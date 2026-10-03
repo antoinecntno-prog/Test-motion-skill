@@ -1,0 +1,68 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>A1 · Le fil rouge · 3,9 s</title>
+<link rel="stylesheet" href="_base.css">
+<style>
+/* Calendrier mural, page Septembre, posé net au centre gauche */
+.cal{position:absolute;left:300px;top:150px;width:720px;height:640px;background:#FBF8F5;border-radius:6px;
+  box-shadow:0 40px 80px rgba(0,0,0,.55);transform:rotate(-3.5deg);padding:40px 46px}
+.cal .rings{position:absolute;top:-16px;left:0;right:0;display:flex;justify-content:space-around;padding:0 120px}
+.cal .rings i{width:16px;height:40px;border-radius:8px;background:linear-gradient(90deg,#6d6670,#d6d0d6,#6d6670)}
+.cal h2{font:900 92px/1 "Archivo";font-stretch:80%;letter-spacing:-.01em;color:var(--ink)}
+.cal h2 small{font:700 34px "Hanken Grotesk";color:var(--text-2);margin-left:14px;letter-spacing:0}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:26px}
+.grid b{font:700 20px "Hanken Grotesk";color:#9a8f99;text-align:center;padding-bottom:6px}
+.grid span{height:72px;border-top:2px solid #E7E0E5;font:600 26px "Hanken Grotesk";color:var(--ink);padding:6px 8px}
+.grid span.off{color:transparent;border-color:transparent}
+.grid span.match{position:relative;color:var(--club-red)}
+.grid span.match::after{content:"";position:absolute;left:-6px;top:-4px;width:74px;height:74px;border:5px solid var(--club-red);
+  border-radius:50%;transform:rotate(-8deg) scaleX(1.12)}
+.grid span.match em{position:absolute;left:-14px;top:-30px;font:700 italic 15px "Hanken Grotesk";color:var(--club-red);white-space:nowrap}
+
+/* Page de juin qui s'envole, floue, en haut à droite (trop grande, flou de mouvement) */
+.juin{position:absolute;left:1180px;top:-140px;width:620px;height:520px;background:#F2EDEA;border-radius:6px;
+  transform:rotate(18deg) scale(1.15);filter:blur(5px);opacity:.9;padding:36px}
+.juin h2{font:900 96px "Archivo";font-stretch:80%;color:#3a3140}
+
+/* Carte de suivi de colis : interface sombre, niveau intermédiaire, légèrement floue */
+.track{position:absolute;left:1120px;top:430px;width:560px;background:#2B232E;border:1px solid #3a3040;border-radius:18px;
+  padding:30px 34px;color:var(--on-dark);box-shadow:0 30px 60px rgba(0,0,0,.5);filter:blur(1.4px);transform:rotate(2deg)}
+.track .k{font:600 18px "Hanken Grotesk";letter-spacing:.08em;text-transform:uppercase;color:var(--on-dark-2)}
+.track .t{font:700 32px "Hanken Grotesk";margin:8px 0 22px}
+.steps{display:flex;align-items:center;gap:0}
+.steps i{width:22px;height:22px;border-radius:50%;background:#5c5160}
+.steps i.on{background:var(--spark)}
+.steps u{flex:1;height:4px;background:#5c5160;text-decoration:none}
+.steps u.on{background:var(--spark)}
+.track .st{margin-top:18px;font:600 24px "Hanken Grotesk";color:var(--spark)}
+
+/* Fil rouge en avant-plan, très flou, noué, coupé par le bord gauche (au-dessus de la bande du sous-titre) */
+.fg{position:absolute;left:-120px;top:-60px;width:900px;height:760px;filter:blur(11px);opacity:.95}
+.thread{position:absolute;left:0;top:0;width:1920px;height:1080px}
+</style></head><body>
+<div class="stage ground-dark">
+  <div class="juin"><h2>JUIN</h2></div>
+  <div class="cal">
+    <div class="rings"><i></i><i></i><i></i><i></i></div>
+    <h2>SEPTEMBRE<small>2026</small></h2>
+    <div class="grid">
+      <b>L</b><b>M</b><b>M</b><b>J</b><b>V</b><b>S</b><b>D</b>
+      <span class="off">.</span><span>1</span><span>2</span><span>3</span><span>4</span><span class="match">5<em>1er match</em></span><span>6</span>
+      <span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span>
+      <span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span>
+    </div>
+  </div>
+  <div class="track">
+    <div class="k">Suivi de commande</div>
+    <div class="t">Maillots · Basket Club Eschau</div>
+    <div class="steps"><i class="on"></i><u class="on"></u><i class="on"></i><u></u><i></i><u></u><i></i></div>
+    <div class="st">En cours d'acheminement</div>
+  </div>
+  <!-- le fil : il part de la page de juin, traverse le cadre et finit en nœud sur le jour du match -->
+  <svg class="thread" viewBox="0 0 1920 1080">
+    <path d="M1700 120 C1500 260 1300 160 1120 300 S 900 520 860 560 C 820 600 760 640 800 690 C 840 740 900 690 870 650 C 840 610 770 650 800 700 C 830 750 900 720 880 680"
+      fill="none" stroke="#D62839" stroke-width="5" stroke-linecap="round"/>
+  </svg>
+  <svg class="fg" viewBox="0 0 900 760"><path d="M-40 520 C 160 380 260 600 420 460 C 560 340 470 200 640 160 C 760 130 820 240 700 300 C 580 360 560 200 700 120"
+    fill="none" stroke="#D62839" stroke-width="22" stroke-linecap="round"/></svg>
+  <div class="sub dark"><span class="box">Septembre</span>, premier match...</div>
+</div>
+</body></html>

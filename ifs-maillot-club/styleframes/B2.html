@@ -1,0 +1,60 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>B2 · L'établi · 28,0 s</title>
+<link rel="stylesheet" href="_base.css">
+<style>
+/* Le même établi, allumé : tapis de coupe clair quadrillé, vu de dessus */
+.mat{position:absolute;inset:0;background:
+  linear-gradient(rgba(26,19,32,.08) 1px,transparent 1px) 0 0/48px 48px,
+  linear-gradient(90deg,rgba(26,19,32,.08) 1px,transparent 1px) 0 0/48px 48px,
+  linear-gradient(rgba(26,19,32,.14) 2px,transparent 2px) 0 0/240px 240px,
+  linear-gradient(90deg,rgba(26,19,32,.14) 2px,transparent 2px) 0 0/240px 240px,
+  #F4F0F3}
+/* tissu polyester blanc posé sur le tapis */
+.cloth{position:absolute;left:180px;top:70px;width:1300px;height:780px;background:
+  radial-gradient(circle,rgba(26,19,32,.06) 0 1.6px,transparent 2.2px) 0 0/12px 12px,#fff;
+  box-shadow:0 20px 50px rgba(26,19,32,.18);transform:rotate(-2deg)}
+.patterns{position:absolute;left:180px;top:70px;width:1300px;height:780px;transform:rotate(-2deg)}
+/* grille de tailles IFS, carte à droite (tailles seulement, aucune mesure inventée) */
+.sizes{position:absolute;left:1480px;top:120px;width:380px;background:#fff;border-radius:14px;box-shadow:0 24px 50px rgba(26,19,32,.2);padding:26px 28px;transform:rotate(3deg)}
+.sizes .k{font:700 17px "Hanken Grotesk";letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.sizes .t{font:900 34px "Archivo";font-stretch:85%;margin:6px 0 16px}
+.sizes .r{display:flex;gap:10px;flex-wrap:wrap}
+.sizes .r span{flex:0 0 auto;min-width:62px;text-align:center;padding:10px 0;border:2px solid #E7E0E5;border-radius:8px;font:700 24px "Hanken Grotesk"}
+.sizes .r span.on{background:var(--accent);border-color:var(--accent);color:#fff}
+/* cutter rotatif qui suit le contour, flou de mouvement */
+.cutter{position:absolute;left:960px;top:420px;width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle,#e8e6ea 0 30%,#b9b6bd 31% 34%,#d8d6dc 35% 88%,#8d8a92 90%);box-shadow:0 10px 24px rgba(0,0,0,.25)}
+.handle{position:absolute;left:1010px;top:470px;width:70px;height:330px;border-radius:35px;background:linear-gradient(90deg,#B3125F,#C2186B 50%,#940E4E);
+  transform:rotate(-38deg);transform-origin:35px 0;box-shadow:0 18px 30px rgba(0,0,0,.25)}
+.blur-trail{position:absolute;left:820px;top:430px;width:200px;height:100px;background:linear-gradient(90deg,transparent,rgba(179,18,95,.25));filter:blur(12px);border-radius:50px;transform:rotate(-30deg)}
+/* règle en avant-plan, floue, coupée par le bord haut gauche */
+.ruler{position:absolute;left:-120px;top:-40px;width:900px;height:110px;background:
+  repeating-linear-gradient(90deg,#1A1320 0 3px,transparent 3px 24px) 0 0/100% 40% no-repeat,#f2e9a0;
+  transform:rotate(-8deg);filter:blur(9px);opacity:.92;box-shadow:0 20px 40px rgba(0,0,0,.2)}
+</style></head><body>
+<div class="stage">
+  <div class="mat"></div>
+  <div class="cloth"></div>
+  <!-- patrons de débardeur : quatre tailles gradées emboîtées, la coupe suit la taille M -->
+  <svg class="patterns" viewBox="0 0 1300 780">
+    <g fill="none" stroke-linejoin="round">
+      <g transform="translate(150 60)">
+        <path d="M120 0 L210 0 C 230 70 330 70 350 0 L440 0 C 430 90 470 140 520 170 L520 660 L50 660 L50 170 C 100 140 130 90 120 0 Z" stroke="#C8BCC5" stroke-width="3" stroke-dasharray="10 8" transform="translate(-30 -20) scale(1.08)"/>
+        <path d="M120 0 L210 0 C 230 70 330 70 350 0 L440 0 C 430 90 470 140 520 170 L520 660 L50 660 L50 170 C 100 140 130 90 120 0 Z" stroke="#B3125F" stroke-width="4"/>
+        <path d="M120 0 L210 0 C 230 70 330 70 350 0 L440 0 C 430 90 470 140 520 170 L520 660 L50 660 L50 170 C 100 140 130 90 120 0 Z" stroke="#C8BCC5" stroke-width="3" stroke-dasharray="10 8" transform="translate(28 22) scale(.92)"/>
+        <text x="250" y="380" font-family="Archivo" font-weight="900" font-size="64" fill="#B3125F" opacity=".9">M</text>
+      </g>
+      <g transform="translate(720 60)">
+        <path d="M120 0 L210 0 C 230 40 330 40 350 0 L440 0 C 430 90 470 140 520 170 L520 660 L50 660 L50 170 C 100 140 130 90 120 0 Z" stroke="#B3125F" stroke-width="4" stroke-dasharray="1600" stroke-dashoffset="520"/>
+        <text x="250" y="380" font-family="Archivo" font-weight="900" font-size="64" fill="#B3125F" opacity=".35">M</text>
+      </g>
+    </g>
+  </svg>
+  <div class="blur-trail"></div>
+  <div class="handle"></div>
+  <div class="cutter"></div>
+  <div class="sizes"><div class="k">Grille IFS</div><div class="t">Tailles standardisées</div>
+    <div class="r"><span>XS</span><span>S</span><span class="on">M</span><span>L</span><span>XL</span><span>2XL</span></div></div>
+  <div class="ruler"></div>
+  <div class="sub">Nos tailles sont <span class="box">standardisées</span>.</div>
+</div>
+</body></html>

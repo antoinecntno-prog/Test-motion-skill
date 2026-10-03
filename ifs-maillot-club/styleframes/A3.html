@@ -1,0 +1,49 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>A3 · Le fil rouge · 39,3 s</title>
+<link rel="stylesheet" href="_base.css">
+<style>
+.gym{position:absolute;inset:0;background:radial-gradient(90% 70% at 70% 20%,#3a2f45 0%,#1A1320 60%,#0f0b12 100%)}
+/* projecteurs de la salle, flous au fond */
+.light{position:absolute;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,#fff6e6 0,#ffe7b8 30%,transparent 70%);filter:blur(14px);opacity:.75}
+/* parquet en perspective, bas du cadre */
+.floor{position:absolute;left:-200px;right:-200px;top:640px;height:700px;transform:perspective(900px) rotateX(62deg);transform-origin:50% 0;
+  background:repeating-linear-gradient(90deg,#b07a46 0 90px,#a46f3d 90px 180px,#b8834f 180px 270px);filter:blur(1.5px)}
+.floor::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,11,18,.85),rgba(15,11,18,.2) 40%,rgba(15,11,18,.6))}
+.court-line{position:absolute;left:-200px;right:-200px;top:700px;height:6px;background:#f2ede6;opacity:.55;filter:blur(1px)}
+/* panier : planche, cercle orange, filet tracé par le fil rouge */
+.board{position:absolute;left:1280px;top:60px;width:520px;height:330px;border:8px solid #f4f0f3;border-radius:6px;background:rgba(255,255,255,.07)}
+.board::after{content:"";position:absolute;left:170px;top:150px;width:164px;height:120px;border:6px solid #f4f0f3}
+.rim{position:absolute;left:1418px;top:388px;width:250px;height:40px;border:9px solid #E8662B;border-radius:50%}
+.net{position:absolute;left:1400px;top:400px;width:290px;height:220px}
+/* ballon qui passe le cercle, avec traînée */
+.ball{position:absolute;left:1468px;top:300px;width:150px;height:150px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#f39a5a,#d9621f 55%,#9c3d0e);box-shadow:inset -10px -14px 24px rgba(0,0,0,.35)}
+.ball::before,.ball::after{content:"";position:absolute;inset:0;border-radius:50%;border:3px solid #2a1408}
+.ball::before{clip-path:inset(0 48% 0 48%)} .ball::after{clip-path:inset(48% 0 48% 0)}
+.trail{position:absolute;left:1200px;top:330px;width:330px;height:110px;background:linear-gradient(90deg,transparent,rgba(232,102,43,.45));filter:blur(14px);transform:rotate(-24deg);border-radius:60px}
+/* le dos n°15 qui monte : sujet, net, légère inclinaison, flou de mouvement sur les bords bas */
+.player{position:absolute;left:270px;top:60px;width:560px;height:735px;background:url(../assets/img/maillot-dos-detoure.png) center/contain no-repeat;
+  transform:rotate(-7deg);filter:drop-shadow(0 40px 50px rgba(0,0,0,.6))}
+.ghost{position:absolute;left:270px;top:130px;width:560px;height:735px;background:url(../assets/img/maillot-dos-detoure.png) center/contain no-repeat;
+  transform:rotate(-7deg);filter:blur(18px);opacity:.35}
+.arm{position:absolute;width:120px;height:430px;border-radius:60px;background:linear-gradient(90deg,#6b4a37,#8a634b 50%,#5d3f2f);transform-origin:50% 100%}
+</style></head><body>
+<div class="stage">
+  <div class="gym"></div>
+  <div class="light" style="left:140px;top:30px"></div><div class="light" style="left:620px;top:-40px;width:120px;height:120px"></div>
+  <div class="light" style="left:1080px;top:20px;width:110px;height:110px"></div>
+  <div class="floor"></div><div class="court-line"></div>
+  <div class="board"></div>
+  <div class="trail"></div>
+  <div class="ball"></div>
+  <div class="rim"></div>
+  <svg class="net" viewBox="0 0 290 220">
+    <g fill="none" stroke="#D62839" stroke-width="4" stroke-linecap="round">
+      <path d="M22 20 L70 200 M60 24 L100 205 M100 26 L130 208 M145 27 L145 210 M190 26 L160 208 M230 24 L190 205 M268 20 L220 200"/>
+      <path d="M22 20 C 80 70 210 70 268 20 M38 80 C 100 120 190 120 252 80 M55 140 C 110 170 180 170 235 140 M70 200 C 120 214 170 214 220 200"/>
+    </g>
+  </svg>
+  <div class="ghost"></div>
+  <div class="player"></div>
+  <div class="sub dark">Samedi, le numéro <span class="box">15</span> monte au panier.</div>
+</div>
+</body></html>

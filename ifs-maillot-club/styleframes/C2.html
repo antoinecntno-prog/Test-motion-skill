@@ -1,0 +1,49 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>C2 · Le numéro 15 · 22,4 s</title>
+<link rel="stylesheet" href="_base.css">
+<style>
+/* Le vrai studio de personnalisation IFS, en fenêtre, la caméra très près du maillot */
+.win{position:absolute;left:150px;top:40px;width:1620px;height:820px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 40px 90px rgba(26,19,32,.22)}
+.hd{height:70px;border-bottom:1px solid #E7E0E5;display:flex;align-items:center;padding:0 22px;gap:14px}
+.hd img{width:44px;height:44px;border-radius:10px}
+.hd b{font:800 22px "Hanken Grotesk"} .hd small{display:block;font:500 15px "Hanken Grotesk";color:var(--text-2)}
+.hd .sel{margin-left:auto;border:1px solid #8A7E88;border-radius:4px;padding:10px 16px;font:500 18px "Hanken Grotesk";width:460px}
+.canvas{position:absolute;left:20px;top:90px;width:1180px;height:650px;overflow:hidden;background:
+  linear-gradient(115deg,transparent 0 40%,rgba(234,227,232,.9) 40% 52%,transparent 52% 60%,rgba(234,227,232,.7) 60% 66%,transparent 66%),#F4F0F3}
+.jersey{position:absolute;left:330px;top:100px;width:540px;height:707px;background:url(../assets/img/maillot-face-rouge-noir-detoure.png) center/contain no-repeat;
+  filter:drop-shadow(0 20px 30px rgba(26,19,32,.18))}
+/* l'écusson du club arrive depuis la caméra : trop grand, flou, décalé, il va se poser sur la poitrine */
+.badge{position:absolute;left:600px;top:120px;width:420px;height:362px;background:url(../assets/img/ecusson-bc-eschau.png) center/contain no-repeat;
+  transform:rotate(-10deg);filter:blur(7px);opacity:.92}
+.target{position:absolute;left:700px;top:250px;width:120px;height:104px;border:3px dashed var(--accent);border-radius:8px}
+.panel{position:absolute;left:1220px;top:70px;width:400px;bottom:0;border-left:1px solid #E7E0E5}
+.tabs{display:flex;border-bottom:1px solid #E7E0E5}
+.tabs span{flex:1;text-align:center;padding:20px 0;font:600 19px "Hanken Grotesk";color:var(--text-2)}
+.tabs span.on{color:var(--ink);box-shadow:inset 0 -3px 0 var(--accent)}
+.drop-zone{margin:26px 20px;border:2px dashed #C8BCC5;border-radius:10px;padding:26px;text-align:center;font:500 18px "Hanken Grotesk";color:var(--text-2)}
+.file{margin:0 20px;display:flex;align-items:center;gap:12px;border:1px solid #E7E0E5;border-radius:8px;padding:12px;font:600 17px "Hanken Grotesk"}
+.file i{width:42px;height:42px;border-radius:6px;background:url(../assets/img/ecusson-bc-eschau.png) center/contain no-repeat #fff}
+.quote{position:absolute;left:20px;right:20px;bottom:20px;background:var(--accent);color:#fff;text-align:center;padding:18px;border-radius:4px;font:700 19px "Hanken Grotesk"}
+.note{position:absolute;left:20px;top:752px;width:1180px;background:#FCEAF2;border-radius:4px;padding:12px 16px;font:500 16px "Hanken Grotesk";color:#5A3A4A}
+.cur{position:absolute;left:950px;top:420px;width:46px;height:58px}
+/* avant-plan : coin flou d'un second écusson qui file vers la caméra */
+.fg{position:absolute;left:-140px;top:560px;width:420px;height:362px;background:url(../assets/img/ecusson-bc-eschau.png) center/contain no-repeat;filter:blur(16px);opacity:.6;transform:rotate(14deg)}
+</style></head><body>
+<div class="stage ground-paper">
+  <div class="win">
+    <div class="hd"><img src="../assets/img/logo-ifs.svg" alt=""><div><b>Studio de personnalisation</b><small>Industrie Française de Sellerie</small></div>
+      <div class="sel">Maillot basketball double face (réversible)</div></div>
+    <div class="canvas"><div class="jersey"></div><div class="target"></div></div>
+    <div class="panel">
+      <div class="tabs"><span>Produit</span><span class="on">Logos</span><span>Textes</span></div>
+      <div class="drop-zone">Déposez votre logo ici</div>
+      <div class="file"><i></i>logo-club.png</div>
+      <div class="quote">Demander un devis avec ce visuel</div>
+    </div>
+    <div class="note"><b>Aperçu indicatif.</b> Les couleurs et le placement définitifs sont validés avec vous sur le BAT officiel.</div>
+  </div>
+  <div class="badge"></div>
+  <svg class="cur" viewBox="0 0 46 58"><path d="M3 2 L3 46 L14 35 L22 54 L30 50 L22 32 L38 32 Z" fill="#fff" stroke="#1A1320" stroke-width="3" stroke-linejoin="round"/></svg>
+  <div class="fg"></div>
+  <div class="sub">Vous envoyez votre <span class="box">design</span><span class="later"> et votre logo.</span></div>
+</div>
+</body></html>

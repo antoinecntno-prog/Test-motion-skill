@@ -116,7 +116,7 @@ Vous choisissez votre design.
 Vous validez le BAT.
 Le tissu est coupé à vos mesures.
 La sublimation fixe les couleurs dans la fibre.
-Chaque maillot est cousu, puis contrôlé.
+La confection assemble chaque maillot.
 Et vous êtes livrés en moins d'un mois.
 Samedi, le numéro quinze monte au panier.
 Le rouge est resté rouge.

@@ -1,0 +1,553 @@
+<template>
+  <style>
+  /* ===================== FIL IFS : début du bloc CSS à copier ===================== */
+  @font-face { font-family: "Archivo"; font-weight: 700 900; font-stretch: 75% 100%; src: url("assets/fonts/archivo-latin.woff2") format("woff2"); }
+  @font-face { font-family: "Hanken Grotesk"; font-weight: 400 700; src: url("assets/fonts/hanken-grotesk-latin.woff2") format("woff2"); }
+  @font-face { font-family: "Pacifico"; src: url("assets/fonts/studio-pacifico.woff2") format("woff2"); }
+  .fx-layer { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+  /* sols : encre (douleur, match, fin), papier (atelier), noir (pivot) */
+  .fx-ink { background: repeating-linear-gradient(115deg, rgba(255,255,255,.028) 0 2px, transparent 2px 46px),
+    radial-gradient(120% 90% at 50% 40%, #241B2B 0%, #1A1320 55%, #110C15 100%); }
+  .fx-paper { background: repeating-linear-gradient(115deg, rgba(179,18,95,.05) 0 2px, transparent 2px 46px),
+    linear-gradient(180deg, #FFFFFF 0%, #F7F3F6 100%); }
+  .fx-black { background: #110C15; }
+  .fx-grain { pointer-events: none; opacity: .05; mix-blend-mode: screen;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='240' height='240' filter='url(%23g)'/></svg>"); }
+  .fx-grain.paper { opacity: .03; mix-blend-mode: multiply; }
+  /* kit caméra : #stage > #drift > #cam > #world (le monde fait la taille de ses stations) */
+  .fx-stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; }
+  .fx-drift, .fx-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+  .fx-world { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+  .fx-st { position: absolute; }                       /* une station : placée par son centre en coordonnées monde */
+  .fx-thread { position: absolute; left: 0; top: 0; overflow: visible; }
+  /* sous-titre : la phrase de la voix, bas centre (bande y 890 à 980), mot par mot */
+  .fx-sub { position: absolute; left: 0; top: 896px; width: 1920px; text-align: center; font: 600 62px/74px "Hanken Grotesk", sans-serif;
+    letter-spacing: -0.015em; color: #1A1320; white-space: nowrap; text-shadow: 0 2px 14px rgba(255,255,255,.8); }
+  .fx-sub.dark { color: #F5EFF3; text-shadow: 0 2px 16px rgba(0,0,0,.6); }
+  .fx-sw { display: inline-block; opacity: 0; position: relative; }
+  .fx-box { position: absolute; left: -.14em; right: -.14em; top: .06em; bottom: .02em; background: #B3125F; border-radius: 3px;
+    transform: scaleX(0); transform-origin: 0 50%; z-index: -1; }
+  .fx-stroke { position: absolute; left: -2%; right: -4%; bottom: -8px; height: 7px; border-radius: 50%; transform: scaleX(0) rotate(-1.2deg);
+    transform-origin: 0 50%; background: linear-gradient(90deg, transparent, #B3125F 12%, #B3125F 70%, transparent); }
+  .fx-sub.dark .fx-stroke { background: linear-gradient(90deg, transparent, #FF7DBA 12%, #FF7DBA 70%, transparent); }
+  .fx-type { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; display: grid; place-items: center;
+    font: 800 84px/1.08 "Archivo"; font-stretch: 85%; letter-spacing: -.01em; color: #F5EFF3; }
+  /* curseur */
+  .fx-cursor { position: absolute; left: 0; top: 0; width: 46px; height: 58px; filter: drop-shadow(0 4px 6px rgba(0,0,0,.35)); }
+  .fx-ripple { position: absolute; width: 120px; height: 120px; margin: -60px 0 0 -60px; border: 4px solid rgba(179,18,95,.55); border-radius: 50%; opacity: 0; }
+  /* ===================== FIL IFS : fin du bloc CSS à copier ===================== */
+
+    /* ===================== séquence 01-juin (préfixe p01) ===================== */
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: "Hanken Grotesk", sans-serif;
+      -webkit-font-smoothing: antialiased; }
+
+    /* ---- S1 : la fenêtre de nouveau message (mise en page Outlook web, contenu anonymisé) ----
+       deux calques au même transform : le papier SOUS le fil, l'encre (texte, bouton) AU-DESSUS du fil */
+    #p01-mailP, #p01-mailC, #p01-mailI { position: absolute; left: 470px; top: 160px; width: 980px; height: 580px;
+      transform-origin: 90px 90px; transform: rotate(-1.5deg); }
+    #p01-mpaper { position: absolute; left: 0; top: 0; width: 980px; height: 580px; border-radius: 10px; background: #FFFFFF;
+      transform-origin: 50% 0; box-shadow: 0 50px 100px rgba(0, 0, 0, .55), 0 6px 18px rgba(0, 0, 0, .3); }
+    /* une fois repliée, la carte roule SUR le fil : un second papier, au-dessus du fil, se fond pendant le repli */
+    #p01-mailC { opacity: 0; }
+    #p01-mcover { position: absolute; left: 0; top: 0; width: 980px; height: 580px; border-radius: 10px; background: #FFFFFF; transform-origin: 50% 0; }
+    #p01-mink { position: absolute; left: 0; top: 0; width: 980px; height: 580px; color: #323130; }
+    .p01-mbar { position: absolute; left: 0; top: 0; width: 980px; height: 56px; background: #0F6CBD; border-radius: 10px 10px 0 0; }
+    #p01-mtitle { position: absolute; left: 24px; top: 0; font: 600 21px/56px "Hanken Grotesk", sans-serif; color: #FFFFFF;
+      white-space: nowrap; transform-origin: 0 50%; transform: scale(1.04); }
+    .p01-wctl { position: absolute; left: 860px; top: 18px; }
+    .p01-rule { position: absolute; left: 0; width: 980px; height: 1px; background: #E8E6E4; }
+    #p01-send { position: absolute; left: 24px; top: 68px; width: 132px; height: 44px; border-radius: 4px; background: #0F6CBD;
+      color: #FFFFFF; font: 700 21px/44px "Hanken Grotesk", sans-serif; text-align: center; }
+    #p01-senddk { position: absolute; left: 0; top: 0; width: 132px; height: 44px; border-radius: 4px; background: #0B4F8A; opacity: 0; }
+    .p01-sendtx { position: relative; }
+    .p01-ico { position: absolute; top: 78px; }
+    .p01-lab { position: absolute; left: 24px; height: 62px; font: 500 22px/62px "Hanken Grotesk", sans-serif; color: #605E5C; }
+    .p01-val { position: absolute; left: 114px; height: 34px; padding: 0 6px; background: #FFFFFF; font: 500 22px/34px "Hanken Grotesk", sans-serif;
+      color: #323130; white-space: nowrap; }
+    .p01-chip { position: absolute; left: 120px; top: 136px; height: 38px; padding: 0 12px; border-radius: 4px; background: #F3F2F1;
+      font: 600 22px/38px "Hanken Grotesk", sans-serif; color: #323130; white-space: nowrap; }
+    #p01-att { position: absolute; left: 24px; top: 268px; height: 64px; padding: 0 22px 0 14px; display: flex; align-items: center; gap: 14px;
+      border: 1px solid #E1DFDD; border-radius: 6px; background: #FFFFFF; font: 600 20px/1 "Hanken Grotesk", sans-serif; color: #323130;
+      white-space: nowrap; transform: translateY(-12px) scale(1.3); filter: blur(6px); }
+    #p01-attsh { position: absolute; left: 0; top: 0; width: 100%; height: 100%; border-radius: 8px; background: rgba(26, 19, 32, .35);
+      filter: blur(10px); z-index: -1; opacity: .5; transform: translateY(16px) scale(1.04); }
+    .p01-xl { flex: none; width: 34px; height: 40px; border-radius: 3px; background: #1D6F42; color: #FFFFFF;
+      font: 800 18px/40px "Archivo", sans-serif; text-align: center; }
+    #p01-body { position: absolute; left: 24px; top: 358px; font: 400 23px/34px "Hanken Grotesk", sans-serif; color: #323130; white-space: nowrap; }
+    /* le curseur et son onde (bleue : on clique dans l'interface Outlook) */
+    #p01-cursor { transform-origin: 3px 2px; }
+    #p01-ripple { left: 574px; top: 247px; border-color: rgba(15, 108, 189, .75); }
+
+    /* ---- S2 et pages JUIN : le calendrier mural (styleframe A1) ---- */
+    .p01-calw { position: absolute; left: 0; top: 0; width: 700px; height: 540px; transform-origin: 350px 270px; }
+    .p01-page { position: absolute; left: 0; top: 0; width: 700px; height: 540px; border-radius: 6px; background: #FBF8F5;
+      box-shadow: 0 40px 80px rgba(0, 0, 0, .55), 0 4px 12px rgba(0, 0, 0, .28); }
+    .p01-ring { position: absolute; top: -18px; width: 16px; height: 40px; border-radius: 8px;
+      background: linear-gradient(90deg, #6D6670, #D6D0D6, #6D6670); }
+    .p01-hole { position: absolute; top: 15px; width: 18px; height: 8px; border-radius: 50%; background: #3A3140; }
+    .p01-cell { position: absolute; width: 82.29px; height: 2px; background: #E7E0E5; }
+    .p01-ctitle { position: absolute; left: 44px; top: 30px; white-space: nowrap; font: 900 92px/1 "Archivo", sans-serif; font-stretch: 80%;
+      letter-spacing: -.01em; color: #1A1320; }
+    .p01-tl { display: inline-block; }
+    .p01-yr { font: 700 34px/1 "Hanken Grotesk", sans-serif; letter-spacing: 0; color: #5E5360; margin-left: 14px; }
+    .p01-hd { position: absolute; top: 132px; width: 82.29px; text-align: center; font: 700 20px/24px "Hanken Grotesk", sans-serif; color: #9A8F99; }
+    .p01-num { position: absolute; width: 40px; height: 34px; text-align: center; font: 600 26px/34px "Hanken Grotesk", sans-serif; color: #1A1320; }
+    #p01-fjuin .p01-num, #p01-bjuin .p01-num { color: #8F8590; }
+    /* SEPTEMBRE : le titre s'imprime lettre à lettre, la grille s'allume ligne à ligne */
+    #p01-calI .p01-tl { opacity: 0; }
+    #p01-calI .p01-hd, #p01-calI .p01-num { opacity: .14; }
+    #p01-calP, #p01-calI { opacity: 0; }
+    .p01-calsvg { position: absolute; left: 0; top: 0; overflow: visible; }
+    #p01-ring5 { fill: none; stroke: #D62839; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+    #p01-match { position: absolute; left: 431.45px; top: 164px; width: 160px; height: 30px; text-align: center; white-space: nowrap;
+      font: italic 700 23px/30px "Hanken Grotesk", sans-serif; color: #D62839; opacity: 0; }
+    #p01-match sup { font-size: .62em; line-height: 0; vertical-align: .62em; margin-left: 1px; }
+
+    /* ---- avant-plan et fond (calques à parallaxe, hors caméra) ---- */
+    #p01-fjuin { left: 1660px; top: 130px; transform-origin: 350px 270px; transform: rotate(9deg) scale(1.32); filter: blur(10px) brightness(.94); }
+    #p01-bjuin { left: 1250px; top: -95px; transform-origin: 350px 270px; opacity: 0; }
+    #p01-loop { position: absolute; left: -60px; top: -40px; overflow: visible; transform-origin: 1020px 580px; opacity: 0; }
+    #p01-loop path { fill: none; stroke: #D62839; stroke-width: 22; stroke-linecap: round; }
+
+    /* ---- sous-titre : gris (encre à 35 %) puis encre ; mot clé dans la boîte accent ---- */
+    #p01-subs .fx-sw { color: rgba(245, 239, 243, .35); }
+    #p01-subs .p01-kw { margin: 0 .14em; text-shadow: none; isolation: isolate; }
+    #p01-subs .p01-pk { position: relative; display: inline-block; }
+    #p01-stroke { opacity: 0; }
+  </style>
+
+  <div id="root" data-composition-id="01-juin" data-width="1920" data-height="1080" data-duration="4.56">
+
+    <!-- sol d'encre W1 (ground-dark) -->
+    <div id="p01-ground" class="clip fx-layer fx-ink" data-start="0" data-duration="4.56" data-track-index="0"></div>
+
+    <!-- fond : la page JUIN qui s'envole, loin derrière le calendrier (séquence 2 de la scène) -->
+    <div id="p01-far" class="clip fx-layer" data-start="0" data-duration="4.56" data-track-index="1" data-layout-allow-overflow>
+      <div id="p01-bjuin" class="p01-calw"></div>
+    </div>
+
+    <!-- le monde W1 sous la caméra : #stage > #drift > #cam > #world -->
+    <div id="p01-scene" class="clip fx-layer" data-start="0" data-duration="4.56" data-track-index="2" data-layout-allow-overflow>
+      <div class="fx-stage" id="p01-stage"><div class="fx-drift" id="p01-drift"><div class="fx-cam" id="p01-cam"><div class="fx-world" id="p01-world">
+
+        <!-- papiers (sous le fil) -->
+        <div id="p01-mailP"><div id="p01-mpaper"></div></div>
+        <div id="p01-calP" class="p01-calw"></div>
+
+        <!-- LE fil rouge (threadPath('W1')) -->
+        <svg class="fx-thread" id="p01-thread" width="16000" height="1080"><path id="p01-thread-path" fill="none" stroke="#D62839" stroke-width="5" stroke-linecap="round"/></svg>
+
+        <!-- papier de la carte au-dessus du fil (apparaît pendant le repli) -->
+        <div id="p01-mailC"><div id="p01-mcover"></div></div>
+
+        <!-- encres (au-dessus du fil) : la fenêtre de message S1 -->
+        <div id="p01-mailI"><div id="p01-mink">
+          <div class="p01-mbar"></div>
+          <div id="p01-mtitle">Nouveau message</div>
+          <svg class="p01-wctl" width="96" height="20" viewBox="0 0 96 20" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="1.8" stroke-linecap="round">
+            <path d="M4 10 H18"/><rect x="39" y="3" width="14" height="14" rx="2"/><path d="M76 3 L90 17 M90 3 L76 17"/>
+          </svg>
+          <div class="p01-rule" style="top: 123px"></div>
+          <div id="p01-send"><i id="p01-senddk"></i><span class="p01-sendtx">Envoyer</span></div>
+          <svg class="p01-ico" style="left: 186px" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#605E5C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 7.5 L9.2 15.3 a2.3 2.3 0 0 0 3.3 3.3 L20.2 10.9 a4.4 4.4 0 0 0 -6.2 -6.2 L6.1 12.6 a6.4 6.4 0 0 0 9 9 L20.6 16.1"/>
+          </svg>
+          <svg class="p01-ico" style="left: 230px" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#605E5C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4.5" width="18" height="15" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18 L10 13 L14 16 L17 13.5 L20.5 16.5"/>
+          </svg>
+          <svg class="p01-ico" style="left: 274px" width="24" height="24" viewBox="0 0 24 24" fill="#605E5C">
+            <circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/>
+          </svg>
+          <svg class="p01-ico" style="left: 930px" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#605E5C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4.5 6.5 H19.5 M9.5 6.5 V4.5 H14.5 V6.5 M6.5 6.5 L7.5 20 H16.5 L17.5 6.5 M10.5 10 V16.5 M13.5 10 V16.5"/>
+          </svg>
+          <div class="p01-lab" style="top: 124px">À</div>
+          <div class="p01-chip">Fournisseur textile</div>
+          <div class="p01-rule" style="top: 185px"></div>
+          <div class="p01-lab" style="top: 186px">Objet</div>
+          <div class="p01-val" style="top: 200px">Commande maillots · saison 2026</div>
+          <div class="p01-rule" style="top: 247px"></div>
+          <div id="p01-att"><i id="p01-attsh"></i><span class="p01-xl">X</span><span>Commande maillots 2026.xlsx</span></div>
+          <div id="p01-body">Bonjour,<br>voici notre commande de maillots pour la saison.<br><br>Basket Club Eschau</div>
+        </div></div>
+
+        <!-- encre du calendrier S2 (au-dessus du fil) -->
+        <div id="p01-calI" class="p01-calw"></div>
+
+        <!-- clic : onde et curseur -->
+        <div id="p01-ripple" class="fx-ripple"></div>
+        <svg id="p01-cursor" class="fx-cursor" viewBox="0 0 46 58"><path d="M3 2 L3 46 L14 35 L22 54 L30 50 L22 32 L38 32 Z" fill="#FFFFFF" stroke="#1A1320" stroke-width="3" stroke-linejoin="round"/></svg>
+
+      </div></div></div></div>
+    </div>
+
+    <!-- avant-plan : la page JUIN tout près de la caméra (scène 1), une boucle du fil floue (scène 2) -->
+    <div id="p01-fore" class="clip fx-layer" data-start="0" data-duration="4.56" data-track-index="3" data-layout-allow-overflow>
+      <div id="p01-fjuin" class="p01-calw"></div>
+      <svg id="p01-loop" width="640" height="520" viewBox="0 0 640 520">
+        <path d="M-40 430 C 90 380 190 400 282 330 C 372 262 368 122 280 112 C 190 102 158 222 250 252 C 352 284 432 168 486 -40"/>
+      </svg>
+    </div>
+
+    <!-- grain 5 % -->
+    <div id="p01-grain" class="clip fx-layer fx-grain" data-start="0" data-duration="4.56" data-track-index="4"></div>
+
+    <!-- la phrase de la voix, bas centre, mot par mot (temps locaux) -->
+    <div id="p01-subs" class="clip fx-layer" data-start="0" data-duration="4.56" data-track-index="5" data-layout-allow-overflow>
+      <div id="p01-s1" class="fx-sub dark"></div>
+      <div id="p01-s2" class="fx-sub dark"></div>
+    </div>
+  </div>
+
+  <script src="assets/vendor/gsap-3.14.2.min.js"></script>
+  <script>
+    (function () {
+      var FID = "01-juin";
+      var root = document.querySelector('[data-composition-id="' + FID + '"]');
+      function $(id) { return root.querySelector("#p01-" + id); }
+
+/* ===================== FIL IFS : début du kit JS à copier ===================== */
+const FX = {
+  W: 1920, H: 1080, THREAD: "#D62839", FADED: "#E8823A", ACCENT: "#B3125F", INK: "#1A1320",
+  /* ancres du fil par monde (coordonnées monde) : la courbe passe par chacune, dans cet ordre */
+  ANCHORS: {
+    W1: [[560,250],[1500,600],[2400,640],[3150,420],[3700,700],[4500,660],[5100,700],[6000,650],[7000,620],[7800,560],[9000,640],[9920,380]],
+    W2: [[-200,560],[700,640],[1800,620],[3200,700],[4600,640],[5400,520],[6500,660],[7600,700],[8800,640],[9800,470],[10600,600],[12000,520],[13200,660],[14200,560]]
+  },
+  /* cadrages de référence (frame.md) */
+  FRAMING: {
+    S1:[960,500,1.0], S2:[3000,500,1.05], S3:[5400,520,0.95], S4:[7800,480,1.1], S5:[10000,470,1.25],
+    S6:[960,480,1.0], S7:[3200,470,0.95], S8:[5400,470,1.05], S9:[7600,470,1.0], S10:[9800,470,1.4], S11:[12000,470,1.2], S12:[14200,470,1.0]
+  }
+};
+/* caméra : amène (x, y) du monde au centre du cadre à l'échelle s ; blur en px sur #cam */
+function fxCam(world, cam, x, y, s, blur) {
+  world.style.transform = `translate(${960 - x}px, ${540 - y}px)`;
+  world.style.transformOrigin = `${x}px ${y}px`;
+  cam.style.transform = `scale(${s})`;
+  cam.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : "none";
+}
+/* Catmull-Rom → Bézier : chemin SVG lisse passant par toutes les ancres */
+function fxThreadD(name) {
+  const p = FX.ANCHORS[name]; let d = `M${p[0][0]} ${p[0][1]}`;
+  for (let i = 0; i < p.length - 1; i++) {
+    const a = p[Math.max(0, i - 1)], b = p[i], c = p[i + 1], e = p[Math.min(p.length - 1, i + 2)];
+    const c1 = [b[0] + (c[0] - a[0]) / 6, b[1] + (c[1] - a[1]) / 6], c2 = [c[0] - (e[0] - b[0]) / 6, c[1] - (e[1] - b[1]) / 6];
+    d += ` C${c1[0].toFixed(1)} ${c1[1].toFixed(1)} ${c2[0].toFixed(1)} ${c2[1].toFixed(1)} ${c[0]} ${c[1]}`;
+  }
+  return d;
+}
+/* nœud (douleur, S3) : trois boucles serrées autour de (cx, cy), tension 0 → 1 les resserre */
+function fxKnotD(cx, cy, tension) {
+  const r = 46 - 26 * tension; let d = `M${cx - 120} ${cy}`;
+  for (let k = 0; k < 3; k++) { const o = (k - 1) * r * 0.55;
+    d += ` C${cx - 40 + o} ${cy - r * 1.6} ${cx + 40 + o} ${cy - r * 1.6} ${cx + o} ${cy}` +
+         ` C${cx - 40 + o} ${cy + r * 1.6} ${cx + 40 + o} ${cy + r * 1.6} ${cx + 20 + o} ${cy}`; }
+  return d + ` L${cx + 120} ${cy + 10}`;
+}
+/* dessine le fil : progress 0 → 1 de sa longueur (signature « le fil trace ») ; color THREAD ou FADED */
+function fxDrawThread(pathEl, progress, color) {
+  const L = pathEl.getTotalLength();
+  pathEl.style.strokeDasharray = `${L} ${L}`;
+  pathEl.style.strokeDashoffset = `${L * (1 - Math.max(0, Math.min(1, progress)))}`;
+  if (color) pathEl.setAttribute("stroke", color);
+  return pathEl.getPointAtLength(L * progress);       // la tête du fil (pour la caméra ou l'aiguille)
+}
+/* aiguille du logo IFS (len px), pointe vers la droite ; renvoie du SVG à placer dans un <svg> ;
+   uid = préfixe de la séquence (« p04 »), pour que l'id du dégradé soit unique dans la page assemblée */
+function fxNeedle(len, uid = "fx") {
+  const w = len * 0.045;
+  return `<defs><linearGradient id="${uid}NeedleG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8A93A1"/><stop offset=".5" stop-color="#3C4452"/><stop offset="1" stop-color="#4A5260"/></linearGradient></defs>
+    <path d="M0 0 C ${len * .25} ${-w} ${len * .75} ${-w * .6} ${len} 0 C ${len * .75} ${w * .6} ${len * .25} ${w} 0 0 Z" fill="url(#${uid}NeedleG)"/>
+    <ellipse cx="${len * .08}" cy="0" rx="${len * .045}" ry="${w * .32}" fill="#110C15"/>`;
+}
+/* stickman (frame.md) : renvoie le SVG d'une pose, en coordonnées locales (tête en (0, -270), bassin en (0, 0)) */
+const FX_POSES = {
+  echauffement: { arms: [[[-30,-200],[-70,-130],[-60,-60]], [[30,-200],[80,-140],[110,-80]]], legs: [[[-20,0],[-40,90],[-45,180]], [[20,0],[50,90],[60,180]]], lean: 0 },
+  attente:      { arms: [[[-30,-200],[-50,-120],[-45,-50]], [[30,-200],[50,-120],[45,-50]]], legs: [[[-20,0],[-25,90],[-30,180]], [[20,0],[25,90],[30,180]]], lean: 0 },
+  telephone:    { arms: [[[-30,-200],[-50,-120],[-45,-50]], [[30,-200],[40,-140],[0,-170]]], legs: [[[-20,0],[-25,90],[-30,180]], [[20,0],[25,90],[30,180]]], lean: -4 },
+  smash:        { arms: [[[-62,-226],[-120,-156],[-165,-98]], [[66,-252],[150,-315],[248,-383]]], legs: [[[17,-5],[-68,-5],[-110,57]], [[86,-17],[22,77],[-88,117]]], lean: -10 }
+};
+function fxStickman(pose, opts = {}) {
+  const P = FX_POSES[pose], line = pts => "M" + pts.map(p => p.join(" ")).join(" L");
+  const limbs = [...P.arms, ...P.legs].map(line).join(" ") + ` M${P.arms[0][0].join(" ")} L0 -215 L${P.arms[1][0].join(" ")} M${P.legs[0][0].join(" ")} L0 0 L${P.legs[1][0].join(" ")}`;
+  const bib = opts.bib ? `<rect x="-62" y="-215" width="124" height="200" rx="10" fill="#6d6670" transform="rotate(${P.lean})"/>` : "";
+  return `<g stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="${limbs}" stroke="#fff" stroke-opacity=".55" stroke-width="30" style="filter:blur(2.2px)"/>
+      <path d="${limbs}" stroke="#0d0a10" stroke-width="22"/>
+      <path d="M0 -215 L0 0" stroke="#0d0a10" stroke-width="22" transform="rotate(${P.lean})"/></g>
+    ${bib}<circle cx="${-12 + P.lean}" cy="-272" r="62" fill="#0d0a10" stroke="#fff" stroke-opacity=".75" stroke-width="4"/>`;
+}
+/* sous-titre mot par mot : words = [["Juin", 0.03, "box"], [",", ...]] ; renvoie les spans pour GSAP */
+function fxSubtitle(el, words) {
+  el.innerHTML = words.map(([w, , mark]) =>
+    `<span class="fx-sw">${w}${mark === "box" ? '<i class="fx-box"></i>' : ""}${mark === "stroke" ? '<i class="fx-stroke"></i>' : ""}</span>`).join(" ");
+  return [...el.querySelectorAll(".fx-sw")];
+}
+/* ===================== FIL IFS : fin du kit JS à copier ===================== */
+
+      var DUR = 4.56;
+
+      /* ===================== le monde W1 ===================== */
+      var world = $("world"), cam = $("cam"), thread = $("thread-path");
+      thread.setAttribute("d", fxThreadD("W1"));
+      var TL = thread.getTotalLength();
+      // fraction de longueur où le fil passe par une ancre (mesurée sur le chemin, jamais devinée)
+      function fracAt(px, py) {
+        var n = 2400, best = 0, bd = 1e12, i, q, d;
+        for (i = 0; i <= n; i++) { q = thread.getPointAtLength(TL * i / n); d = (q.x - px) * (q.x - px) + (q.y - py) * (q.y - py); if (d < bd) { bd = d; best = i; } }
+        var lo = Math.max(0, best - 1) / n, hi = Math.min(n, best + 1) / n, f = best / n;
+        for (i = 0; i <= 80; i++) { var g = lo + (hi - lo) * i / 80; q = thread.getPointAtLength(TL * g); d = (q.x - px) * (q.x - px) + (q.y - py) * (q.y - py); if (d < bd) { bd = d; f = g; } }
+        return f;
+      }
+      var P_SEND = 0.08;                    // 1.40 : le fil sorti du mail (storyboard)
+      var P_FIVE = fracAt(3150, 420);       // le 5 entouré de S2
+      var P_DOWN = fracAt(3700, 700);       // il repart du 5 vers la droite et descend
+      var P_SEAM = fracAt(4500, 660);       // handoff_out : fil tracé jusqu'à (4500, 660)
+      var U_HEAD = P_SEND * TL;             // tête du fil après l'envoi (u monde)
+
+      /* ---- calendriers : une seule fonction pour SEPTEMBRE (S2) et les pages JUIN ---- */
+      var PADL = 44, PITCH = 88.29, ROW0 = 202, ROWP = 62, DAYS = ["L", "M", "M", "J", "V", "S", "D"];
+      function colX(c) { return PADL + c * PITCH; }
+      function calHTML(month, firstCol, ndays, part, split) {
+        var h = "", d, k, r, c;
+        if (part !== "ink") {
+          h += '<div class="p01-page"></div>';
+          [140, 280, 420, 560].forEach(function (x) { h += '<i class="p01-hole" style="left:' + (x - 9) + 'px"></i><i class="p01-ring" style="left:' + (x - 8) + 'px"></i>'; });
+          for (d = 1; d <= ndays; d++) { k = firstCol + d - 1; r = Math.floor(k / 7); c = k % 7;
+            h += '<i class="p01-cell" style="left:' + colX(c).toFixed(2) + 'px;top:' + (ROW0 + r * ROWP) + 'px"></i>'; }
+        }
+        if (part !== "paper") {
+          h += '<div class="p01-ctitle">' + (split ? month.split("").map(function (ch) { return '<span class="p01-tl">' + ch + '</span>'; }).join("") : month) +
+            '<span class="p01-tl p01-yr">2026</span></div>';
+          DAYS.forEach(function (L, c2) { h += '<div class="p01-hd" style="left:' + colX(c2).toFixed(2) + 'px">' + L + '</div>'; });
+          for (d = 1; d <= ndays; d++) { k = firstCol + d - 1; r = Math.floor(k / 7); c = k % 7;
+            h += '<div class="p01-num p01-r' + r + '" style="left:' + (colX(c) + 6).toFixed(2) + 'px;top:' + (ROW0 + r * ROWP + 8) + 'px">' + d + '</div>'; }
+        }
+        return h;
+      }
+      var calP = $("calP"), calI = $("calI");
+      calP.innerHTML = calHTML("SEPTEMBRE", 1, 30, "paper", true);   // 1er septembre 2026 : un mardi
+      calI.innerHTML = calHTML("SEPTEMBRE", 1, 30, "ink", true) +
+        '<svg class="p01-calsvg" width="700" height="540" viewBox="0 0 700 540"><path id="p01-ring5"/></svg>' +
+        '<div id="p01-match">1<sup>er</sup> match</div>';
+      $("fjuin").innerHTML = calHTML("JUIN", 0, 30, "all", false);     // 1er juin 2026 : un lundi
+      $("bjuin").innerHTML = calHTML("JUIN", 0, 30, "all", false);
+
+      // le samedi 5 (case S, 1re ligne) tombe exactement sur l'ancre du fil (3150, 420), page à -3,5°
+      var FIVE = [colX(5) + 6 + 20, ROW0 + 8 + 17], CAL_R = -3.5, ra = CAL_R * Math.PI / 180;
+      var ox5 = FIVE[0] - 350, oy5 = FIVE[1] - 270;
+      var CAL_CX = 3150 - (ox5 * Math.cos(ra) - oy5 * Math.sin(ra)), CAL_CY = 420 - (ox5 * Math.sin(ra) + oy5 * Math.cos(ra));
+      [calP, calI].forEach(function (el) { el.style.left = (CAL_CX - 350).toFixed(2) + "px"; el.style.top = (CAL_CY - 270).toFixed(2) + "px"; });
+
+      // le feutre entoure le 5 : une boucle à main levée (un peu plus d'un tour, légère spirale)
+      (function () {
+        var pts = [], n = 90, i, a, w, x, y, tilt = -0.14;
+        for (i = 0; i <= n; i++) {
+          a = -1.25 - i / n * 1.12 * 2 * Math.PI;
+          w = 1 + 0.035 * Math.sin(i / n * 6.3) + 0.07 * (i / n);
+          x = Math.cos(a) * 35 * w; y = Math.sin(a) * 28 * w;
+          pts.push((FIVE[0] + x * Math.cos(tilt) - y * Math.sin(tilt)).toFixed(1) + " " + (FIVE[1] + 1 + x * Math.sin(tilt) + y * Math.cos(tilt)).toFixed(1));
+        }
+        $("ring5").setAttribute("d", "M" + pts.join(" L"));
+      })();
+      var ring5 = $("ring5"), RL = ring5.getTotalLength();
+      ring5.style.strokeDasharray = RL + " " + RL;
+      ring5.style.strokeDashoffset = RL;
+
+      /* ---- sous-titres (fxSubtitle du kit) ---- */
+      function glue(a) { var n = a.nextSibling; if (n && n.nodeType === 3) n.parentNode.removeChild(n); }
+      var W1S = [["Juin", 0.03, "box"], [",", 0.03], ["vous", 0.70], ["commandez", 0.94], ["les", 1.36], ["maillots", 1.56], ["du", 1.74], ["club.", 1.96]];
+      var W2S = [["Septembre", 2.62, "box"], [",", 2.62], ["premier", 3.52], ["match", 3.90], ["...", 3.90]];
+      var s1 = $("s1"), s2 = $("s2");
+      var sp1 = fxSubtitle(s1, W1S), sp2 = fxSubtitle(s2, W2S);
+      glue(sp1[0]); sp1[0].classList.add("p01-kw");
+      glue(sp2[0]); sp2[0].classList.add("p01-kw");
+      glue(sp2[3]);
+      var pk = document.createElement("span"); pk.className = "p01-pk";
+      s2.insertBefore(pk, sp2[2]); pk.appendChild(sp2[2]); pk.appendChild(pk.nextSibling); pk.appendChild(sp2[3]);
+      pk.insertAdjacentHTML("beforeend", '<i class="fx-stroke" id="p01-stroke"></i>');
+
+      /* ===================== état : proxies lus par UN seul onUpdate ===================== */
+      var C = { x: FX.FRAMING.S1[0], y: 500, s: 1.1, b: 0 };          // caméra (handoff_in : cam(960, 500, 1.1) flou 0)
+      var T = { p: 0 };                                                  // le fil : aucun fil à t = 0
+      var V = { u: 0, dx: 0, k: 1, r: -1.5, fold: 1, mb: 0, mo: 1, cov: 0 };     // la fenêtre / carte sur son rail
+      var K = { cu: 0, ck: 1 };                                          // le curseur
+      var Q = { o: 0, k: 1.15, b: 8, r: -7 };                            // le calendrier S2
+      var J = { s: 1.32, x: 0, y: 0, r: 9, b: 10, o: 1 };                // la page JUIN d'avant-plan
+      var B = { o: 0, x: 0, y: 0, r: 22 };                               // la page JUIN du fond
+      var MAIL_H = 580, FOLD = 352 / 580;                                // la carte garde l'en-tête, À, Objet et la pièce jointe
+      var CUR0 = [560 + 212, 250 + 212], CURC = [792, 300], CUR1 = [574, 247];   // à 300 px en bas à droite d'Envoyer → Envoyer
+
+      var mailP = $("mailP"), mailC = $("mailC"), mailI = $("mailI"), mpaper = $("mpaper"), mcover = $("mcover"), mink = $("mink"), cursor = $("cursor");
+      var fjuin = $("fjuin"), bjuin = $("bjuin"), loop = $("loop");
+
+      function render() {
+        fxCam(world, cam, C.x, C.y, C.s, C.b);
+        fxDrawThread(thread, T.p, FX.THREAD);
+
+        // la fenêtre, puis la carte, posée par son bouton Envoyer sur le fil (le rail)
+        var a = thread.getPointAtLength(Math.max(0, Math.min(TL, V.u)));
+        var mt = "translate(" + (a.x - 560 + V.dx).toFixed(2) + "px," + (a.y - 250).toFixed(2) + "px) rotate(" + V.r.toFixed(3) + "deg) scale(" + V.k.toFixed(4) + ")";
+        var mf = V.mb > 0.05 ? "blur(" + V.mb.toFixed(2) + "px)" : "none";
+        mailP.style.transform = mt; mailC.style.transform = mt; mailI.style.transform = mt;
+        mailP.style.filter = mf; mailC.style.filter = mf; mailI.style.filter = mf;
+        mailP.style.opacity = V.mo; mailC.style.opacity = V.mo * V.cov; mailI.style.opacity = V.mo;
+        mpaper.style.transform = "scaleY(" + V.fold.toFixed(4) + ")"; mcover.style.transform = mpaper.style.transform;
+        mink.style.clipPath = V.fold < 0.999 ? "inset(0px 0px " + ((1 - V.fold) * MAIL_H).toFixed(1) + "px 0px)" : "none";
+
+        // le curseur : une seule courbe vers Envoyer
+        var t = K.cu, it = 1 - t;
+        var cx = it * it * CUR0[0] + 2 * it * t * CURC[0] + t * t * CUR1[0], cy = it * it * CUR0[1] + 2 * it * t * CURC[1] + t * t * CUR1[1];
+        cursor.style.transform = "translate(" + (cx - 3).toFixed(2) + "px," + (cy - 2).toFixed(2) + "px) scale(" + K.ck.toFixed(4) + ")";
+
+        // le calendrier S2 (papier et encre au même transform)
+        var ct = "rotate(" + Q.r.toFixed(3) + "deg) scale(" + Q.k.toFixed(4) + ")", cf = Q.b > 0.05 ? "blur(" + Q.b.toFixed(2) + "px)" : "none";
+        calP.style.transform = ct; calI.style.transform = ct;
+        calP.style.filter = cf; calI.style.filter = cf;
+        calP.style.opacity = Q.o; calI.style.opacity = Q.o;
+
+        // avant-plan, scène 1 : la page JUIN tout près de l'objectif (parallaxe 1,6 autour du cadrage S1)
+        var fx = (960 - C.x) * C.s * 1.6, fy = (500 - C.y) * C.s * 1.6;
+        fjuin.style.transform = "translate(" + (fx + J.x).toFixed(2) + "px," + (fy + J.y).toFixed(2) + "px) rotate(" + J.r.toFixed(3) + "deg) scale(" + J.s.toFixed(4) + ")";
+        fjuin.style.filter = "blur(" + J.b.toFixed(2) + "px) brightness(.94)";
+        fjuin.style.opacity = J.o;
+
+        // fond, scène 2 : la page JUIN qui s'envole (parallaxe 0,5 autour du cadrage S2)
+        var bx = (3000 - C.x) * C.s * 0.5, by = (500 - C.y) * C.s * 0.5;
+        bjuin.style.transform = "translate(" + (bx + B.x).toFixed(2) + "px," + (by + B.y).toFixed(2) + "px) rotate(" + B.r.toFixed(3) + "deg) scale(.6)";
+        bjuin.style.filter = "blur(" + (6 + C.b * 0.4).toFixed(2) + "px)";
+        bjuin.style.opacity = B.o;
+
+        // avant-plan, scène 2 : la boucle du fil floue en haut à gauche (parallaxe 1,45)
+        var lx = (3000 - C.x) * C.s * 1.45, ly = (500 - C.y) * C.s * 1.45, lk = Math.pow(C.s / 1.05, 1.45);
+        loop.style.transform = "translate(" + lx.toFixed(2) + "px," + ly.toFixed(2) + "px) scale(" + lk.toFixed(4) + ")";
+        loop.style.filter = "blur(" + (11 + C.b * 0.9).toFixed(2) + "px)";
+      }
+
+      /* ===================== la timeline unique, en pause ===================== */
+      var tl = gsap.timeline({ paused: true, onUpdate: render });
+      function ft(target, from, to, pos) { if (pos > 0) to.immediateRender = false; tl.fromTo(target, from, to, pos); }
+      function tw(target, from, to, dur, ease, pos) { var o = {}, k; for (k in to) o[k] = to[k]; o.duration = dur; o.ease = ease; ft(target, from, o, pos); }
+
+      /* ---- piste caméra ---- */
+      // scène 1 : dérive x +20 u/s, échelle -1 %/s
+      var S1D = { x: 960 + 20 * 1.96, y: 500, s: 1.1 * (1 - 0.01 * 1.96) };
+      tw(C, { x: 960, s: 1.1 }, { x: S1D.x, s: S1D.s }, 1.96, "none", 0);
+      // 1.96 « club » : poussée ×1,18 vers la tête du fil
+      var PA = { x: 1200, y: 525, s: 1.18 };
+      tw(C, { x: S1D.x, y: 500, s: S1D.s }, PA, 0.24, "expo.out", 1.96);
+      tw(C, { x: 1200 }, { x: 1202 }, 0.10, "none", 2.20);
+      // 2.30 whip vers S2 : power2.in jusqu'au sommet du flou (2.45, 63,4 % du trajet, vitesses égales), puis expo.out
+      var W0 = { x: 1202, y: 525, s: 1.18 }, WB = { x: FX.FRAMING.S2[0], y: FX.FRAMING.S2[1], s: FX.FRAMING.S2[2] }, WF = 0.634, WM = {};
+      for (var key in W0) WM[key] = W0[key] + (WB[key] - W0[key]) * WF;
+      tw(C, W0, WM, 0.15, "power2.in", 2.30);
+      tw(C, WM, WB, 0.30, "expo.out", 2.45);
+      tw(C, { b: 0 }, { b: 12 }, 0.15, "power2.in", 2.30);
+      tw(C, { b: 12 }, { b: 0 }, 0.30, "expo.out", 2.45);
+      // S2 : dérive x +25 u/s, échelle +1 %/s
+      var S2D = { x: WB.x + 25 * 1.65, y: 500, s: WB.s * (1 + 0.01 * 1.65) };
+      tw(C, { x: WB.x, s: WB.s }, { x: S2D.x, s: S2D.s }, 1.65, "none", 2.75);
+      // 4.40 whip vers l'état de couture cam(4200, 560, 1.0) flou 12, sortie à +6000 u/s en x
+      var SEAM = { x: 4200, y: 560, s: 1.0 }, kq = 6000 * 0.16 / (SEAM.x - S2D.x), qa = kq - 2, qb = 3 - kq;
+      var WHIP_OUT = function (p) { return qa * p * p * p + qb * p * p; };
+      tw(C, S2D, SEAM, 0.16, WHIP_OUT, 4.40);
+      tw(C, { b: 0 }, { b: 12 }, 0.16, "power2.in", 4.40);
+
+      /* ---- scène 1 : juin, le mail part ---- */
+      // 0.00 la page JUIN glisse de 40 px vers la caméra (flou 10 → 12)
+      tw(J, { s: 1.32, x: 0, y: 0, b: 10 }, { s: 1.40, x: 28, y: -28, b: 12 }, 1.60, "none", 0);
+      // 0.10 le titre « Nouveau message » se tasse
+      ft($("mtitle"), { scale: 1.04 }, { scale: 1, duration: 0.10, ease: "power2.out" }, 0.10);
+      // la pièce jointe, glissée sous le curseur, plane puis se pose à 0.25 (×1,3 flou 6 → net, expo.out)
+      ft($("att"), { y: -12, scale: 1.3, filter: "blur(6px)" }, { y: -8, scale: 1.3, filter: "blur(6px)", duration: 0.25, ease: "none" }, 0);
+      ft($("att"), { y: -8, scale: 1.3, filter: "blur(6px)" }, { y: 0, scale: 1, filter: "blur(0px)", duration: 0.12, ease: "expo.out" }, 0.25);
+      ft($("attsh"), { opacity: 0.5, y: 16, scale: 1.04 }, { opacity: 0, y: 0, scale: 1, duration: 0.12, ease: "expo.out" }, 0.25);
+      // 0.45 le curseur part en courbe vers Envoyer ; 0.90 il presse, onde bleue, le bouton passe en bleu foncé
+      tw(K, { cu: 0 }, { cu: 1 }, 0.45, "power3.out", 0.45);
+      tw(K, { ck: 1 }, { ck: 0.85 }, 0.06, "power2.out", 0.90);
+      tw(K, { ck: 0.85 }, { ck: 1 }, 0.10, "power2.out", 0.96);
+      ft($("send"), { scale: 1 }, { scale: 0.96, duration: 0.06, ease: "power2.out" }, 0.90);
+      ft($("send"), { scale: 0.96 }, { scale: 1, duration: 0.12, ease: "power2.out" }, 0.96);
+      ft($("senddk"), { opacity: 0 }, { opacity: 1, duration: 0.06, ease: "none" }, 0.90);
+      ft($("ripple"), { opacity: 1, scale: 0.3 }, { opacity: 0, scale: 1.4, duration: 0.5, ease: "power2.out" }, 0.90);
+      // le fil rouge naît du bouton au clic et se dessine vers la droite (fxDrawThread 0 → 0,08, expo.out)
+      tw(T, { p: 0 }, { p: P_SEND }, 0.50, "expo.out", 0.90);
+      // 1.10 la fenêtre se replie en carte (×1 → 0,62) et glisse sur le fil comme sur un rail ; le curseur s'efface
+      tw(V, { k: 1, r: -1.5, fold: 1 }, { k: 0.62, r: 8, fold: FOLD }, 0.20, "power2.in", 1.10);
+      tw(V, { cov: 0 }, { cov: 1 }, 0.20, "power1.inOut", 1.10);
+      ft(cursor, { opacity: 1 }, { opacity: 0, duration: 0.12, ease: "power2.in" }, 1.10);
+      tw(V, { u: 0 }, { u: 80 }, 0.26, "power2.in", 1.10);
+      // 1.36 « les » : la carte accélère sur le fil ; son bouton atteint la tête du fil à 2.10
+      var VU = (U_HEAD - 80) / 0.74;
+      tw(V, { u: 80 }, { u: 80 + VU * 0.88 }, 0.88, "none", 1.36);
+      // 1.60 la page JUIN s'arrache vers le haut à droite
+      tw(J, { x: 28, y: -28, r: 9, b: 12 }, { x: 500, y: -760, r: 27, b: 18 }, 0.25, "power2.in", 1.60);
+      tw(J, { o: 1 }, { o: 0 }, 0.02, "none", 1.85);
+      // 2.10 la carte sort par le bord droit (power2.in, filé)
+      tw(V, { dx: 0, mb: 0 }, { dx: 1150, mb: 6 }, 0.14, "power2.in", 2.10);
+      tw(V, { mo: 1 }, { mo: 0 }, 0.02, "none", 2.24);
+
+      /* ---- scène 2 : septembre, premier match ---- */
+      // pendant le whip : la boucle d'avant-plan et la page du fond entrent avec la parallaxe
+      ft(loop, { opacity: 0 }, { opacity: 0.95, duration: 0.10, ease: "none" }, 2.30);
+      tw(B, { o: 0 }, { o: 0.55 }, 0.10, "none", 2.30);
+      // 2.50 le calendrier arrive trop grand et flou, se pose à -3,5°
+      tw(Q, { o: 0 }, { o: 1 }, 0.10, "none", 2.38);
+      tw(Q, { k: 1.15, b: 8, r: -7 }, { k: 1, b: 0, r: CAL_R }, 0.14, "expo.out", 2.50);
+      // 2.62 « Septembre » : SEPTEMBRE 2026 s'imprime, lettres à 0,02 s
+      Array.prototype.forEach.call(calI.querySelectorAll(".p01-ctitle .p01-tl"), function (el, i) {
+        ft(el, { opacity: 0, y: -16, scale: 1.18, filter: "blur(4px)" }, { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", duration: 0.12, ease: "power3.out" }, 2.62 + i * 0.02);
+      });
+      // 2.90 la grille des jours s'allume ligne par ligne (0,03 s)
+      [".p01-hd", ".p01-r0", ".p01-r1", ".p01-r2", ".p01-r3", ".p01-r4"].forEach(function (sel, g) {
+        ft(calI.querySelectorAll(sel), { opacity: 0.14 }, { opacity: 1, duration: 0.16, ease: "power2.out" }, 2.90 + g * 0.03);
+      });
+      // la page du fond continue de s'envoler, puis part par le haut avant le whip
+      tw(B, { y: 0, r: 22 }, { y: -24, r: 25 }, 1.20, "none", 2.75);
+      tw(B, { x: 0, y: -24, r: 25 }, { x: 300, y: -620, r: 39 }, 0.40, "power2.in", 3.95);
+      // 3.30 le fil remonte jusqu'au samedi 5
+      tw(T, { p: P_SEND }, { p: P_FIVE }, 0.22, "power2.out", 3.30);
+      // 3.52 « premier » : le feutre rouge entoure le 5
+      ft(ring5, { opacity: 0 }, { opacity: 1, duration: 0.01, ease: "none" }, 3.52);
+      ft(ring5, { strokeDashoffset: RL }, { strokeDashoffset: 0, duration: 0.30, ease: "power2.out" }, 3.52);
+      // 3.90 « match » : « 1er match » s'écrit au-dessus
+      ft($("match"), { opacity: 0, scale: 1.2, rotation: -5, filter: "blur(4px)" }, { opacity: 1, scale: 1, rotation: -5, filter: "blur(0px)", duration: 0.12, ease: "power3.out" }, 3.90);
+      // 4.10 le fil repart du 5 vers la droite et descend ; pendant le whip sa tête file jusqu'à (4500, 660)
+      tw(T, { p: P_FIVE }, { p: P_DOWN }, 0.30, "power2.in", 4.10);
+      tw(T, { p: P_DOWN }, { p: P_SEAM }, 0.16, "none", 4.40);
+
+      /* ---- la phrase de la voix : mot par mot, gris puis encre ; une boîte, un trait ---- */
+      var INK = "#F5EFF3", GREY = "rgba(245,239,243,0.35)";
+      function sayWords(spans, list) {
+        spans.forEach(function (w, i) {
+          var st = Math.max(0, list[i][1] - 1 / 30), kw = list[i][2] === "box";
+          ft(w, { opacity: 0, y: 8, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.14, ease: "power2.out" }, st);
+          if (kw) ft(w, { color: GREY }, { color: "#FFFFFF", duration: 0.10, ease: "none" }, st + 0.04);
+          else ft(w, { color: GREY }, { color: INK, duration: 0.20, ease: "power1.out" }, st + 0.10);
+        });
+      }
+      sayWords(sp1, W1S);
+      sayWords(sp2, W2S);
+      var BOXZ = { scaleX: 0, scaleY: 1, rotation: 0, skewX: 0, skewY: 0 };
+      ft(sp1[0].querySelector(".fx-box"), BOXZ, { scaleX: 1, scaleY: 1, rotation: 0, skewX: 0, skewY: 0, duration: 0.16, ease: "power3.out" }, 0);
+      ft(sp2[0].querySelector(".fx-box"), BOXZ, { scaleX: 1, scaleY: 1, rotation: 0, skewX: 0, skewY: 0, duration: 0.16, ease: "power3.out" }, 2.58);
+      var stroke = $("stroke");
+      gsap.set(stroke, { scaleX: 0, scaleY: 1, rotation: -1.2, skewX: 0, skewY: 0 });
+      ft(stroke, { opacity: 0 }, { opacity: 1, duration: 0.01, ease: "none" }, 3.52);
+      ft(stroke, { scaleX: 0, scaleY: 1, rotation: -1.2, skewX: 0, skewY: 0 }, { scaleX: 1, scaleY: 1, rotation: -1.2, skewX: 0, skewY: 0, duration: 0.40, ease: "power2.out" }, 3.52);
+      // avant chaque couture la phrase sort (opacité 1 → 0, flou 0 → 6 px, 0,14 s)
+      ft(s1, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 2.16);
+      ft(s2, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 4.36);
+
+      // durée exacte de la séquence
+      tl.set({}, {}, DUR);
+
+      // première image = handoff_in, avant tout seek
+      render();
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[FID] = tl;
+    })();
+  </script>
+</template>

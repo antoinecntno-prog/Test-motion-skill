@@ -54,7 +54,7 @@ patterns: ../patterns/STORYBOARD-CRAFT.md, ../patterns/PATTERNS.md
 - scene: Sur l'encre, la fenêtre de message « Commande maillots · saison 2026 » part vers le fournisseur ; le fil rouge sort du bouton Envoyer ; la caméra file le long du fil jusqu'au calendrier de septembre où le samedi 5 est entouré « 1er match »
 - duration: 4.56s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/01-juin.html
 - voiceover: "Juin, vous commandez les maillots du club. Septembre, premier match..."
 - type: hook

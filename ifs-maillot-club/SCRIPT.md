@@ -103,7 +103,7 @@ Deux écarts avec les faits du catalogue (`PRODUCT.md` du dépôt ifs-catalogue)
 - le catalogue indique « Fabriqué en Europe », par un partenaire, IFS chiffre et coordonne. « Dans notre atelier » et « cousu chez nous » ne valent donc que si le maillot du film est fabriqué à l'atelier IFS des Vosges ;
 - la voix de la marque IFS est le vouvoiement.
 
-Lignes modifiées (vouvoiement, sans revendication d'atelier) :
+Lignes modifiées (vouvoiement, sans revendication d'atelier ; le client fournit design et logo, IFS fait coupe, sublimation, confection et livraison sur une grille de tailles standardisée, Antoine, 03/10/2026) :
 
 ```
 Juin, vous commandez les maillots du club.
@@ -112,9 +112,10 @@ Le jour où ils arrivent, le rouge a viré à l'orange.
 Et le numéro se décolle au premier lavage.
 On reprend depuis le début.
 Avec IFS, tout part d'un mail.
-Vous choisissez votre design.
+Vous envoyez votre design et votre logo.
 Vous validez le BAT.
-Le tissu est coupé selon votre tableau des tailles.
+Nous faisons le reste.
+Nos tailles sont standardisées, la coupe va plus vite.
 La sublimation fixe les couleurs dans la fibre.
 La confection assemble chaque maillot.
 Et vous êtes livrés en moins d'un mois.

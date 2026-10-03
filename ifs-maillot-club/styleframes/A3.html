@@ -10,40 +10,56 @@
 .floor::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,11,18,.85),rgba(15,11,18,.2) 40%,rgba(15,11,18,.6))}
 .court-line{position:absolute;left:-200px;right:-200px;top:700px;height:6px;background:#f2ede6;opacity:.55;filter:blur(1px)}
 /* panier : planche, cercle orange, filet tracé par le fil rouge */
-.board{position:absolute;left:1280px;top:60px;width:520px;height:330px;border:8px solid #f4f0f3;border-radius:6px;background:rgba(255,255,255,.07)}
-.board::after{content:"";position:absolute;left:170px;top:150px;width:164px;height:120px;border:6px solid #f4f0f3}
-.rim{position:absolute;left:1418px;top:388px;width:250px;height:40px;border:9px solid #E8662B;border-radius:50%}
-.net{position:absolute;left:1400px;top:400px;width:290px;height:220px}
-/* ballon qui passe le cercle, avec traînée */
-.ball{position:absolute;left:1468px;top:300px;width:150px;height:150px;border-radius:50%;
+.board{position:absolute;left:1200px;top:40px;width:560px;height:340px;border:8px solid #f4f0f3;border-radius:6px;background:rgba(255,255,255,.07)}
+.board::after{content:"";position:absolute;left:185px;top:160px;width:174px;height:124px;border:6px solid #f4f0f3}
+.rim-back{position:absolute;left:1352px;top:382px;width:260px;height:44px;border:9px solid #b84d1d;border-radius:50%;clip-path:inset(0 0 50% 0)}
+.rim-front{position:absolute;left:1352px;top:382px;width:260px;height:44px;border:9px solid #E8662B;border-radius:50%;clip-path:inset(50% 0 0 0)}
+.net{position:absolute;left:1336px;top:396px;width:292px;height:220px}
+/* ballon écrasé dans le cercle */
+.ball{position:absolute;left:1405px;top:300px;width:150px;height:150px;border-radius:50%;
   background:radial-gradient(circle at 35% 30%,#f39a5a,#d9621f 55%,#9c3d0e);box-shadow:inset -10px -14px 24px rgba(0,0,0,.35)}
 .ball::before,.ball::after{content:"";position:absolute;inset:0;border-radius:50%;border:3px solid #2a1408}
 .ball::before{clip-path:inset(0 48% 0 48%)} .ball::after{clip-path:inset(48% 0 48% 0)}
-.trail{position:absolute;left:1200px;top:330px;width:330px;height:110px;background:linear-gradient(90deg,transparent,rgba(232,102,43,.45));filter:blur(14px);transform:rotate(-24deg);border-radius:60px}
-/* le dos n°15 qui monte : sujet, net, légère inclinaison, flou de mouvement sur les bords bas */
-.player{position:absolute;left:270px;top:60px;width:560px;height:735px;background:url(../assets/img/maillot-dos-detoure.png) center/contain no-repeat;
-  transform:rotate(-7deg);filter:drop-shadow(0 40px 50px rgba(0,0,0,.6))}
-.ghost{position:absolute;left:270px;top:130px;width:560px;height:735px;background:url(../assets/img/maillot-dos-detoure.png) center/contain no-repeat;
-  transform:rotate(-7deg);filter:blur(18px);opacity:.35}
-.arm{position:absolute;width:120px;height:430px;border-radius:60px;background:linear-gradient(90deg,#6b4a37,#8a634b 50%,#5d3f2f);transform-origin:50% 100%}
+/* le joueur : stickman de dos qui porte le vrai maillot n° 15 et smashe */
+.player{position:absolute;left:0;top:0;width:1920px;height:1080px}
+.jersey{position:absolute;left:1028px;top:356px;width:250px;height:328px;background:url(../assets/img/maillot-dos-detoure.png) center/contain no-repeat;
+  transform:rotate(14deg);transform-origin:50% 0;filter:drop-shadow(0 16px 22px rgba(0,0,0,.5))}
+/* traînées du saut sous le joueur */
+.streak{position:absolute;width:26px;border-radius:13px;background:linear-gradient(180deg,rgba(245,239,243,.0),rgba(245,239,243,.28));filter:blur(4px)}
+/* filet qui bouge : avant-plan flou d'un autre joueur, coupé par le bord gauche */
+.fg{position:absolute;left:-160px;top:180px;width:420px;height:760px;filter:blur(16px);opacity:.55}
 </style></head><body>
 <div class="stage">
   <div class="gym"></div>
   <div class="light" style="left:140px;top:30px"></div><div class="light" style="left:620px;top:-40px;width:120px;height:120px"></div>
-  <div class="light" style="left:1080px;top:20px;width:110px;height:110px"></div>
+  <div class="light" style="left:980px;top:10px;width:110px;height:110px"></div>
   <div class="floor"></div><div class="court-line"></div>
   <div class="board"></div>
-  <div class="trail"></div>
+  <div class="rim-back"></div>
+  <!-- jambes et bras derrière le maillot -->
+  <svg class="player" viewBox="0 0 1920 1080">
+    <g stroke="#F5EFF3" stroke-width="34" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M1112 650 L1050 742 L1096 830"/>                 <!-- jambe gauche repliée -->
+      <path d="M1196 668 L1170 770 L1238 812"/>                 <!-- jambe droite repliée -->
+      <path d="M1060 420 L990 520 L948 610"/>                   <!-- bras gauche en balancier -->
+      <path d="M1222 392 L1330 336 L1418 318"/>                 <!-- bras droit tendu vers le cercle -->
+    </g>
+    <circle cx="1170" cy="312" r="50" fill="#F5EFF3"/>          <!-- tête -->
+  </svg>
+  <div class="jersey"></div>
   <div class="ball"></div>
-  <div class="rim"></div>
-  <svg class="net" viewBox="0 0 290 220">
+  <div class="rim-front"></div>
+  <svg class="net" viewBox="0 0 292 220">
     <g fill="none" stroke="#D62839" stroke-width="4" stroke-linecap="round">
-      <path d="M22 20 L70 200 M60 24 L100 205 M100 26 L130 208 M145 27 L145 210 M190 26 L160 208 M230 24 L190 205 M268 20 L220 200"/>
-      <path d="M22 20 C 80 70 210 70 268 20 M38 80 C 100 120 190 120 252 80 M55 140 C 110 170 180 170 235 140 M70 200 C 120 214 170 214 220 200"/>
+      <path d="M22 20 L70 200 M60 24 L100 205 M100 26 L130 208 M146 27 L146 210 M192 26 L162 208 M232 24 L192 205 M270 20 L222 200"/>
+      <path d="M22 20 C 80 70 212 70 270 20 M38 80 C 100 120 192 120 254 80 M55 140 C 110 170 182 170 237 140 M70 200 C 120 214 172 214 222 200"/>
     </g>
   </svg>
-  <div class="ghost"></div>
-  <div class="player"></div>
+  <!-- main sur le ballon, au-dessus du cercle -->
+  <svg class="player" viewBox="0 0 1920 1080"><circle cx="1428" cy="316" r="22" fill="#F5EFF3"/></svg>
+  <div class="streak" style="left:1080px;top:820px;height:70px"></div>
+  <div class="streak" style="left:1200px;top:800px;height:80px"></div>
+  <svg class="fg" viewBox="0 0 420 760"><g stroke="#F5EFF3" stroke-width="60" stroke-linecap="round" fill="none"><path d="M200 60 L260 360 L180 700"/><path d="M230 200 L380 320"/></g><circle cx="190" cy="0" r="90" fill="#F5EFF3"/></svg>
   <div class="sub dark">Samedi, le numéro <span class="box">15</span> monte au panier.</div>
 </div>
 </body></html>

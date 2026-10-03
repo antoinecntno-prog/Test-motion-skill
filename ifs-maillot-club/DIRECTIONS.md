@@ -48,8 +48,9 @@ logo final.
   avant-plan à gauche. Sol d'encre.
 - A2 (31,6 s, « couleurs ») : macro de la maille blanche ; le fil arrive de la gauche et se dissout dans le tissu, le
   vrai motif du maillot apparaît en halo ; plaque de presse floue en avant-plan haut.
-- A3 (39,3 s, « panier ») : salle de nuit, le dos n° 15 monte vers le cercle, le ballon passe, le filet est tracé par
-  le fil rouge ; projecteurs flous au fond.
+- A3 (39,3 s, « panier ») : salle de nuit, un joueur en stickman, de dos, porte le vrai maillot n° 15 et smashe :
+  main sur le ballon dans le cercle, filet tracé par le fil rouge ; projecteurs flous au fond, un second joueur flou en
+  avant-plan (retour d'Antoine du 03/10/2026 : un maillot ne monte pas au panier tout seul).
 
 ## B. « L'établi »
 
@@ -100,5 +101,5 @@ Signatures : « l'iris du hublot » (ouverture et fermeture circulaires, 5 occur
 
 ## Choix
 
-Direction retenue : à choisir par Antoine.
+Direction retenue : A « Le fil rouge » (Antoine, 03/10/2026), avec un joueur stickman qui porte le maillot sur le terrain.
 Images : `styleframes/png/planche-A.png`, `planche-B.png`, `planche-C.png` (et chaque image en 1920 × 1080).

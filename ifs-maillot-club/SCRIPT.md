@@ -14,7 +14,7 @@ Promesse : qualité irréprochable, livraison en moins d'un mois.
 5. **Avant / après** : écran partagé, le fournisseur habituel à gauche, l'atelier IFS à droite, la même commande. « Même commande. Moins d'un mois. »
 6. **L'attente qui se retourne** : « tu attends » revient à chaque étape de la douleur, puis « tu n'attends plus ». « Tu n'attends plus tes maillots. »
 
-## Version A : « Du mail au parquet » (tutoiement, concepts 1 et 4)
+## Version A : « Du mail au parquet » (tutoiement, concepts 1 et 4) · CHOISIE le 03/10/2026
 
 ### Version mise en scène
 
@@ -93,6 +93,33 @@ La sublimation imprime les couleurs au cœur de la fibre.
 Chaque maillot est cousu dans notre atelier.
 Livraison en moins d'un mois.
 Jour de match. Le numéro quinze monte au panier.
+IFS. Une qualité irréprochable, livrée en moins d'un mois.
+Découvrez notre catalogue.
+```
+
+## Version A ajustée (proposition du 03/10/2026, à valider avant la voix)
+
+Deux écarts avec les faits du catalogue (`PRODUCT.md` du dépôt ifs-catalogue) :
+- le catalogue indique « Fabriqué en Europe », par un partenaire, IFS chiffre et coordonne. « Dans notre atelier » et « cousu chez nous » ne valent donc que si le maillot du film est fabriqué à l'atelier IFS des Vosges ;
+- la voix de la marque IFS est le vouvoiement.
+
+Lignes modifiées (vouvoiement, sans revendication d'atelier) :
+
+```
+Juin, vous commandez les maillots du club.
+Septembre, premier match... et toujours pas de maillots.
+Le jour où ils arrivent, le rouge a viré à l'orange.
+Et le numéro se décolle au premier lavage.
+On reprend depuis le début.
+Avec IFS, tout part d'un mail.
+Vous choisissez votre design.
+Vous validez le BAT.
+Le tissu est coupé à vos mesures.
+La sublimation fixe les couleurs dans la fibre.
+Chaque maillot est cousu, puis contrôlé.
+Et vous êtes livrés en moins d'un mois.
+Samedi, le numéro quinze monte au panier.
+Le rouge est resté rouge.
 IFS. Une qualité irréprochable, livrée en moins d'un mois.
 Découvrez notre catalogue.
 ```

@@ -11,6 +11,9 @@
   demo("gym"), demo("pivot"), demo("fin") pour voir les états de référence.
   Aucune dépendance réseau : le kit n'utilise pas GSAP ; les séquences animent avec GSAP et appellent le kit
   (fxCam, fxDrawThread) dans un seul onUpdate.
+  Le kit JS se colle À L'INTÉRIEUR de la fonction immédiate de la séquence ((function () { … })();), jamais au niveau
+  global : toutes les séquences vivent dans la même page assemblée et « const FX » déclaré deux fois la ferait planter.
+  GSAP se charge en local : <script src="assets/vendor/gsap-3.14.2.min.js"></script> (le CDN est bloqué ici).
 -->
 <style>
   /* ===================== FIL IFS : début du bloc CSS à copier ===================== */
@@ -111,11 +114,12 @@ function fxDrawThread(pathEl, progress, color) {
   if (color) pathEl.setAttribute("stroke", color);
   return pathEl.getPointAtLength(L * progress);       // la tête du fil (pour la caméra ou l'aiguille)
 }
-/* aiguille du logo IFS (len px), pointe vers la droite ; renvoie du SVG à placer dans un <svg> */
-function fxNeedle(len) {
+/* aiguille du logo IFS (len px), pointe vers la droite ; renvoie du SVG à placer dans un <svg> ;
+   uid = préfixe de la séquence (« p04 »), pour que l'id du dégradé soit unique dans la page assemblée */
+function fxNeedle(len, uid = "fx") {
   const w = len * 0.045;
-  return `<defs><linearGradient id="fxNeedleG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8A93A1"/><stop offset=".5" stop-color="#3C4452"/><stop offset="1" stop-color="#4A5260"/></linearGradient></defs>
-    <path d="M0 0 C ${len * .25} ${-w} ${len * .75} ${-w * .6} ${len} 0 C ${len * .75} ${w * .6} ${len * .25} ${w} 0 0 Z" fill="url(#fxNeedleG)"/>
+  return `<defs><linearGradient id="${uid}NeedleG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8A93A1"/><stop offset=".5" stop-color="#3C4452"/><stop offset="1" stop-color="#4A5260"/></linearGradient></defs>
+    <path d="M0 0 C ${len * .25} ${-w} ${len * .75} ${-w * .6} ${len} 0 C ${len * .75} ${w * .6} ${len * .25} ${w} 0 0 Z" fill="url(#${uid}NeedleG)"/>
     <ellipse cx="${len * .08}" cy="0" rx="${len * .045}" ry="${w * .32}" fill="#110C15"/>`;
 }
 /* stickman (frame.md) : renvoie le SVG d'une pose, en coordonnées locales (tête en (0, -270), bassin en (0, 0)) */

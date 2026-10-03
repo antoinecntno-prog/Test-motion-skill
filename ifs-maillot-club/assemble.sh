@@ -13,35 +13,35 @@ cd "$(dirname "$0")"
 export HYPERFRAMES_NO_TELEMETRY=1 DO_NOT_TRACK=1 HYPERFRAMES_SKIP_SKILLS=1 HYPERFRAMES_NO_UPDATE_CHECK=1
 
 # ---- settings (times in seconds on the final timeline, see STORYBOARD.md) ------------------------------------------
-FIRST_FRAME="01-hook"      # id of the first frame (basename of its src, without .html)
-END_CARD="09-fin"          # id of the end card frame (the iris opens it)
-TOTAL="45.0"               # final duration = STORYBOARD duration = TOTAL in build-audio.sh
+FIRST_FRAME="01-juin"      # id of the first frame (basename of its src, without .html)
+END_CARD="11-catalogue"          # id of the end card frame (the iris opens it)
+TOTAL="52.0"               # final duration = STORYBOARD duration = TOTAL in build-audio.sh
 AUDIO="assets/audio/${MIX:-mix.wav}"   # mix from build-audio.sh or build-music-options.py (MIX=mix-M2.wav bash assemble.sh); empty = silent
 
 # Light flash, dark world -> light world (empty LEAK_AT = no flash). The flash covers the screen from
 # LEAK_AT+0.15 to LEAK_AT+0.30: put the cut between the last dark frame and the first light frame at LEAK_AT+0.25.
-LEAK_AT="14.25"
+LEAK_AT="18.45"            # coupure noir → papier à 18.70 = LEAK_AT + 0.25 (point de lumière de la séquence 4)
 LEAK_X="960"               # flash center in px (the object the light comes from, e.g. a caret or a word)
 LEAK_Y="540"
 
 # Iris, light world -> dark end card (empty IRIS_AT = no iris). The end card must start at IRIS_AT+0.05 with
 # transition_in: cut. The frame under the iris is kept mounted until IRIS_AT+0.80: its own internal clips must
 # last that long too, or the iris opens on black (see references/pitfalls.md).
-IRIS_AT="36.1"
+IRIS_AT=""                 # pas d'iris : le film finit sur l'encre en continu (séquences 9 à 11)
 IRIS_X="1400"              # iris center in px (the object the iris grows from)
 IRIS_Y="450"
 IRIS_FROM=""               # id of the frame under the iris (empty = the frame just before END_CARD)
 
 # Paper bed under the light world, so a crossfade between two light frames never shows the dark root.
 # Default span: LEAK_AT+0.20 to IRIS_AT+0.80. Empty PAPER = no bed.
-PAPER="#f6f1e9"
+PAPER="#FFFFFF"
 BED_START=""               # optional override
-BED_END=""                 # optional override
+BED_END="37.45"            # fin du monde clair (coupe franche vers le match)
 
 # Colors of the flash and the iris ring: copy accent, accent-light and accent-glow from frame.md.
-ACCENT="#c25b28"
-ACCENT_LIGHT="#d4703f"
-ACCENT_GLOW="#e08a5c"
+ACCENT="#B3125F"
+ACCENT_LIGHT="#C2186B"
+ACCENT_GLOW="#FF7DBA"
 
 RUN_LINT="${RUN_LINT:-1}"  # RUN_LINT=0 skips the lint
 # ---------------------------------------------------------------------------------------------------------------------

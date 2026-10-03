@@ -97,7 +97,7 @@ IFS. Une qualité irréprochable, livrée en moins d'un mois.
 Découvrez notre catalogue.
 ```
 
-## Version A ajustée (proposition du 03/10/2026, à valider avant la voix)
+## Version A ajustée · VALIDÉE le 03/10/2026 (vouvoiement, « moins d'un mois » assumé en public)
 
 Deux écarts avec les faits du catalogue (`PRODUCT.md` du dépôt ifs-catalogue) :
 - le catalogue indique « Fabriqué en Europe », par un partenaire, IFS chiffre et coordonne. « Dans notre atelier » et « cousu chez nous » ne valent donc que si le maillot du film est fabriqué à l'atelier IFS des Vosges ;

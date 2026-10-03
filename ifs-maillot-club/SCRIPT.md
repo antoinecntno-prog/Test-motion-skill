@@ -114,7 +114,7 @@ On reprend depuis le début.
 Avec IFS, tout part d'un mail.
 Vous choisissez votre design.
 Vous validez le BAT.
-Le tissu est coupé à vos mesures.
+Le tissu est coupé selon votre tableau des tailles.
 La sublimation fixe les couleurs dans la fibre.
 La confection assemble chaque maillot.
 Et vous êtes livrés en moins d'un mois.

@@ -1,0 +1,481 @@
+<template>
+  <style>
+  /* ===================== FIL IFS : début du bloc CSS à copier ===================== */
+  @font-face { font-family: "Archivo"; font-weight: 700 900; font-stretch: 75% 100%; src: url("assets/fonts/archivo-latin.woff2") format("woff2"); }
+  @font-face { font-family: "Hanken Grotesk"; font-weight: 400 700; src: url("assets/fonts/hanken-grotesk-latin.woff2") format("woff2"); }
+  @font-face { font-family: "Pacifico"; src: url("assets/fonts/studio-pacifico.woff2") format("woff2"); }
+  .fx-layer { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+  /* sols : encre (douleur, match, fin), papier (atelier), noir (pivot) */
+  .fx-ink { background: repeating-linear-gradient(115deg, rgba(255,255,255,.028) 0 2px, transparent 2px 46px),
+    radial-gradient(120% 90% at 50% 40%, #241B2B 0%, #1A1320 55%, #110C15 100%); }
+  .fx-paper { background: repeating-linear-gradient(115deg, rgba(179,18,95,.05) 0 2px, transparent 2px 46px),
+    linear-gradient(180deg, #FFFFFF 0%, #F7F3F6 100%); }
+  .fx-black { background: #110C15; }
+  .fx-grain { pointer-events: none; opacity: .05; mix-blend-mode: screen;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='240' height='240' filter='url(%23g)'/></svg>"); }
+  .fx-grain.paper { opacity: .03; mix-blend-mode: multiply; }
+  /* kit caméra : #stage > #drift > #cam > #world (le monde fait la taille de ses stations) */
+  .fx-stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; }
+  .fx-drift, .fx-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+  .fx-world { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+  .fx-st { position: absolute; }                       /* une station : placée par son centre en coordonnées monde */
+  .fx-thread { position: absolute; left: 0; top: 0; overflow: visible; }
+  /* sous-titre : la phrase de la voix, bas centre (bande y 890 à 980), mot par mot */
+  .fx-sub { position: absolute; left: 0; top: 896px; width: 1920px; text-align: center; font: 600 62px/74px "Hanken Grotesk", sans-serif;
+    letter-spacing: -0.015em; color: #1A1320; white-space: nowrap; text-shadow: 0 2px 14px rgba(255,255,255,.8); }
+  .fx-sub.dark { color: #F5EFF3; text-shadow: 0 2px 16px rgba(0,0,0,.6); }
+  .fx-sw { display: inline-block; opacity: 0; position: relative; }
+  .fx-box { position: absolute; left: -.14em; right: -.14em; top: .06em; bottom: .02em; background: #B3125F; border-radius: 3px;
+    transform: scaleX(0); transform-origin: 0 50%; z-index: -1; }
+  .fx-stroke { position: absolute; left: -2%; right: -4%; bottom: -8px; height: 7px; border-radius: 50%; transform: scaleX(0) rotate(-1.2deg);
+    transform-origin: 0 50%; background: linear-gradient(90deg, transparent, #B3125F 12%, #B3125F 70%, transparent); }
+  .fx-sub.dark .fx-stroke { background: linear-gradient(90deg, transparent, #FF7DBA 12%, #FF7DBA 70%, transparent); }
+  .fx-type { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; display: grid; place-items: center;
+    font: 800 84px/1.08 "Archivo"; font-stretch: 85%; letter-spacing: -.01em; color: #F5EFF3; }
+  /* curseur */
+  .fx-cursor { position: absolute; left: 0; top: 0; width: 46px; height: 58px; filter: drop-shadow(0 4px 6px rgba(0,0,0,.35)); }
+  .fx-ripple { position: absolute; width: 120px; height: 120px; margin: -60px 0 0 -60px; border: 4px solid rgba(179,18,95,.55); border-radius: 50%; opacity: 0; }
+  /* ===================== FIL IFS : fin du bloc CSS à copier ===================== */
+
+    /* ===================== séquence 10-ifs (préfixe p10) ===================== */
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: "Hanken Grotesk", sans-serif;
+      -webkit-font-smoothing: antialiased; }
+
+    /* ---- W3 (raccord d'entrée) : la salle de nuit, floue, en fin de tilt ---- */
+    #p10-gground { background: radial-gradient(90% 70% at 60% 20%, #3a2f45 0%, #1A1320 60%, #0f0b12 100%); }
+    .p10-light { position: absolute; border-radius: 50%; background: radial-gradient(circle, #fff6e6 0, #ffe7b8 30%, transparent 70%);
+      filter: blur(14px); opacity: .85; }
+    #p10-gfloor { position: absolute; left: 300px; top: 140px; width: 2600px; height: 1000px;
+      background: linear-gradient(180deg, rgba(15,11,18,.7), rgba(15,11,18,.05) 45%, rgba(15,11,18,.35)),
+        repeating-linear-gradient(90deg, #b07a46 0 90px, #a46f3d 90px 180px, #b8834f 180px 270px); }
+    #p10-gline { position: absolute; left: 300px; top: 199px; width: 2600px; height: 6px; background: #f2ede6; opacity: .7; }
+    #p10-gsvg { position: absolute; left: 0; top: 0; overflow: visible; }
+
+    /* ---- W4 : le sol d'encre de la fin, le logo IFS et son fil ---- */
+    #p10-ground, #p10-scene, #p10-fore { opacity: 0; }
+    #p10-iback { position: absolute; left: 0; top: 0; width: 150px; height: 150px; transform-origin: 75px 75px;
+      filter: drop-shadow(0px 22px 34px rgba(0,0,0,.5)) drop-shadow(0px 3px 8px rgba(0,0,0,.35)); }
+    #p10-iback svg { display: block; }
+    #p10-thread { position: absolute; left: 0; top: 0; overflow: visible; }
+    #p10-ifront { position: absolute; left: 0; top: 0; width: 150px; height: 150px; overflow: visible; transform-origin: 75px 75px; }
+    #p10-glint, #p10-spark { opacity: 0; }
+    #p10-wm { position: absolute; left: 0; top: 0; white-space: nowrap; transform-origin: 0 0; }
+    #p10-wm b { display: block; font: 900 72px/1 "Archivo", sans-serif; font-stretch: 85%; letter-spacing: -.01em; color: #F5EFF3; }
+    #p10-wm .p10-l { display: inline-block; opacity: 0; transform-origin: 50% 60%; }
+    #p10-tag { display: block; margin-top: 14px; font: 600 26px/1.2 "Hanken Grotesk", sans-serif; color: #C8BCC5; opacity: 0; }
+
+    /* ---- avant-plan : une boucle du fil, floue, coupée par le bord gauche ---- */
+    #p10-loop { position: absolute; left: 0; top: 0; overflow: visible; }
+    #p10-loop path { fill: none; stroke: #D62839; stroke-width: 24; stroke-linecap: round; }
+
+    /* ---- sous-titre : gris (encre à 35 %) puis encre ; mot clé dans la boîte accent ---- */
+    #p10-subs .fx-sw { color: #F5EFF3; isolation: isolate; }
+    #p10-subs .p10-kw { color: #FFFFFF; margin: 0 .14em; text-shadow: none; isolation: isolate; }
+  </style>
+
+  <div id="root" data-composition-id="10-ifs" data-width="1920" data-height="1080" data-duration="4.55">
+
+    <!-- W3, raccord d'entrée : le mur de la salle de nuit (jusqu'au sommet du flou, 0.12) -->
+    <div id="p10-gground" class="clip fx-layer" data-start="0" data-duration="4.55" data-track-index="0"></div>
+
+    <!-- W3 sous sa caméra : panier en haut du cadre, joueur n° 15 suspendu au cercle, brin rouge qui file -->
+    <div id="p10-gscene" class="clip fx-layer" data-start="0" data-duration="4.55" data-track-index="1" data-layout-allow-overflow>
+      <div class="fx-stage" id="p10-gstage"><div class="fx-drift" id="p10-gdrift"><div class="fx-cam" id="p10-gcam"><div class="fx-world" id="p10-gworld">
+        <div class="p10-light" style="left:700px;top:-760px;width:170px;height:170px"></div>
+        <div class="p10-light" style="left:1120px;top:-640px;width:130px;height:130px"></div>
+        <div id="p10-gfloor"></div><div id="p10-gline"></div>
+        <svg id="p10-gsvg" width="2400" height="1400" viewBox="0 0 2400 1400">
+          <defs>
+            <linearGradient id="p10-gsteel" x1="0" x2="1"><stop offset="0" stop-color="#d9d6dc"/><stop offset=".5" stop-color="#f4f2f5"/><stop offset="1" stop-color="#b9b6bd"/></linearGradient>
+          </defs>
+          <path d="M1745 -115 L1880 -25 L1880 805" fill="none" stroke="url(#p10-gsteel)" stroke-width="34" stroke-linejoin="round"/>
+          <rect x="1590" y="-515" width="160" height="410" fill="#2b2533" stroke="#f4f2f5" stroke-width="12"/>
+          <rect x="1615" y="-365" width="64" height="150" fill="none" stroke="#f4f2f5" stroke-width="8"/>
+          <path d="M1362 -219 A120 22 0 0 1 1602 -219" fill="none" stroke="#a5461a" stroke-width="10"/>
+          <path id="p10-gnet" fill="none" stroke="#f4f2f5" stroke-width="3.2" stroke-linecap="round"/>
+          <g stroke-linecap="round" stroke-linejoin="round" fill="none">
+            <path d="M1428 -214 L1448 -40 M1538 -214 L1522 -40 M1452 360 L1440 560 M1520 360 L1534 560" stroke="#fff" stroke-opacity=".55" stroke-width="30"/>
+            <path d="M1428 -214 L1448 -40 M1538 -214 L1522 -40 M1452 360 L1440 560 M1520 360 L1534 560" stroke="#0d0a10" stroke-width="22"/>
+          </g>
+          <circle cx="1485" cy="-110" r="62" fill="#0d0a10" stroke="#fff" stroke-opacity=".75" stroke-width="4"/>
+          <path d="M1400 250 L1570 250 L1580 360 L1496 364 L1485 322 L1474 364 L1390 360 Z" fill="#DC2A2F" stroke="#0d0a10" stroke-width="4"/>
+          <path d="M1435 -44 Q1485 -26 1535 -44 L1557 -40 Q1545 10 1567 40 L1565 262 L1405 262 L1403 40 Q1425 10 1413 -40 Z" fill="#DC2A2F" stroke="#0d0a10" stroke-width="4"/>
+          <path d="M1435 -44 Q1485 -26 1535 -44 L1557 -40 Q1551 -16 1553 -2 Q1485 10 1417 -2 Q1419 -16 1413 -40 Z" fill="#15151C"/>
+          <text x="1485" y="110" text-anchor="middle" font-family="Archivo" font-weight="900" font-stretch="75%" font-size="74" fill="#15151C" stroke="#a9aeb6" stroke-width="3" paint-order="stroke">15</text>
+          <g transform="translate(1590 190) rotate(8)">
+            <rect x="-82.5" y="-117.5" width="165" height="235" rx="7" fill="#FFFFFF"/>
+            <rect x="-68.5" y="-103.5" width="137" height="120" rx="4" fill="#D62839"/>
+          </g>
+          <path d="M1362 -219 A120 22 0 0 0 1602 -219" fill="none" stroke="#E8662B" stroke-width="10"/>
+          <circle cx="1428" cy="-214" r="18" fill="#0d0a10" stroke="#fff" stroke-opacity=".6" stroke-width="3"/>
+          <circle cx="1538" cy="-214" r="18" fill="#0d0a10" stroke="#fff" stroke-opacity=".6" stroke-width="3"/>
+          <path d="M1372 -212 C 1210 -320 1010 -540 640 -1010" fill="none" stroke="#D62839" stroke-width="5" stroke-linecap="round"/>
+        </svg>
+      </div></div></div></div>
+    </div>
+
+    <!-- W4 : sol d'encre (ground-dark), né au sommet du flou -->
+    <div id="p10-ground" class="clip fx-layer fx-ink" data-start="0" data-duration="4.55" data-track-index="2"></div>
+
+    <!-- W4 sous la caméra : l'icône, le fil, l'aiguille, le wordmark -->
+    <div id="p10-scene" class="clip fx-layer" data-start="0" data-duration="4.55" data-track-index="3" data-layout-allow-overflow>
+      <div class="fx-stage" id="p10-stage"><div class="fx-drift" id="p10-drift"><div class="fx-cam" id="p10-cam"><div class="fx-world" id="p10-world">
+
+        <!-- l'icône IFS : carré blanc et lettres (sous le fil) -->
+        <div id="p10-iback">
+          <svg width="150" height="150" viewBox="0 0 64 64">
+            <defs><clipPath id="p10-iclip"><rect width="64" height="64" rx="14"/></clipPath></defs>
+            <g clip-path="url(#p10-iclip)">
+              <rect width="64" height="64" fill="#FFFFFF"/>
+              <path d="M3.87 48V17H9.61V48ZM14.94 48V17H35.67V22.16H20.68V29.54H33.71V34.66H20.68V48ZM49.37 48.58Q44.43 48.58 41.25 46Q38.07 43.42 37.4 39.15L43.01 37.77Q43.5 40.62 45.25 42.04Q47.01 43.46 49.59 43.46Q50.97 43.46 52.06 43Q53.15 42.53 53.790 41.62Q54.44 40.71 54.44 39.46Q54.44 38.3 53.77 37.46Q53.1 36.61 51.75 35.9Q50.39 35.19 48.35 34.43Q45.41 33.28 43.43 31.97Q41.45 30.650 40.47 28.92Q39.49 27.19 39.49 24.83Q39.49 22.34 40.72 20.42Q41.94 18.51 44.14 17.4Q46.34 16.29 49.28 16.29Q52.39 16.29 54.82 17.73Q57.24 19.18 58.71 22.03L54.13 24.83Q53.19 23.14 51.93 22.27Q50.66 21.4 49.1 21.4Q47.99 21.4 47.12 21.83Q46.25 22.25 45.74 22.98Q45.23 23.72 45.23 24.69Q45.23 25.72 45.83 26.52Q46.43 27.32 47.79 28.05Q49.15 28.79 51.32 29.59Q54.22 30.65 56.15 31.94Q58.09 33.23 59.11 34.95Q60.13 36.66 60.13 39.1Q60.13 41.86 58.77 44.02Q57.42 46.18 55.02 47.38Q52.61 48.58 49.37 48.58Z" fill="#1F2A44"/>
+              <path d="M33.6 55.5C30.5 59.5 29 60.5 29.5 63" fill="none" stroke="#D62839" stroke-width="2.13" stroke-linecap="round"/>
+              <path d="M32.55 57.39 44.38 40.94 59.59 11.63 58.27 6.48 53.34 8.47 38.77 38.11Z" fill="#FFFFFF"/>
+            </g>
+          </svg>
+        </div>
+
+        <!-- LE fil rouge : du bord gauche, par la boucle du logo, jusque dans le chas -->
+        <svg id="p10-thread" width="1920" height="1080"><path id="p10-thread-path" fill="none" stroke="#D62839" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+
+        <!-- l'aiguille de l'icône (fxNeedle, au-dessus du fil), son reflet, le scintillement du chas -->
+        <svg id="p10-ifront" width="150" height="150" viewBox="0 0 150 150">
+          <defs>
+            <clipPath id="p10-iclip2"><rect width="150" height="150" rx="33"/></clipPath>
+            <linearGradient id="p10-glg" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+          </defs>
+          <g clip-path="url(#p10-iclip2)"><g id="p10-needle" transform="translate(135 19.2) rotate(117)"></g></g>
+          <path id="p10-spark" d="M0 -16 L3 -3 L16 0 L3 3 L0 16 L-3 3 L-16 0 L-3 -3 Z" fill="#FFFFFF" style="filter: drop-shadow(0px 0px 6px rgba(255,125,186,.9))"/>
+        </svg>
+
+        <!-- le wordmark -->
+        <div id="p10-wm"><b><span class="p10-l">I</span><span class="p10-l">F</span><span class="p10-l">S</span></b><span id="p10-tag">Industrie Française de Sellerie</span></div>
+
+      </div></div></div></div>
+    </div>
+
+    <!-- avant-plan : une boucle du fil, floue, coupée par le bord gauche (au-dessus de y 860) -->
+    <div id="p10-fore" class="clip fx-layer" data-start="0" data-duration="4.55" data-track-index="4" data-layout-allow-overflow>
+      <svg id="p10-loop" width="1920" height="1080"><path d="M-90 548 C 60 566 214 660 262 614 C 314 562 238 506 178 560 C 118 614 150 742 -90 804"/></svg>
+    </div>
+
+    <!-- grain 5 % -->
+    <div id="p10-grain" class="clip fx-layer fx-grain" data-start="0" data-duration="4.55" data-track-index="5"></div>
+
+    <!-- la phrase de la voix, bas centre, mot par mot (temps locaux) -->
+    <div id="p10-subs" class="clip fx-layer" data-start="0" data-duration="4.55" data-track-index="6" data-layout-allow-overflow>
+      <div id="p10-s1" class="fx-sub dark"></div>
+      <div id="p10-s2" class="fx-sub dark"></div>
+      <div id="p10-s3" class="fx-sub dark"></div>
+    </div>
+  </div>
+
+  <script src="assets/vendor/gsap-3.14.2.min.js"></script>
+  <script>
+    (function () {
+      var FID = "10-ifs";
+      var root = document.querySelector('[data-composition-id="' + FID + '"]');
+      function $(id) { return root.querySelector("#p10-" + id); }
+
+/* ===================== FIL IFS : début du kit JS à copier ===================== */
+const FX = {
+  W: 1920, H: 1080, THREAD: "#D62839", FADED: "#E8823A", ACCENT: "#B3125F", INK: "#1A1320",
+  /* ancres du fil par monde (coordonnées monde) : la courbe passe par chacune, dans cet ordre */
+  ANCHORS: {
+    W1: [[560,250],[820,470],[1150,690],[1500,600],[1950,560],[2400,640],[2700,478],[2950,463],[3112,452],[3107,600],[3116,688],[3160,716],[3184,682],[3150,650],[3112,676],[3140,724],[3280,736],[3700,700],[4500,660],[5100,700],[6000,650],[7000,620],[7800,560],[9000,640],[9920,380]],
+    W2: [[-200,560],[700,640],[1800,620],[3200,700],[4600,640],[5400,520],[6500,660],[7600,700],[8800,640],[9800,470],[10600,600],[12000,520],[13200,660],[14200,560]]
+  },
+  /* cadrages de référence (frame.md) */
+  FRAMING: {
+    S1:[960,500,1.0], S2:[3000,500,1.05], S3:[5400,520,0.95], S4:[7800,480,1.1], S5:[10000,470,1.25],
+    S6:[960,480,1.0], S7:[3200,470,0.95], S8:[5400,470,1.05], S9:[7600,470,1.0], S10:[9800,470,1.4], S11:[12000,470,1.2], S12:[14200,470,1.0]
+  }
+};
+/* caméra : amène (x, y) du monde au centre du cadre à l'échelle s ; blur en px sur #cam */
+function fxCam(world, cam, x, y, s, blur) {
+  world.style.transform = `translate(${960 - x}px, ${540 - y}px)`;
+  world.style.transformOrigin = `${x}px ${y}px`;
+  cam.style.transform = `scale(${s})`;
+  cam.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : "none";
+}
+/* Catmull-Rom → Bézier : chemin SVG lisse passant par toutes les ancres */
+function fxThreadD(name) {
+  const p = FX.ANCHORS[name]; let d = `M${p[0][0]} ${p[0][1]}`;
+  for (let i = 0; i < p.length - 1; i++) {
+    const a = p[Math.max(0, i - 1)], b = p[i], c = p[i + 1], e = p[Math.min(p.length - 1, i + 2)];
+    const c1 = [b[0] + (c[0] - a[0]) / 6, b[1] + (c[1] - a[1]) / 6], c2 = [c[0] - (e[0] - b[0]) / 6, c[1] - (e[1] - b[1]) / 6];
+    d += ` C${c1[0].toFixed(1)} ${c1[1].toFixed(1)} ${c2[0].toFixed(1)} ${c2[1].toFixed(1)} ${c[0]} ${c[1]}`;
+  }
+  return d;
+}
+/* nœud (douleur, S3) : trois boucles serrées autour de (cx, cy), tension 0 → 1 les resserre */
+function fxKnotD(cx, cy, tension) {
+  const r = 46 - 26 * tension; let d = `M${cx - 120} ${cy}`;
+  for (let k = 0; k < 3; k++) { const o = (k - 1) * r * 0.55;
+    d += ` C${cx - 40 + o} ${cy - r * 1.6} ${cx + 40 + o} ${cy - r * 1.6} ${cx + o} ${cy}` +
+         ` C${cx - 40 + o} ${cy + r * 1.6} ${cx + 40 + o} ${cy + r * 1.6} ${cx + 20 + o} ${cy}`; }
+  return d + ` L${cx + 120} ${cy + 10}`;
+}
+/* dessine le fil : progress 0 → 1 de sa longueur (signature « le fil trace ») ; color THREAD ou FADED */
+function fxDrawThread(pathEl, progress, color) {
+  const L = pathEl.getTotalLength();
+  pathEl.style.strokeDasharray = `${L} ${L}`;
+  pathEl.style.strokeDashoffset = `${L * (1 - Math.max(0, Math.min(1, progress)))}`;
+  if (color) pathEl.setAttribute("stroke", color);
+  return pathEl.getPointAtLength(L * progress);       // la tête du fil (pour la caméra ou l'aiguille)
+}
+/* aiguille du logo IFS (len px), pointe vers la droite ; renvoie du SVG à placer dans un <svg> ;
+   uid = préfixe de la séquence (« p04 »), pour que l'id du dégradé soit unique dans la page assemblée */
+function fxNeedle(len, uid = "fx") {
+  const w = len * 0.045;
+  return `<defs><linearGradient id="${uid}NeedleG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8A93A1"/><stop offset=".5" stop-color="#3C4452"/><stop offset="1" stop-color="#4A5260"/></linearGradient></defs>
+    <path d="M0 0 C ${len * .25} ${-w} ${len * .75} ${-w * .6} ${len} 0 C ${len * .75} ${w * .6} ${len * .25} ${w} 0 0 Z" fill="url(#${uid}NeedleG)"/>
+    <ellipse cx="${len * .08}" cy="0" rx="${len * .045}" ry="${w * .32}" fill="#110C15"/>`;
+}
+/* stickman (frame.md) : renvoie le SVG d'une pose, en coordonnées locales (tête en (0, -270), bassin en (0, 0)) */
+const FX_POSES = {
+  echauffement: { arms: [[[-30,-200],[-70,-130],[-60,-60]], [[30,-200],[80,-140],[110,-80]]], legs: [[[-20,0],[-40,90],[-45,180]], [[20,0],[50,90],[60,180]]], lean: 0 },
+  attente:      { arms: [[[-30,-200],[-50,-120],[-45,-50]], [[30,-200],[50,-120],[45,-50]]], legs: [[[-20,0],[-25,90],[-30,180]], [[20,0],[25,90],[30,180]]], lean: 0 },
+  telephone:    { arms: [[[-30,-200],[-50,-120],[-45,-50]], [[30,-200],[40,-140],[0,-170]]], legs: [[[-20,0],[-25,90],[-30,180]], [[20,0],[25,90],[30,180]]], lean: -4 },
+  smash:        { arms: [[[-62,-226],[-120,-156],[-165,-98]], [[66,-252],[150,-315],[248,-383]]], legs: [[[17,-5],[-68,-5],[-110,57]], [[86,-17],[22,77],[-88,117]]], lean: -10 }
+};
+function fxStickman(pose, opts = {}) {
+  const P = FX_POSES[pose], line = pts => "M" + pts.map(p => p.join(" ")).join(" L");
+  const limbs = [...P.arms, ...P.legs].map(line).join(" ") + ` M${P.arms[0][0].join(" ")} L0 -215 L${P.arms[1][0].join(" ")} M${P.legs[0][0].join(" ")} L0 0 L${P.legs[1][0].join(" ")}`;
+  const bib = opts.bib ? `<rect x="-62" y="-215" width="124" height="200" rx="10" fill="#6d6670" transform="rotate(${P.lean})"/>` : "";
+  return `<g stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="${limbs}" stroke="#fff" stroke-opacity=".55" stroke-width="30" style="filter:blur(2.2px)"/>
+      <path d="${limbs}" stroke="#0d0a10" stroke-width="22"/>
+      <path d="M0 -215 L0 0" stroke="#0d0a10" stroke-width="22" transform="rotate(${P.lean})"/></g>
+    ${bib}<circle cx="${-12 + P.lean}" cy="-272" r="62" fill="#0d0a10" stroke="#fff" stroke-opacity=".75" stroke-width="4"/>`;
+}
+/* sous-titre mot par mot : words = [["Juin", 0.03, "box"], [",", ...]] ; renvoie les spans pour GSAP */
+function fxSubtitle(el, words) {
+  el.innerHTML = words.map(([w, , mark]) =>
+    `<span class="fx-sw">${w}${mark === "box" ? '<i class="fx-box"></i>' : ""}${mark === "stroke" ? '<i class="fx-stroke"></i>' : ""}</span>`).join(" ");
+  return [...el.querySelectorAll(".fx-sw")];
+}
+/* ===================== FIL IFS : fin du kit JS à copier ===================== */
+
+      var DUR = 4.55;
+
+      /* ===================== W3 : la salle, en fin de tilt ===================== */
+      var gworld = $("gworld"), gcam = $("gcam");
+      // filet en losanges sous le cercle (12 brins, 4 rangs)
+      (function () {
+        var d = "", i, r, R = [[-219, 120, 22], [-170, 104, 18], [-122, 90, 15], [-76, 78, 12], [-34, 70, 10]];
+        function pt(row, i) { var a = Math.PI * i / 11, q = R[row]; return [1482 + q[1] * Math.cos(a), q[0] + q[2] * Math.sin(a)]; }
+        for (r = 0; r < 4; r++) for (i = 0; i < 12; i++) {
+          var a = pt(r, i), b = pt(r + 1, Math.min(11, i + 1)), c = pt(r + 1, Math.max(0, i - 1));
+          d += "M" + a[0].toFixed(1) + " " + a[1].toFixed(1) + " L" + b[0].toFixed(1) + " " + b[1].toFixed(1) +
+               " M" + a[0].toFixed(1) + " " + a[1].toFixed(1) + " L" + c[0].toFixed(1) + " " + c[1].toFixed(1) + " ";
+        }
+        $("gnet").setAttribute("d", d);
+      })();
+
+      /* ===================== W4 : géométrie (coordonnées monde = écran à cam(960, 540, 1)) ===================== */
+      var world = $("world"), cam = $("cam"), thread = $("thread-path");
+      var IK = 150 / 64;                                  // icône 150 px ; points du logo en unités 64
+      var ICX = 693, ICY = 210;                           // position finale de l'icône (coin haut gauche)
+      var EYE = [55.47 * IK, 12.02 * IK];                 // le chas, dans l'icône (px)
+      var LOCKW = 282;                                    // demi-largeur du bloc logo + wordmark, depuis le bord gauche de l'icône
+
+      // l'aiguille du logo : fxNeedle du kit (talon en haut à droite, pointe en bas à gauche, comme l'icône)
+      var NL = 127, NW = NL * 0.045, needle = $("needle");
+      needle.innerHTML = fxNeedle(NL, "p10") +
+        '<clipPath id="p10-nclip"><path d="M0 0 C ' + NL * .25 + ' ' + (-NW) + ' ' + NL * .75 + ' ' + (-NW * .6) + ' ' + NL + ' 0 C ' + NL * .75 + ' ' + NW * .6 + ' ' + NL * .25 + ' ' + NW + ' 0 0 Z"/></clipPath>' +
+        '<g clip-path="url(#p10-nclip)"><rect id="p10-glint" x="-16" y="-10" width="32" height="20" fill="url(#p10-glg)"/></g>';
+      needle.querySelector("ellipse").setAttribute("fill", "none");   // le chas est un trou : on voit le fil au travers
+      var glint = $("glint"), spark = $("spark");
+
+      // la boucle du logo (icône, px), parcourue du coin haut gauche vers le chas
+      function bez(a, b, c, e, n, out) {
+        for (var k = 1; k <= n; k++) { var t = k / n, u = 1 - t;
+          out.push([u * u * u * a[0] + 3 * u * u * t * b[0] + 3 * u * t * t * c[0] + t * t * t * e[0], u * u * u * a[1] + 3 * u * u * t * b[1] + 3 * u * t * t * c[1] + t * t * t * e[1]]); }
+      }
+      var CURL = [[8.5, 5.6]];
+      bez([8.5, 5.6], [10.5, 7.6], [13.5, 9.4], [18, 10], 6, CURL);
+      bez([18, 10], [25, 11], [30.6, 7.8], [30, 4.3], 10, CURL);
+      bez([30, 4.3], [29.5, 1.3], [25, 1.8], [25.5, 5], 10, CURL);
+      bez([25.5, 5], [26, 8.5], [31, 8.5], [36, 5.5], 10, CURL);
+      bez([36, 5.5], [42, 1.5], [52, 2.5], [55.47, 12.02], 16, CURL);
+      CURL = CURL.map(function (p) { return [p[0] * IK, p[1] * IK]; });
+
+      // le fil hors de l'icône : du coin haut gauche de l'icône jusqu'au bord gauche (Catmull-Rom échantillonné)
+      var A0 = [[20, 13], [-40, -26], [-170, -30], [-340, 26], [-540, 84], [-800, 64]];   // relatif à la position finale de l'icône
+      var AW = [1, 1, 0.75, 0.45, 0.15, 0];               // part du déplacement de l'icône que suit chaque ancre (le bout gauche est fixe)
+      var NS = 18, BASE = [], WTS = [];
+      (function () {
+        var i, k, t, a, b, c, e;
+        for (i = 0; i < A0.length - 1; i++) {
+          a = A0[Math.max(0, i - 1)]; b = A0[i]; c = A0[i + 1]; e = A0[Math.min(A0.length - 1, i + 2)];
+          for (k = 0; k < NS; k++) { t = k / NS; var t2 = t * t, t3 = t2 * t;
+            BASE.push([ICX + 0.5 * (2 * b[0] + (-a[0] + c[0]) * t + (2 * a[0] - 5 * b[0] + 4 * c[0] - e[0]) * t2 + (-a[0] + 3 * b[0] - 3 * c[0] + e[0]) * t3),
+                       ICY + 0.5 * (2 * b[1] + (-a[1] + c[1]) * t + (2 * a[1] - 5 * b[1] + 4 * c[1] - e[1]) * t2 + (-a[1] + 3 * b[1] - 3 * c[1] + e[1]) * t3)]);
+            WTS.push(AW[i] + (AW[i + 1] - AW[i]) * t);
+          }
+        }
+        BASE.push([ICX + A0[A0.length - 1][0], ICY + A0[A0.length - 1][1]]); WTS.push(0);
+      })();
+
+      /* ---- sous-titres (fxSubtitle du kit) ---- */
+      function glue(a) { var n = a.nextSibling; if (n && n.nodeType === 3) n.parentNode.removeChild(n); }
+      var W1S = [["IFS.", 0.29]];
+      var W2S = [["Une", 1.25], ["qualité", 1.50], ["irréprochable", 1.96, "box"], [",", 1.96]];
+      var W3S = [["livrée", 2.96], ["en", 3.48], ["moins", 3.82], ["d'un", 3.98], ["mois.", 4.26]];
+      var s1 = $("s1"), s2 = $("s2"), s3 = $("s3");
+      var sp1 = fxSubtitle(s1, W1S), sp2 = fxSubtitle(s2, W2S), sp3 = fxSubtitle(s3, W3S);
+      glue(sp2[2]); sp2[2].classList.add("p10-kw");
+
+      /* ===================== état : proxies lus par UN seul onUpdate ===================== */
+      var G = { y: 120 };                                 // caméra W3 (handoff_in : cam(1480, 120, 1.15) flou 10)
+      var C = { x: 909, y: 602, s: 1.0, b: 10 };          // caméra W4 ; dérive x +12 u/s jusqu'à cam(960, 540, 1.0) à 4.55
+      var Z = { z: 1 };                                   // cran vers l'aiguille (point fixe : le chas)
+      var L = { x: 834, y: 250, k: 1 };                   // bloc logo : coin haut gauche de l'icône, tassement
+      var A = { k: 3, b: 12, o: 0 };                      // arrivée de l'icône depuis la caméra
+      var T = { a: 0, b: 0 };                             // le fil : a = hors de l'icône, b = boucle du logo jusqu'au chas
+      var W = { amp: 0, ph: -4 * Math.PI, pa: 0, pc: 1.15 };   // vague du fil ; pa/pc = la vague forte qui court vers le chas
+      var N = { u: 0, o: 0 };                             // reflet de l'aiguille
+      var S = { k: 0, o: 0 };                             // scintillement du chas
+      var F = { o: 0, x: 0 };                             // boucle d'avant-plan
+
+      var iback = $("iback"), ifront = $("ifront"), wm = $("wm"), loop = $("loop");
+
+      function render() {
+        fxCam(gworld, gcam, 1480, G.y, 1.15, 10);
+
+        // le bloc logo : position, tassement autour de son centre
+        var lcx = L.x + LOCKW, lcy = L.y + 75, k = L.k;
+        var icx = lcx + (L.x + 75 - lcx) * k, icy = lcy + (L.y + 75 - lcy) * k;          // centre de l'icône
+        var it = "translate(" + (icx - 75).toFixed(2) + "px," + (icy - 75).toFixed(2) + "px) scale(" + (k * A.k).toFixed(4) + ")";
+        iback.style.transform = it; ifront.style.transform = it;
+        iback.style.opacity = A.o; ifront.style.opacity = A.o;
+        iback.style.filter = (A.b > 0.05 ? "blur(" + A.b.toFixed(2) + "px) " : "") + "drop-shadow(0px 22px 34px rgba(0,0,0,.5)) drop-shadow(0px 3px 8px rgba(0,0,0,.35))";
+        ifront.style.filter = A.b > 0.05 ? "blur(" + A.b.toFixed(2) + "px)" : "none";
+        wm.style.transform = "translate(" + (lcx + (L.x + 180 - lcx) * k).toFixed(2) + "px," + (lcy + (L.y + 16 - lcy) * k).toFixed(2) + "px) scale(" + k.toFixed(4) + ")";
+        function ip(p) { return [icx + (p[0] - 75) * k, icy + (p[1] - 75) * k]; }   // point de l'icône → monde
+
+        // caméra : cran vers l'aiguille, le chas reste fixe à l'écran
+        var e = ip(EYE), z = Z.z;
+        fxCam(world, cam, e[0] - (e[0] - C.x) / z, e[1] - (e[1] - C.y) / z, C.s * z, C.b);
+
+        // le fil : bord gauche → coin de l'icône (vague) → boucle du logo → chas
+        var dx = L.x - ICX, dy = L.y - ICY, n = BASE.length, pts = [], i, u, env, y;
+        for (i = n - 1; i >= 0; i--) {
+          u = i / (n - 1); env = Math.min(1, u * 3.2);
+          y = BASE[i][1] + dy * WTS[i] + env * (W.amp * Math.sin(u * 2 * Math.PI * 1.7 - W.ph) + W.pa * Math.exp(-Math.pow((u - W.pc) / 0.09, 2)));
+          pts.push([BASE[i][0] + dx * WTS[i], y]);
+        }
+        var lo = 0, lc = 0, d = "M" + pts[0][0].toFixed(1) + " " + pts[0][1].toFixed(1), q, j;
+        for (j = 1; j < pts.length; j++) lo += Math.hypot(pts[j][0] - pts[j - 1][0], pts[j][1] - pts[j - 1][1]), d += " L" + pts[j][0].toFixed(1) + " " + pts[j][1].toFixed(1);
+        var prev = pts[pts.length - 1];
+        for (j = 1; j < CURL.length; j++) { q = ip(CURL[j]); lc += Math.hypot(q[0] - prev[0], q[1] - prev[1]); prev = q; d += " L" + q[0].toFixed(1) + " " + q[1].toFixed(1); }
+        thread.setAttribute("d", d);
+        fxDrawThread(thread, (T.a * lo + T.b * lc) / (lo + lc), FX.THREAD);   // tête mesurée sur le vrai chemin
+
+        // reflet de l'aiguille, scintillement du chas
+        glint.setAttribute("x", (N.u * (NL + 32) - 32).toFixed(2));
+        glint.style.opacity = N.o;
+        spark.setAttribute("transform", "translate(" + EYE[0].toFixed(2) + " " + EYE[1].toFixed(2) + ") rotate(" + (S.k * 45).toFixed(2) + ") scale(" + S.k.toFixed(4) + ")");
+        spark.style.opacity = S.o;
+
+        // avant-plan : la boucle floue (parallaxe 1,6)
+        var cs = C.s * z, cx = e[0] - (e[0] - C.x) / z, cy = e[1] - (e[1] - C.y) / z;
+        var fx = (960 - cx) * cs * 1.6 + F.x, fy = (540 - cy) * cs * 1.6, fk = Math.pow(cs, 1.6);
+        loop.style.transform = "translate(" + fx.toFixed(2) + "px," + fy.toFixed(2) + "px) scale(" + fk.toFixed(4) + ")";
+        loop.style.filter = "blur(" + (14 + C.b * 0.8).toFixed(2) + "px)";
+        loop.style.opacity = F.o;
+      }
+
+      /* ===================== la timeline unique, en pause ===================== */
+      var tl = gsap.timeline({ paused: true, onUpdate: render });
+      function ft(target, from, to, pos) { if (pos > 0) to.immediateRender = false; tl.fromTo(target, from, to, pos); }
+      function tw(target, from, to, dur, ease, pos) { var o = {}, kk; for (kk in to) o[kk] = to[kk]; o.duration = dur; o.ease = ease; ft(target, from, o, pos); }
+
+      /* ---- piste caméra ---- */
+      // 0.00 à 0.12 fin du tilt dans la salle : -2400 u/s en y, flou 10 ; au sommet du flou, le sol d'encre W4 prend le cadre
+      tw(G, { y: 120 }, { y: 120 - 2400 * 0.12 }, 0.12, "none", 0);
+      ["gground", "gscene"].forEach(function (id) { ft($(id), { opacity: 1 }, { opacity: 0, duration: 0.01, ease: "none" }, 0.12); });
+      ["ground", "scene", "fore"].forEach(function (id) { ft($(id), { opacity: 0 }, { opacity: 1, duration: 0.01, ease: "none" }, 0.12); });
+      // 0.12 à 0.30 le tilt se pose (expo.out, même vitesse au raccord), flou 10 → 0
+      tw(C, { y: 602, b: 10 }, { y: 540, b: 0 }, 0.18, "expo.out", 0.12);
+      // 0.30 à 4.55 dérive x +12 u/s
+      tw(C, { x: 909 }, { x: 960 }, DUR - 0.30, "none", 0.30);
+      // 2.40 cran ×1 → ×1,06 vers l'aiguille, puis retour à ×1 par une dérive d'échelle jusqu'à 4.55
+      tw(Z, { z: 1 }, { z: 1.06 }, 0.30, "expo.out", 2.40);
+      tw(Z, { z: 1.06 }, { z: 1 }, DUR - 2.70, "none", 2.70);
+
+      /* ---- le fil, l'icône, l'aiguille ---- */
+      // 0.12 le fil traverse le cadre depuis le bord gauche vers le centre haut (0,4 s expo.out)
+      tw(T, { a: 0 }, { a: 1 }, 0.40, "expo.out", 0.12);
+      // 0.12 l'icône arrive depuis la caméra (×3 flou 12 → net, 0,22 s expo.out), en avance sur « IFS »
+      tw(A, { o: 0 }, { o: 1 }, 0.06, "none", 0.12);
+      tw(A, { k: 3, b: 12 }, { k: 1, b: 0 }, 0.22, "expo.out", 0.12);
+      // 0.60 l'aiguille s'allume : un reflet la parcourt
+      tw(N, { o: 0 }, { o: 1 }, 0.03, "none", 0.60);
+      tw(N, { u: 0 }, { u: 1 }, 0.22, "power2.inOut", 0.60);
+      tw(N, { o: 1 }, { o: 0 }, 0.04, "none", 0.80);
+      // 0.80 le fil suit la boucle du logo et passe dans le chas (0,15 s) ; scintillement
+      tw(T, { b: 0 }, { b: 1 }, 0.15, "power2.inOut", 0.80);
+      tw(S, { k: 0, o: 0 }, { k: 1, o: 1 }, 0.10, "expo.out", 0.93);
+      tw(S, { k: 1, o: 1 }, { k: 0.5, o: 0 }, 0.18, "power2.in", 1.03);
+      // 1.00 « IFS » s'assemble lettre par lettre ; le bloc glisse à gauche pour se centrer
+      tw(L, { x: 834 }, { x: ICX }, 0.40, "power3.out", 1.00);
+      Array.prototype.forEach.call(wm.querySelectorAll(".p10-l"), function (el, i) {
+        ft(el, { opacity: 0, scale: 1.3, filter: "blur(6px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.22, ease: "expo.out" }, 1.00 + i * 0.05);
+      });
+      ft($("tag"), { opacity: 0, y: 10, filter: "blur(4px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.18, ease: "power3.out" }, 1.15);
+      // 1.25 le fil ondule (vague ±10 px qui court, 2 boucles de 1,65 s, finie à 4.55)
+      tw(W, { amp: 0 }, { amp: 10 }, 0.50, "power1.inOut", 1.25);
+      tw(W, { ph: -4 * Math.PI }, { ph: 0 }, DUR - 1.25, "none", 1.25);
+      // 1.96 « irréprochable » : le logo se tasse
+      tw(L, { k: 1 }, { k: 1.02 }, 0.06, "power2.out", 1.96);
+      tw(L, { k: 1.02 }, { k: 1 }, 0.26, "power3.out", 2.02);
+      // 2.96 « livrée » : une vague plus forte court le long du fil jusqu'au chas
+      tw(W, { pa: 0 }, { pa: 20 }, 0.06, "none", 2.96);
+      tw(W, { pc: 1.15 }, { pc: -0.1 }, 0.40, "power1.in", 2.96);
+      tw(W, { pa: 20 }, { pa: 0 }, 0.06, "none", 3.32);
+      // 3.40 le reflet repasse sur l'aiguille
+      tw(N, { o: 0 }, { o: 1 }, 0.03, "none", 3.40);
+      tw(N, { u: 0 }, { u: 1 }, 0.22, "power2.inOut", 3.40);
+      tw(N, { o: 1 }, { o: 0 }, 0.04, "none", 3.60);
+      // 3.82 « moins » : le fil se tend un instant
+      tw(W, { amp: 10 }, { amp: 1.5 }, 0.10, "power2.out", 3.82);
+      tw(W, { amp: 1.5 }, { amp: 10 }, 0.40, "power2.inOut", 3.95);
+      // 4.26 le bloc logo remonte de 40 px pour laisser la place au bouton
+      tw(L, { y: 250 }, { y: ICY }, 0.25, "power3.out", 4.26);
+
+      /* ---- avant-plan : la boucle floue entre avec le sol d'encre et sort par la gauche avant la couture ---- */
+      tw(F, { o: 0 }, { o: 0.85 }, 0.01, "none", 0.12);
+      tw(F, { o: 0.85, x: 0 }, { o: 0, x: -160 }, 0.34, "power2.in", 3.96);
+
+      /* ---- la phrase de la voix : mot par mot, gris puis encre ; une boîte ---- */
+      function sayWords(spans, list) {
+        spans.forEach(function (w, i) {
+          var st = Math.max(0, list[i][1] - 1 / 30), kw = list[i][2] === "box";
+          ft(w, { y: 8, filter: "blur(6px)" }, { y: 0, filter: "blur(0px)", duration: 0.14, ease: "power2.out" }, st);
+          if (kw) ft(w, { opacity: 0 }, { opacity: 1, duration: 0.10, ease: "power2.out" }, st);
+          else {
+            ft(w, { opacity: 0 }, { opacity: 0.35, duration: 0.08, ease: "power2.out" }, st);
+            ft(w, { opacity: 0.35 }, { opacity: 1, duration: 0.20, ease: "power1.out" }, st + 0.10);
+          }
+        });
+      }
+      sayWords(sp1, W1S); sayWords(sp2, W2S); sayWords(sp3, W3S);
+      var BOXZ = { scaleX: 0, scaleY: 1, rotation: 0, skewX: 0, skewY: 0 };
+      ft(sp2[2].querySelector(".fx-box"), BOXZ, { scaleX: 1, scaleY: 1, rotation: 0, skewX: 0, skewY: 0, duration: 0.16, ease: "power3.out" }, 1.92);
+      // chaque morceau sort avant le suivant (opacité 1 → 0, flou 0 → 6 px, 0,14 s)
+      ft(s1, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 1.06);
+      ft(s2, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 2.78);
+      ft(s3, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 4.40);
+
+      // durée exacte de la séquence
+      tl.set({}, {}, DUR);
+
+      // première image = handoff_in, avant tout seek
+      render();
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[FID] = tl;
+    })();
+  </script>
+</template>

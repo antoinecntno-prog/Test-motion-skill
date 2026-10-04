@@ -611,10 +611,10 @@ function fxSubtitle(el, words) {
       var S4E = { x: 7860 + 15 * 0.56, y: 470, s: 1.3 * (1 + 0.01 * 0.56) };
       tw(C, { x: 7860, s: 1.3 }, { x: S4E.x, s: S4E.s }, 0.56, "none", 2.60);
       // 3.16 whip vers S5 : power2.in jusqu'au sommet (3.30, 61,8 % du trajet, vitesses égales), puis expo.out jusqu'à 3.60
-      var WB = { x: FX.FRAMING.S5[0], y: FX.FRAMING.S5[1], s: FX.FRAMING.S5[2] }, WF = 0.618, WM = {};
-      for (var key in S4E) WM[key] = S4E[key] + (WB[key] - S4E[key]) * WF;
+      var CWB = { x: FX.FRAMING.S5[0], y: FX.FRAMING.S5[1], s: FX.FRAMING.S5[2] }, WF = 0.618, WM = {};
+      for (var key in S4E) WM[key] = S4E[key] + (CWB[key] - S4E[key]) * WF;
       tw(C, S4E, WM, 0.14, "power2.in", 3.16);
-      tw(C, WM, WB, 0.30, "expo.out", 3.30);
+      tw(C, WM, CWB, 0.30, "expo.out", 3.30);
       tw(C, { b: 0 }, { b: 12 }, 0.14, "power2.in", 3.16);
       tw(C, { b: 12 }, { b: 0 }, 0.30, "expo.out", 3.30);
       // 3.60 à 6.15 poussée linéaire dans le hublot x1,25 → x1,45

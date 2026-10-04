@@ -172,7 +172,7 @@
           <div class="p01-rule" style="top: 247px"></div>
           <div id="p01-att"><span class="p01-xl">X</span><span>Commande maillots 2026.xlsx</span></div>
           <div id="p01-body">Bonjour,<br>voici notre commande de maillots pour la saison.<br><br>Basket Club Eschau</div>
-          <svg id="p01-stub" width="980" height="580" viewBox="0 0 980 580"><path id="p01-stub-path" d="M156 92 C 168 95 178 103 188 116"/></svg>
+          <svg id="p01-stub" width="980" height="580" viewBox="0 0 980 580"><path id="p01-stub-path" d="M156 92 C 170 94 172 123 196 123 L 330 123 C 352 123 366 118 380 110"/></svg>
         </div></div>
 
         <!-- encre du calendrier S2 (au-dessus du fil) -->
@@ -378,9 +378,9 @@ function fxSubtitle(el, words) {
       var K = { cu: 0, ck: 1 };                                          // le curseur
       var Q = { o: 0, k: 1.15, b: 8, r: -7 };                            // le calendrier S2
       var J = { s: 1.32, x: 0, y: 0, r: 9, b: 10, o: 1 };                // la page JUIN d'avant-plan
-      var B = { o: 0, x: 0, y: 0, r: 22 };
+      var B = { o: 0, x: 0, y: 0, r: 22 };                               // la page JUIN du fond
       var stubLine = $("stub-path");
-      var D = { st: 0, rg: 0 };                                          // tracés du bout de fil (Envoyer) et de l'anneau du 5                               // la page JUIN du fond
+      var D = { st: 0, rg: 0 };                                          // tracés du bout de fil (Envoyer) et de l'anneau du 5
       var MAIL_H = 580, FOLD = 352 / 580;                                // la carte garde l'en-tête, À, Objet et la pièce jointe
       var CUR0 = [560 + 212, 250 + 212], CURC = [792, 300], CUR1 = [574, 247];   // à 300 px en bas à droite d'Envoyer → Envoyer
 
@@ -482,10 +482,10 @@ function fxSubtitle(el, words) {
       // tant que la fenêtre est ouverte il court SOUS son papier (couverture opaque dès 0.69) et ne sort qu'au bord de la carte
       tw(V, { cov: 0 }, { cov: 1 }, 0.01, "none", 0.69);
       tw(T, { p: 0 }, { p: P_SEND }, 0.70, "expo.out", 0.70);
-      // 0.90 au clic, le bout de fil naît du bord droit du bouton Envoyer (au-dessus de l'encre), effacé à 1.10 quand la carte se replie
+      // 0.86 au clic, le bout de fil (230 px) naît du bord droit du bouton Envoyer et file dans l'interligne sous la barre d'outils, effacé à 1.10 quand la carte se replie
       var stub = $("stub");
-      ft(stub, { opacity: 0 }, { opacity: 1, duration: 0.01, ease: "none" }, 0.90);
-      tw(D, { st: 0 }, { st: 1 }, 0.10, "power2.out", 0.90);
+      ft(stub, { opacity: 0 }, { opacity: 1, duration: 0.01, ease: "none" }, 0.86);
+      tw(D, { st: 0 }, { st: 1 }, 0.18, "power2.out", 0.86);
       ft(stub, { opacity: 1 }, { opacity: 0, duration: 0.04, ease: "none" }, 1.10);
       // 1.10 la fenêtre se replie en carte (×1 → 0,62) et glisse sur le fil comme sur un rail ; le curseur s'efface
       tw(V, { k: 1, r: -1.5, fold: 1 }, { k: 0.62, r: 8, fold: FOLD }, 0.20, "power2.in", 1.10);

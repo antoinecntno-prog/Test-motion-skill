@@ -78,10 +78,11 @@ events = []
 if os.path.exists(env["SFX_EVENTS"]):
     events = json.load(open(env["SFX_EVENTS"], encoding="utf-8"))
 def sfx_file(name):
-    for ext in (".wav", ".mp3"):
-        path = os.path.join(env["SFX_DIR"], name + ext)
-        if os.path.exists(path):
-            return path
+    for folder in (env["SFX_DIR"], "assets/audio/sfx"):           # bibliothèque HeyGen, puis bruitages propres au projet
+        for ext in (".wav", ".mp3"):
+            path = os.path.join(folder, name + ext)
+            if os.path.exists(path):
+                return path
     sys.exit(f"build-audio: sound effect '{name}' not found in {env['SFX_DIR']} (.wav or .mp3)")
 
 args = ["ffmpeg", "-v", "error", "-y", "-i", env["VOICE_OUT"]]

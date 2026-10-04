@@ -368,7 +368,8 @@ function fxSubtitle(el, words) {
       var T = { u: U0, f: 0 };                                    // le fil (longueur dessinée A + B + C) et le brin qui file
       var M = { m: 0, ph: 0, ox: 330, oy: 445 };                  // pose (0 course, 1 impulsion, 2 smash, 3 suspendu), cycle de course, O
       var SW = { a: 0, ph: 0 };                                   // balancement des jambes
-      var BL = { att: 1, x: 0, y: 0, o: 1 };                      // le ballon (attaché à la main, puis libre)
+      var BL = { att: 1, x: 0, y: 0, o: 1 };
+      var DR = { w: 1, p: 0 };                                    // le dribble pendant la course (poids, nombre de rebonds)                      // le ballon (attaché à la main, puis libre)
       var RIM = { d: 0, n: 1 };                                   // le cercle plie, le filet s'étire
       var DOF = { b: 0, lb: 14 };                                 // flou du fond (planche, poteau, projecteurs)
       var SWT = { k: 3.2, b: 12, r: -12, o: 0, gx: -150, go: 0 }; // le nuancier et l'éclat
@@ -422,6 +423,10 @@ function fxSubtitle(el, words) {
 
         // le ballon : dans la main, puis libre
         var bx = BL.att ? fr[0] + BALL_OFF[0] : BL.x, by = BL.att ? fr[1] + BALL_OFF[1] : BL.y;
+        if (BL.att && DR.w > 0.001) {                              // dribble : la main pousse, le ballon touche le parquet (y 838) et remonte
+          var df = DR.p % 1, db = Math.pow(1 - Math.abs(2 * df - 1), 0.85);
+          by += (838 - by) * db * DR.w; bx += 24 * db * DR.w;
+        }
         ball.setAttribute("transform", "translate(" + f2(bx) + " " + f2(by) + ")");
         ball.setAttribute("opacity", BL.o.toFixed(3));
 
@@ -481,6 +486,9 @@ function fxSubtitle(el, words) {
       Array.prototype.forEach.call(lights, function (el, j) { ft(el, { opacity: 0 }, { opacity: 0.8, duration: 0.16, ease: "power2.out" }, 0.08 + j * 0.05); });
       // 0.00 à 0.85 il court vers le panier ; le fil court au sol derrière lui
       tw(M, { ox: 330, ph: 0 }, { ox: 900, ph: 3 }, 0.85, "none", 0);
+      // il dribble en courant : 3 rebonds, puis il ramasse le ballon avant l'impulsion
+      tw(DR, { p: 0 }, { p: 3 }, 0.78, "none", 0);
+      tw(DR, { w: 1 }, { w: 0 }, 0.06, "power2.out", 0.78);
       tw(T, { u: U0 }, { u: U1 }, 0.85, "none", 0);
       // 0.80 l'impulsion (traînées verticales sous les pieds)
       tw(M, { m: 0, oy: 445 }, { m: 1, oy: 460 }, 0.17, "power2.out", 0.80);

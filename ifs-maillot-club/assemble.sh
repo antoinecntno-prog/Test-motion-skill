@@ -76,6 +76,9 @@ EOF
 node $S/assemble-index.mjs --storyboard ./STORYBOARD.md --hyperframes . | tail -3
 node $S/transitions.mjs inject --storyboard ./STORYBOARD.md --hyperframes . | tail -2
 node $S/transitions.mjs verify --storyboard ./STORYBOARD.md --index ./index.html | tail -1
+# GSAP en local : le CDN jsdelivr est bloqué dans ce bac à sable
+sed -i 's#<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"[^>]*></script>#<script src="assets/vendor/gsap-3.14.2.min.js"></script>#' index.html
+if grep -q 'cdn.jsdelivr' index.html; then echo "index.html charge encore un script depuis le CDN" >&2; exit 1; fi
 
 python3 - <<'EOF'
 import os, re

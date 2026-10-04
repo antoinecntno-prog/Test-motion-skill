@@ -1,0 +1,611 @@
+<template>
+  <style>
+  /* ===================== FIL IFS : début du bloc CSS à copier ===================== */
+  @font-face { font-family: "Archivo"; font-weight: 700 900; font-stretch: 75% 100%; src: url("assets/fonts/archivo-latin.woff2") format("woff2"); }
+  @font-face { font-family: "Hanken Grotesk"; font-weight: 400 700; src: url("assets/fonts/hanken-grotesk-latin.woff2") format("woff2"); }
+  @font-face { font-family: "Pacifico"; src: url("assets/fonts/studio-pacifico.woff2") format("woff2"); }
+  .fx-layer { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+  /* sols : encre (douleur, match, fin), papier (atelier), noir (pivot) */
+  .fx-ink { background: repeating-linear-gradient(115deg, rgba(255,255,255,.028) 0 2px, transparent 2px 46px),
+    radial-gradient(120% 90% at 50% 40%, #241B2B 0%, #1A1320 55%, #110C15 100%); }
+  .fx-paper { background: repeating-linear-gradient(115deg, rgba(179,18,95,.05) 0 2px, transparent 2px 46px),
+    linear-gradient(180deg, #FFFFFF 0%, #F7F3F6 100%); }
+  .fx-black { background: #110C15; }
+  .fx-grain { pointer-events: none; opacity: .05; mix-blend-mode: screen;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='240' height='240' filter='url(%23g)'/></svg>"); }
+  .fx-grain.paper { opacity: .03; mix-blend-mode: multiply; }
+  /* kit caméra : #stage > #drift > #cam > #world (le monde fait la taille de ses stations) */
+  .fx-stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; }
+  .fx-drift, .fx-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+  .fx-world { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+  .fx-st { position: absolute; }                       /* une station : placée par son centre en coordonnées monde */
+  .fx-thread { position: absolute; left: 0; top: 0; overflow: visible; }
+  /* sous-titre : la phrase de la voix, bas centre (bande y 890 à 980), mot par mot */
+  .fx-sub { position: absolute; left: 0; top: 896px; width: 1920px; text-align: center; font: 600 62px/74px "Hanken Grotesk", sans-serif;
+    letter-spacing: -0.015em; color: #1A1320; white-space: nowrap; text-shadow: 0 2px 14px rgba(255,255,255,.8); }
+  .fx-sub.dark { color: #F5EFF3; text-shadow: 0 2px 16px rgba(0,0,0,.6); }
+  .fx-sw { display: inline-block; opacity: 0; position: relative; }
+  .fx-box { position: absolute; left: -.14em; right: -.14em; top: .06em; bottom: .02em; background: #B3125F; border-radius: 3px;
+    transform: scaleX(0); transform-origin: 0 50%; z-index: -1; }
+  .fx-stroke { position: absolute; left: -2%; right: -4%; bottom: -8px; height: 7px; border-radius: 50%; transform: scaleX(0) rotate(-1.2deg);
+    transform-origin: 0 50%; background: linear-gradient(90deg, transparent, #B3125F 12%, #B3125F 70%, transparent); }
+  .fx-sub.dark .fx-stroke { background: linear-gradient(90deg, transparent, #FF7DBA 12%, #FF7DBA 70%, transparent); }
+  .fx-type { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; display: grid; place-items: center;
+    font: 800 84px/1.08 "Archivo"; font-stretch: 85%; letter-spacing: -.01em; color: #F5EFF3; }
+  /* curseur */
+  .fx-cursor { position: absolute; left: 0; top: 0; width: 46px; height: 58px; filter: drop-shadow(0 4px 6px rgba(0,0,0,.35)); }
+  .fx-ripple { position: absolute; width: 120px; height: 120px; margin: -60px 0 0 -60px; border: 4px solid rgba(179,18,95,.55); border-radius: 50%; opacity: 0; }
+  /* ===================== FIL IFS : fin du bloc CSS à copier ===================== */
+
+    /* ===================== séquence 02-chasubles (préfixe p02) ===================== */
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: "Hanken Grotesk", sans-serif;
+      -webkit-font-smoothing: antialiased; }
+
+    /* ---- S2 : le calendrier de la séquence 1, tel qu'il est posé à sa dernière image (styleframe A1) ---- */
+    .p02-calw { position: absolute; left: 0; top: 0; width: 700px; height: 540px; transform-origin: 350px 270px; }
+    .p02-page { position: absolute; left: 0; top: 0; width: 700px; height: 540px; border-radius: 6px; background: #FBF8F5;
+      box-shadow: 0 40px 80px rgba(0, 0, 0, .55), 0 4px 12px rgba(0, 0, 0, .28); }
+    .p02-ring { position: absolute; top: -18px; width: 16px; height: 40px; border-radius: 8px;
+      background: linear-gradient(90deg, #6D6670, #D6D0D6, #6D6670); }
+    .p02-hole { position: absolute; top: 15px; width: 18px; height: 8px; border-radius: 50%; background: #3A3140; }
+    .p02-cell { position: absolute; width: 82.29px; height: 2px; background: #E7E0E5; }
+    .p02-ctitle { position: absolute; left: 44px; top: 30px; white-space: nowrap; font: 900 92px/1 "Archivo", sans-serif; font-stretch: 80%;
+      letter-spacing: -.01em; color: #1A1320; }
+    .p02-tl { display: inline-block; }
+    .p02-yr { font: 700 34px/1 "Hanken Grotesk", sans-serif; letter-spacing: 0; color: #5E5360; margin-left: 14px; }
+    .p02-hd { position: absolute; top: 132px; width: 82.29px; text-align: center; font: 700 20px/24px "Hanken Grotesk", sans-serif; color: #9A8F99; }
+    .p02-num { position: absolute; width: 40px; height: 34px; text-align: center; font: 600 26px/34px "Hanken Grotesk", sans-serif; color: #1A1320; }
+    .p02-calsvg { position: absolute; left: 0; top: 0; overflow: visible; }
+    #p02-ring5 { fill: none; stroke: #D62839; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+    #p02-match { position: absolute; left: 431.45px; top: 164px; width: 160px; height: 30px; text-align: center; white-space: nowrap;
+      font: italic 700 23px/30px "Hanken Grotesk", sans-serif; color: #D62839; transform: rotate(-5deg); }
+    #p02-match sup { font-size: .62em; line-height: 0; vertical-align: .62em; margin-left: 1px; }
+    .p02-num, .p02-hd, #p02-match { text-shadow: 0 0 3px #FBF8F5, 0 0 6px #FBF8F5, 0 0 10px #FBF8F5; }
+    #p02-calP, #p02-calI { transform: rotate(-3.5deg); }
+
+    /* ---- S3 : la salle du club la nuit (mur sombre, 2 projecteurs, parquet sombre en perspective) ----
+       la salle finit en fondu à x 6040 du monde : à 4.49 (cam 7000, 560, 1.0) rien d'elle n'est dans le cadre */
+    #p02-room { position: absolute; left: 4300px; top: -200px; width: 1740px; height: 1400px; opacity: 0; transform-origin: 1000px 700px;
+      -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 300px, #000 1400px, transparent 1740px);
+      mask-image: linear-gradient(90deg, transparent 0, #000 300px, #000 1400px, transparent 1740px); }
+    #p02-wall { position: absolute; left: 0; top: 0; width: 1740px; height: 670px;
+      background: radial-gradient(46% 62% at 56% 78%, #3a2f45 0%, #2a2133 46%, #1d1525 78%, #1A1320 100%);
+      -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 260px); mask-image: linear-gradient(180deg, transparent 0, #000 260px); }
+    .p02-spot { position: absolute; border-radius: 50%; background: radial-gradient(circle, #fff6e6 0, #ffe7b8 30%, rgba(255, 231, 184, 0) 70%);
+      filter: blur(14px); opacity: .78; }
+    #p02-floorw { position: absolute; left: 0; top: 670px; width: 1740px; height: 730px; overflow: hidden; }
+    #p02-floor { position: absolute; left: -500px; top: 0; width: 2740px; height: 600px; transform-origin: 50% 0;
+      transform: perspective(900px) rotateX(58deg);
+      background: repeating-linear-gradient(90deg, #b07a46 0 90px, #a46f3d 90px 180px, #b8834f 180px 270px); }
+    #p02-court { position: absolute; left: 0; top: 352px; width: 2740px; height: 7px; background: #f2ede6; opacity: .55; }
+    #p02-floordk { position: absolute; left: 0; top: 0; width: 2740px; height: 600px;
+      background: linear-gradient(180deg, rgba(17, 12, 21, .9) 0%, rgba(17, 12, 21, .66) 45%, rgba(17, 12, 21, .74) 100%); }
+    #p02-pool { position: absolute; left: 260px; top: 560px; width: 1300px; height: 560px;
+      background: radial-gradient(50% 50% at 50% 42%, rgba(255, 220, 170, .13) 0%, rgba(255, 220, 170, .05) 55%, rgba(255, 220, 170, 0) 100%); }
+    #p02-base { position: absolute; left: 0; top: 664px; width: 1740px; height: 10px; background: #120d16; opacity: .8; }
+
+    /* ---- les joueurs en chasuble et l'entraîneur (fxStickman du kit) ---- */
+    #p02-team { position: absolute; left: 0; top: 0; width: 1px; height: 1px; opacity: 0; transform-origin: 5370px 470px; }
+    .p02-man { position: absolute; overflow: visible; }
+    .p02-man rect { filter: brightness(var(--p02-bl, 1)); }
+    .p02-shadow { fill: #07050a; opacity: .55; filter: blur(5px); }
+    #p02-coach { position: absolute; left: 0; top: 0; width: 1px; height: 1px; opacity: 0; transform-origin: 4915px 630px; }
+
+    /* ---- la carte de suivi (tracking-card de frame.md, styleframe A1) ---- */
+    #p02-card { position: absolute; left: 4995px; top: 238px; width: 440px; opacity: 0; transform-origin: -80px 105px; }
+    #p02-cardin { position: relative; box-sizing: border-box; width: 440px; padding: 24px 28px 24px; border-radius: 18px; background: #2B232E;
+      border: 1px solid #3a3040; color: #F5EFF3; box-shadow: 0 30px 60px rgba(0, 0, 0, .5), 0 4px 12px rgba(0, 0, 0, .3); }
+    .p02-k { font: 700 14px/18px "Hanken Grotesk", sans-serif; letter-spacing: .08em; text-transform: uppercase; color: #C8BCC5; }
+    .p02-t { margin: 7px 0 18px; font: 700 25px/30px "Hanken Grotesk", sans-serif; white-space: nowrap; }
+    .p02-steps { position: relative; display: flex; align-items: center; }
+    .p02-steps i { position: relative; flex: none; width: 17px; height: 17px; border-radius: 50%; background: #5c5160; }
+    .p02-steps i.on { background: #FFE45C; }
+    .p02-steps u { flex: 1; height: 3px; background: #5c5160; text-decoration: none; }
+    .p02-steps u.on { background: #FFE45C; }
+    #p02-pulse { position: absolute; left: -7px; top: -7px; width: 27px; height: 27px; box-sizing: border-box; border-radius: 50%;
+      border: 2px solid #FFE45C; opacity: 0; }
+    .p02-st { margin-top: 14px; font: 600 19px/24px "Hanken Grotesk", sans-serif; color: #FFE45C; white-space: nowrap; }
+    #p02-refresh { position: absolute; right: 24px; top: 22px; width: 22px; height: 22px; }
+    #p02-flash { position: absolute; left: -1px; top: -1px; right: -1px; bottom: -1px; border-radius: 18px; border: 3px solid #A89BA5; opacity: 0; }
+
+    /* ---- avant-plan : l'épaule floue d'un joueur, coupée par le bord gauche (hors caméra, parallaxe) ---- */
+    #p02-forew { -webkit-mask-image: linear-gradient(180deg, #000 0, #000 770px, transparent 862px);
+      mask-image: linear-gradient(180deg, #000 0, #000 770px, transparent 862px); }
+    #p02-fore { position: absolute; left: 0; top: 0; overflow: visible; opacity: 0; }
+
+    /* ---- sous-titre : gris (encre à 35 %) puis encre ---- */
+    #p02-subs .fx-sw { color: #F5EFF3; }
+  </style>
+
+  <div id="root" data-composition-id="02-chasubles" data-width="1920" data-height="1080" data-duration="4.49">
+
+    <!-- sol d'encre W1 (ground-dark) -->
+    <div id="p02-ground" class="clip fx-layer fx-ink" data-start="0" data-duration="4.49" data-track-index="0"></div>
+
+    <!-- le monde W1 sous la caméra : #stage > #drift > #cam > #world -->
+    <div id="p02-scene" class="clip fx-layer" data-start="0" data-duration="4.49" data-track-index="1" data-layout-allow-overflow>
+      <div class="fx-stage" id="p02-stage"><div class="fx-drift" id="p02-drift"><div class="fx-cam" id="p02-cam"><div class="fx-world" id="p02-world">
+
+        <!-- S2 : papier du calendrier (sous le fil) -->
+        <div id="p02-calP" class="p02-calw"></div>
+
+        <!-- S3 : la salle (fond) -->
+        <div id="p02-room">
+          <div id="p02-wall"></div>
+          <div class="p02-spot" style="left: 760px; top: 170px; width: 170px; height: 170px"></div>
+          <div class="p02-spot" style="left: 1190px; top: 140px; width: 136px; height: 136px"></div>
+          <div id="p02-floorw"><div id="p02-floor"><i id="p02-court"></i><i id="p02-floordk"></i></div></div>
+          <div id="p02-base"></div>
+          <div id="p02-pool"></div>
+        </div>
+
+        <!-- S3 : les quatre joueurs en chasuble grise (le rang du fond d'abord) -->
+        <div id="p02-team">
+          <svg class="p02-man" id="p02-m2" width="1" height="1"><ellipse class="p02-shadow"/><g class="p02-body"></g></svg>
+          <svg class="p02-man" id="p02-m3" width="1" height="1"><ellipse class="p02-shadow"/><g class="p02-body"></g></svg>
+          <svg class="p02-man" id="p02-m1" width="1" height="1"><ellipse class="p02-shadow"/><g class="p02-body"></g></svg>
+          <svg class="p02-man" id="p02-m4" width="1" height="1"><ellipse class="p02-shadow"/><g class="p02-body"></g></svg>
+        </div>
+
+        <!-- S3 : l'entraîneur, téléphone en main -->
+        <div id="p02-coach">
+          <svg class="p02-man" id="p02-m0" width="1" height="1"><ellipse class="p02-shadow"/><g class="p02-body"></g>
+            <g id="p02-phone"><rect x="-17" y="-30" width="34" height="60" rx="7" fill="#15111a" stroke="#F5EFF3" stroke-opacity=".7" stroke-width="2.5"/>
+              <rect x="-12" y="-23" width="24" height="44" rx="3" fill="#CFC6D6" opacity=".9"/></g>
+          </svg>
+        </div>
+
+        <!-- LE fil rouge (threadPath('W1')) et son nœud (fxKnotD) -->
+        <svg class="fx-thread" id="p02-thread" width="16000" height="1080">
+          <defs>
+            <mask id="p02-tmask" maskUnits="userSpaceOnUse" x="0" y="-200" width="16000" height="1480">
+              <rect x="0" y="-200" width="16000" height="1480" fill="#fff"/>
+              <g id="p02-mholeg"><rect id="p02-mhole" x="-117" y="-26" width="234" height="62" fill="#000" opacity="0"/></g>
+            </mask>
+          </defs>
+          <path id="p02-thread-path" fill="none" stroke="#D62839" stroke-width="5" stroke-linecap="round" mask="url(#p02-tmask)"/>
+          <g id="p02-knotg" opacity="0"><path id="p02-knot" fill="none" stroke="#D62839" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></g>
+        </svg>
+
+        <!-- S2 : encre du calendrier (au-dessus du fil) -->
+        <div id="p02-calI" class="p02-calw"></div>
+
+        <!-- S3 : la carte de suivi qui sort du téléphone -->
+        <div id="p02-card"><div id="p02-cardin">
+          <div class="p02-k">Suivi de commande</div>
+          <svg id="p02-refresh" viewBox="0 0 22 22" fill="none" stroke="#C8BCC5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18.2 8 A7.6 7.6 0 1 0 18.6 13"/><path d="M18.6 3.4 L18.4 8.2 L13.7 8"/></svg>
+          <div id="p02-cbody">
+            <div class="p02-t">Maillots · Basket Club Eschau</div>
+            <div class="p02-steps"><i class="on"></i><u class="on"></u><i class="on"><b id="p02-pulse"></b></i><u></u><i></i><u></u><i></i></div>
+            <div class="p02-st">En cours d'acheminement</div>
+          </div>
+          <i id="p02-flash"></i>
+        </div></div>
+
+      </div></div></div></div>
+    </div>
+
+    <!-- avant-plan : l'épaule d'un joueur tout près de l'objectif (scène 1) -->
+    <div id="p02-forew" class="clip fx-layer" data-start="0" data-duration="4.49" data-track-index="2" data-layout-allow-overflow>
+      <svg id="p02-fore" width="1" height="1"><g id="p02-foreg"></g></svg>
+    </div>
+
+    <!-- grain 5 % -->
+    <div id="p02-grain" class="clip fx-layer fx-grain" data-start="0" data-duration="4.49" data-track-index="3"></div>
+
+    <!-- la phrase de la voix, bas centre, mot par mot (temps locaux) -->
+    <div id="p02-subs" class="clip fx-layer" data-start="0" data-duration="4.49" data-track-index="4" data-layout-allow-overflow>
+      <div id="p02-s1" class="fx-sub dark"></div>
+    </div>
+  </div>
+
+  <script src="assets/vendor/gsap-3.14.2.min.js"></script>
+  <script>
+    (function () {
+      var FID = "02-chasubles";
+      var root = document.querySelector('[data-composition-id="' + FID + '"]');
+      function $(id) { return root.querySelector("#p02-" + id); }
+
+/* ===================== FIL IFS : début du kit JS à copier ===================== */
+const FX = {
+  W: 1920, H: 1080, THREAD: "#D62839", FADED: "#E8823A", ACCENT: "#B3125F", INK: "#1A1320",
+  /* ancres du fil par monde (coordonnées monde) : la courbe passe par chacune, dans cet ordre */
+  ANCHORS: {
+    W1: [[560,250],[820,470],[1150,690],[1500,600],[1950,560],[2400,640],[2700,478],[2950,463],[3112,452],[3107,600],[3116,688],[3160,716],[3184,682],[3150,650],[3112,676],[3140,724],[3280,736],[3700,700],[4500,660],[5100,700],[6000,650],[7000,620],[7800,560],[9000,640],[9920,380]],
+    W2: [[-200,560],[700,640],[1800,620],[3200,700],[4600,640],[5400,520],[6500,660],[7600,700],[8800,640],[9800,470],[10600,600],[12000,520],[13200,660],[14200,560]]
+  },
+  /* cadrages de référence (frame.md) */
+  FRAMING: {
+    S1:[960,500,1.0], S2:[3000,500,1.05], S3:[5400,520,0.95], S4:[7800,480,1.1], S5:[10000,470,1.25],
+    S6:[960,480,1.0], S7:[3200,470,0.95], S8:[5400,470,1.05], S9:[7600,470,1.0], S10:[9800,470,1.4], S11:[12000,470,1.2], S12:[14200,470,1.0]
+  }
+};
+/* caméra : amène (x, y) du monde au centre du cadre à l'échelle s ; blur en px sur #cam */
+function fxCam(world, cam, x, y, s, blur) {
+  world.style.transform = `translate(${960 - x}px, ${540 - y}px)`;
+  world.style.transformOrigin = `${x}px ${y}px`;
+  cam.style.transform = `scale(${s})`;
+  cam.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : "none";
+}
+/* Catmull-Rom → Bézier : chemin SVG lisse passant par toutes les ancres */
+function fxThreadD(name) {
+  const p = FX.ANCHORS[name]; let d = `M${p[0][0]} ${p[0][1]}`;
+  for (let i = 0; i < p.length - 1; i++) {
+    const a = p[Math.max(0, i - 1)], b = p[i], c = p[i + 1], e = p[Math.min(p.length - 1, i + 2)];
+    const c1 = [b[0] + (c[0] - a[0]) / 6, b[1] + (c[1] - a[1]) / 6], c2 = [c[0] - (e[0] - b[0]) / 6, c[1] - (e[1] - b[1]) / 6];
+    d += ` C${c1[0].toFixed(1)} ${c1[1].toFixed(1)} ${c2[0].toFixed(1)} ${c2[1].toFixed(1)} ${c[0]} ${c[1]}`;
+  }
+  return d;
+}
+/* nœud (douleur, S3) : trois boucles serrées autour de (cx, cy), tension 0 → 1 les resserre */
+function fxKnotD(cx, cy, tension) {
+  const r = 46 - 26 * tension; let d = `M${cx - 120} ${cy}`;
+  for (let k = 0; k < 3; k++) { const o = (k - 1) * r * 0.55;
+    d += ` C${cx - 40 + o} ${cy - r * 1.6} ${cx + 40 + o} ${cy - r * 1.6} ${cx + o} ${cy}` +
+         ` C${cx - 40 + o} ${cy + r * 1.6} ${cx + 40 + o} ${cy + r * 1.6} ${cx + 20 + o} ${cy}`; }
+  return d + ` L${cx + 120} ${cy + 10}`;
+}
+/* dessine le fil : progress 0 → 1 de sa longueur (signature « le fil trace ») ; color THREAD ou FADED */
+function fxDrawThread(pathEl, progress, color) {
+  const L = pathEl.getTotalLength();
+  pathEl.style.strokeDasharray = `${L} ${L}`;
+  pathEl.style.strokeDashoffset = `${L * (1 - Math.max(0, Math.min(1, progress)))}`;
+  if (color) pathEl.setAttribute("stroke", color);
+  return pathEl.getPointAtLength(L * progress);       // la tête du fil (pour la caméra ou l'aiguille)
+}
+/* aiguille du logo IFS (len px), pointe vers la droite ; renvoie du SVG à placer dans un <svg> ;
+   uid = préfixe de la séquence (« p04 »), pour que l'id du dégradé soit unique dans la page assemblée */
+function fxNeedle(len, uid = "fx") {
+  const w = len * 0.045;
+  return `<defs><linearGradient id="${uid}NeedleG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8A93A1"/><stop offset=".5" stop-color="#3C4452"/><stop offset="1" stop-color="#4A5260"/></linearGradient></defs>
+    <path d="M0 0 C ${len * .25} ${-w} ${len * .75} ${-w * .6} ${len} 0 C ${len * .75} ${w * .6} ${len * .25} ${w} 0 0 Z" fill="url(#${uid}NeedleG)"/>
+    <ellipse cx="${len * .08}" cy="0" rx="${len * .045}" ry="${w * .32}" fill="#110C15"/>`;
+}
+/* stickman (frame.md) : renvoie le SVG d'une pose, en coordonnées locales (tête en (0, -270), bassin en (0, 0)) */
+const FX_POSES = {
+  echauffement: { arms: [[[-30,-200],[-70,-130],[-60,-60]], [[30,-200],[80,-140],[110,-80]]], legs: [[[-20,0],[-40,90],[-45,180]], [[20,0],[50,90],[60,180]]], lean: 0 },
+  attente:      { arms: [[[-30,-200],[-50,-120],[-45,-50]], [[30,-200],[50,-120],[45,-50]]], legs: [[[-20,0],[-25,90],[-30,180]], [[20,0],[25,90],[30,180]]], lean: 0 },
+  telephone:    { arms: [[[-30,-200],[-50,-120],[-45,-50]], [[30,-200],[40,-140],[0,-170]]], legs: [[[-20,0],[-25,90],[-30,180]], [[20,0],[25,90],[30,180]]], lean: -4 },
+  smash:        { arms: [[[-62,-226],[-120,-156],[-165,-98]], [[66,-252],[150,-315],[248,-383]]], legs: [[[17,-5],[-68,-5],[-110,57]], [[86,-17],[22,77],[-88,117]]], lean: -10 }
+};
+function fxStickman(pose, opts = {}) {
+  const P = FX_POSES[pose], line = pts => "M" + pts.map(p => p.join(" ")).join(" L");
+  const limbs = [...P.arms, ...P.legs].map(line).join(" ") + ` M${P.arms[0][0].join(" ")} L0 -215 L${P.arms[1][0].join(" ")} M${P.legs[0][0].join(" ")} L0 0 L${P.legs[1][0].join(" ")}`;
+  const bib = opts.bib ? `<rect x="-62" y="-215" width="124" height="200" rx="10" fill="#6d6670" transform="rotate(${P.lean})"/>` : "";
+  return `<g stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="${limbs}" stroke="#fff" stroke-opacity=".55" stroke-width="30" style="filter:blur(2.2px)"/>
+      <path d="${limbs}" stroke="#0d0a10" stroke-width="22"/>
+      <path d="M0 -215 L0 0" stroke="#0d0a10" stroke-width="22" transform="rotate(${P.lean})"/></g>
+    ${bib}<circle cx="${-12 + P.lean}" cy="-272" r="62" fill="#0d0a10" stroke="#fff" stroke-opacity=".75" stroke-width="4"/>`;
+}
+/* sous-titre mot par mot : words = [["Juin", 0.03, "box"], [",", ...]] ; renvoie les spans pour GSAP */
+function fxSubtitle(el, words) {
+  el.innerHTML = words.map(([w, , mark]) =>
+    `<span class="fx-sw">${w}${mark === "box" ? '<i class="fx-box"></i>' : ""}${mark === "stroke" ? '<i class="fx-stroke"></i>' : ""}</span>`).join(" ");
+  return [...el.querySelectorAll(".fx-sw")];
+}
+/* ===================== FIL IFS : fin du kit JS à copier ===================== */
+
+      var DUR = 4.49;
+
+      /* ===================== le monde W1 ===================== */
+      var world = $("world"), cam = $("cam"), thread = $("thread-path");
+      thread.setAttribute("d", fxThreadD("W1"));
+      var TL = thread.getTotalLength();
+      // fraction de longueur où le fil passe par un point (mesurée sur le chemin, jamais devinée)
+      function fracAt(px, py) {
+        var n = 2400, best = 0, bd = 1e12, i, q, d;
+        for (i = 0; i <= n; i++) { q = thread.getPointAtLength(TL * i / n); d = (q.x - px) * (q.x - px) + (q.y - py) * (q.y - py); if (d < bd) { bd = d; best = i; } }
+        var lo = Math.max(0, best - 1) / n, hi = Math.min(n, best + 1) / n, f = best / n;
+        for (i = 0; i <= 80; i++) { var g = lo + (hi - lo) * i / 80; q = thread.getPointAtLength(TL * g); d = (q.x - px) * (q.x - px) + (q.y - py) * (q.y - py); if (d < bd) { bd = d; f = g; } }
+        return f;
+      }
+      // fraction où le fil passe à l'abscisse x (après le dernier retour en arrière du calendrier)
+      function fracAtX(x) {
+        var lo = fracAt(3700, 700), hi = 1, i, m;
+        for (i = 0; i < 40; i++) { m = (lo + hi) / 2; if (thread.getPointAtLength(TL * m).x < x) lo = m; else hi = m; }
+        return (lo + hi) / 2;
+      }
+      function ptAtX(x) { return thread.getPointAtLength(TL * fracAtX(x)); }
+      var P_IN = fracAt(4500, 660);     // handoff_in : fil tracé jusqu'à (4500, 660)
+      var P_CROSS = fracAtX(6560);      // 1.38 : il traverse le parquet et sort du cadre à droite
+      var P_OUT = fracAt(7000, 620);    // handoff_out : fil tracé jusqu'à (7000, 620)
+
+      /* ---- S2 : le calendrier SEPTEMBRE, à sa place et dans son état de fin de séquence 1 ---- */
+      var PADL = 44, PITCH = 88.29, ROW0 = 202, ROWP = 62, DAYS = ["L", "M", "M", "J", "V", "S", "D"];
+      function colX(c) { return PADL + c * PITCH; }
+      function calHTML(month, firstCol, ndays, part) {
+        var h = "", d, k, r, c;
+        if (part !== "ink") {
+          h += '<div class="p02-page"></div>';
+          [140, 280, 420, 560].forEach(function (x) { h += '<i class="p02-hole" style="left:' + (x - 9) + 'px"></i><i class="p02-ring" style="left:' + (x - 8) + 'px"></i>'; });
+          for (d = 1; d <= ndays; d++) { k = firstCol + d - 1; r = Math.floor(k / 7); c = k % 7;
+            h += '<i class="p02-cell" style="left:' + colX(c).toFixed(2) + 'px;top:' + (ROW0 + r * ROWP) + 'px"></i>'; }
+        }
+        if (part !== "paper") {
+          h += '<div class="p02-ctitle">' + month.split("").map(function (ch) { return '<span class="p02-tl">' + ch + '</span>'; }).join("") +
+            '<span class="p02-tl p02-yr">2026</span></div>';
+          DAYS.forEach(function (L, c2) { h += '<div class="p02-hd" style="left:' + colX(c2).toFixed(2) + 'px">' + L + '</div>'; });
+          for (d = 1; d <= ndays; d++) { k = firstCol + d - 1; r = Math.floor(k / 7); c = k % 7;
+            h += '<div class="p02-num" style="left:' + (colX(c) + 6).toFixed(2) + 'px;top:' + (ROW0 + r * ROWP + 8) + 'px">' + d + '</div>'; }
+        }
+        return h;
+      }
+      var calP = $("calP"), calI = $("calI");
+      calP.innerHTML = calHTML("SEPTEMBRE", 1, 30, "paper");
+      calI.innerHTML = calHTML("SEPTEMBRE", 1, 30, "ink") +
+        '<svg class="p02-calsvg" width="700" height="540" viewBox="0 0 700 540"><path id="p02-ring5"/></svg>' +
+        '<div id="p02-match">1<sup>er</sup> match</div>';
+      var FIVE = [colX(5) + 6 + 20, ROW0 + 8 + 17], CAL_R = -3.5, ra = CAL_R * Math.PI / 180;
+      var ox5 = FIVE[0] - 350, oy5 = FIVE[1] - 270;
+      var CAL_CX = 3150 - (ox5 * Math.cos(ra) - oy5 * Math.sin(ra)), CAL_CY = 420 - (ox5 * Math.sin(ra) + oy5 * Math.cos(ra));
+      [calP, calI].forEach(function (el) { el.style.left = (CAL_CX - 350).toFixed(2) + "px"; el.style.top = (CAL_CY - 270).toFixed(2) + "px"; });
+      (function () {
+        var pts = [], n = 90, i, a, w, x, y, tilt = -0.14;
+        for (i = 0; i <= n; i++) {
+          a = -1.25 - i / n * 1.12 * 2 * Math.PI;
+          w = 1 + 0.035 * Math.sin(i / n * 6.3) + 0.07 * (i / n);
+          x = Math.cos(a) * 35 * w; y = Math.sin(a) * 28 * w;
+          pts.push((FIVE[0] + x * Math.cos(tilt) - y * Math.sin(tilt)).toFixed(1) + " " + (FIVE[1] + 1 + x * Math.sin(tilt) + y * Math.cos(tilt)).toFixed(1));
+        }
+        $("ring5").setAttribute("d", "M" + pts.join(" L"));
+      })();
+      fxDrawThread($("ring5"), 1);
+
+      /* ---- S3 : poses (FX_POSES du kit + deux variantes : téléphone à l'oreille, mains sur les hanches) ---- */
+      FX_POSES.p02oreille = { arms: [[[-30,-200],[-50,-120],[-45,-50]], [[30,-200],[84,-236],[46,-292]]], legs: FX_POSES.telephone.legs, lean: -4 };
+      FX_POSES.p02hanches = { arms: [[[-30,-200],[-94,-136],[-60,-64]], [[30,-200],[94,-136],[60,-64]]], legs: FX_POSES.attente.legs, lean: 0 };
+      // variantes d'échauffement (même modèle) : bras en V du saut, bras le long du corps, étirement latéral, bras croisé
+      FX_POSES.p02haut = { arms: [[[-30,-200],[-82,-268],[-120,-334]], [[30,-200],[82,-268],[120,-334]]], legs: [[[-20,0],[-58,88],[-82,176]], [[20,0],[58,88],[82,176]]], lean: 0 };
+      FX_POSES.p02moulin = { arms: [[[-30,-200],[-48,-126],[-42,-56]], FX_POSES.echauffement.arms[1]], legs: FX_POSES.echauffement.legs, lean: 0 };
+      FX_POSES.p02etire = { arms: [[[-30,-200],[-52,-128],[-48,-58]], [[30,-200],[74,-292],[44,-378]]], legs: [[[-20,0],[-52,90],[-68,180]], [[20,0],[52,90],[68,180]]], lean: 0 };
+      FX_POSES.p02bras = { arms: [[[-30,-200],[-86,-222],[-128,-262]], [[30,-200],[86,-222],[128,-262]]], legs: FX_POSES.echauffement.legs, lean: 0 };
+      function lerp(a, b, t) { return a + (b - a) * t; }
+      function mixPose(A, B, t) {
+        function mp(la, lb) { return la.map(function (limb, i) { return limb.map(function (p, j) { return [lerp(p[0], lb[i][j][0], t), lerp(p[1], lb[i][j][1], t)]; }); }); }
+        return { arms: mp(A.arms, B.arms), legs: mp(A.legs, B.legs), lean: lerp(A.lean, B.lean, t) };
+      }
+      function swingArm(P, k, deg) {      // tourne le bras k autour de l'épaule (moulinet)
+        if (!deg) return P;
+        var a = deg * Math.PI / 180, c = Math.cos(a), s = Math.sin(a), sh = P.arms[k][0];
+        var arms = P.arms.map(function (limb, i) { return i !== k ? limb : limb.map(function (p, j) {
+          if (!j) return p; var dx = p[0] - sh[0], dy = p[1] - sh[1]; return [sh[0] + dx * c - dy * s, sh[1] + dx * s + dy * c]; }); });
+        return { arms: arms, legs: P.legs, lean: P.lean };
+      }
+      function rnd(P) {
+        function r(l) { return l.map(function (limb) { return limb.map(function (p) { return [Math.round(p[0] * 2) / 2, Math.round(p[1] * 2) / 2]; }); }); }
+        return { arms: r(P.arms), legs: r(P.legs), lean: Math.round(P.lean * 10) / 10 };
+      }
+      // un bonhomme : son SVG (fxStickman), ses poings (disques de 34 px, frame.md), son ombre au sol
+      function Man(id, x, feet, sc, flip, bib) {
+        var el = $(id);
+        el.style.left = x + "px"; el.style.top = feet + "px";
+        var body = el.querySelector(".p02-body"), sh = el.querySelector(".p02-shadow");
+        sh.setAttribute("cx", 0); sh.setAttribute("cy", 4); sh.setAttribute("rx", 84 * sc); sh.setAttribute("ry", 13 * sc);
+        return { el: el, body: body, sh: sh, sc: sc, flip: flip ? -1 : 1, bib: bib, key: "" };
+      }
+      function drawMan(m, P, dy, rot) {
+        P = rnd(P);
+        var key = JSON.stringify(P);
+        if (key !== m.key) {
+          m.key = key; FX_POSES.p02cur = P;
+          var fists = [P.arms[0][2], P.arms[1][2]].map(function (h) {
+            return '<circle cx="' + h[0] + '" cy="' + h[1] + '" r="17" fill="#0d0a10" stroke="#fff" stroke-opacity=".6" stroke-width="3"/>'; }).join("");
+          m.body.innerHTML = fists + fxStickman("p02cur", { bib: m.bib });
+        }
+        m.body.setAttribute("transform", "translate(0 " + (-180 * m.sc + dy).toFixed(2) + ") rotate(" + (rot || 0).toFixed(2) + " 0 " + (180 * m.sc).toFixed(1) + ") scale(" + (m.sc * m.flip) + " " + m.sc + ")");
+        return P;
+      }
+      // le groupe en arc : deux joueurs devant (bords), deux au fond (milieu), l'entraîneur à gauche
+      var COACH_X = 4915, FEET_F = 630, FEET_B = 584;
+      var m1 = Man("m1", 5100, FEET_F, 0.78, false, true), m2 = Man("m2", 5285, FEET_B, 0.64, false, true),
+          m3 = Man("m3", 5468, FEET_B, 0.64, true, true), m4 = Man("m4", 5645, FEET_F, 0.78, true, true),
+          m0 = Man("m0", COACH_X, FEET_F, 0.82, false, false);
+      var team = $("team"), coach = $("coach"), phone = $("phone"), room = $("room");
+
+      /* ---- le nœud au pied de l'entraîneur (fxKnotD du kit), posé sur le fil entre A et B ---- */
+      var KX = COACH_X + 22, KA = ptAtX(KX - 100), KB = ptAtX(KX + 100);
+      var KLEN = Math.hypot(KB.x - KA.x, KB.y - KA.y), KSC = KLEN / Math.hypot(240, 10);
+      var KROT = (Math.atan2(KB.y - KA.y, KB.x - KA.x) - Math.atan2(10, 240)) * 180 / Math.PI;
+      var KT = "translate(" + KA.x.toFixed(2) + " " + KA.y.toFixed(2) + ") rotate(" + KROT.toFixed(3) + ") scale(" + KSC.toFixed(4) + ") translate(120 0)";
+      $("knotg").setAttribute("transform", KT);
+      $("mholeg").setAttribute("transform", KT);
+      var knot = $("knot"), knotg = $("knotg"), mhole = $("mhole");
+      function knotD(L, tension) {        // L = 0 : le fil droit ; L = 1 : les boucles de fxKnotD
+        var i = 0, x = 0, r = 46 - 26 * tension, px = 20 + 0.55 * r;
+        function yl(xx) { return (xx + 120) * 10 / 240; }
+        var d = fxKnotD(0, 0, tension).replace(/-?\d+(\.\d+)?/g, function (s) {
+          var v = parseFloat(s), k = i++;
+          if (k % 2 === 0) { x = v; return v.toFixed(2); }
+          if (k === 3) v = yl(x);          // départ tangent au fil (pas d'angle à l'entrée du nœud)
+          return (yl(x) + L * (v - yl(x))).toFixed(2);
+        });
+        // sortie tangente au fil (le dernier trait droit du nœud devient une courbe douce)
+        return d.replace(/ L(-?[\d.]+) (-?[\d.]+)$/, " C" + (px + 35).toFixed(2) + " " + yl(px + 35).toFixed(2) + " 85 " + yl(85).toFixed(2) + " 120 10");
+      }
+
+      /* ---- avant-plan : l'épaule d'un joueur (même modèle, ×2,3, flou 14) ---- */
+      $("foreg").innerHTML = fxStickman("attente", { bib: true });
+      var fore = $("fore");
+
+      /* ---- la carte ---- */
+      var card = $("card"), cbody = $("cbody"), refresh = $("refresh"), pulse = $("pulse"), flash = $("flash");
+
+      /* ---- sous-titre (fxSubtitle du kit) ---- */
+      var WS = [["et", 0.18], ["toujours", 0.57], ["pas", 1.02], ["de", 1.24], ["maillots.", 1.38]];
+      var s1 = $("s1"), sp = fxSubtitle(s1, WS);
+
+      /* ===================== état : proxies lus par UN seul onUpdate ===================== */
+      var C = { x: 4200, y: 560, s: 1.0, b: 12 };                 // caméra (handoff_in : cam(4200, 560, 1.0) flou 12)
+      var T = { p: P_IN };                                          // le fil, tracé jusqu'à (4500, 660)
+      var K = { on: 0, L: 0, t: 0 };                                // le nœud
+      var R = { o: 0, k: 1.1, tb: 8 };                              // la salle qui se pose
+      var D = { b: 0, o: 1 };                                       // profondeur de champ des joueurs (scène 2)
+      var Z = { t: 0 };                                             // horloge des petits mouvements d'échauffement
+      var J1 = { dy: 0 }, J2 = { a: 0 }, J3 = { h: 0 }, BL = { a: 1, b: 1, c: 1, d: 1 };
+      var CO = { o: 0, x: -180, k: 1.15, b: 6, ph: 0, lean: 0, tap: 1 };   // l'entraîneur
+      var F = { o: 0, x: 300, k: 1 };                               // l'épaule d'avant-plan
+      var CD = { o: 0, k: 0.2, sh: 1, c: 1, rf: 0, pr: 0, fl: 0 };  // la carte de suivi
+
+      var ECH = FX_POSES.echauffement;
+      function render() {
+        fxCam(world, cam, C.x, C.y, C.s, C.b);
+        fxDrawThread(thread, T.p, FX.THREAD);
+
+        // le nœud : boucle puis serrage ; sous lui, le tronçon droit du fil est masqué
+        knotg.setAttribute("opacity", K.on > 0.5 ? 1 : 0);
+        mhole.setAttribute("opacity", K.on > 0.5 ? 1 : 0);
+        if (K.on > 0.5) knot.setAttribute("d", knotD(K.L, K.t));
+
+        // la salle se pose (×1,1 → 1)
+        room.style.opacity = R.o;
+        room.style.transform = "scale(" + R.k.toFixed(4) + ")";
+
+        // les joueurs : la salle se pose (×1,1 flou 8 → net), puis la profondeur de champ de la scène 2
+        var tb = Math.max(R.tb, D.b);
+        team.style.opacity = (R.o * D.o).toFixed(3);
+        team.style.transform = "scale(" + R.k.toFixed(4) + ")";
+        team.style.filter = tb > 0.05 ? "blur(" + tb.toFixed(2) + "px)" : "none";
+        var t = Z.t, TAU = Math.PI * 2;
+        // 1 : sauts sur place (bras en V en l'air) ; 2 : moulinet ; 3 : étirement latéral puis mains sur les hanches ; 4 : bras qui s'ouvrent et se ferment
+        var up = Math.min(1, -J1.dy / 30), b1 = J1.dy ? 0 : 1;
+        drawMan(m1, mixPose(ECH, FX_POSES.p02haut, up), J1.dy + 3 * Math.sin(TAU * t / 0.62 + 0.4) * b1, 0);
+        drawMan(m2, swingArm(FX_POSES.p02moulin, 1, J2.a), 3.5 * Math.sin(TAU * t / 0.58 + 2.1), 0);
+        var et = 0.5 + 0.5 * Math.sin(TAU * t / 1.3 - 1.2);
+        drawMan(m3, mixPose(mixPose(FX_POSES.attente, FX_POSES.p02etire, 0.55 + 0.45 * et), FX_POSES.p02hanches, J3.h), 2 * Math.sin(TAU * t / 0.54 + 1.2) * (1 - J3.h), (4 + 4 * et) * (1 - J3.h));
+        drawMan(m4, mixPose(FX_POSES.attente, FX_POSES.p02bras, 0.5 + 0.5 * Math.sin(TAU * t / 0.9 + 0.7)), 3 * Math.sin(TAU * t / 0.66 + 4.0), 0);
+        [m1, m2, m3, m4].forEach(function (m, i) { m.el.style.setProperty("--p02-bl", [BL.a, BL.b, BL.c, BL.d][i].toFixed(3)); });
+        m1.sh.setAttribute("rx", (84 * 0.78 * (1 + J1.dy / 120)).toFixed(2));
+
+        // l'entraîneur : entre trop grand et flou, téléphone à l'oreille puis devant lui
+        coach.style.opacity = CO.o;
+        coach.style.transform = "translate(" + CO.x.toFixed(2) + "px,0) scale(" + CO.k.toFixed(4) + ")";
+        coach.style.filter = CO.b > 0.05 ? "blur(" + CO.b.toFixed(2) + "px)" : "none";
+        var PC = mixPose(FX_POSES.p02oreille, FX_POSES.telephone, CO.ph);
+        PC.lean += CO.lean;
+        PC = drawMan(m0, PC, 0, 0);
+        var hand = PC.arms[1][2], sc0 = m0.sc;
+        phone.setAttribute("transform", "translate(" + (hand[0] * sc0).toFixed(2) + " " + ((hand[1] - 180) * sc0 - 6).toFixed(2) + ") rotate(" + lerp(-16, -8, CO.ph).toFixed(2) + ") scale(" + (sc0 * 0.9 * CO.tap).toFixed(4) + ")");
+
+        // la carte de suivi : sort du téléphone, tremble à chaque rafraîchissement, liseré gris à l'erreur
+        var shx = 6 * Math.sin(CD.sh * Math.PI * 4) * (1 - CD.sh);
+        card.style.opacity = CD.o;
+        card.style.transform = "translate(" + shx.toFixed(2) + "px,0) rotate(1.5deg) scale(" + CD.k.toFixed(4) + ")";
+        cbody.style.opacity = CD.c;
+        refresh.style.transform = "rotate(" + (CD.rf * 360).toFixed(1) + "deg)";
+        pulse.style.opacity = (Math.sin(CD.pr * Math.PI) * 0.85).toFixed(3);
+        pulse.style.transform = "scale(" + (1 + 0.9 * CD.pr).toFixed(3) + ")";
+        flash.style.opacity = CD.fl;
+
+        // avant-plan : l'épaule floue, coupée par le bord gauche (parallaxe ×2,5 pendant la dérive)
+        fore.style.opacity = F.o;
+        fore.style.transform = "translate(" + (70 + F.x).toFixed(2) + "px,1250px) scale(" + (2.6 * F.k).toFixed(4) + ")";
+        fore.style.filter = "blur(" + (14 + C.b * 0.9).toFixed(2) + "px)";
+      }
+
+      /* ===================== la timeline unique, en pause ===================== */
+      var tl = gsap.timeline({ paused: true, onUpdate: render });
+      function ft(target, from, to, pos) { if (pos > 0) to.immediateRender = false; tl.fromTo(target, from, to, pos); }
+      function tw(target, from, to, dur, ease, pos) { var o = {}, k; for (k in to) o[k] = to[k]; o.duration = dur; o.ease = ease; ft(target, from, o, pos); }
+
+      tw(Z, { t: 0 }, { t: DUR }, DUR, "none", 0);
+
+      /* ---- piste caméra ---- */
+      // 0.00 à 0.30 : fin du whip, à +6000 u/s au départ (même vitesse que la fin de la séquence 1), freinage jusqu'au cadrage S3
+      var S3 = { x: 5300, y: 520, s: 0.95 };
+      var kin = 6000 * 0.30 / (S3.x - 4200), ia = kin - 2, ib = 3 - 2 * kin;
+      var WHIP_IN = function (p) { return ia * p * p * p + ib * p * p + kin * p; };
+      tw(C, { x: 4200, y: 560, s: 1.0 }, S3, 0.30, WHIP_IN, 0);
+      tw(C, { b: 12 }, { b: 0 }, 0.30, function (p) { return 1 - Math.pow(1 - p, 1.5); }, 0);
+      // 0.30 à 1.84 : dérive x +18 u/s, échelle +1 %/s
+      var S1D = { x: S3.x + 18 * 1.54, s: S3.s * (1 + 0.01 * 1.54) };
+      tw(C, { x: S3.x, s: S3.s }, S1D, 1.54, "none", 0.30);
+      // 1.84 à 2.30 : poussée vers l'entraîneur (expo.out)
+      var PU = { x: 5150, y: 490, s: 1.25 };
+      tw(C, { x: S1D.x, y: S3.y, s: S1D.s }, PU, 0.46, "expo.out", 1.84);
+      // 2.30 à 4.34 : dérive échelle +2 %/s
+      var S2E = PU.s * (1 + 0.02 * 2.04);
+      tw(C, { s: PU.s }, { s: S2E }, 2.04, "none", 2.30);
+      // 4.34 à 4.49 : whip vers cam(7000, 560, 1.0), flou 0 → 12, sortie à +6000 u/s en x
+      var SEAM = { x: 7000, y: 560, s: 1.0 }, kq = 6000 * 0.15 / (SEAM.x - PU.x), qa = kq - 2, qb = 3 - kq;
+      var WHIP_OUT = function (p) { return qa * p * p * p + qb * p * p; };
+      tw(C, { x: PU.x, y: PU.y, s: S2E }, SEAM, 0.15, WHIP_OUT, 4.34);
+      tw(C, { b: 0 }, { b: 12 }, 0.15, "power2.in", 4.34);
+
+      /* ---- scène 1 : la salle, toujours pas de maillots ---- */
+      // 0.14 la salle S3 se pose (×1,1 flou 8 → net, 0,12 s)
+      tw(R, { o: 0 }, { o: 1 }, 0.08, "power2.out", 0.14);
+      tw(R, { k: 1.1, tb: 8 }, { k: 1, tb: 0 }, 0.12, "expo.out", 0.14);
+      // l'épaule d'avant-plan arrive avec la caméra (plus vite que le monde), puis dérive
+      tw(F, { o: 0 }, { o: 1 }, 0.16, "power2.out", 0.14);
+      tw(F, { x: 300 }, { x: 0 }, 0.26, "expo.out", 0.14);
+      tw(F, { x: 0 }, { x: -62 }, 1.44, "none", 0.40);
+      // 0.30 le premier joueur saute sur place (y -30 → 0, 0,2 s)
+      tw(J1, { dy: 0 }, { dy: -30 }, 0.08, "power2.out", 0.30);
+      tw(J1, { dy: -30 }, { dy: 0 }, 0.12, "power2.in", 0.38);
+      // 0.50 le deuxième fait un moulinet de bras
+      tw(J2, { a: 0 }, { a: -360 }, 0.50, "power2.inOut", 0.50);
+      // 0.57 « toujours » : l'entraîneur entre par la gauche, trop grand et flou (×1,15 flou 6 → net, 0,14 s expo.out)
+      tw(CO, { o: 0 }, { o: 1 }, 0.05, "power2.out", 0.55);
+      tw(CO, { x: -180, k: 1.15, b: 6 }, { x: 0, k: 1, b: 0 }, 0.14, "expo.out", 0.55);
+      // 0.98 le téléphone passe de l'oreille à devant lui
+      tw(CO, { ph: 0 }, { ph: 1 }, 0.24, "power2.inOut", 0.98);
+      // 1.02 « pas » : les quatre chasubles grises s'éclairent une à une (+15 %, 0,04 s d'écart)
+      ["a", "b", "c", "d"].forEach(function (k, i) { var f = {}, t2 = {}; f[k] = 1; t2[k] = 1.15; tw(BL, f, t2, 0.12, "power2.out", 1.01 + i * 0.04); });
+      // 1.38 « maillots » : le fil traverse le parquet devant eux, seul objet rouge du plan
+      tw(T, { p: P_IN }, { p: P_CROSS }, 0.45, "power3.out", 1.36);
+
+      /* ---- scène 2 : le gag muet ---- */
+      // 1.84 la poussée : l'épaule d'avant-plan sort à gauche, les joueurs passent au flou (4 px)
+      tw(F, { x: -62, k: 1 }, { x: -760, k: 1.25 }, 0.46, "expo.out", 1.84);
+      tw(D, { b: 0, o: 1 }, { b: 4, o: 0.8 }, 0.46, "power2.inOut", 1.84);
+      // 2.10 la carte de suivi sort du téléphone et grandit à côté de lui (×0,2 → 1, 0,18 s expo.out)
+      tw(CD, { o: 0 }, { o: 1 }, 0.05, "power2.out", 2.08);
+      tw(CD, { k: 0.2 }, { k: 1 }, 0.18, "expo.out", 2.08);
+      tw(CO, { lean: 0 }, { lean: -3 }, 0.30, "power2.out", 2.10);
+      // 2.60 et 3.10 il rafraîchit : le pouce tape (×0,9, 0,06 s), la carte tremble (x ±6 px, 0,12 s), le contenu recharge,
+      [2.60, 3.10].forEach(function (t0, i) {
+        tw(CO, { tap: 1 }, { tap: 0.9 }, 0.06, "power2.out", t0);
+        tw(CO, { tap: 0.9 }, { tap: 1 }, 0.08, "power2.out", t0 + 0.06);
+        tw(CD, { sh: 0 }, { sh: 1 }, 0.12, "none", t0);
+        tw(CD, { rf: i }, { rf: i + 1 }, 0.40, "power2.out", t0);
+        tw(CD, { c: 1 }, { c: 0.35 }, 0.06, "power2.out", t0 + 0.02);
+        // et revient pareil : 2 étapes sur 4 (2.80 et 3.30)
+        tw(CD, { c: 0.35 }, { c: 1 }, 0.12, "power2.out", t0 + 0.20);
+        tw(CD, { pr: 0 }, { pr: 1 }, 0.36, "power2.out", t0 + 0.20);
+      });
+      // 3.40 un joueur du fond s'arrête, mains sur les hanches
+      tw(J3, { h: 0 }, { h: 1 }, 0.24, "power2.out", 3.40);
+      // 3.60 le fil fait une boucle au pied de l'entraîneur
+      tw(K, { on: 0 }, { on: 1 }, 0.01, "none", 3.60);
+      tw(K, { L: 0 }, { L: 1 }, 0.28, "power3.out", 3.60);
+      // 3.84 erreur : la carte flashe d'un liseré gris (0,1 s)
+      tw(CD, { fl: 0 }, { fl: 1 }, 0.03, "power2.out", 3.84);
+      tw(CD, { fl: 1 }, { fl: 0 }, 0.07, "power2.in", 3.87);
+      // 3.90 à 4.30 le fil se noue (fxKnotD, tension 0 → 1, power2.in)
+      tw(K, { t: 0 }, { t: 1 }, 0.40, "power2.in", 3.90);
+      // 4.34 pendant le whip, la tête du fil file jusqu'à (7000, 620)
+      tw(T, { p: P_CROSS }, { p: P_OUT }, 0.15, "none", 4.34);
+
+      /* ---- la phrase de la voix : mot par mot, gris puis encre ---- */
+      sp.forEach(function (w, i) {
+        var st = Math.max(0, WS[i][1] - 1 / 30);
+        ft(w, { y: 8, filter: "blur(6px)" }, { y: 0, filter: "blur(0px)", duration: 0.14, ease: "power2.out" }, st);
+        ft(w, { opacity: 0 }, { opacity: 0.35, duration: 0.08, ease: "power2.out" }, st);
+        ft(w, { opacity: 0.35 }, { opacity: 1, duration: 0.20, ease: "power1.out" }, st + 0.10);
+      });
+      // 1.70 à 1.84 la phrase sort (opacité 1 → 0, flou 0 → 6 px)
+      ft(s1, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 1.70);
+
+      // durée exacte de la séquence
+      tl.set({}, {}, DUR);
+
+      // première image = handoff_in, avant tout seek
+      render();
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[FID] = tl;
+    })();
+  </script>
+</template>

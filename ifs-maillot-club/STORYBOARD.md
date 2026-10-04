@@ -386,7 +386,7 @@ Scene 2 (2.60 à 4.75 s) : P28, le rouge est resté rouge, le joueur suspendu au
 - scene: Au bout du tilt, le sol d'encre de la fin ; le fil traverse le cadre et rentre dans le chas de l'aiguille de l'icône IFS, qui se pose ; le wordmark s'assemble ; la promesse s'écrit en sous-titre
 - duration: 4.55s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/10-ifs.html
 - voiceover: "IFS. Une qualité irréprochable, livrée en moins d'un mois."
 - type: cta

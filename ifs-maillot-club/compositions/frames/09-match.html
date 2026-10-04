@@ -1,0 +1,578 @@
+<template>
+  <style>
+  /* ===================== FIL IFS : début du bloc CSS à copier ===================== */
+  @font-face { font-family: "Archivo"; font-weight: 700 900; font-stretch: 75% 100%; src: url("assets/fonts/archivo-latin.woff2") format("woff2"); }
+  @font-face { font-family: "Hanken Grotesk"; font-weight: 400 700; src: url("assets/fonts/hanken-grotesk-latin.woff2") format("woff2"); }
+  @font-face { font-family: "Pacifico"; src: url("assets/fonts/studio-pacifico.woff2") format("woff2"); }
+  .fx-layer { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+  /* sols : encre (douleur, match, fin), papier (atelier), noir (pivot) */
+  .fx-ink { background: repeating-linear-gradient(115deg, rgba(255,255,255,.028) 0 2px, transparent 2px 46px),
+    radial-gradient(120% 90% at 50% 40%, #241B2B 0%, #1A1320 55%, #110C15 100%); }
+  .fx-paper { background: repeating-linear-gradient(115deg, rgba(179,18,95,.05) 0 2px, transparent 2px 46px),
+    linear-gradient(180deg, #FFFFFF 0%, #F7F3F6 100%); }
+  .fx-black { background: #110C15; }
+  .fx-grain { pointer-events: none; opacity: .05; mix-blend-mode: screen;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='240' height='240' filter='url(%23g)'/></svg>"); }
+  .fx-grain.paper { opacity: .03; mix-blend-mode: multiply; }
+  /* kit caméra : #stage > #drift > #cam > #world (le monde fait la taille de ses stations) */
+  .fx-stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; }
+  .fx-drift, .fx-cam { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+  .fx-world { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+  .fx-st { position: absolute; }                       /* une station : placée par son centre en coordonnées monde */
+  .fx-thread { position: absolute; left: 0; top: 0; overflow: visible; }
+  /* sous-titre : la phrase de la voix, bas centre (bande y 890 à 980), mot par mot */
+  .fx-sub { position: absolute; left: 0; top: 896px; width: 1920px; text-align: center; font: 600 62px/74px "Hanken Grotesk", sans-serif;
+    letter-spacing: -0.015em; color: #1A1320; white-space: nowrap; text-shadow: 0 2px 14px rgba(255,255,255,.8); }
+  .fx-sub.dark { color: #F5EFF3; text-shadow: 0 2px 16px rgba(0,0,0,.6); }
+  .fx-sw { display: inline-block; opacity: 0; position: relative; }
+  .fx-box { position: absolute; left: -.14em; right: -.14em; top: .06em; bottom: .02em; background: #B3125F; border-radius: 3px;
+    transform: scaleX(0); transform-origin: 0 50%; z-index: -1; }
+  .fx-stroke { position: absolute; left: -2%; right: -4%; bottom: -8px; height: 7px; border-radius: 50%; transform: scaleX(0) rotate(-1.2deg);
+    transform-origin: 0 50%; background: linear-gradient(90deg, transparent, #B3125F 12%, #B3125F 70%, transparent); }
+  .fx-sub.dark .fx-stroke { background: linear-gradient(90deg, transparent, #FF7DBA 12%, #FF7DBA 70%, transparent); }
+  .fx-type { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; display: grid; place-items: center;
+    font: 800 84px/1.08 "Archivo"; font-stretch: 85%; letter-spacing: -.01em; color: #F5EFF3; }
+  /* curseur */
+  .fx-cursor { position: absolute; left: 0; top: 0; width: 46px; height: 58px; filter: drop-shadow(0 4px 6px rgba(0,0,0,.35)); }
+  .fx-ripple { position: absolute; width: 120px; height: 120px; margin: -60px 0 0 -60px; border: 4px solid rgba(179,18,95,.55); border-radius: 50%; opacity: 0; }
+  /* ===================== FIL IFS : fin du bloc CSS à copier ===================== */
+
+    /* ===================== séquence 09-match (préfixe p09) ===================== */
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: "Hanken Grotesk", sans-serif;
+      -webkit-font-smoothing: antialiased; }
+    /* salle de nuit (ground-gym, styleframe A3) */
+    #p09-ground { background: radial-gradient(90% 70% at 60% 20%, #3a2f45 0%, #1A1320 60%, #0f0b12 100%); }
+    #p09-far { transform-origin: 960px 540px; }
+    .p09-light { position: absolute; border-radius: 50%; background: radial-gradient(circle, #fff6e6 0, #ffe7b8 30%, transparent 70%);
+      filter: blur(14px); opacity: 0; }
+    /* parquet en perspective et ligne de terrain (coordonnées A3, dans le monde) */
+    #p09-a3 { position: absolute; left: 0; top: 0; transform: translate(0px, -495px); }
+    #p09-floor { position: absolute; left: -400px; top: 635px; width: 2720px; height: 700px; transform: perspective(900px) rotateX(58deg);
+      transform-origin: 50% 0; background: repeating-linear-gradient(90deg, #b07a46 0 90px, #a46f3d 90px 180px, #b8834f 180px 270px); }
+    #p09-floor::after { content: ""; position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(15,11,18,.7), rgba(15,11,18,.05) 45%, rgba(15,11,18,.35)); }
+    #p09-line { position: absolute; left: -400px; top: 694px; width: 2720px; height: 6px; background: #f2ede6; opacity: .7; }
+    #p09-svg { position: absolute; left: 0; top: 0; overflow: visible; }
+    #p09-thF, #p09-thB, #p09-strand { opacity: 0; }
+    #p09-streaks { opacity: 0; }
+    #p09-sw { opacity: 0; }
+    #p09-glint { opacity: 0; }
+    /* avant-plan : l'adversaire flou (A3) et le ballon qui retombe */
+    #p09-opp { position: absolute; left: -150px; top: 150px; width: 420px; height: 760px; filter: blur(16px); opacity: .5; overflow: visible; }
+    #p09-fball { position: absolute; left: 1700px; top: 0; width: 300px; height: 300px; border-radius: 50%; opacity: 0;
+      background: radial-gradient(circle at 35% 30%, #f39a5a 0, #d9621f 55%, #8f370c 100%); filter: blur(14px); }
+    /* sous-titre : gris (encre à 35 %) puis encre ; mot clé dans la boîte accent */
+    #p09-subs .fx-sw { color: #F5EFF3; isolation: isolate; }
+    #p09-subs .p09-kw { color: #FFFFFF; margin: 0 .14em; text-shadow: none; isolation: isolate; }
+    #p09-subs .fx-stroke { opacity: 0; }
+  </style>
+
+  <div id="root" data-composition-id="09-match" data-width="1920" data-height="1080" data-duration="4.75">
+
+    <!-- sol : le mur de la salle de nuit -->
+    <div id="p09-ground" class="clip fx-layer" data-start="0" data-duration="4.75" data-track-index="0"></div>
+
+    <!-- fond : les projecteurs flous (parallaxe 0,5) -->
+    <div id="p09-farc" class="clip fx-layer" data-start="0" data-duration="4.75" data-track-index="1" data-layout-allow-overflow>
+      <div id="p09-far" class="fx-layer">
+        <div class="p09-light" style="left:150px;top:40px;width:170px;height:170px"></div>
+        <div class="p09-light" style="left:620px;top:-30px;width:130px;height:130px"></div>
+        <div class="p09-light" style="left:980px;top:10px;width:120px;height:120px"></div>
+      </div>
+    </div>
+
+    <!-- le monde W3 sous la caméra : #stage > #drift > #cam > #world -->
+    <div id="p09-scene" class="clip fx-layer" data-start="0" data-duration="4.75" data-track-index="2" data-layout-allow-overflow>
+      <div class="fx-stage" id="p09-stage"><div class="fx-drift" id="p09-drift"><div class="fx-cam" id="p09-cam"><div class="fx-world" id="p09-world">
+        <div id="p09-a3">
+          <div id="p09-floor"></div><div id="p09-line"></div>
+          <svg id="p09-svg" width="2400" height="1400" viewBox="0 0 2400 1400">
+            <defs>
+              <filter id="p09-rim" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2.2"/></filter>
+              <filter id="p09-dof" x="-30%" y="-10%" width="160%" height="120%"><feGaussianBlur id="p09-dofb" stdDeviation="0"/></filter>
+              <linearGradient id="p09-steel" x1="0" x2="1"><stop offset="0" stop-color="#d9d6dc"/><stop offset=".5" stop-color="#f4f2f5"/><stop offset="1" stop-color="#b9b6bd"/></linearGradient>
+              <radialGradient id="p09-ballg" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#f39a5a"/><stop offset=".55" stop-color="#d9621f"/><stop offset="1" stop-color="#8f370c"/></radialGradient>
+              <linearGradient id="p09-glg" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".85"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+            </defs>
+
+            <!-- poteau, bras et planche, vus de trois quarts (A3) -->
+            <g id="p09-back" filter="url(#p09-dof)">
+              <path d="M1745 380 L1880 470 L1880 1300" fill="none" stroke="url(#p09-steel)" stroke-width="34" stroke-linejoin="round"/>
+              <rect x="1590" y="-20" width="160" height="410" fill="#2b2533" stroke="#f4f2f5" stroke-width="12"/>
+              <rect x="1615" y="130" width="64" height="150" fill="none" stroke="#f4f2f5" stroke-width="8"/>
+            </g>
+            <!-- arrière du cercle -->
+            <g id="p09-rimb">
+              <path d="M1362 276 A120 22 0 0 1 1602 276" fill="none" stroke="#a5461a" stroke-width="10"/>
+              <path d="M1600 272 L1640 262 L1640 286" fill="#c4521d" stroke="#a5461a" stroke-width="6"/>
+            </g>
+
+            <!-- LE fil : au sol derrière le joueur, puis le long du poteau jusqu'à la platine -->
+            <path id="p09-thA" fill="none" stroke="#D62839" stroke-width="5" stroke-linecap="round"/>
+
+            <!-- traînées verticales de l'impulsion -->
+            <g id="p09-streaks" stroke="#F5EFF3" stroke-linecap="round" stroke-width="5" opacity="0">
+              <path d="M880 915 L880 985"/><path d="M915 925 L915 1010"/><path d="M950 915 L950 985"/>
+            </g>
+
+            <!-- le joueur n° 15 : bras gauche, jambes, maillot, tête (le balancement pivote autour de la main) -->
+            <g id="p09-body">
+              <g stroke-linecap="round" stroke-linejoin="round" fill="none">
+                <g stroke="#fff" stroke-opacity=".55" stroke-width="30" filter="url(#p09-rim)">
+                  <path id="p09-wAL"/><path id="p09-wLL"/><path id="p09-wLR"/>
+                </g>
+                <g stroke="#0d0a10" stroke-width="22">
+                  <path id="p09-kAL"/><path id="p09-kLL"/><path id="p09-kLR"/>
+                </g>
+              </g>
+              <circle id="p09-fistL" r="17" fill="#0d0a10" stroke="#fff" stroke-opacity=".6" stroke-width="3"/>
+              <g id="p09-torso">
+                <path d="M-14 -16 L-12 4" stroke="#0d0a10" stroke-width="24" stroke-linecap="round"/>
+                <path d="M-82 196 L82 196 L92 300 L12 304 L0 262 L-12 304 L-92 300 Z" fill="#DC2A2F" stroke="#0d0a10" stroke-width="4"/>
+                <path d="M86 210 L94 296" stroke="#15151C" stroke-width="10"/><path d="M78 212 L86 296" stroke="#fff" stroke-width="3"/>
+                <path d="M-86 210 L-94 296" stroke="#15151C" stroke-width="10"/><path d="M-78 212 L-86 296" stroke="#fff" stroke-width="3"/>
+                <path d="M-92 300 L-12 304 M12 304 L92 300" stroke="#15151C" stroke-width="7"/>
+                <path d="M-50 -2 Q0 16 50 -2 L72 2 Q60 52 82 82 L80 216 L-80 216 L-82 82 Q-60 52 -72 2 Z" fill="#DC2A2F" stroke="#0d0a10" stroke-width="4"/>
+                <path d="M-50 -2 Q0 16 50 -2 L72 2 Q66 26 68 40 Q0 52 -68 40 Q-66 26 -72 2 Z" fill="#15151C"/>
+                <path d="M-80 204 L80 204 L80 216 L-80 216 Z" fill="#15151C"/>
+                <g stroke="#15151C" stroke-width="3" opacity=".9"><path d="M-80 110 L-64 124 M-80 132 L-62 148 M-80 154 L-64 168 M80 110 L64 124 M80 132 L62 148 M80 154 L64 168"/></g>
+                <text x="0" y="122" text-anchor="middle" font-family="Archivo" font-weight="900" font-stretch="75%" font-size="74" fill="#15151C" stroke="#a9aeb6" stroke-width="3" paint-order="stroke">15</text>
+                <text x="-4" y="166" text-anchor="middle" font-family="Pacifico" font-size="25" fill="#fff">Contino</text>
+                <text x="30" y="186" text-anchor="middle" font-family="Hanken Grotesk" font-weight="700" font-style="italic" font-size="13" fill="#fff" letter-spacing="1">SPORT</text>
+              </g>
+              <circle id="p09-head" r="62" fill="#0d0a10" stroke="#fff" stroke-opacity=".75" stroke-width="4"/>
+            </g>
+
+            <!-- le ballon -->
+            <g id="p09-ball">
+              <circle r="62" fill="url(#p09-ballg)"/>
+              <g fill="none" stroke="#2a1408" stroke-width="3"><path d="M0 -62 L0 62"/><path d="M-60 6 Q0 20 60 -2"/><path d="M-44 -42 Q-12 0 -34 50"/><path d="M44 -46 Q16 0 38 50"/></g>
+            </g>
+
+            <!-- filet blanc en losanges (script A3, variable tp) ; le brin rouge est le fil -->
+            <g id="p09-net" fill="none" stroke-linecap="round">
+              <path id="p09-netw" stroke="#f4f2f5" stroke-width="3.2"/>
+              <path id="p09-strand" stroke="#D62839" stroke-width="5"/>
+            </g>
+
+            <!-- bras droit et poing, devant le filet -->
+            <g id="p09-armR" stroke-linecap="round" stroke-linejoin="round" fill="none">
+              <path id="p09-wAR" stroke="#fff" stroke-opacity=".55" stroke-width="30" filter="url(#p09-rim)"/>
+              <path id="p09-kAR" stroke="#0d0a10" stroke-width="22"/>
+              <circle id="p09-fistR" r="18" fill="#0d0a10" stroke="#fff" stroke-opacity=".6" stroke-width="3"/>
+            </g>
+
+            <!-- avant du cercle, et le fil qui le longe -->
+            <g id="p09-rimf">
+              <path d="M1362 276 A120 22 0 0 0 1602 276" fill="none" stroke="#E8662B" stroke-width="10"/>
+              <path id="p09-thB" fill="none" stroke="#D62839" stroke-width="5" stroke-linecap="round"/>
+            </g>
+            <!-- le brin détaché qui file vers le haut -->
+            <path id="p09-thF" fill="none" stroke="#D62839" stroke-width="5" stroke-linecap="round"/>
+
+            <!-- le nuancier, posé contre le dos du maillot (suit le balancement) -->
+            <g id="p09-swg">
+              <g id="p09-sw">
+                <rect x="-82.5" y="-117.5" width="165" height="235" rx="7" fill="#FFFFFF"/>
+                <rect x="-68.5" y="-103.5" width="137" height="120" rx="4" fill="#D62839"/>
+                <text x="-68.5" y="47" font-family="Archivo" font-weight="800" font-stretch="85%" font-size="15" fill="#1A1320">Rouge club</text>
+                <text x="-68.5" y="66" font-family="Hanken Grotesk" font-weight="600" font-size="9" fill="#6b6170">BAT validé</text>
+                <path d="M-68.5 84 L68.5 84" stroke="#E9E2E7" stroke-width="1"/>
+              </g>
+              <polygon id="p09-glint" points="0,-60 26,-60 6,60 -20,60" fill="url(#p09-glg)"/>
+            </g>
+          </svg>
+        </div>
+      </div></div></div></div>
+    </div>
+
+    <!-- avant-plan : l'adversaire flou coupé par le bord gauche ; le ballon qui retombe, coupé par le bord droit -->
+    <div id="p09-fore" class="clip fx-layer" data-start="0" data-duration="4.75" data-track-index="3" data-layout-allow-overflow>
+      <svg id="p09-opp" viewBox="0 0 420 760"><g stroke="#F5EFF3" stroke-width="60" stroke-linecap="round" fill="none"><path d="M200 60 L260 360 L180 700"/><path d="M230 200 L380 320"/></g><circle cx="190" cy="0" r="90" fill="#F5EFF3"/></svg>
+      <div id="p09-fball"></div>
+    </div>
+
+    <!-- grain 5 % -->
+    <div id="p09-grain" class="clip fx-layer fx-grain" data-start="0" data-duration="4.75" data-track-index="4"></div>
+
+    <!-- la phrase de la voix, bas centre, mot par mot (temps locaux) -->
+    <div id="p09-subs" class="clip fx-layer" data-start="0" data-duration="4.75" data-track-index="5" data-layout-allow-overflow>
+      <div id="p09-s1" class="fx-sub dark"></div>
+      <div id="p09-s2" class="fx-sub dark"></div>
+    </div>
+  </div>
+
+  <script src="assets/vendor/gsap-3.14.2.min.js"></script>
+  <script>
+    (function () {
+      var FID = "09-match";
+      var root = document.querySelector('[data-composition-id="' + FID + '"]');
+      function $(id) { return root.querySelector("#p09-" + id); }
+
+/* ===================== FIL IFS : début du kit JS à copier ===================== */
+const FX = {
+  W: 1920, H: 1080, THREAD: "#D62839", FADED: "#E8823A", ACCENT: "#B3125F", INK: "#1A1320",
+  /* ancres du fil par monde (coordonnées monde) : la courbe passe par chacune, dans cet ordre */
+  ANCHORS: {
+    W1: [[560,250],[820,470],[1150,690],[1500,600],[1950,560],[2400,640],[2700,478],[2950,463],[3112,452],[3107,600],[3116,688],[3160,716],[3184,682],[3150,650],[3112,676],[3140,724],[3280,736],[3700,700],[4500,660],[5100,700],[6000,650],[7000,620],[7800,560],[9000,640],[9920,380]],
+    W2: [[-200,560],[700,640],[1800,620],[3200,700],[4600,640],[5400,520],[6500,660],[7600,700],[8800,640],[9800,470],[10600,600],[12000,520],[13200,660],[14200,560]]
+  },
+  /* cadrages de référence (frame.md) */
+  FRAMING: {
+    S1:[960,500,1.0], S2:[3000,500,1.05], S3:[5400,520,0.95], S4:[7800,480,1.1], S5:[10000,470,1.25],
+    S6:[960,480,1.0], S7:[3200,470,0.95], S8:[5400,470,1.05], S9:[7600,470,1.0], S10:[9800,470,1.4], S11:[12000,470,1.2], S12:[14200,470,1.0]
+  }
+};
+/* caméra : amène (x, y) du monde au centre du cadre à l'échelle s ; blur en px sur #cam */
+function fxCam(world, cam, x, y, s, blur) {
+  world.style.transform = `translate(${960 - x}px, ${540 - y}px)`;
+  world.style.transformOrigin = `${x}px ${y}px`;
+  cam.style.transform = `scale(${s})`;
+  cam.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : "none";
+}
+/* Catmull-Rom → Bézier : chemin SVG lisse passant par toutes les ancres */
+function fxThreadD(name) {
+  const p = FX.ANCHORS[name]; let d = `M${p[0][0]} ${p[0][1]}`;
+  for (let i = 0; i < p.length - 1; i++) {
+    const a = p[Math.max(0, i - 1)], b = p[i], c = p[i + 1], e = p[Math.min(p.length - 1, i + 2)];
+    const c1 = [b[0] + (c[0] - a[0]) / 6, b[1] + (c[1] - a[1]) / 6], c2 = [c[0] - (e[0] - b[0]) / 6, c[1] - (e[1] - b[1]) / 6];
+    d += ` C${c1[0].toFixed(1)} ${c1[1].toFixed(1)} ${c2[0].toFixed(1)} ${c2[1].toFixed(1)} ${c[0]} ${c[1]}`;
+  }
+  return d;
+}
+/* nœud (douleur, S3) : trois boucles serrées autour de (cx, cy), tension 0 → 1 les resserre */
+function fxKnotD(cx, cy, tension) {
+  const r = 46 - 26 * tension; let d = `M${cx - 120} ${cy}`;
+  for (let k = 0; k < 3; k++) { const o = (k - 1) * r * 0.55;
+    d += ` C${cx - 40 + o} ${cy - r * 1.6} ${cx + 40 + o} ${cy - r * 1.6} ${cx + o} ${cy}` +
+         ` C${cx - 40 + o} ${cy + r * 1.6} ${cx + 40 + o} ${cy + r * 1.6} ${cx + 20 + o} ${cy}`; }
+  return d + ` L${cx + 120} ${cy + 10}`;
+}
+/* dessine le fil : progress 0 → 1 de sa longueur (signature « le fil trace ») ; color THREAD ou FADED */
+function fxDrawThread(pathEl, progress, color) {
+  const L = pathEl.getTotalLength();
+  pathEl.style.strokeDasharray = `${L} ${L}`;
+  pathEl.style.strokeDashoffset = `${L * (1 - Math.max(0, Math.min(1, progress)))}`;
+  if (color) pathEl.setAttribute("stroke", color);
+  return pathEl.getPointAtLength(L * progress);       // la tête du fil (pour la caméra ou l'aiguille)
+}
+/* aiguille du logo IFS (len px), pointe vers la droite ; renvoie du SVG à placer dans un <svg> ;
+   uid = préfixe de la séquence (« p04 »), pour que l'id du dégradé soit unique dans la page assemblée */
+function fxNeedle(len, uid = "fx") {
+  const w = len * 0.045;
+  return `<defs><linearGradient id="${uid}NeedleG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8A93A1"/><stop offset=".5" stop-color="#3C4452"/><stop offset="1" stop-color="#4A5260"/></linearGradient></defs>
+    <path d="M0 0 C ${len * .25} ${-w} ${len * .75} ${-w * .6} ${len} 0 C ${len * .75} ${w * .6} ${len * .25} ${w} 0 0 Z" fill="url(#${uid}NeedleG)"/>
+    <ellipse cx="${len * .08}" cy="0" rx="${len * .045}" ry="${w * .32}" fill="#110C15"/>`;
+}
+/* stickman (frame.md) : renvoie le SVG d'une pose, en coordonnées locales (tête en (0, -270), bassin en (0, 0)) */
+const FX_POSES = {
+  echauffement: { arms: [[[-30,-200],[-70,-130],[-60,-60]], [[30,-200],[80,-140],[110,-80]]], legs: [[[-20,0],[-40,90],[-45,180]], [[20,0],[50,90],[60,180]]], lean: 0 },
+  attente:      { arms: [[[-30,-200],[-50,-120],[-45,-50]], [[30,-200],[50,-120],[45,-50]]], legs: [[[-20,0],[-25,90],[-30,180]], [[20,0],[25,90],[30,180]]], lean: 0 },
+  telephone:    { arms: [[[-30,-200],[-50,-120],[-45,-50]], [[30,-200],[40,-140],[0,-170]]], legs: [[[-20,0],[-25,90],[-30,180]], [[20,0],[25,90],[30,180]]], lean: -4 },
+  smash:        { arms: [[[-62,-226],[-120,-156],[-165,-98]], [[66,-252],[150,-315],[248,-383]]], legs: [[[17,-5],[-68,-5],[-110,57]], [[86,-17],[22,77],[-88,117]]], lean: -10 }
+};
+function fxStickman(pose, opts = {}) {
+  const P = FX_POSES[pose], line = pts => "M" + pts.map(p => p.join(" ")).join(" L");
+  const limbs = [...P.arms, ...P.legs].map(line).join(" ") + ` M${P.arms[0][0].join(" ")} L0 -215 L${P.arms[1][0].join(" ")} M${P.legs[0][0].join(" ")} L0 0 L${P.legs[1][0].join(" ")}`;
+  const bib = opts.bib ? `<rect x="-62" y="-215" width="124" height="200" rx="10" fill="#6d6670" transform="rotate(${P.lean})"/>` : "";
+  return `<g stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="${limbs}" stroke="#fff" stroke-opacity=".55" stroke-width="30" style="filter:blur(2.2px)"/>
+      <path d="${limbs}" stroke="#0d0a10" stroke-width="22"/>
+      <path d="M0 -215 L0 0" stroke="#0d0a10" stroke-width="22" transform="rotate(${P.lean})"/></g>
+    ${bib}<circle cx="${-12 + P.lean}" cy="-272" r="62" fill="#0d0a10" stroke="#fff" stroke-opacity=".75" stroke-width="4"/>`;
+}
+/* sous-titre mot par mot : words = [["Juin", 0.03, "box"], [",", ...]] ; renvoie les spans pour GSAP */
+function fxSubtitle(el, words) {
+  el.innerHTML = words.map(([w, , mark]) =>
+    `<span class="fx-sw">${w}${mark === "box" ? '<i class="fx-box"></i>' : ""}${mark === "stroke" ? '<i class="fx-stroke"></i>' : ""}</span>`).join(" ");
+  return [...el.querySelectorAll(".fx-sw")];
+}
+/* ===================== FIL IFS : fin du kit JS à copier ===================== */
+
+
+      var DUR = 4.75, DY = -495;            // le décor est dessiné en coordonnées A3, posé 495 u plus haut dans le monde W3
+      function f2(v) { return v.toFixed(2); }
+      function P2(p) { return f2(p[0]) + " " + f2(p[1]); }
+
+      /* ===================== le filet (script A3 : 12 points sur l'avant du cercle, 12 en bas, losanges) ===================== */
+      var N = 12, tp = [], bot = [], rows = 4, pts = [], i, r, k;
+      for (i = 0; i <= N; i++) { var a = Math.PI * (i / N); tp.push([1482 - 120 * Math.cos(a), 276 + 22 * Math.sin(a)]); bot.push([1482 - 70 * Math.cos(a), 470 + 12 * Math.sin(a)]); }
+      for (r = 0; r <= rows; r++) { var t0 = r / rows; pts.push(tp.map(function (p, j) { return [p[0] + (bot[j][0] - p[0]) * t0, p[1] + (bot[j][1] - p[1]) * t0]; })); }
+      var dn = "";
+      for (r = 0; r < rows; r++) for (i = 0; i < N; i++) { var na = pts[r][i], nb = pts[r + 1][i + 1], nc = pts[r][i + 1], ne = pts[r + 1][i]; dn += "M" + na + " L" + nb + " M" + nc + " L" + ne + " "; }
+      $("netw").setAttribute("d", dn);
+      var ds = "";
+      for (k = 0; k < rows; k++) { var sa = pts[k][k % 2 ? 5 : 4], sb = pts[k + 1][(k + 1) % 2 ? 5 : 4]; ds += (k ? " L" : "M") + sa + " L" + sb; }
+      var strand = $("strand"); strand.setAttribute("d", ds);
+
+      /* ===================== le fil : trois tronçons (sol et poteau, avant du cercle, brin du filet) ===================== */
+      function catmull(p) {
+        var d = "M" + p[0][0] + " " + p[0][1];
+        for (var q = 0; q < p.length - 1; q++) {
+          var A = p[Math.max(0, q - 1)], B = p[q], C2 = p[q + 1], E = p[Math.min(p.length - 1, q + 2)];
+          d += " C" + f2(B[0] + (C2[0] - A[0]) / 6) + " " + f2(B[1] + (C2[1] - A[1]) / 6) + " " + f2(C2[0] - (E[0] - B[0]) / 6) + " " + f2(C2[1] - (E[1] - B[1]) / 6) + " " + C2[0] + " " + C2[1];
+        }
+        return d;
+      }
+      var thA = $("thA"), thB = $("thB"), thF = $("thF");
+      thA.setAttribute("d", catmull([[-160, 540], [-20, 650], [140, 880], [320, 1025], [620, 1042], [1000, 1042], [1400, 1040], [1700, 1036],
+        [1840, 1010], [1858, 900], [1858, 640], [1858, 500], [1810, 458], [1736, 410], [1660, 330], [1606, 282]]));
+      var arc = [];
+      for (k = 24; k >= 8; k--) { var aa = Math.PI * (k / 2) / N; arc.push(f2(1482 - 120 * Math.cos(aa)) + " " + f2(276 + 22 * Math.sin(aa))); }
+      thB.setAttribute("d", "M1606 282 L" + arc.join(" L"));
+      thF.setAttribute("d", catmull([tp[4], [1398, 190], [1330, 40], [1190, -170], [960, -440]]));
+      var LA = thA.getTotalLength(), LB = thB.getTotalLength(), LC = strand.getTotalLength(), LT = LA + LB + LC;
+      // fraction de longueur où le fil passe par un point (mesurée sur le chemin, jamais devinée)
+      function fracAt(px, py) {
+        var n = 2400, best = 0, bd = 1e12, j, q, d;
+        for (j = 0; j <= n; j++) { q = thA.getPointAtLength(LA * j / n); d = (q.x - px) * (q.x - px) + (q.y - py) * (q.y - py); if (d < bd) { bd = d; best = j; } }
+        var lo = Math.max(0, best - 1) / n, hi = Math.min(n, best + 1) / n, f = best / n;
+        for (j = 0; j <= 80; j++) { var g = lo + (hi - lo) * j / 80; q = thA.getPointAtLength(LA * g); d = (q.x - px) * (q.x - px) + (q.y - py) * (q.y - py); if (d < bd) { bd = d; f = g; } }
+        return f;
+      }
+      var U0 = fracAt(250, 1030) * LA;       // handoff_in : le fil entre par le bord gauche à mi-hauteur, sa tête juste derrière le joueur
+      var U1 = fracAt(840, 1042) * LA;       // 0.85 : la tête au sol, derrière l'impulsion
+      var U2 = fracAt(1858, 900) * LA;       // 1.80 : au pied du poteau
+
+      /* ===================== le joueur : squelette A3 (bassin des épaules en O, inclinaison lean) ===================== */
+      // points du torse en repère local (reproduisent exactement A3 à lean = -10)
+      var LOC = { shL: [-65.7, 15.8], shR: [65, 11.5], hipL: [-33.5, 293.6], hipR: [29, 296.5], head: [1.6, -77.9] };
+      function rot(p, deg) { var an = deg * Math.PI / 180, c = Math.cos(an), s = Math.sin(an); return [p[0] * c - p[1] * s, p[0] * s + p[1] * c]; }
+      // coudes, poings, genoux, pieds : décalages depuis O (non tournés)
+      var RUNA = { lean: 10, eL: [-20, 80], fL: [50, 60], eR: [110, 95], fR: [165, 40], kL: [-150, 365], ftL: [-230, 410], kR: [60, 360], ftR: [45, 455] };
+      var RUNB = { lean: 10, eL: [-130, 70], fL: [-175, 130], eR: [110, 95], fR: [165, 40], kL: [-10, 350], ftL: [-15, 450], kR: [-95, 365], ftR: [-185, 395] };
+      var CROUCH = { lean: 18, eL: [-140, 40], fL: [-200, 90], eR: [140, 70], fR: [190, 10], kL: [-40, 330], ftL: [-60, 430], kR: [20, 350], ftR: [0, 445] };
+      var SMASH = { lean: -10, eL: [-120, 97], fL: [-165, 155], eR: [150, -63], fR: [248, -131], kL: [-68, 295], ftL: [-110, 357], kR: [22, 377], ftR: [-88, 417] };
+      var HANG = { lean: 2, eL: [-110, 90], fL: [-120, 165], eR: [80, -95], fR: [72, -212], kL: [-55, 380], ftL: [-140, 335], kR: [5, 386], ftR: [-85, 345] };   // jambes repliées en arrière : elles restent au-dessus de la phrase
+      var KEYS = ["eL", "fL", "eR", "fR", "kL", "ftL", "kR", "ftR"];
+      function mix(a, b, w) {
+        var o = { lean: a.lean + (b.lean - a.lean) * w };
+        KEYS.forEach(function (key) { o[key] = [a[key][0] + (b[key][0] - a[key][0]) * w, a[key][1] + (b[key][1] - a[key][1]) * w]; });
+        return o;
+      }
+      var GRIP = [1385, 289];                                     // la main droite tient l'avant du cercle
+      var O_SMASH = [1150, 345], O_HANG = [GRIP[0] - HANG.fR[0], GRIP[1] - HANG.fR[1]];
+      var BALL_OFF = [54, 18];                                    // ballon sous la main (A3)
+
+      /* ---- sous-titres (fxSubtitle du kit) ---- */
+      function glue(el) { var n = el.nextSibling; if (n && n.nodeType === 3) n.parentNode.removeChild(n); }
+      var W1S = [["Samedi,", 0.08], ["le", 0.85], ["numéro", 1.01], ["15", 1.31, "box"], ["monte", 1.61], ["au", 1.95], ["panier.", 2.13]];
+      var W2S = [["Le", 2.70], ["rouge", 3.03], ["est", 3.31], ["resté", 3.69, "stroke"], ["rouge", 3.97, "box"], [".", 3.97]];
+      var s1 = $("s1"), s2 = $("s2");
+      var sp1 = fxSubtitle(s1, W1S), sp2 = fxSubtitle(s2, W2S);
+      sp1[3].classList.add("p09-kw"); sp2[4].classList.add("p09-kw"); glue(sp2[4]);
+
+      /* ===================== état : proxies lus par UN seul onUpdate ===================== */
+      var C = { x: 860, y: 520, s: 1.0, b: 14 };                 // caméra, en coordonnées A3 (y monde = y + DY)
+      var SH = { a: 0, ph: 0 };                                   // secousse du smash
+      var T = { u: U0, f: 0 };                                    // le fil (longueur dessinée A + B + C) et le brin qui file
+      var M = { m: 0, ph: 0, ox: 330, oy: 445 };                  // pose (0 course, 1 impulsion, 2 smash, 3 suspendu), cycle de course, O
+      var SW = { a: 0, ph: 0 };                                   // balancement des jambes
+      var BL = { att: 1, x: 0, y: 0, o: 1 };                      // le ballon (attaché à la main, puis libre)
+      var RIM = { d: 0, n: 1 };                                   // le cercle plie, le filet s'étire
+      var DOF = { b: 0, lb: 14 };                                 // flou du fond (planche, poteau, projecteurs)
+      var SWT = { k: 3.2, b: 12, r: -12, o: 0, gx: -150, go: 0 }; // le nuancier et l'éclat
+      var OP = { x: -20 };                                        // l'adversaire d'avant-plan
+      var FB = { y: -360, r: 0 };                                 // le ballon d'avant-plan
+
+      var world = $("world"), cam = $("cam"), far = $("far"), lights = root.querySelectorAll(".p09-light");
+      var body = $("body"), armR = $("armR"), swg = $("swg"), sw = $("sw"), glint = $("glint"), torso = $("torso"), head = $("head");
+      var wAL = $("wAL"), kAL = $("kAL"), wLL = $("wLL"), kLL = $("kLL"), wLR = $("wLR"), kLR = $("kLR"), wAR = $("wAR"), kAR = $("kAR");
+      var fistL = $("fistL"), fistR = $("fistR"), ball = $("ball"), net = $("net"), rimb = $("rimb"), rimf = $("rimf"), dofb = $("dofb");
+      var opp = $("opp"), fball = $("fball");
+
+      function pose() {
+        var m = M.m, run = mix(RUNA, RUNB, (1 - Math.cos(Math.PI * M.ph)) / 2);
+        if (m <= 1) return mix(run, CROUCH, m);
+        if (m <= 2) return mix(CROUCH, SMASH, m - 1);
+        return mix(SMASH, HANG, Math.min(1, m - 2));
+      }
+      function add(o, p) { return [o[0] + p[0], o[1] + p[1]]; }
+      function line(a, b, c) { return "M" + P2(a) + " L" + P2(b) + " L" + P2(c); }
+
+      function render() {
+        // caméra (+ secousse 6 px au smash)
+        var shx = 6 * SH.a * Math.sin(SH.ph * Math.PI * 6) / C.s, shy = 6 * SH.a * Math.cos(SH.ph * Math.PI * 5) / C.s;
+        fxCam(world, cam, C.x + shx, C.y + DY + shy, C.s, C.b);
+
+        // le fil : A au sol et sur le poteau, B le long du cercle, C le brin du filet
+        fxDrawThread(thA, Math.min(T.u, LA) / LA, FX.THREAD);
+        fxDrawThread(thB, Math.max(0, Math.min(LB, T.u - LA)) / LB, FX.THREAD);
+        fxDrawThread(strand, Math.max(0, Math.min(LC, T.u - LA - LB)) / LC, FX.THREAD);
+        fxDrawThread(thF, T.f, FX.THREAD);
+
+        // le joueur
+        var P = pose(), bob = M.m < 1 ? -10 * Math.abs(Math.sin(Math.PI * M.ph)) * (1 - M.m) : 0;
+        var O = [M.ox, M.oy + bob], L = P.lean;
+        var lw = 6 * SW.a * Math.sin(SW.ph * Math.PI * 2);           // jambes ±6°
+        var bw = 1.2 * SW.a * Math.sin(SW.ph * Math.PI * 2 - 0.6);   // le corps pivote doucement autour de la main
+        var shL = add(O, rot(LOC.shL, L)), shR = add(O, rot(LOC.shR, L)), hL = add(O, rot(LOC.hipL, L)), hR = add(O, rot(LOC.hipR, L));
+        function legPt(hip, p) { var v = [O[0] + p[0] - hip[0], O[1] + p[1] - hip[1]]; return add(hip, rot(v, lw)); }
+        var dAL = line(shL, add(O, P.eL), add(O, P.fL)), dAR = line(shR, add(O, P.eR), add(O, P.fR));
+        var dLL = line(hL, legPt(hL, P.kL), legPt(hL, P.ftL)), dLR = line(hR, legPt(hR, P.kR), legPt(hR, P.ftR));
+        wAL.setAttribute("d", dAL); kAL.setAttribute("d", dAL); wAR.setAttribute("d", dAR); kAR.setAttribute("d", dAR);
+        wLL.setAttribute("d", dLL); kLL.setAttribute("d", dLL); wLR.setAttribute("d", dLR); kLR.setAttribute("d", dLR);
+        var fl = add(O, P.fL), fr = add(O, P.fR), hd = add(O, rot(LOC.head, L));
+        fistL.setAttribute("cx", f2(fl[0])); fistL.setAttribute("cy", f2(fl[1]));
+        fistR.setAttribute("cx", f2(fr[0])); fistR.setAttribute("cy", f2(fr[1]));
+        head.setAttribute("cx", f2(hd[0])); head.setAttribute("cy", f2(hd[1]));
+        torso.setAttribute("transform", "translate(" + P2(O) + ") rotate(" + f2(L) + ")");
+        var piv = "rotate(" + bw.toFixed(3) + " " + GRIP[0] + " " + GRIP[1] + ")";
+        body.setAttribute("transform", piv); armR.setAttribute("transform", piv); swg.setAttribute("transform", piv);
+
+        // le ballon : dans la main, puis libre
+        var bx = BL.att ? fr[0] + BALL_OFF[0] : BL.x, by = BL.att ? fr[1] + BALL_OFF[1] : BL.y;
+        ball.setAttribute("transform", "translate(" + f2(bx) + " " + f2(by) + ")");
+        ball.setAttribute("opacity", BL.o.toFixed(3));
+
+        // le cercle plie, le filet s'étire (depuis le cercle)
+        var rb = "translate(0 " + RIM.d.toFixed(2) + ")";
+        rimb.setAttribute("transform", rb); rimf.setAttribute("transform", rb);
+        net.setAttribute("transform", "translate(0 " + f2(276 + RIM.d) + ") scale(1 " + RIM.n.toFixed(4) + ") translate(0 -276)");
+
+        // profondeur : le fond flou quand la caméra est sur le dos
+        dofb.setAttribute("stdDeviation", DOF.b.toFixed(2));
+        far.style.transform = "translate(" + f2((960 - C.x) * 0.5 * C.s) + "px," + f2((540 - C.y) * 0.5 * C.s) + "px) scale(" + (1 + (C.s - 1) * 0.5).toFixed(4) + ")";
+        for (k = 0; k < lights.length; k++) lights[k].style.filter = "blur(" + f2(DOF.lb + C.b * 0.5) + "px)";
+
+        // le nuancier contre le dos du maillot, à droite du 15
+        sw.setAttribute("transform", "translate(" + f2(O_HANG[0] + 122) + " " + f2(O_HANG[1] + 124) + ") rotate(" + SWT.r.toFixed(3) + ") scale(" + SWT.k.toFixed(4) + ")");
+        sw.style.filter = (SWT.b > 0.05 ? "blur(" + f2(SWT.b) + "px) " : "") + "drop-shadow(0px 6px 8px rgba(0,0,0,.45))";
+        sw.style.opacity = SWT.o;
+        glint.setAttribute("transform", "translate(" + f2(O_HANG[0] + SWT.gx) + " " + f2(O_HANG[1] + 90) + ")");
+        glint.style.opacity = SWT.go;
+
+        // avant-plan
+        opp.style.transform = "translate(" + f2(OP.x + (881 - C.x) * 0.08) + "px," + f2((540 - C.y) * 0.3) + "px)";
+        fball.style.transform = "translate(0px," + f2(FB.y) + "px) rotate(" + f2(FB.r) + "deg)";
+      }
+
+      /* ===================== la timeline unique, en pause ===================== */
+      var tl = gsap.timeline({ paused: true, onUpdate: render });
+      function ft(target, from, to, pos) { if (pos > 0) to.immediateRender = false; tl.fromTo(target, from, to, pos); }
+      function tw(target, from, to, dur, ease, pos) { var o = {}, key; for (key in to) o[key] = to[key]; o.duration = dur; o.ease = ease; ft(target, from, o, pos); }
+
+      /* ---- piste caméra ---- */
+      // 0.00 à 0.12 le flou du whip retombe (14 → 0) ; dérive x +25 u/s
+      tw(C, { b: 14 }, { b: 0 }, 0.12, "expo.out", 0);
+      tw(C, { x: 860 }, { x: 881 }, 0.85, "none", 0);
+      // 0.85 à 1.40 la caméra monte avec le joueur
+      tw(C, { x: 881, y: 520 }, { x: 1250, y: 470 }, 0.55, "power3.out", 0.85);
+      tw(C, { x: 1250 }, { x: 1255 }, 0.20, "none", 1.40);
+      // 1.60 à 2.13 poussée ×1 → ×1,12 vers le cercle (joueur et panier centrés, marges égales)
+      tw(C, { x: 1255, y: 470, s: 1.0 }, { x: 1310, y: 480, s: 1.12 }, 0.53, "expo.out", 1.60);
+      tw(C, { x: 1310 }, { x: 1322 }, 0.47, "none", 2.13);
+      // secousse 6 px à 2.13 (0,12 s)
+      tw(SH, { a: 1, ph: 0 }, { a: 0, ph: 1 }, 0.12, "none", 2.13);
+      // 2.60 à 3.00 poussée sur le dos du joueur, même sens : le maillot et le nuancier côte à côte au centre
+      var BACK = { x: 1375, y: 718, s: 1.8 };
+      tw(C, { x: 1322, y: 480, s: 1.12 }, BACK, 0.40, "expo.out", 2.60);
+      // dérive échelle +1 %/s
+      tw(C, { s: BACK.s }, { s: BACK.s * 1.0155 }, 1.55, "none", 3.00);
+      // 4.55 à 4.75 tilt vers le haut vers l'état de couture cam(1480, 120, 1.15) monde, flou 0 → 10, sortie à -2400 u/s en y
+      var END = { x: 1480, y: 120 - DY, s: 1.15 }, TT = 0.20, ky = 2400 * TT / (BACK.y - END.y);
+      tw(C, { y: BACK.y }, { y: END.y }, TT, function (p) { return Math.pow(p, ky); }, 4.55);
+      tw(C, { x: BACK.x }, { x: END.x }, TT, "power2.out", 4.55);
+      tw(C, { s: BACK.s * 1.0155 }, { s: END.s }, TT, "power2.in", 4.55);
+      tw(C, { b: 0 }, { b: 10 }, TT, "power2.in", 4.55);
+
+      /* ---- scène 1 : le smash ---- */
+      // 0.08 « Samedi » : les projecteurs s'allument un à un (0,05 s d'écart)
+      Array.prototype.forEach.call(lights, function (el, j) { ft(el, { opacity: 0 }, { opacity: 0.8, duration: 0.16, ease: "power2.out" }, 0.08 + j * 0.05); });
+      // 0.00 à 0.85 il court vers le panier ; le fil court au sol derrière lui
+      tw(M, { ox: 330, ph: 0 }, { ox: 900, ph: 3 }, 0.85, "none", 0);
+      tw(T, { u: U0 }, { u: U1 }, 0.85, "none", 0);
+      // 0.80 l'impulsion (traînées verticales sous les pieds)
+      tw(M, { m: 0, oy: 445 }, { m: 1, oy: 460 }, 0.17, "power2.out", 0.80);
+      tw(M, { ox: 900 }, { ox: 930 }, 0.17, "none", 0.85);
+      ft($("streaks"), { opacity: 0, scaleY: 0.4, transformOrigin: "50% 0%" }, { opacity: 0.75, scaleY: 1, transformOrigin: "50% 0%", duration: 0.10, ease: "power3.out" }, 0.88);
+      ft($("streaks"), { opacity: 0.75 }, { opacity: 0, duration: 0.18, ease: "power2.in" }, 1.02);
+      // 1.02 à 1.31 il décolle, bras droit tendu, ballon en main (pose smash A3)
+      tw(M, { m: 1, ox: 930, oy: 460 }, { m: 2, ox: 1110, oy: 450 }, 0.29, "power3.out", 1.02);
+      tw(M, { ox: 1110, oy: 450 }, { ox: 1120, oy: 440 }, 0.30, "none", 1.31);
+      // 1.61 « monte » : il monte jusqu'au cercle (power2.out)
+      tw(M, { ox: 1120, oy: 440 }, { ox: 1150, oy: 355 }, 0.30, "power2.out", 1.61);
+      tw(M, { oy: 355 }, { oy: O_SMASH[1] }, 0.22, "none", 1.91);
+      // 0.85 à 1.80 le fil continue au sol jusqu'au pied du poteau ; 1.80 à 2.20 il remonte le poteau et se tisse dans le filet
+      tw(T, { u: U1 }, { u: U2 }, 0.95, "none", 0.85);
+      ft(thB, { opacity: 0 }, { opacity: 1, duration: 0.01, ease: "none" }, 1.80);
+      ft(strand, { opacity: 0 }, { opacity: 1, duration: 0.01, ease: "none" }, 1.80);
+      tw(T, { u: U2 }, { u: LT }, 0.40, "expo.out", 1.80);
+      // 2.13 « panier » : SMASH, le ballon traverse le cercle, le cercle plie de 6 px, le filet s'étire
+      tw(BL, { att: 1 }, { att: 0 }, 0.001, "none", 2.13);
+      var B0 = [O_SMASH[0] + SMASH.fR[0] + BALL_OFF[0], O_SMASH[1] + SMASH.fR[1] + BALL_OFF[1]];
+      tw(BL, { x: B0[0], y: B0[1] }, { x: 1478, y: 330 }, 0.10, "power2.in", 2.13);
+      tw(BL, { x: 1478, y: 330 }, { x: 1486, y: 560 }, 0.20, "none", 2.23);
+      tw(BL, { x: 1486, y: 560 }, { x: 1494, y: 980 }, 0.27, "power2.in", 2.43);
+      tw(BL, { o: 1 }, { o: 0 }, 0.08, "none", 2.62);
+      tw(RIM, { d: 0 }, { d: 6 }, 0.05, "power2.out", 2.13);
+      tw(RIM, { d: 6 }, { d: 0 }, 0.05, "power2.in", 2.18);
+      tw(RIM, { n: 1 }, { n: 1.15 }, 0.10, "power2.out", 2.18);
+      tw(RIM, { n: 1.15 }, { n: 1 }, 0.10, "power2.inOut", 2.28);
+      // 2.13 à 2.55 il reste accroché au cercle par la main droite, le corps passe dessous
+      tw(M, { m: 2, ox: O_SMASH[0], oy: O_SMASH[1] }, { m: 3, ox: O_HANG[0], oy: O_HANG[1] }, 0.42, "power2.out", 2.13);
+      // l'adversaire flou accompagne l'action, puis sort par la gauche pendant la poussée
+      tw(OP, { x: -20 }, { x: 0 }, 2.60, "none", 0);
+      tw(OP, { x: 0 }, { x: -620 }, 0.30, "power2.in", 2.60);
+
+      /* ---- scène 2 : le rouge est resté rouge ---- */
+      // 2.40 ses jambes se balancent (±6°, période 0,8 s, nombre fini de cycles)
+      tw(SW, { a: 0 }, { a: 1 }, 0.30, "power2.out", 2.40);
+      tw(SW, { ph: 0 }, { ph: (DUR - 2.40) / 0.8 }, DUR - 2.40, "none", 2.40);
+      tw(SW, { a: 1 }, { a: 0.6 }, 1.75, "none", 2.70);
+      // le fond se floute (profondeur de champ sur le dos)
+      tw(DOF, { b: 0, lb: 14 }, { b: 5, lb: 22 }, 0.40, "power2.out", 2.60);
+      // le ballon d'avant-plan retombe, flou, coupé par le bord droit
+      ft(fball, { opacity: 0 }, { opacity: 1, duration: 0.01, ease: "none" }, 2.62);
+      tw(FB, { y: -360, r: 0 }, { y: 1300, r: 70 }, 0.95, "power2.in", 2.62);
+      // 2.80 le nuancier arrive depuis la caméra (×3,2, flou 12 → net) et se pose contre le dos, à droite du 15
+      tw(SWT, { o: 0 }, { o: 1 }, 0.06, "none", 2.80);
+      tw(SWT, { k: 3.2, b: 12, r: -12 }, { k: 1, b: 0, r: -4 }, 0.22, "expo.out", 2.80);
+      // 3.31 même teinte : un petit éclat blanc passe sur le maillot puis sur la pastille
+      tw(SWT, { gx: -60 }, { gx: 190 }, 0.20, "power2.inOut", 3.31);
+      tw(SWT, { go: 0 }, { go: 1 }, 0.06, "none", 3.31);
+      tw(SWT, { go: 1 }, { go: 0 }, 0.06, "none", 3.45);
+      // 3.97 « rouge » : le nuancier se tasse contre le tissu
+      tw(SWT, { k: 1 }, { k: 0.98 }, 0.06, "power2.out", 3.97);
+      tw(SWT, { k: 0.98 }, { k: 1 }, 0.14, "power2.out", 4.03);
+      // 4.20 le brin rouge se détache du filet (effacé vers le haut) et file vers le haut à gauche
+      tw(T, { u: LT }, { u: LA + LB }, 0.22, "power2.in", 4.20);
+      ft(thF, { opacity: 0 }, { opacity: 1, duration: 0.01, ease: "none" }, 4.22);
+      tw(T, { f: 0 }, { f: 1 }, 0.53, "power2.in", 4.22);
+
+      /* ---- la phrase de la voix : mot par mot, gris puis encre ; une boîte, un trait ---- */
+      function sayWords(spans, list) {
+        spans.forEach(function (w, j) {
+          var st = Math.max(0, list[j][1] - 1 / 30), kw = list[j][2] === "box";
+          ft(w, { y: 8, filter: "blur(6px)" }, { y: 0, filter: "blur(0px)", duration: 0.14, ease: "power2.out" }, st);
+          if (kw) ft(w, { opacity: 0 }, { opacity: 1, duration: 0.10, ease: "power2.out" }, st);
+          else {
+            ft(w, { opacity: 0 }, { opacity: 0.35, duration: 0.08, ease: "power2.out" }, st);
+            ft(w, { opacity: 0.35 }, { opacity: 1, duration: 0.20, ease: "power1.out" }, st + 0.10);
+          }
+        });
+      }
+      sayWords(sp1, W1S);
+      sayWords(sp2, W2S);
+      var BOXZ = { scaleX: 0, scaleY: 1, rotation: 0, skewX: 0, skewY: 0 };
+      ft(sp1[3].querySelector(".fx-box"), BOXZ, { scaleX: 1, scaleY: 1, rotation: 0, skewX: 0, skewY: 0, duration: 0.16, ease: "power3.out" }, 1.27);
+      ft(sp2[4].querySelector(".fx-box"), BOXZ, { scaleX: 1, scaleY: 1, rotation: 0, skewX: 0, skewY: 0, duration: 0.16, ease: "power3.out" }, 3.93);
+      var stroke = sp2[3].querySelector(".fx-stroke");
+      gsap.set(stroke, { scaleX: 0, scaleY: 1, rotation: -1.2, skewX: 0, skewY: 0 });
+      ft(stroke, { opacity: 0 }, { opacity: 1, duration: 0.01, ease: "none" }, 3.69);
+      ft(stroke, { scaleX: 0, scaleY: 1, rotation: -1.2, skewX: 0, skewY: 0 }, { scaleX: 1, scaleY: 1, rotation: -1.2, skewX: 0, skewY: 0, duration: 0.40, ease: "power2.out" }, 3.69);
+      // la phrase sort (opacité 1 → 0, flou 0 → 6 px, 0,14 s)
+      ft(s1, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 2.46);
+      ft(s2, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 4.40);
+
+      // durée exacte de la séquence
+      tl.set({}, {}, DUR);
+
+      // première image = handoff_in, avant tout seek
+      render();
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[FID] = tl;
+    })();
+  </script>
+</template>

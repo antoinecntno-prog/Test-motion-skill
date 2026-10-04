@@ -16,9 +16,9 @@ RAW="${RAW:-assets/audio/voix.mp3}"                # raw voice exported from Ele
 CUTS="${CUTS:-6.46:2.5 14.61:1.5 37.90:0.4}"                                   # "cut:silence" pairs in raw seconds, e.g. "14.00:0.8 34.75:0.4" (empty = no cut)
 TAIL="${TAIL:-3.5}"                                # silence added after the voice (end card hold)
 TOTAL="${TOTAL:-52.0}"                             # final duration in seconds = STORYBOARD duration = TOTAL in assemble.sh
-MUSIC="${MUSIC-assets/audio/musique-chill.wav}"    # composée par scripts/musique-chill.py, libre de droits (MUSIC="" : sans musique)
+MUSIC="${MUSIC-assets/audio/musique-film.wav}"     # composée par scripts/musique-film.py, libre de droits (MUSIC="" : sans musique)
 MUSIC_START="${MUSIC_START:-0}"                    # where to start in the track (skip a quiet intro, see pitfalls.md)
-MUSIC_VOLUME="${MUSIC_VOLUME:-0.16}"               # 0.10 to 0.15 under a voice
+MUSIC_VOLUME="${MUSIC_VOLUME:-0.22}"               # 0.10 to 0.15 under a voice
 SFX_DIR="${SFX_DIR:-../.claude/skills/media-use/audio/assets/sfx}"   # Pixabay SFX shipped with HeyGen's media-use
 SFX_EVENTS="${SFX_EVENTS:-assets/audio/sfx-events.json}"             # [["name", seconds, volume], ...] on the FINAL timeline
 VOICE_OUT="${VOICE_OUT:-assets/audio/voix-montage.wav}"
@@ -85,7 +85,7 @@ def sfx_file(name):
     sys.exit(f"build-audio: sound effect '{name}' not found in {env['SFX_DIR']} (.wav or .mp3)")
 
 args = ["ffmpeg", "-v", "error", "-y", "-i", env["VOICE_OUT"]]
-graph = ["[0]aformat=sample_rates=44100:channel_layouts=stereo[v]"]
+graph = ["[0]aformat=sample_rates=44100:channel_layouts=stereo,asplit=2[v][vkey]"]
 labels = ["[v]"]
 index = 1
 music = env["MUSIC"]
@@ -96,9 +96,13 @@ if music:
     args += ["-i", music]
     graph.append(f"[{index}]atrim={start:.3f}:{start + total:.3f},asetpts=PTS-STARTPTS,"
                  f"aformat=sample_rates=44100:channel_layouts=stereo,afade=t=in:d=0.8,"
-                 f"afade=t=out:st={max(0.0, total - 3):.3f}:d=3,volume={float(env['MUSIC_VOLUME'])}[m]")
+                 f"afade=t=out:st={max(0.0, total - 3):.3f}:d=3,volume={float(env['MUSIC_VOLUME'])}[mraw]")
+    # la musique s'efface sous la voix (environ 6 dB) et remonte dans les silences
+    graph.append("[mraw][vkey]sidechaincompress=threshold=0.02:ratio=5:attack=15:release=320:makeup=1[m]")
     labels.append("[m]")
     index += 1
+if not music:
+    graph.append("[vkey]anullsink")
 for k, (name, at, volume) in enumerate(events):
     args += ["-i", sfx_file(name)]
     delay = int(round(float(at) * 1000))

@@ -16,9 +16,9 @@ RAW="${RAW:-assets/audio/voix.mp3}"                # raw voice exported from Ele
 CUTS="${CUTS:-6.46:2.5 14.61:1.5 37.90:0.4}"                                   # "cut:silence" pairs in raw seconds, e.g. "14.00:0.8 34.75:0.4" (empty = no cut)
 TAIL="${TAIL:-3.5}"                                # silence added after the voice (end card hold)
 TOTAL="${TOTAL:-52.0}"                             # final duration in seconds = STORYBOARD duration = TOTAL in assemble.sh
-MUSIC="${MUSIC-assets/audio/music.mp3}"            # CC0 track (set MUSIC="" for no music)
+MUSIC="${MUSIC-assets/audio/musique-chill.wav}"    # composée par scripts/musique-chill.py, libre de droits (MUSIC="" : sans musique)
 MUSIC_START="${MUSIC_START:-0}"                    # where to start in the track (skip a quiet intro, see pitfalls.md)
-MUSIC_VOLUME="${MUSIC_VOLUME:-0.12}"               # 0.10 to 0.15 under a voice
+MUSIC_VOLUME="${MUSIC_VOLUME:-0.16}"               # 0.10 to 0.15 under a voice
 SFX_DIR="${SFX_DIR:-../.claude/skills/media-use/audio/assets/sfx}"   # Pixabay SFX shipped with HeyGen's media-use
 SFX_EVENTS="${SFX_EVENTS:-assets/audio/sfx-events.json}"             # [["name", seconds, volume], ...] on the FINAL timeline
 VOICE_OUT="${VOICE_OUT:-assets/audio/voix-montage.wav}"

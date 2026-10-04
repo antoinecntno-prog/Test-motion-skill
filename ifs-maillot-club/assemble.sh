@@ -180,6 +180,10 @@ if iris_at is not None:
         tl.fromTo("#fxiris-ring", {{ opacity: 0 }}, {{ opacity: 1, duration: 0.08, immediateRender: false }}, {t(0.05)});
         tl.to("#fxiris-ring", {{ opacity: 0, duration: 0.15 }}, {t(0.70)});
 '''
+# this assembler writes the main timeline without a local tl nor a full-span anchor: add both
+bare = 'window.__timelines["main"] = gsap.timeline({ paused: true });'
+if bare in s:
+    s = s.replace(bare, 'const tl = gsap.timeline({ paused: true });\n      window.__timelines["main"] = tl;\n      tl.to({}, { duration: %s }, 0);' % total, 1)
 anchor = re.search(r"(?m)^[ \t]*tl\.to\(\{\}, \{ duration: [0-9.]+ \}, 0\);", s)
 if not anchor:
     raise SystemExit("assemble: full-span anchor tl.to({}, { duration: N }, 0); not found in index.html")

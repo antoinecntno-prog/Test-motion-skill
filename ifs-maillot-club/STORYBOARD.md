@@ -54,7 +54,7 @@ patterns: ../patterns/STORYBOARD-CRAFT.md, ../patterns/PATTERNS.md
 - scene: Sur l'encre, la fenêtre de message « Commande maillots · saison 2026 » part vers le fournisseur ; le fil rouge sort du bouton Envoyer ; la caméra file le long du fil jusqu'au calendrier de septembre où le samedi 5 est entouré « 1er match »
 - duration: 4.56s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/01-juin.html
 - voiceover: "Juin, vous commandez les maillots du club. Septembre, premier match..."
 - type: hook
@@ -92,7 +92,7 @@ Scene 2 (2.30 à 4.56 s) : P3 et P4, septembre, premier match
 - scene: La caméra arrive dans la salle du club : quatre joueurs stickman s'échauffent en chasubles grises ; « et toujours pas de maillots » ; gag muet : l'entraîneur rafraîchit le suivi de commande sur son téléphone, rien ne bouge, le fil se noue au pied du groupe
 - duration: 4.49s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/02-chasubles.html
 - voiceover: "...et toujours pas de maillots."
 - type: pain_point
@@ -130,7 +130,7 @@ Scene 2 (1.84 à 4.49 s) : P6 et P7, le gag muet (silence 6.40 à 9.19)
 - scene: Le carton arrive enfin : le maillot sort délavé, son rouge a viré à l'orange à côté du nuancier « Rouge club » ; le fil pâlit ; la caméra file jusqu'au hublot de la machine à laver où le numéro 15 se fissure et se décolle, tiré par le fil
 - duration: 6.15s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/03-delave.html
 - voiceover: "Le jour où ils arrivent, le rouge a viré à l'orange. Et le numéro se décolle au premier lavage."
 - type: pain_point
@@ -168,7 +168,7 @@ Scene 2 (3.30 à 6.15 s) : P10 et P11, le hublot, le numéro se décolle
 - scene: Coupe au noir sur l'impact ; le bout du fil est seul au centre ; l'aiguille du logo IFS traverse le noir et se renfile sur le fil, qui redevient rouge vif ; « On reprend depuis le début. » s'écrit au centre ; l'aiguille sort, sa pointe devient un point de lumière
 - duration: 3.50s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/04-pivot.html
 - voiceover: "On reprend depuis le début."
 - type: pivot
@@ -244,7 +244,7 @@ Scene 2 (2.50 à 5.30 s) : P16 et P17, le studio IFS, le design et le logo
 - scene: Le design s'imprime en BAT ; le fil trace une coche qui devient le tampon VALIDÉ ; « Nous faisons le reste » ; la caméra file au tapis de coupe : la grille de tailles IFS, les patrons gradés, le cutter rotatif suit la ligne du fil sur le patron M
 - duration: 5.80s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/06-bat-coupe.html
 - voiceover: "Vous validez le BAT. Nous faisons le reste. Nos tailles sont standardisées. La coupe va plus vite."
 - type: demo
@@ -282,7 +282,7 @@ Scene 2 (2.70 à 5.80 s) : P20 et P21, la grille de tailles, la coupe
 - scene: Au fond de la plongée, la maille blanche du tissu en macro ; la presse descend ; le fil plonge dans la fibre et la couleur du vrai maillot Eschau s'y répand en halo
 - duration: 3.00s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/07-sublimation.html
 - voiceover: "La sublimation fixe les couleurs dans la fibre."
 - type: demo
@@ -310,7 +310,7 @@ Scene 1 (0.00 à 3.00 s) : P22 et P23, la presse, la couleur dans la fibre
 - scene: L'aiguille du logo pique et le fil devient la couture qui ferme l'emmanchure du maillot ; le maillot fini se plie dans un carton IFS, le fil en fait la ficelle ; étiquette « Livré · moins d'un mois »
 - duration: 4.65s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/08-couture-livraison.html
 - voiceover: "La confection assemble chaque maillot. Et vous êtes livrés en moins d'un mois."
 - type: payoff
@@ -348,7 +348,7 @@ Scene 2 (2.40 à 4.65 s) : P25, le carton, livré en moins d'un mois
 - scene: Samedi, dans la salle de nuit : le joueur stickman n° 15, maillot Eschau dessiné, s'élance et smashe ; le fil devient le brin rouge du filet ; il reste suspendu au cercle et la caméra pousse sur son dos : le nuancier « Rouge club » se pose contre le tissu, même rouge ; le brin rouge quitte le filet et file vers le haut
 - duration: 4.75s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/09-match.html
 - voiceover: "Samedi, le numéro quinze monte au panier. Le rouge est resté rouge."
 - type: payoff

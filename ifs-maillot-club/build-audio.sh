@@ -70,6 +70,8 @@ subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", raw, "-filter_complex", gra
                 "-ar", "44100", "-ac", "1", env["VOICE_OUT"]], check=True)
 voice_len = sum(b - a for a, b in zip(bounds, bounds[1:])) + sum(g for _, g in cuts) + tail
 print(f"voice montage: {env['VOICE_OUT']} (raw {raw_len:.2f} s, {len(cuts)} cut(s), voice + silences {voice_len:.2f} s, trimmed or padded to {total:.2f} s)")
+if os.path.exists("scripts/voix-contino.py"):
+    subprocess.run([sys.executable, "scripts/voix-contino.py", env["VOICE_OUT"]], check=True)
 if voice_len > total + 0.01:
     print(f"warning: the voice montage ({voice_len:.2f} s) is longer than TOTAL ({total:.2f} s): the end is cut", file=sys.stderr)
 

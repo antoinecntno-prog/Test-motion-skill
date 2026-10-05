@@ -158,9 +158,9 @@
         <div id="p05-studio">
           <div id="p05-scard"></div>
           <div class="p05-shead">
-            <img id="p05-slogo" src="assets/img/logo-ifs.svg" alt="">
+            <img id="p05-slogo" src="assets/img/logo-contino.svg" alt="">
             <div class="p05-stitle">Studio de personnalisation</div>
-            <div class="p05-ssub">Industrie Française de Sellerie</div>
+            <div class="p05-ssub">Contino Sport</div>
           </div>
           <div class="p05-sel">Maillot basketball double face (réversible)
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#5E5360" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8 L10 13 L15 8"/></svg>
@@ -223,7 +223,7 @@
             <path d="M4.5 6.5 H19.5 M9.5 6.5 V4.5 H14.5 V6.5 M6.5 6.5 L7.5 20 H16.5 L17.5 6.5 M10.5 10 V16.5 M13.5 10 V16.5"/>
           </svg>
           <div class="p05-lab" style="top: 124px">À</div>
-          <div class="p05-chip">IFS</div>
+          <div class="p05-chip">Contino Sport</div>
           <div class="p05-rule" style="top: 185px"></div>
           <div class="p05-lab" style="top: 186px">Objet</div>
           <div class="p05-val" style="top: 200px">Commande maillots · saison 2026</div>
@@ -392,12 +392,12 @@ function fxSubtitle(el, words) {
 
       /* ---- sous-titres (fxSubtitle du kit) ---- */
       function glue(a) { var n = a.nextSibling; if (n && n.nodeType === 3) n.parentNode.removeChild(n); }
-      var W1S = [["Avec", 0.14], ["IFS,", 0.84], ["tout", 1.41], ["part", 1.60], ["d’un", 1.84], ["mail", 2.16, "box"], [".", 2.16]];
+      var W1S = [["Avec", 0.20], ["Contino", 0.76], ["Sport,", 1.10], ["tout", 1.60], ["part", 1.82], ["d’un", 2.10], ["mail", 2.42, "box"], [".", 2.42]];
       var W2S = [["Vous", 2.76], ["envoyez", 3.04], ["votre", 3.38], ["design", 3.66, "box"], ["et", 4.14], ["votre", 4.42], ["logo.", 4.70]];
-      var BOX1 = 2.12, BOX2 = 3.62;
+      var BOX1 = 2.40, BOX2 = 3.62;
       var s1 = $("s1"), s2 = $("s2");
       var sp1 = fxSubtitle(s1, W1S), sp2 = fxSubtitle(s2, W2S);
-      glue(sp1[5]); sp1[5].classList.add("p05-kw");
+      glue(sp1[6]); sp1[6].classList.add("p05-kw");
       sp2[3].classList.add("p05-kw");
 
       /* ===================== état : proxies lus par UN seul onUpdate ===================== */
@@ -576,7 +576,7 @@ function fxSubtitle(el, words) {
       sayWords(sp1, W1S);
       sayWords(sp2, W2S);
       var BOXZ = { scaleX: 0, scaleY: 1, rotation: 0, skewX: 0, skewY: 0 };
-      ft(sp1[5].querySelector(".fx-box"), BOXZ, { scaleX: 1, scaleY: 1, rotation: 0, skewX: 0, skewY: 0, duration: 0.16, ease: "power3.out" }, BOX1);
+      ft(sp1[6].querySelector(".fx-box"), BOXZ, { scaleX: 1, scaleY: 1, rotation: 0, skewX: 0, skewY: 0, duration: 0.16, ease: "power3.out" }, BOX1);
       ft(sp2[3].querySelector(".fx-box"), BOXZ, { scaleX: 1, scaleY: 1, rotation: 0, skewX: 0, skewY: 0, duration: 0.16, ease: "power3.out" }, BOX2);
       // chaque phrase sort (opacité 1 → 0, flou 0 → 6 px, 0,14 s)
       ft(s1, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 2.36);

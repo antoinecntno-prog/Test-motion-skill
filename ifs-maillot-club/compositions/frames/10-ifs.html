@@ -60,9 +60,9 @@
     #p10-ifront { position: absolute; left: 0; top: 0; width: 150px; height: 150px; overflow: visible; transform-origin: 75px 75px; }
     #p10-glint, #p10-spark { opacity: 0; }
     #p10-wm { position: absolute; left: 0; top: 0; white-space: nowrap; transform-origin: 0 0; }
-    #p10-wm b { display: block; font: 900 72px/1 "Archivo", sans-serif; font-stretch: 85%; letter-spacing: -.01em; color: #F5EFF3; }
+    #p10-wm b { display: block; font: 400 78px/1.1 "Pacifico", cursive; color: #F5EFF3; margin-top: -14px; }
     #p10-wm .p10-l { display: inline-block; opacity: 0; transform-origin: 50% 60%; }
-    #p10-tag { display: block; margin-top: 14px; font: 600 26px/1.2 "Hanken Grotesk", sans-serif; color: #C8BCC5; opacity: 0; }
+    #p10-tag { display: block; margin: 0 0 0 132px; font: italic 700 30px/1.1 "Hanken Grotesk", sans-serif; letter-spacing: .14em; color: #C8BCC5; opacity: 0; }
 
     /* ---- avant-plan : une boucle du fil, floue, coupée par le bord gauche ---- */
     #p10-loop { position: absolute; left: 0; top: 0; overflow: visible; }
@@ -127,7 +127,7 @@
             <defs><clipPath id="p10-iclip"><rect width="64" height="64" rx="14"/></clipPath></defs>
             <g clip-path="url(#p10-iclip)">
               <rect width="64" height="64" fill="#FFFFFF"/>
-              <path d="M3.87 48V17H9.61V48ZM14.94 48V17H35.67V22.16H20.68V29.54H33.71V34.66H20.68V48ZM49.37 48.58Q44.43 48.58 41.25 46Q38.07 43.42 37.4 39.15L43.01 37.77Q43.5 40.62 45.25 42.04Q47.01 43.46 49.59 43.46Q50.97 43.46 52.06 43Q53.15 42.53 53.790 41.62Q54.44 40.71 54.44 39.46Q54.44 38.3 53.77 37.46Q53.1 36.61 51.75 35.9Q50.39 35.19 48.35 34.43Q45.41 33.28 43.43 31.97Q41.45 30.650 40.47 28.92Q39.49 27.19 39.49 24.83Q39.49 22.34 40.72 20.42Q41.94 18.51 44.14 17.4Q46.34 16.29 49.28 16.29Q52.39 16.29 54.82 17.73Q57.24 19.18 58.71 22.03L54.13 24.83Q53.19 23.14 51.93 22.27Q50.66 21.4 49.1 21.4Q47.99 21.4 47.12 21.83Q46.25 22.25 45.74 22.98Q45.23 23.72 45.23 24.69Q45.23 25.72 45.83 26.52Q46.43 27.32 47.79 28.05Q49.15 28.79 51.32 29.59Q54.22 30.65 56.15 31.94Q58.09 33.23 59.11 34.95Q60.13 36.66 60.13 39.1Q60.13 41.86 58.77 44.02Q57.42 46.18 55.02 47.38Q52.61 48.58 49.37 48.58Z" fill="#1F2A44"/>
+              <path d="M35.6 21.4 A15 15 0 1 0 35.6 42.6" fill="none" stroke="#1A1320" stroke-width="9.5"/>
               <path d="M33.6 55.5C30.5 59.5 29 60.5 29.5 63" fill="none" stroke="#D62839" stroke-width="2.13" stroke-linecap="round"/>
               <path d="M32.55 57.39 44.38 40.94 59.59 11.63 58.27 6.48 53.34 8.47 38.77 38.11Z" fill="#FFFFFF"/>
             </g>
@@ -148,7 +148,7 @@
         </svg>
 
         <!-- le wordmark -->
-        <div id="p10-wm"><b><span class="p10-l">I</span><span class="p10-l">F</span><span class="p10-l">S</span></b><span id="p10-tag">Industrie Française de Sellerie</span></div>
+        <div id="p10-wm"><b><span class="p10-l">C</span><span class="p10-l">o</span><span class="p10-l">n</span><span class="p10-l">t</span><span class="p10-l">i</span><span class="p10-l">n</span><span class="p10-l">o</span></b><span id="p10-tag">SPORT</span></div>
 
       </div></div></div></div>
     </div>
@@ -319,9 +319,9 @@ function fxSubtitle(el, words) {
 
       /* ---- sous-titres (fxSubtitle du kit) ---- */
       function glue(a) { var n = a.nextSibling; if (n && n.nodeType === 3) n.parentNode.removeChild(n); }
-      var W1S = [["IFS.", 0.29]];
-      var W2S = [["Une", 1.25], ["qualité", 1.50], ["irréprochable", 1.96, "box"], [",", 1.96]];
-      var W3S = [["livrée", 2.96], ["en", 3.48], ["moins", 3.82], ["d'un", 3.98], ["mois.", 4.26]];
+      var W1S = [["Contino", 0.74], ["Sport.", 1.05]];
+      var W2S = [["Une", 1.62], ["qualité", 1.76], ["irréprochable", 2.20, "box"], [",", 2.20]];
+      var W3S = [["livrée", 3.28], ["en", 3.80], ["moins", 4.08], ["d'un", 4.24], ["mois.", 4.38]];
       var s1 = $("s1"), s2 = $("s2"), s3 = $("s3");
       var sp1 = fxSubtitle(s1, W1S), sp2 = fxSubtitle(s2, W2S), sp3 = fxSubtitle(s3, W3S);
       glue(sp2[2]); sp2[2].classList.add("p10-kw");
@@ -462,11 +462,11 @@ function fxSubtitle(el, words) {
       }
       sayWords(sp1, W1S); sayWords(sp2, W2S); sayWords(sp3, W3S);
       var BOXZ = { scaleX: 0, scaleY: 1, rotation: 0, skewX: 0, skewY: 0 };
-      ft(sp2[2].querySelector(".fx-box"), BOXZ, { scaleX: 1, scaleY: 1, rotation: 0, skewX: 0, skewY: 0, duration: 0.16, ease: "power3.out" }, 1.92);
+      ft(sp2[2].querySelector(".fx-box"), BOXZ, { scaleX: 1, scaleY: 1, rotation: 0, skewX: 0, skewY: 0, duration: 0.16, ease: "power3.out" }, 2.16);
       // chaque morceau sort avant le suivant (opacité 1 → 0, flou 0 → 6 px, 0,14 s)
-      ft(s1, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 1.06);
-      ft(s2, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 2.78);
-      ft(s3, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 4.40);
+      ft(s1, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 1.46);
+      ft(s2, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 3.12);
+      // le dernier morceau tient jusqu'à la coupe : « mois. » arrive à 4.38, la séquence 11 enchaîne sur « Découvrez »
 
       // durée exacte de la séquence
       tl.set({}, {}, DUR);

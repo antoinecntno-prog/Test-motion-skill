@@ -51,8 +51,8 @@
     #p11-icon img { display: block; width: 150px; height: 150px; }
     #p11-glint { position: absolute; left: 0; top: 0; overflow: visible; opacity: 0; }
     #p11-wm { position: absolute; left: 873px; top: 226px; white-space: nowrap; }
-    #p11-wm b { display: block; font: 900 72px/1 "Archivo", sans-serif; font-stretch: 85%; letter-spacing: -.01em; color: #F5EFF3; }
-    #p11-wm span { display: block; margin-top: 14px; font: 600 26px/1.2 "Hanken Grotesk", sans-serif; color: #C8BCC5; }
+    #p11-wm b { display: block; font: 400 78px/1.1 "Pacifico", cursive; color: #F5EFF3; margin-top: -14px; }
+    #p11-wm span { display: block; margin: 0 0 0 132px; font: italic 700 30px/1.1 "Hanken Grotesk", sans-serif; letter-spacing: .14em; color: #C8BCC5; }
 
     /* ---- sujet : le fil qui descend, le bouton, l'URL ---- */
     #p11-tailB { position: absolute; left: 0; top: 0; overflow: visible; opacity: 0; }
@@ -101,7 +101,7 @@
           <div id="p11-halo"></div>
           <svg id="p11-tailA" width="1920" height="1080"><path id="p11-tailA-path"/></svg>
           <svg id="p11-tailB" width="1920" height="1080"><path id="p11-tailB-path"/></svg>
-          <div id="p11-icon"><img src="assets/img/logo-ifs.svg" alt="">
+          <div id="p11-icon"><img src="assets/img/logo-contino.svg" alt="">
             <svg id="p11-glint" width="150" height="150" viewBox="0 0 64 64">
               <defs>
                 <clipPath id="p11-needle-clip"><path d="M33 56.5 42.86 40.17 58.07 10.86 58.38 8.45 57.68 7.64 56.62 7.55 54.86 9.24 40.29 38.88Z"/></clipPath>
@@ -110,7 +110,7 @@
               <g clip-path="url(#p11-needle-clip)"><ellipse id="p11-glint-dot" cx="0" cy="0" rx="9" ry="5" fill="url(#p11-glint-g)"/></g>
             </svg>
           </div>
-          <div id="p11-wm"><b>IFS</b><span>Industrie Française de Sellerie</span></div>
+          <div id="p11-wm"><b>Contino</b><span>SPORT</span></div>
         </div>
 
         <!-- sujet net : le bouton et son URL -->
@@ -278,7 +278,7 @@ function fxSubtitle(el, words) {
       glue(sp[2]); sp[2].classList.add("p11-kw");
 
       /* ---- URL : lettre à lettre ---- */
-      var URL_TXT = "catalogue-ifs.netlify.app", url = $("url");
+      var URL_TXT = "continosport.fr", url = $("url");
       url.innerHTML = URL_TXT.split("").map(function (ch) { return "<i>" + ch + "</i>"; }).join("");
       var letters = url.querySelectorAll("i");
 

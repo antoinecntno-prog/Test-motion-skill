@@ -52,7 +52,7 @@ Chaque maillot est cousu chez nous.
 Et tu es livré en moins d'un mois.
 Samedi, le numéro quinze monte au panier.
 Le rouge est resté rouge.
-IFS. Une qualité irréprochable, livrée en moins d'un mois.
+Contino Sport. Une qualité irréprochable, livrée en moins d'un mois.
 Découvre le catalogue.
 ```
 
@@ -93,7 +93,7 @@ La sublimation imprime les couleurs au cœur de la fibre.
 Chaque maillot est cousu dans notre atelier.
 Livraison en moins d'un mois.
 Jour de match. Le numéro quinze monte au panier.
-IFS. Une qualité irréprochable, livrée en moins d'un mois.
+Contino Sport. Une qualité irréprochable, livrée en moins d'un mois.
 Découvrez notre catalogue.
 ```
 
@@ -111,7 +111,7 @@ Septembre, premier match... et toujours pas de maillots.
 Le jour où ils arrivent, le rouge a viré à l'orange.
 Et le numéro se décolle au premier lavage.
 On reprend depuis le début.
-Avec IFS, tout part d'un mail.
+Avec Contino Sport, tout part d’un mail.
 Vous envoyez votre design et votre logo.
 Vous validez le BAT.
 Nous faisons le reste.
@@ -121,6 +121,6 @@ La confection assemble chaque maillot.
 Et vous êtes livrés en moins d'un mois.
 Samedi, le numéro quinze monte au panier.
 Le rouge est resté rouge.
-IFS. Une qualité irréprochable, livrée en moins d'un mois.
+Contino Sport. Une qualité irréprochable, livrée en moins d'un mois.
 Découvrez notre catalogue.
 ```

@@ -22,7 +22,7 @@ for k, (src, a, b, (s, e), cut) in enumerate(PATCHES):
         chain = f"[{k+1}]atrim={a}:{b},asetpts=PTS-STARTPTS,"
     d = int(s * 1000)
     graph.append(chain + f"atempo={tempo:.4f},aformat=sample_rates=44100:channel_layouts=stereo,afade=t=in:d=0.02,adelay={d}|{d}[n{k}]")
-    labels.append(f"[n{k}]"); mute.append(f"between(t,{s - 0.12},{e})")
+    labels.append(f"[n{k}]"); mute.append(f"between(t,{s - 0.45},{e})")   # couvre l'attaque de l'ancien « IFS » (le « i » parasite)
     print(f"{os.path.basename(src)} : {speech:.2f} s de parole dans {e - s:.2f} s, tempo x{tempo:.3f}")
 graph.insert(0, f"[0]aformat=sample_rates=44100:channel_layouts=stereo,volume=enable='{'+'.join(mute)}':volume=0[base]")
 graph.append("[base]" + "".join(labels) + f"amix=inputs={len(labels)+1}:normalize=0:duration=first[out]")

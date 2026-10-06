@@ -8,7 +8,8 @@ every rebuild. Each entry replaces one sentence:
     "slot": [42.62, 46.96],                       # where it goes in the montage (s): from the old sentence's start
                                                   # to just before the next sentence
     "speech": [0.00, 4.93],                       # optional: speech bounds inside the take (default: detected)
-    "drop": [1.22, 1.47]}]                        # optional: a pause inside the take to shorten
+    "drop": [1.22, 1.47],                         # optional: a pause inside the take to shorten
+    "lead": 0.35}]                                # optional: mute margin before the slot (default 0.45)
 
 The old sentence is muted from slot start - 0.45 s (the attack of its first word starts before the transcript says:
 a stray "i" of the old "IFS" stayed audible with a 0.12 s margin) to slot end. The take is sped up just enough to fit
@@ -60,7 +61,8 @@ def main():
         graph.append(chain + f"atempo={tempo:.4f},aformat=sample_rates=44100:channel_layouts=stereo,"
                              f"afade=t=in:d=0.02,adelay={d}|{d}[n{k}]")
         labels.append(f"[n{k}]")
-        mute.append(f"between(t,{max(0.0, s - LEAD):.3f},{e:.3f})")
+        lead = float(p.get("lead", LEAD))                      # shorter when the previous sentence ends close to the slot
+        mute.append(f"between(t,{max(0.0, s - lead):.3f},{e:.3f})")
         warn = "  (over x1.10: regenerate a tighter take)" if tempo > 1.10 else ""
         print(f"patch-voix: {os.path.basename(take)}: {speech:.2f} s of speech in {e - s:.2f} s, tempo x{tempo:.3f}{warn}")
     graph.insert(0, f"[0]aformat=sample_rates=44100:channel_layouts=stereo,volume=enable='{'+'.join(mute)}':volume=0[base]")

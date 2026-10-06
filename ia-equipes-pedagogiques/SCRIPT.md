@@ -1,8 +1,8 @@
 # Script : Formation IA pour les équipes pédagogiques
 
 Cible : directions d'établissement, coordinateurs et équipes enseignantes. Diffusion : page LinkedIn perso d'Antoine
-Contino, formateur IA. Appel à l'action : réserver un appel (https://calendly.com/antoine-cntno/30min) ; plaquettes
-sur antoinecontino.fr.
+Contino, formateur IA. Appel à l'action : réserver un appel (https://calendly.com/antoine-cntno/30min) ; lien école
+antoinecontino.fr/ecoles.
 Douleur : le temps des équipes part dans l'administratif (mails, bulletins, tableaux, réunions) et le sens s'use.
 Promesse : du temps récupéré avec l'IA sur leurs vrais documents, et le sens du métier qui revient.
 Vouvoiement. Voix Paul K (Eleven v4). Durée visée : 45 à 50 s.
@@ -15,7 +15,7 @@ Vouvoiement. Voix Paul K (Eleven v4). Durée visée : 45 à 50 s.
 4. **Le bulletin** : un seul bulletin, écrit le soir à la main ; le même, préparé avec l'IA et relu en deux minutes. « Même bulletin. Une soirée de plus. »
 5. **La réunion** : la réunion qui prépare la réunion, puis la réunion où l'on parle enfin des élèves. « On a parlé des élèves. »
 
-## Version A : « La salle des profs » (concept 1, touches du 3)
+## Version A : « La salle des profs » (concept 1, touches du 3) · VALIDÉE le 06/10/2026
 
 ### Version mise en scène
 
@@ -34,7 +34,7 @@ Vouvoiement. Voix Paul K (Eleven v4). Durée visée : 45 à 50 s.
 | | Aucun prérequis technique : on part de votre quotidien. | Le carnet manuscrit : « vos documents, vos outils ». |
 | | Le temps gagné revient aux élèves. Et le sens, avec. | Les cases s'effacent, les taches ocre des élèves reviennent, nettes. |
 | 6. Marque et appel à l'action | Antoine Contino, formateur IA. | Signature manuscrite à l'encre bordeaux. |
-| | Réservez un appel. Les plaquettes sont sur antoinecontino.fr. | Bouton « Réserver un appel », clic ; dessous : calendly.com/antoine-cntno/30min · antoinecontino.fr |
+| | Réservez un appel. | Bouton « Réserver un appel », clic ; dessous : calendly.com/antoine-cntno/30min · antoinecontino.fr/ecoles |
 
 ### Version à coller dans ElevenLabs
 
@@ -51,7 +51,7 @@ Un mail difficile trouve son ton. Une grille d'évaluation se construit en direc
 Aucun prérequis technique : on part de votre quotidien.
 Le temps gagné revient aux élèves. Et le sens, avec.
 Antoine Contino, formateur IA.
-Réservez un appel. Les plaquettes sont sur antoinecontino.fr.
+Réservez un appel.
 ```
 
 ## Version B : « Le compteur » (concept 2, touches du 5)

@@ -2,7 +2,7 @@
 
 Cible : enseignants et formateurs (lycées, écoles, universités), et les directions qui les accompagnent. Diffusion :
 page LinkedIn perso d'Antoine Contino, formateur IA. Appel à l'action : réserver un appel
-(https://calendly.com/antoine-cntno/30min) ; plaquettes sur antoinecontino.fr.
+(https://calendly.com/antoine-cntno/30min) ; lien école antoinecontino.fr/ecoles.
 Douleur : le cours se prépare seul le soir, reste magistral, pendant que les étudiants ont déjà l'IA en poche.
 Promesse : des cours interactifs préparés avec l'IA, et des étudiants qui apprennent à s'en servir pour progresser.
 Vouvoiement. Voix Paul K (Eleven v4). Durée visée : 45 à 50 s.
@@ -15,7 +15,7 @@ Vouvoiement. Voix Paul K (Eleven v4). Durée visée : 45 à 50 s.
 4. **Le quiz** : un cours magistral devient un quiz en direct, les mains se lèvent, les scores montent. « Trente mains levées. »
 5. **Le binôme** : le prof et l'IA préparent à deux ; l'étudiant et l'IA révisent à deux ; le prof garde la dernière main. « À deux, on va plus loin. Vous gardez la main. »
 
-## Version A : « Trente téléphones » (concept 1, touches du 4)
+## Version A : « Trente téléphones » (concept 1, touches du 4) · VALIDÉE le 06/10/2026
 
 ### Version mise en scène
 
@@ -33,7 +33,7 @@ Vouvoiement. Voix Paul K (Eleven v4). Durée visée : 45 à 50 s.
 | | Vos contenus, vos objectifs : l'IA s'adapte à votre pédagogie. | Le plan de cours manuscrit du prof, l'IA en marge, en encre plus claire. |
 | | Le cours redevient vivant. Et vous, disponible. | La salle pleine de couleur, trente mains levées, le prof au milieu des tables. |
 | 6. Marque et appel à l'action | Antoine Contino, formateur IA. | Signature manuscrite à l'encre bordeaux. |
-| | Réservez un appel. Les plaquettes sont sur antoinecontino.fr. | Bouton « Réserver un appel », clic ; dessous : calendly.com/antoine-cntno/30min · antoinecontino.fr |
+| | Réservez un appel. | Bouton « Réserver un appel », clic ; dessous : calendly.com/antoine-cntno/30min · antoinecontino.fr/ecoles |
 
 ### Version à coller dans ElevenLabs
 
@@ -49,7 +49,7 @@ Vos étudiants apprennent à s'en servir pour progresser : des réflexes qu'ils 
 Vos contenus, vos objectifs : l'IA s'adapte à votre pédagogie.
 Le cours redevient vivant. Et vous, disponible.
 Antoine Contino, formateur IA.
-Réservez un appel. Les plaquettes sont sur antoinecontino.fr.
+Réservez un appel.
 ```
 
 ## Version B : « Le plan de cours » (concept 2, touches du 5)

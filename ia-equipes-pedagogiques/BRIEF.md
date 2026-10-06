@@ -25,7 +25,7 @@
 - Nom exact de la marque : « Antoine Contino, formateur IA ».
 - Logo : aucun fourni ; signature manuscrite à l'encre bordeaux (à remplacer par le logo du site si fourni).
 - Appel à l'action et URL exacte : bouton « Réserver un appel », https://calendly.com/antoine-cntno/30min ;
-  sous le bouton et dans la voix : antoinecontino.fr (les plaquettes).
+  sous le bouton : antoinecontino.fr/ecoles (lien direct école). La voix dit seulement « Réservez un appel. »
 - Diffusion : page LinkedIn perso d'Antoine Contino, 16:9.
 
 ## 4. Matière et confidentialité

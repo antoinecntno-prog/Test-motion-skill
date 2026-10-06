@@ -2,7 +2,7 @@
 
 Cible : directions d'établissement, responsables pédagogiques et enseignants (lycées, écoles, universités) qui
 décident d'une formation pour leurs étudiants. Diffusion : page LinkedIn perso d'Antoine Contino, formateur IA.
-Appel à l'action : réserver un appel (https://calendly.com/antoine-cntno/30min) ; plaquettes sur antoinecontino.fr.
+Appel à l'action : réserver un appel (https://calendly.com/antoine-cntno/30min) ; lien école antoinecontino.fr/ecoles.
 Douleur : les étudiants copient l'IA sans apprendre, les cours perdent leur attention et leur curiosité.
 Promesse : des étudiants formés à apprendre avec l'IA, par le jeu et le défi ; la curiosité revient.
 Vouvoiement. Voix Paul K (Eleven v4). Durée visée : 45 à 50 s.
@@ -15,7 +15,7 @@ Vouvoiement. Voix Paul K (Eleven v4). Durée visée : 45 à 50 s.
 4. **Le match** : deux équipes d'étudiants, un défi, l'IA comme arbitre et comme adversaire. « Ils ont gagné. Et ils ont appris. »
 5. **Avant / après** : écran partagé, le même devoir, copié à gauche, construit à droite avec l'IA. « Même devoir. Un étudiant en plus. »
 
-## Version A : « Le copier-coller » (concept 1, touches du 3)
+## Version A : « Le copier-coller » (concept 1, touches du 3) · VALIDÉE le 06/10/2026
 
 ### Version mise en scène
 
@@ -24,9 +24,9 @@ Vouvoiement. Voix Paul K (Eleven v4). Durée visée : 45 à 50 s.
 | 1. Accroche datée | Dimanche, vingt-trois heures. Votre étudiant colle le sujet dans une IA. | Un bureau d'étudiant peint à l'aquarelle, lampe allumée, l'écran du portable : le sujet collé dans une fenêtre de chat. |
 | | Lundi, il rend trois pages qu'il n'a pas lues. | Les pages sortent de l'imprimante, grises, sans une tache de couleur. Elles glissent sur le bureau du prof. |
 | 2. Gag muet (2,5 s) | *(silence)* | Le stylo rouge du prof reste en l'air au-dessus de la copie. Il tourne une page, puis l'autre. Rien à annoter. |
-| 3. Diagnostic | Il a gagné une soirée. Il a perdu le cours. | La lampe s'éteint d'un côté, le cahier reste blanc de l'autre. |
+| 3. Diagnostic | Il a gagné une soirée. Il a perdu la leçon. | La lampe s'éteint d'un côté, le cahier reste blanc de l'autre. |
 | | La note tombe, et personne n'a rien appris. | Une note s'écrit à l'encre bordeaux, puis pâlit jusqu'au gris. |
-| | Et la curiosité s'éteint, un copier-coller à la fois. | Des taches de couleur sur la page s'effacent une à une, laissant le papier nu. |
+| | La curiosité s'éteint, un copier-coller à la fois. | Des taches de couleur sur la page s'effacent une à une, laissant le papier nu. |
 | 4. Pivot sur noir | Et si l'IA servait à apprendre ? | Noir, texte centré. 1,5 s de silence. Le papier revient, éclairé. |
 | 5. Solution | Je forme vos étudiants à l'IA. | Une salle de classe aquarelle, les étudiants autour de tables, un portable par table. |
 | | Ils apprennent à la questionner, à la vérifier, à la contredire, à créer avec elle. | Sur l'écran, une question tapée ; une source cochée ; une réponse barrée ; un dessin qui naît. |
@@ -35,16 +35,16 @@ Vouvoiement. Voix Paul K (Eleven v4). Durée visée : 45 à 50 s.
 | | Une méthode et de bons réflexes suffisent. | Un carnet de réflexes manuscrit (Caveat) se referme. |
 | | Et le cours redevient le leur. | La page du début, colorée cette fois, dans les mains d'un étudiant. |
 | 6. Marque et appel à l'action | Antoine Contino, formateur IA. | Signature manuscrite à l'encre bordeaux, « formateur IA » en DM Sans. |
-| | Réservez un appel. Les plaquettes sont sur antoinecontino.fr. | Bouton « Réserver un appel », le curseur arrive et clique ; sous le bouton : calendly.com/antoine-cntno/30min · antoinecontino.fr |
+| | Réservez un appel. | Bouton « Réserver un appel », le curseur arrive et clique ; sous le bouton : calendly.com/antoine-cntno/30min · antoinecontino.fr/ecoles |
 
 ### Version à coller dans ElevenLabs
 
 ```
 Dimanche, vingt-trois heures. Votre étudiant colle le sujet dans une IA.
 Lundi, il rend trois pages qu'il n'a pas lues.
-Il a gagné une soirée. Il a perdu le cours.
+Il a gagné une soirée. Il a perdu la leçon.
 La note tombe, et personne n'a rien appris.
-Et la curiosité s'éteint, un copier-coller à la fois.
+La curiosité s'éteint, un copier-coller à la fois.
 Et si l'IA servait à apprendre ?
 Je forme vos étudiants à l'IA.
 Ils apprennent à la questionner, à la vérifier, à la contredire, à créer avec elle.
@@ -53,7 +53,7 @@ En équipes, par défis, la curiosité revient.
 Une méthode et de bons réflexes suffisent.
 Et le cours redevient le leur.
 Antoine Contino, formateur IA.
-Réservez un appel. Les plaquettes sont sur antoinecontino.fr.
+Réservez un appel.
 ```
 
 ## Version B : « La question » (concept 2, touches du 4)

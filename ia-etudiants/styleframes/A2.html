@@ -1,0 +1,52 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>A2 · Le carnet · 12,5 s</title>
+<link rel="stylesheet" href="_base.css">
+<style>
+.scene{position:absolute;left:0;top:0;width:1920px;height:1080px}
+.spine{position:absolute;left:943px;top:0;width:34px;height:1080px;background:linear-gradient(90deg,rgba(58,42,36,0) 0,rgba(58,42,36,.14) 45%,rgba(58,42,36,.26) 50%,rgba(58,42,36,.14) 55%,rgba(58,42,36,0) 100%)}
+.copy{position:absolute;left:300px;top:150px;width:520px;height:690px;background:#F6EEE0;box-shadow:0 20px 50px rgba(58,42,36,.16);transform:rotate(-2.5deg)}
+.copy .l{position:absolute;left:46px;right:46px;height:3px;background:#B9AE9E;opacity:.55}
+.copy .nom{position:absolute;left:46px;top:40px;font:400 26px/1 "Caveat",cursive;color:#8E847A}
+.copy2{position:absolute;left:340px;top:170px;width:520px;height:690px;background:#F2E9D9;transform:rotate(3deg);box-shadow:0 10px 30px rgba(58,42,36,.1)}
+.note{position:absolute;left:600px;top:120px;font:600 150px/1 "Caveat",cursive;color:#9C8C83;transform:rotate(-8deg);opacity:.75}
+.lampoff{position:absolute;left:1080px;top:140px;font:400 32px/1 "Caveat",cursive;color:var(--ink-light);transform:rotate(-3deg)}
+</style></head><body>
+<div class="stage">
+  <svg class="scene" id="s" viewBox="0 0 1920 1080"></svg>
+  <div class="spine"></div>
+  <div class="copy2"></div>
+  <div class="copy"><div class="nom">Dissertation · 1/3</div>
+    <div class="l" style="top:110px"></div><div class="l" style="top:150px;right:120px"></div><div class="l" style="top:190px"></div><div class="l" style="top:230px;right:200px"></div>
+    <div class="l" style="top:300px"></div><div class="l" style="top:340px"></div><div class="l" style="top:380px;right:90px"></div><div class="l" style="top:420px"></div><div class="l" style="top:460px;right:260px"></div>
+    <div class="l" style="top:530px"></div><div class="l" style="top:570px"></div><div class="l" style="top:610px;right:160px"></div>
+  </div>
+  <div class="note">12</div>
+  <div class="lampoff">lampe éteinte</div>
+  <svg class="scene" id="s2" viewBox="0 0 1920 1080"></svg>
+  <div class="paper"></div><div class="fibres"></div>
+  <div class="sub">La <span class="stroke">curiosité</span> s'éteint, un copier-coller à la fois.</div>
+</div>
+<script src="_aquarelle.js"></script>
+<script>
+const svg = document.getElementById("s"), over = document.getElementById("s2"); const { aqDefs, aqWash, aqInk, aqDrop, el } = AQ; aqDefs(svg); aqDefs(over);
+// ce qui reste des couleurs : des taches en train de s'effacer vers les bords (séchage inversé), pâles, découpées
+aqWash(svg, { cx: 180, cy: 300, r: 150, seed: 12, w: 0.3, n: 9, ry: 0.8 }, "#EFD7A6", 0.35, true);
+aqWash(svg, { cx: 120, cy: 760, r: 120, seed: 13, w: 0.3, n: 8 }, "#C98A93", 0.3, true);
+aqWash(svg, { cx: 1700, cy: 240, r: 170, seed: 14, w: 0.26, n: 9, ry: 0.7 }, "#EFD7A6", 0.3, true);
+aqWash(svg, { cx: 1820, cy: 760, r: 130, seed: 15, w: 0.3, n: 8 }, "#C98A93", 0.28, true);
+// la page de droite : le bureau du prof, lavis gris de nuit, la lampe éteinte en encre
+aqWash(svg, { cx: 1480, cy: 620, r: 460, seed: 16, w: 0.12, n: 12, ry: 0.55 }, "#CFC6BA", 0.5, true);
+const ink = el("g", { filter: "url(#ink)" }, over);
+aqInk(svg, "M1560 820 L1560 600 Q1560 540 1630 520 L1730 490", 6, "#3A2A24", ink);
+aqInk(svg, "M1700 470 L1770 430 L1820 510 Z", 6, "#3A2A24", ink);
+aqInk(svg, "M1510 822 L1610 822", 6, "#3A2A24", ink);
+// le stylo rouge, posé en travers, bouchon fermé
+const pen = el("g", { transform: "rotate(-34 560 560)" }, over);
+aqWash(svg, "M380 552 L740 552 L740 572 L380 572 Z", "#9B2F3F", 0.9, false, pen);
+aqInk(svg, "M380 552 L740 552 L740 572 L380 572 Z M740 552 L780 562 L740 572", 4, "#3A2A24", el("g", { filter: "url(#ink)" }, pen));
+// l'encre de la note qui a séché en gris : une tache sous le 12
+aqWash(svg, { cx: 700, cy: 230, r: 130, seed: 17, w: 0.22, n: 9, ry: 0.7 }, "#A99F95", 0.35);
+// une dernière goutte de couleur qui s'efface, au premier plan, légèrement floue
+const fg = el("g", { filter: "url(#aq-blur)", opacity: 0.6 }, over);
+aqWash(svg, { cx: 120, cy: 980, r: 70, seed: 18, w: 0.2, n: 8 }, "#C98A2E", 0.7, false, fg);
+</script>
+</body></html>

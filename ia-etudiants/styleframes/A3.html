@@ -1,0 +1,53 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>A3 · Le carnet · 33 s</title>
+<link rel="stylesheet" href="_base.css">
+<style>
+.scene{position:absolute;left:0;top:0;width:1920px;height:1080px}
+.spine{position:absolute;left:-20px;top:0;width:34px;height:1080px;background:linear-gradient(90deg,rgba(58,42,36,.2),rgba(58,42,36,0))}
+.chrono{position:absolute;left:1380px;top:120px;width:300px;height:300px;font-family:"DM Sans",sans-serif}
+.chrono .n{position:absolute;left:0;width:300px;top:112px;text-align:center;font:700 74px/1 "DM Sans";color:var(--ink);letter-spacing:-.02em}
+.chrono .l{position:absolute;left:0;width:300px;top:196px;text-align:center;font:600 22px/1 "Caveat",cursive;color:var(--bordeaux);font-size:34px}
+.score{position:absolute;top:470px;font:600 30px/1 "Caveat",cursive;color:var(--ink-2)}
+.defi{position:absolute;left:140px;top:110px;font:600 92px/1 "Fraunces",serif;color:var(--ink);letter-spacing:-.02em}
+.defi small{display:block;font:400 40px/1.2 "Caveat",cursive;color:var(--bordeaux);margin-top:14px}
+</style></head><body>
+<div class="stage">
+  <svg class="scene" id="s" viewBox="0 0 1920 1080"></svg>
+  <div class="spine"></div>
+  <div class="defi">Défi 3<small>Trouvez l'erreur de l'IA</small></div>
+  <div class="chrono"><div class="n">00:42</div><div class="l">il reste</div></div>
+  <div class="score" style="left:1392px">équipe ocre</div>
+  <div class="score" style="left:1560px">équipe bordeaux</div>
+  <svg class="scene" id="s2" viewBox="0 0 1920 1080"></svg>
+  <div class="paper"></div><div class="fibres"></div>
+  <div class="sub">En <span class="box">équipes</span>, par défis, la curiosité revient.</div>
+</div>
+<script src="_aquarelle.js"></script>
+<script>
+const svg = document.getElementById("s"), over = document.getElementById("s2"); const { aqDefs, aqWash, aqInk, aqDrop, aqFigure, el } = AQ; aqDefs(svg); aqDefs(over);
+// le sol de la classe : grand lavis ocre pâle
+aqWash(svg, { cx: 760, cy: 760, r: 760, seed: 20, w: 0.1, n: 12, ry: 0.42 }, "#EFD7A6", 0.55, true);
+// les étudiants : silhouettes en taches, ocre d'un côté, bordeaux de l'autre, assis autour des tables
+const ocre = "#C98A2E", bdx = "#7A1E2E";
+aqFigure(svg, 240, 400, 180, ocre, 31, "dos"); aqFigure(svg, 370, 410, 170, ocre, 32, "penche");
+aqFigure(svg, 700, 360, 180, bdx, 33, "dos"); aqFigure(svg, 830, 370, 170, bdx, 34, "bras-leve");
+aqFigure(svg, 250, 630, 200, ocre, 35, "penche"); aqFigure(svg, 410, 640, 190, ocre, 36, "dos");
+aqFigure(svg, 740, 600, 200, bdx, 37, "dos"); aqFigure(svg, 910, 610, 190, bdx, 38, "penche");
+// quatre tables en lavis brun, en perspective légère
+[[300, 560, 230], [760, 520, 230], [330, 800, 260], [820, 770, 260]].forEach(([x, y, w], i) =>
+  aqWash(svg, `M${x - w / 2} ${y} L${x + w / 2} ${y} L${x + w / 2 + 14} ${y + 70} L${x - w / 2 - 14} ${y + 70} Z`, "#B99A74", 0.8));
+// un portable par table, en encre
+const ink = el("g", { filter: "url(#ink)" }, over);
+[[300, 575], [760, 535], [330, 815], [820, 785]].forEach(([x, y]) => { aqInk(svg, `M${x - 46} ${y - 40} L${x + 46} ${y - 40} L${x + 52} ${y} L${x - 52} ${y} Z`, 3.5, "#3A2A24", ink); });
+// le chronomètre : cercle d'encre, aiguille, tache ocre derrière
+aqWash(svg, { cx: 1530, cy: 270, r: 150, seed: 40, w: 0.12, n: 10 }, "#EFD7A6", 0.8);
+aqInk(svg, "M1530 130 A140 140 0 1 1 1529 130", 6, "#3A2A24", ink);
+aqInk(svg, "M1530 270 L1530 160", 5, "#7A1E2E", ink);
+// deux colonnes de points qui montent : ocre et bordeaux, en taches empilées
+for (let i = 0; i < 7; i++) aqDrop(svg, 1460, 840 - i * 44, 20, ocre, 50 + i);
+for (let i = 0; i < 9; i++) aqDrop(svg, 1660, 840 - i * 44, 20, bdx, 60 + i);
+aqInk(svg, "M1380 870 L1760 870", 4, "#3A2A24", ink);
+// avant-plan : une goutte ocre nette qui tombe, grande, avec sa traînée
+aqDrop(svg, 1160, 300, 44, ocre, 70);
+aqWash(svg, "M1150 300 C 1146 200 1152 120 1158 60 L 1170 60 C 1166 120 1170 200 1172 300 Z", ocre, 0.5);
+</script>
+</body></html>

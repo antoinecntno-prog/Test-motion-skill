@@ -1,0 +1,27 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>C2 · La fenêtre · 15 s (pivot)</title>
+<link rel="stylesheet" href="_base.css">
+<style>
+html,body,.stage{background:#17110F}
+.scene{position:absolute;left:0;top:0;width:1920px;height:1080px}
+.q{position:absolute;left:0;top:470px;width:1920px;text-align:center;font:600 80px/1.1 "Fraunces",serif;color:#F4EBDD;letter-spacing:-.01em}
+.q .stroke{position:relative;display:inline-block}
+.q .stroke::after{content:"";position:absolute;left:-2%;right:-3%;bottom:-4px;height:10px;border-radius:50%;background:var(--ocre);opacity:.95;transform:rotate(-1.2deg)}
+</style></head><body>
+<div class="stage">
+  <svg class="scene" id="s" viewBox="0 0 1920 1080"></svg>
+  <div class="q">Et si l'IA servait à <span class="stroke">apprendre</span> ?</div>
+  <div class="fibres" style="opacity:.25"></div>
+</div>
+<script src="_aquarelle.js"></script>
+<script>
+const svg = document.getElementById("s"); const { aqDefs, aqInk, el } = AQ; aqDefs(svg);
+// le cadre de la fenêtre, seul sur le noir, en train de tourner : vu en perspective, trait clair, avec un fantôme de sa position d'avant
+const g = el("g", { transform: "translate(960 540)" }, svg);
+const ghost = el("g", { opacity: 0.25, filter: "url(#ink)" }, g);
+aqInk(svg, "M-420 -300 L420 -300 L420 300 L-420 300 Z M-420 -236 L420 -236", 5, "#F4EBDD", ghost);
+const frame = el("g", { transform: "matrix(0.55 0 0 1 0 0) skewY(-6)", filter: "url(#ink)" }, g);
+aqInk(svg, "M-420 -300 L420 -300 L420 300 L-420 300 Z M-420 -236 L420 -236", 7, "#F4EBDD", frame);
+// la lueur chaude qui commence à passer par le cadre
+el("rect", { x: -230, y: -300, width: 460, height: 600, fill: "#C98A2E", opacity: 0.12, filter: "url(#aq-blur)", transform: "skewY(-6)" }, g);
+</script>
+</body></html>

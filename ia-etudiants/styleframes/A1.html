@@ -1,0 +1,57 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>A1 · Le carnet · 0,9 s</title>
+<link rel="stylesheet" href="_base.css">
+<style>
+.scene{position:absolute;left:0;top:0;width:1920px;height:1080px}
+.spine{position:absolute;left:1180px;top:0;width:34px;height:1080px;background:linear-gradient(90deg,rgba(58,42,36,0) 0,rgba(58,42,36,.16) 45%,rgba(58,42,36,.28) 50%,rgba(58,42,36,.16) 55%,rgba(58,42,36,0) 100%)}
+.pagenext{position:absolute;left:1214px;top:0;width:706px;height:1080px;background:#EFE4D2;filter:blur(7px);opacity:.9}
+.date{position:absolute;left:150px;top:96px;font:400 44px/1 "Caveat",cursive;color:var(--ink-2);transform:rotate(-2deg)}
+.h{position:absolute;left:150px;top:150px;font:600 92px/1.02 "Fraunces",serif;color:var(--ink);letter-spacing:-.02em}
+.chat{position:absolute;left:470px;top:410px;width:560px;height:330px;font-family:"DM Sans",sans-serif;color:var(--ink)}
+.chat .t{position:absolute;left:28px;top:14px;font:600 20px/1 "DM Sans";color:var(--ink-2);letter-spacing:.04em}
+.chat .m{position:absolute;left:28px;right:28px;top:78px;padding:16px 20px;background:rgba(201,138,46,.14);border-radius:12px 12px 12px 4px;font:400 22px/30px "DM Sans";color:var(--ink)}
+.chat .m b{display:block;font:600 16px/1 "DM Sans";color:var(--ocre);letter-spacing:.08em;margin-bottom:8px}
+.chat .in{position:absolute;left:28px;right:28px;bottom:22px;height:52px;border-radius:26px;background:rgba(58,42,36,.06);font:400 20px/52px "DM Sans";color:var(--ink-light);padding-left:22px}
+.chat .in i{position:absolute;right:10px;top:8px;width:36px;height:36px;border-radius:50%;background:var(--bordeaux)}
+.cursor{position:absolute;left:964px;top:688px;width:34px;filter:drop-shadow(0 3px 4px rgba(58,42,36,.3))}
+</style></head><body>
+<div class="stage">
+  <div class="pagenext"></div>
+  <svg class="scene" id="s" viewBox="0 0 1920 1080"></svg>
+  <div class="spine"></div>
+  <div class="date">dim. 23 h 04</div>
+  <div class="h">Dimanche,<br>vingt-trois heures.</div>
+  <div class="chat">
+    <div class="t">NOUVELLE CONVERSATION</div>
+    <div class="m"><b>VOUS</b>Rédige une dissertation de trois pages sur les causes de la Première Guerre mondiale, avec introduction et conclusion.</div>
+    <div class="in">Écrire un message<i></i></div>
+  </div>
+  <svg class="cursor" viewBox="0 0 34 44"><path d="M3 2 L31 24 L19 26 L26 40 L20 43 L13 29 L3 38 Z" fill="#F8F1E6" stroke="#3A2A24" stroke-width="2.5" stroke-linejoin="round"/></svg>
+  <div class="paper"></div><div class="fibres"></div>
+  <div class="sub"><span class="box">Dimanche</span>, vingt-trois heures.</div>
+</div>
+<script src="_aquarelle.js"></script>
+<script>
+const svg = document.getElementById("s"); const { aqDefs, aqWash, aqInk, aqDrop, el } = AQ; aqDefs(svg);
+// lueur de la lampe : lavis ocre pâle, large et doux, derrière le bureau
+aqWash(svg, { cx: 760, cy: 560, r: 420, seed: 2, w: 0.14, n: 10, ry: 0.72 }, "#F0DDAE", 0.75, true);
+// la nuit par la fenêtre : lavis bordeaux pâle en haut à droite de la page
+aqWash(svg, { cx: 1010, cy: 180, r: 190, seed: 9, w: 0.2, n: 9, ry: 0.8 }, "#C98A93", 0.55, true);
+// le bureau : une bande de lavis brun, le bord de la table
+aqWash(svg, "M120 790 C 400 760 800 770 1100 780 L1100 860 C 800 850 400 860 120 870 Z", "#B99A74", 0.7);
+// l'ordinateur portable : encre, posé sur le bureau
+const ink = el("g", { filter: "url(#ink)" }, svg);
+aqInk(svg, "M452 392 L1052 392 L1072 758 L430 758 Z", 5, "#3A2A24", ink);          // écran
+aqInk(svg, "M400 760 L1100 760 L1130 800 L370 800 Z", 5, "#3A2A24", ink);          // clavier
+aqInk(svg, "M430 772 L1070 772", 2.5, "#9C8C83", ink);
+// la lampe : pied à gauche, abat-jour vers l'écran
+aqInk(svg, "M150 790 L150 560 Q150 500 220 480 L330 450", 6, "#3A2A24", ink);
+aqInk(svg, "M300 430 L370 390 L420 470 Z", 6, "#3A2A24", ink);
+aqInk(svg, "M100 792 L200 792", 6, "#3A2A24", ink);
+// la lueur sur l'écran : tache ocre très pâle à l'intérieur de l'écran
+aqWash(svg, { cx: 760, cy: 580, r: 230, seed: 4, w: 0.12, n: 9, ry: 0.6 }, "#F7E9C8", 0.9);
+// la goutte bordeaux encore humide au coin de la page, et sa traînée
+aqDrop(svg, 1090, 930, 46, "#7A1E2E", 7);
+aqWash(svg, "M1060 940 C 1000 980 940 1000 880 1010 L 884 1024 C 946 1016 1010 998 1066 962 Z", "#9B2F3F", 0.6);
+aqDrop(svg, 858, 1018, 12, "#9B2F3F", 8);
+</script>
+</body></html>

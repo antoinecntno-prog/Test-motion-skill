@@ -1,0 +1,42 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>B1 · La goutte d'eau · 0,9 s</title>
+<link rel="stylesheet" href="_base.css">
+<style>
+.scene{position:absolute;left:0;top:0;width:1920px;height:1080px}
+.chat{position:absolute;left:560px;top:300px;width:800px;height:420px;font-family:"DM Sans",sans-serif;color:var(--ink)}
+.chat .t{position:absolute;left:34px;top:18px;font:600 22px/1 "DM Sans";color:var(--ink-2);letter-spacing:.04em}
+.chat .m{position:absolute;left:34px;right:34px;top:92px;padding:18px 24px;background:rgba(201,138,46,.14);border-radius:14px 14px 14px 4px;font:400 26px/36px "DM Sans";color:var(--ink)}
+.chat .m b{display:block;font:600 17px/1 "DM Sans";color:var(--ocre);letter-spacing:.08em;margin-bottom:10px}
+.chat .in{position:absolute;left:34px;right:34px;bottom:28px;height:58px;border-radius:29px;background:rgba(58,42,36,.06);font:400 22px/58px "DM Sans";color:var(--ink-light);padding-left:24px}
+.h{position:absolute;left:120px;top:110px;font:600 84px/1.02 "Fraunces",serif;color:var(--ink);letter-spacing:-.02em}
+.grey{position:absolute;inset:0;pointer-events:none}
+</style></head><body>
+<div class="stage">
+  <svg class="scene" id="s" viewBox="0 0 1920 1080"></svg>
+  <div class="h">Dimanche,<br>vingt-trois heures.</div>
+  <div class="chat">
+    <div class="t">NOUVELLE CONVERSATION</div>
+    <div class="m"><b>VOUS</b>Rédige une dissertation de trois pages sur les causes de la Première Guerre mondiale, avec introduction et conclusion.</div>
+    <div class="in">Écrire un message</div>
+  </div>
+  <svg class="scene" id="s2" viewBox="0 0 1920 1080"></svg>
+  <div class="paper"></div><div class="fibres"></div>
+  <div class="sub"><span class="box">Dimanche</span>, vingt-trois heures.</div>
+</div>
+<script src="_aquarelle.js"></script>
+<script>
+const svg = document.getElementById("s"), over = document.getElementById("s2"); const { aqDefs, aqWash, aqInk, aqDrop, aqWindow, el } = AQ; aqDefs(svg); aqDefs(over);
+// la feuille vue de dessus : des couleurs qui étaient là (ocre, bordeaux) déjà délavées par l'eau sale
+aqWash(svg, { cx: 300, cy: 700, r: 260, seed: 3, w: 0.2, n: 10, ry: 0.8 }, "#EFD7A6", 0.45, true);
+aqWash(svg, { cx: 1600, cy: 300, r: 220, seed: 4, w: 0.2, n: 9 }, "#C98A93", 0.4, true);
+aqWash(svg, { cx: 1650, cy: 820, r: 240, seed: 5, w: 0.2, n: 9, ry: 0.7 }, "#EFD7A6", 0.4, true);
+// la fenêtre de chat dessinée à l'encre
+aqWindow(svg, 540, 280, 840, 460, { barH: 64 });
+// la goutte sale qui vient de tomber sur la fenêtre, et l'eau grise qui s'étale et délave le coin
+const grey = el("g", {}, over);
+aqWash(svg, { cx: 1190, cy: 380, r: 150, seed: 7, w: 0.3, n: 10 }, "#8E847A", 0.42, true, grey);
+aqDrop(svg, 1180, 372, 34, "#6B5A52", 8, grey);
+// la trace qui part vers le bas à droite, sinueuse, de plus en plus pâle
+aqWash(svg, "M1200 400 C 1260 480 1300 560 1360 620 C 1420 680 1480 700 1560 740 C 1620 770 1700 800 1760 880 L 1748 892 C 1690 820 1610 790 1548 760 C 1468 720 1408 696 1346 634 C 1286 572 1246 494 1186 412 Z", "#8E847A", 0.5, false, grey);
+aqDrop(svg, 1764, 896, 16, "#8E847A", 9, grey);
+</script>
+</body></html>

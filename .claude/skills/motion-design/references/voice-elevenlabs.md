@@ -38,10 +38,31 @@ Vendredi... toujours rien.
 A paid plan is required for commercial use of the audio. Recording your own voice works the same way (quiet room,
 phone close to the mouth, export MP3): the rest of the method does not change.
 
+## Generate with the ElevenLabs connector (when it is attached)
+
+When the session has the ElevenLabs connector, you can generate the takes yourself, with the user's go for the
+credits (about 40 credits per short sentence, 70 for a long one, per variation). Never an API key.
+
+1. `creative_generate_speech`: `model_id: "eleven_v4"`, the `voice_id` of the brief (default Paul K,
+   `ecxPjiGTvAfpGEams6ec`), the whole text in `prompt`, `generations_count: 2`, and the `flow_id` of the film once one
+   exists (all the film's generations on one canvas).
+2. Poll `creative_get_flow_run_status` with the `session_ids` until `all_completed`; each generation has a signed
+   `content_url` (valid 2 h): download it with `curl -sS -o <project>/assets/audio/<name>.mp3 "<url>"`.
+3. A `429 rate_limited` means too many generations at once: nothing started, nothing is charged. Wait for the running
+   ones to finish, then send it again. Never resend a call that did start (it charges a second generation).
+4. Sound effects go the same way: `creative_generate_in_flow`, `node_type: "sfx"`, `model_id:
+   "eleven_text_to_sound_v2"`, a precise English prompt ("single basketball bounce on an indoor hardwood floor, close
+   mic, one bounce only"), 2 variations, then `curl` into `<project>/assets/audio/sfx/<name>.mp3`.
+
 ## After the voice
 
 - **Montage, never regeneration, for the silences**: the silent gag (2 to 3 s), the pivot (about 1.5 s of silence),
   a breath before the end card and a tail of about 4 s. Cut only in the middle of a silence (`onsets.py --no-whisper`
   prints the cut points), 5 ms fades on every join (`build-audio.sh`, `CUTS`).
-- **One wrong word in the best take** (v4 once read "l'IA" as "Lydia"): regenerate that sentence alone, splice it in
-  the silences around it at the montage, then redo the timings (`method.md` § 4), since every cue after it moves.
+- **One wrong word in the best take** (v4 once read "l'IA" as "Lydia"), **or a brand name that changes after the
+  montage** (IFS became Contino Sport on a finished film): regenerate that sentence alone with the same voice and model,
+  then lay it over its slot without touching the rest of the montage: write `<project>/assets/audio/patch-voix.json`
+  (`scripts/patch-voix.py` documents the format: the take, its slot, an optional pause to shorten) and rerun
+  `build-audio.sh`, which applies it after every montage. The old sentence is muted from 0.45 s before its slot (with
+  0.12 s, the attack of the old "IFS" stayed audible as a stray "i"). Then redo the word timings (`mots.py`) and
+  update the word cues of the frames concerned, and every visible mention of the old word (logo, interface, URL).

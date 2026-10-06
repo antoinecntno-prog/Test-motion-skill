@@ -43,26 +43,25 @@ Rules for every script:
 ## 2. Project folder
 
 ```bash
-bash .claude/skills/motion-design/scripts/new-project.sh <project> --fonts
+bash .claude/skills/motion-design/scripts/new-project.sh <project> --fonts=archivo,hanken-grotesk,pacifico
 ```
 
-It creates `<project>/` at the repository root with `meta.json`, `hyperframes.json`, `assets/{audio,fonts,icons,img,music}`,
-`compositions/frames/`, `reference/`, `styleframes/`, an empty `assets/audio/sfx-events.json`, the templates to fill
-(`frame.md`, `STORYBOARD.md`, `assemble.sh`, `build-audio.sh`, `build-music-options.py`) and `DIRECTIONS.md` (from
-`templates/DIRECTIONS-TEMPLATE.md`). The format of the sound effects list is shown in
+It creates `<project>/` at the repository root with `meta.json`, `hyperframes.json`,
+`assets/{audio,audio/sfx,audio/reprises,fonts,icons,img,music,vendor}`, `compositions/frames/`, `reference/`,
+`styleframes/`, `planches/`, an empty `assets/audio/sfx-events.json`, `assets/audio/musique.json`, the templates to
+fill (`BRIEF.md`, `frame.md`, `STORYBOARD.md`, `assemble.sh`, `build-audio.sh`, `build-music-options.py`) and
+`DIRECTIONS.md` (from `templates/DIRECTIONS-TEMPLATE.md`). It vendors GSAP in `assets/vendor/gsap-3.14.2.min.js`:
+frames load it from there and `assemble.sh` rewrites the assembled index to it (the CDN is blocked in cloud sessions). The format of the sound effects list is shown in
 `.claude/skills/motion-design/templates/sfx-events.json` (step 10). No `npx hyperframes init` is needed:
 `assemble.sh` builds `index.html`.
 
-`--fonts` downloads the default fonts (SIL Open Font License, served by Fontsource on jsDelivr, same files as Google
-Fonts). By hand:
+`--fonts=family,...` fetches Fontsource families (SIL Open Font License, the Google Fonts files) through the npm
+registry (`npm pack @fontsource/<family>`, which works where jsDelivr is blocked), every latin weight, with the
+license; `--fonts` alone fetches the default trio (instrument-sans, space-mono, big-shoulders). The `@font-face` of
+`frame.md` points to `assets/fonts/<family>-latin-<weight>-normal.woff2`.
 
-```bash
-F=<project>/assets/fonts; U=https://cdn.jsdelivr.net/fontsource/fonts
-for w in 400 500 600 700; do curl -sfL "$U/instrument-sans@latest/latin-$w-normal.woff2" -o "$F/InstrumentSans-$w.woff2"; done
-for w in 400 700; do curl -sfL "$U/space-mono@latest/latin-$w-normal.woff2" -o "$F/SpaceMono-$w.woff2"; done
-curl -sfL "$U/big-shoulders@latest/latin-800-normal.woff2" -o "$F/BigShoulders-800.woff2"
-ls -la "$F"
-```
+Heavy photos and cutouts (over about 600 KB) are shrunk before the workers use them, since every image is inlined in
+each frame that shows it: `python3 .claude/skills/motion-design/scripts/optimise-images.py <project>`.
 
 Tool logos the film shows (Simple Icons, CC0 files; the logos stay trademarks of their owners):
 
@@ -70,12 +69,17 @@ Tool logos the film shows (Simple Icons, CC0 files; the logos stay trademarks of
 for i in gmail stripe notion; do curl -sfL "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/$i.svg" -o "<project>/assets/icons/$i.svg"; done
 ```
 
+Where jsDelivr is blocked, take them from the npm registry:
+`(cd /tmp && npm pack simple-icons --silent && tar xzf simple-icons-*.tgz package/icons/gmail.svg) && cp /tmp/package/icons/gmail.svg <project>/assets/icons/`.
+
 Save the validated script as `<project>/SCRIPT.md` (screen version with the real numbers, then the voice version).
 
 ## 3. Voice
 
-See `voice-elevenlabs.md`. You prepare the voice text with its tags; the user generates it in the ElevenLabs web app
-and drops the chosen take as `<project>/assets/audio/voix.mp3`.
+See `voice-elevenlabs.md`. You prepare the voice text with its tags; either the user generates it in the ElevenLabs
+web app, or, when the ElevenLabs connector is attached and the user agrees to spend the credits, you generate 2 takes
+yourself (`creative_generate_speech`, Eleven v4, the voice of the brief) and download them. The chosen take becomes
+`<project>/assets/audio/voix.mp3`.
 
 ## 4. Timings: montage, word timings, real onsets
 
@@ -283,14 +287,25 @@ missing asset): a frame that throws renders black.
 
 ## 10. Audio mix
 
-- Music: a CC0 track the user provides (`<project>/assets/audio/music.mp3`), volume 0.10 to 0.15, short fade-in,
-  3 s fade-out. If it opens on a quiet build, start later (`MUSIC_START`) on a clean, stronger section.
+- Music, one of: a CC0 track the user provides (`<project>/assets/audio/music.mp3`, volume 0.10 to 0.15, short
+  fade-in, 3 s fade-out; if it opens on a quiet build, start later with `MUSIC_START` on a stronger section), or the
+  score composed on the edit when nothing is provided: fill `<project>/assets/audio/musique.json` from the acts and
+  cuts of the storyboard (`tension` up to the pivot, `pivot`, `groove` for the solution, `hymne` from the payoff,
+  `fin` on the end card, `hits` on the big gestures), then
+  `python3 .claude/skills/motion-design/scripts/musique-film.py <project>/assets/audio/musique.json` and
+  `MUSIC=assets/audio/musique.wav MUSIC_VOLUME=0.22`. The mix ducks the music under the voice (sidechain), so it can
+  sit higher in the silences. A calm loop that ignores the cuts was judged "boring" on the Contino Sport film.
 - Sound effects: `<project>/assets/audio/sfx-events.json`, `[name, seconds, volume]` on the final timeline, names from
   `.claude/skills/media-use/audio/assets/sfx/` (`manifest.json` there describes each one). Typical grammar:
   `whoosh-short` 0.12 to 0.2 on each transition, `pop` 0.1 to 0.3 on key-word boxes and cards that land, `click` 0.35
   to 0.45 on cursor clicks, `key-press` / `typing` 0.15 to 0.25 while text types, `error` 0.2 on a breakage, `whoosh`
   0.2 to 0.5 on the flash and on the iris, `ping` or `chime` 0.15 on a success, and ONE signature sound (a two-tone
-  `notification`) on the key moment of the story. Place each one on the visual event, not on the word.
+  `notification`) on the key moment of the story. Place each one on the visual event, not on the word. Density that
+held on the Contino Sport film after two rounds of feedback: about 45 sounds for 52 s, at most 7 whooshes (the big
+camera moves, the flash, the act cut), at most 1 sparkle (the flash), nothing on the letters of the logo. The hero
+gestures get real sounds (a ball bouncing on a parquet, a dunk in the rim) generated with the ElevenLabs connector
+(`creative_generate_in_flow`, `node_type: "sfx"`, `eleven_text_to_sound_v2`, 2 variations) and dropped in
+`<project>/assets/audio/sfx/`, where `build-audio.sh` finds them by name.
 
 ```bash
 bash <project>/build-audio.sh && bash <project>/assemble.sh
@@ -311,11 +326,15 @@ Where to find commercial-safe tracks, the edit in detail and the checks: `music.
 ## 11. Checks before the render
 
 ```bash
+python3 .claude/skills/motion-design/scripts/lint-frames.py <project>
 cd <project> && npx hyperframes check
-cd <project> && npx hyperframes snapshot --at <frame midpoints, and each cut -0.1 and +0.2, comma-separated>
+python3 .claude/skills/motion-design/scripts/snapshots-lots.py <project> --at <frame midpoints, and each cut -0.04 and +0.04>
 ```
 
-Open `<project>/snapshots/contact-sheet.jpg`. Midpoints: layout failures, the subtitle band (y 890 to 980) free of
+`snapshots-lots.py` exists because `npx hyperframes snapshot` waits 10 s at most for the page: past 8 or 9 frames the
+whole film no longer loads in time ("Navigation timeout of 10000 ms exceeded"). It snapshots a few consecutive frames
+at a time, puts every frame back, and writes one labelled sheet in `<project>/planches/` (the one to show the user).
+Open that sheet. Midpoints: layout failures, the subtitle band (y 890 to 980) free of
 anything else, no element cut by the frame edge (no sliver of a card), balanced side margins, one thing to look at.
 Around every seam: a continuing element must keep its position, scale, opacity, blur and direction, the camera must be
 in the same move, nothing is doubled and nothing is missing. Seam times (the cumulative durations):

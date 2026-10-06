@@ -3,7 +3,23 @@
 Found while making the example films with this exact stack (HyperFrames 0.8.82, HeyGen skills at commit 93ab289), up to
 the flagship film `examples/ligne-du-temps-v8/`. The guardrails of `AGENTS.md` (pinned local CLI, telemetry variables
 on every `npx hyperframes` command) come first. The items marked BLOCKING are the ones the dispatch template of
-`SKILL.md` hands to every worker.
+`SKILL.md` hands to every worker. The Contino Sport film (`ifs-maillot-club/`, made in a claude.ai cloud session)
+added the cloud items and several frame and sound items below.
+
+## Cloud session (claude.ai/code)
+
+- **The CDN is blocked** (`cdn.jsdelivr.net`): the HeyGen assembler writes the GSAP tag of the index on jsDelivr, so the
+  film stays frozen on its first image ("gsap is not defined", every snapshot identical). `new-project.sh` vendors GSAP
+  in `assets/vendor/` and `assemble.sh` rewrites the index to it; the frames load the same file. Fonts and icons come
+  from the npm registry (`npm pack`), which stays reachable.
+- **`npx hyperframes snapshot` of the whole film times out** past 8 or 9 frames ("Navigation timeout of 10000 ms
+  exceeded", hard-coded): use `snapshots-lots.py`, which snapshots a few frames at a time. The render waits 60 s and
+  passes (52 s film, draft quality, 2 workers: under 3 minutes).
+- **Playwright**: the preinstalled Chromium lives in `/opt/pw-browsers`; a newer `playwright` package refuses it.
+  Pin the version that matches, or pass `executablePath: '/opt/pw-browsers/chromium'`.
+- **Whisper** downloads its model from `openaipublic.azureedge.net`: the user must allow that host once in the
+  environment's network settings before `mots.py` runs.
+- **The container restarts** after an idle period and wipes what is not committed: commit after every gate.
 
 ## Timing
 
@@ -63,6 +79,17 @@ on every `npx hyperframes` command) come first. The items marked BLOCKING are th
   tweens (a living hold repeats `Math.ceil(D / period)` times), randomness derived from the index.
 - **The core worker contract forbids narration text on screen** because HeyGen's default pipeline burns captions. This
   method disables captions and shows the sentence itself, word by word: the dispatch template says so explicitly.
+- **BLOCKING. The same `var` declared twice in a frame**: JavaScript keeps the last one. A camera proxy named `WB`
+  overwrote the word list `WB` declared earlier; the subtitle code threw and the frame showed nothing but its thread
+  for 6 s. `lint-frames.py` finds it; give every proxy a distinct, readable name.
+- **A color tween on the subtitle words** (grey to ink) fails the "transforms only" rule: fade the opacity instead
+  (0 to 0.35, then 1), the ink is the CSS color.
+- **An SVG stroke drawn by tweening `strokeDashoffset`**: tween a proxy and draw it in `render()` with the kit's
+  `fxDrawThread`, like the thread.
+- **The storyboard's thread progress numbers are guesses**: the head of a thread reaches a named point at the fraction
+  measured on the real path (`fracAt` in the pilot frame of `ifs-maillot-club/`), never at the number written.
+- **Heavy images**: every image is inlined in each frame that shows it (2 MB at most each). Four 2 MB cutouts made the
+  film too heavy; `optimise-images.py` brings them to about 200 KB.
 - **CSS `transform` on an element that GSAP moves** is silently overwritten (the centering jumps). Center with margins
   or `xPercent` / `yPercent`.
 - **BLOCKING. GSAP does not interpolate a `clip-path: polygon()` with many points** (a torn edge, a crumpled sheet): it swaps
@@ -108,6 +135,12 @@ on every `npx hyperframes` command) come first. The items marked BLOCKING are th
 - **The music must not crush the voice at the pivot.** It is the moment where a build peaks, and where it most often
   covers the voice. Measure it: 8 dB or more between the voice and the music in the 1.5 s before the pivot, the bass
   (under 150 Hz) near silence between the pivot and the flash. `build-music-options.py` prints both (`music.md`).
+- **A calm loop that ignores the cuts is "boring"**, and a dense sound design with 17 whooshes and sparkles on every
+  logo is "unbearable" (both said by the user of the Contino Sport film). The score follows the acts and the cuts
+  (`musique-film.py` or a CC0 track edited on the cuts), the music ducks under the voice and comes back in the
+  silences, and the sound effects stay at 7 whooshes and 1 sparkle at most, with real sounds on the hero gestures.
+- **A spliced sentence leaves the old word's attack**: mute the old sentence from 0.45 s before its slot
+  (`patch-voix.py` does it), and check the level in 50 ms windows before the new take.
 - **`alimiter` has a make-up gain on by default** (`level`): after `loudnorm`, it pushes the peaks back near 0 dBFS
   and the film ends above -1.5 dBTP. Use `alimiter=limit=0.79:level=disabled`, and measure with
   `ffmpeg -i mix.wav -af ebur128=peak=true -f null -`.

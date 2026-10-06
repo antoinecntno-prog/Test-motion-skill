@@ -36,17 +36,37 @@ Frame-specific lines to add to the dispatch context when they apply:
 
 ## Pilot, then parallel
 
-1. **Pilot**: dispatch frame 1 alone, in the background. When its file exists, run `bash <project>/assemble.sh` (frames not built yet are
-   skipped automatically, the orchestrator layer waits for the end card), then
-   `cd <project> && npx hyperframes snapshot --at <3 or 4 moments of frame 1>` and show the contact sheet to the user.
-   Fix the look now (in `frame.md` if it is a style issue, then re-dispatch the pilot) before building the rest.
+1. **Pilot**: dispatch frame 1 alone, in the background. When its file exists, run
+   `python3 .claude/skills/motion-design/scripts/lint-frames.py <project> <frame_id>`, then
+   `python3 .claude/skills/motion-design/scripts/snapshots-lots.py <project> --at <8 to 11 moments of frame 1>` and
+   send the user the sheet it writes in `<project>/planches/`. Fix the look now (in `frame.md` if it is a style issue,
+   then resume the pilot worker) before building the rest. The pilot frame becomes the reference implementation the
+   other workers read (structure, kit inside the IIFE, proxies and one `render()`, subtitles, depth).
 2. **Parallel**: dispatch every remaining frame at once, one worker each, in the background (in waves if the harness caps concurrency:
    never merge two frames into one worker). A worker takes 8 to 30 minutes.
 3. **Wait on the files**: a frame is done when `<project>/compositions/frames/<frame_id>.html` exists and is a single
    `<template>...</template>`. A missing file after the worker returned: re-dispatch once with the same prompt.
-4. Assemble (`bash <project>/assemble.sh`): it marks the built frames `animated`, rebuilds the index and lints.
+4. `lint-frames.py <project>` (static faults HyperFrames does not see: network URL, a `var` declared twice, a color
+   tween, a kit that differs from the reference), then assemble (`bash <project>/assemble.sh`): it marks the built
+   frames `animated`, rebuilds the index and lints.
    For every lint or check error, re-dispatch the frame concerned with the finding (or make the smallest fix yourself
    when it is one line).
+
+## Budget (measured on the Contino Sport film, Pro plan)
+
+A worker that loops on screenshots costs 200 000 to 270 000 tokens; two of them ran for 18 minutes on two frames and
+the user saw 40 % of the session quota gone. What keeps a film within one session:
+
+- **Workers at medium effort** (`effort: "medium"` in a Workflow, or say it in the prompt), one self-check only: mount
+  the frame headless, no page error, at most 3 screenshots (first image, key image, last image) in ONE sheet, fix the
+  clear defects, stop. A report of 8 lines at most.
+- **No reviewer agents.** The orchestrator reviews with `lint-frames.py` and one sheet of `snapshots-lots.py` per
+  half film, then makes the one-line fixes itself and resumes a worker only for a real rework.
+- **The harness runs about 2 workers at a time** (it caps concurrency on the CPUs): 10 frames take 4 to 5 rounds.
+  Dispatch the frames that introduce a recurring object first.
+- **A session limit kills workers mid-run**: the file written early survives. After the reset, `check-frames.py` and
+  re-dispatch only the missing frames (a new script with only those ids; do not resume a run whose agents failed).
+- **Images**: shrink them before dispatch (`optimise-images.py`), every worker inlines them.
 
 ## What workers must never do
 

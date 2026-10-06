@@ -76,9 +76,11 @@ EOF
 node $S/assemble-index.mjs --storyboard ./STORYBOARD.md --hyperframes . | tail -3
 node $S/transitions.mjs inject --storyboard ./STORYBOARD.md --hyperframes . | tail -2
 node $S/transitions.mjs verify --storyboard ./STORYBOARD.md --index ./index.html | tail -1
-# GSAP en local : le CDN jsdelivr est bloqué dans ce bac à sable
-sed -i 's#<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"[^>]*></script>#<script src="assets/vendor/gsap-3.14.2.min.js"></script>#' index.html
-if grep -q 'cdn.jsdelivr' index.html; then echo "index.html charge encore un script depuis le CDN" >&2; exit 1; fi
+# GSAP from the project (assets/vendor, copied by new-project.sh): the CDN is often blocked (cloud sessions, offline)
+if [ -f assets/vendor/gsap-3.14.2.min.js ]; then
+  sed -i.bak 's#<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"[^>]*></script>#<script src="assets/vendor/gsap-3.14.2.min.js"></script>#' index.html && rm -f index.html.bak
+  if grep -q 'cdn.jsdelivr' index.html; then echo "assemble: index.html still loads a script from the CDN" >&2; exit 1; fi
+fi
 
 python3 - <<'EOF'
 import os, re
@@ -180,7 +182,7 @@ if iris_at is not None:
         tl.fromTo("#fxiris-ring", {{ opacity: 0 }}, {{ opacity: 1, duration: 0.08, immediateRender: false }}, {t(0.05)});
         tl.to("#fxiris-ring", {{ opacity: 0, duration: 0.15 }}, {t(0.70)});
 '''
-# this assembler writes the main timeline without a local tl nor a full-span anchor: add both
+# some assembler builds write the main timeline without a local tl nor a full-span anchor: add both
 bare = 'window.__timelines["main"] = gsap.timeline({ paused: true });'
 if bare in s:
     s = s.replace(bare, 'const tl = gsap.timeline({ paused: true });\n      window.__timelines["main"] = tl;\n      tl.to({}, { duration: %s }, 0);' % total, 1)

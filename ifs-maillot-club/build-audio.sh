@@ -16,9 +16,9 @@ RAW="${RAW:-assets/audio/voix.mp3}"                # raw voice exported from Ele
 CUTS="${CUTS:-6.46:2.5 14.61:1.5 37.90:0.4}"                                   # "cut:silence" pairs in raw seconds, e.g. "14.00:0.8 34.75:0.4" (empty = no cut)
 TAIL="${TAIL:-3.5}"                                # silence added after the voice (end card hold)
 TOTAL="${TOTAL:-52.0}"                             # final duration in seconds = STORYBOARD duration = TOTAL in assemble.sh
-MUSIC="${MUSIC-assets/audio/musique-film.wav}"     # composée par scripts/musique-film.py, libre de droits (MUSIC="" : sans musique)
+MUSIC="${MUSIC-assets/audio/musique.wav}"          # partition de musique-film.py (assets/audio/musique.json), libre de droits ; MUSIC="" : sans musique
 MUSIC_START="${MUSIC_START:-0}"                    # where to start in the track (skip a quiet intro, see pitfalls.md)
-MUSIC_VOLUME="${MUSIC_VOLUME:-0.22}"               # 0.10 to 0.15 under a voice
+MUSIC_VOLUME="${MUSIC_VOLUME:-0.22}"               # 0.22 with the sidechain (about 7 dB under the voice)
 SFX_DIR="${SFX_DIR:-../.claude/skills/media-use/audio/assets/sfx}"   # Pixabay SFX shipped with HeyGen's media-use
 SFX_EVENTS="${SFX_EVENTS:-assets/audio/sfx-events.json}"             # [["name", seconds, volume], ...] on the FINAL timeline
 VOICE_OUT="${VOICE_OUT:-assets/audio/voix-montage.wav}"
@@ -70,8 +70,10 @@ subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", raw, "-filter_complex", gra
                 "-ar", "44100", "-ac", "1", env["VOICE_OUT"]], check=True)
 voice_len = sum(b - a for a, b in zip(bounds, bounds[1:])) + sum(g for _, g in cuts) + tail
 print(f"voice montage: {env['VOICE_OUT']} (raw {raw_len:.2f} s, {len(cuts)} cut(s), voice + silences {voice_len:.2f} s, trimmed or padded to {total:.2f} s)")
-if os.path.exists("scripts/voix-contino.py"):
-    subprocess.run([sys.executable, "scripts/voix-contino.py", env["VOICE_OUT"]], check=True)
+# re-recorded sentences (a brand name, a wrong word) laid over their slots: assets/audio/patch-voix.json
+if os.path.exists("assets/audio/patch-voix.json"):
+    subprocess.run([sys.executable, "../.claude/skills/motion-design/scripts/patch-voix.py", env["VOICE_OUT"],
+                    "assets/audio/patch-voix.json"], check=True)
 if voice_len > total + 0.01:
     print(f"warning: the voice montage ({voice_len:.2f} s) is longer than TOTAL ({total:.2f} s): the end is cut", file=sys.stderr)
 
@@ -80,7 +82,7 @@ events = []
 if os.path.exists(env["SFX_EVENTS"]):
     events = json.load(open(env["SFX_EVENTS"], encoding="utf-8"))
 def sfx_file(name):
-    for folder in (env["SFX_DIR"], "assets/audio/sfx"):           # bibliothèque HeyGen, puis bruitages propres au projet
+    for folder in (env["SFX_DIR"], "assets/audio/sfx"):           # HeyGen library, then the project's own sounds
         for ext in (".wav", ".mp3"):
             path = os.path.join(folder, name + ext)
             if os.path.exists(path):
@@ -100,7 +102,7 @@ if music:
     graph.append(f"[{index}]atrim={start:.3f}:{start + total:.3f},asetpts=PTS-STARTPTS,"
                  f"aformat=sample_rates=44100:channel_layouts=stereo,afade=t=in:d=0.8,"
                  f"afade=t=out:st={max(0.0, total - 3):.3f}:d=3,volume={float(env['MUSIC_VOLUME'])}[mraw]")
-    # la musique s'efface sous la voix (environ 6 dB) et remonte dans les silences
+    # the music ducks under the voice (about 6 dB) and comes back up in the silences
     graph.append("[mraw][vkey]sidechaincompress=threshold=0.02:ratio=5:attack=15:release=320:makeup=1[m]")
     labels.append("[m]")
     index += 1

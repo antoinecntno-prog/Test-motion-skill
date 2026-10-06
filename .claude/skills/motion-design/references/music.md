@@ -26,6 +26,17 @@ Two ways to get there:
 - **One track with a drop**: the same file twice, the second segment offset so the drop hits the flash. The music
   stops on the pivot and comes back on the drop, as if the film had been scored.
 
+## When no track is provided: the score composed on the edit
+
+`scripts/musique-film.py` writes a score by script (synthesized instruments, no sample, no generative service, so no
+rights issue) whose sections start on the cuts of the storyboard: `tension` (minor, the pulse and the drums build,
+a roll accelerates into the cut), `pivot` (a low drone, a heartbeat that speeds up, a swell into the light), `groove`
+(major, kick, clap, hats in sixteenths, syncopated bass, arpeggio), `hymne` (a drop on its first beat, wider chords),
+`fin` (one ringing chord), and `hits` (a big kick on a smash or a stamp). Fill `<project>/assets/audio/musique.json`
+from the storyboard (act times, the key of each section), run it, then mix with `MUSIC=assets/audio/musique.wav
+MUSIC_VOLUME=0.22`: the sidechain of `build-audio.sh` keeps the voice on top. It sounds like a clean demo, not a
+studio track: say so, and offer a CC0 track or ElevenLabs Music (credits, on the user's go) when the user wants more.
+
 ## Find the drop and the start time
 
 ```bash

@@ -1,6 +1,6 @@
 ---
 name: motion-design
-description: Makes an agency-grade launch motion design film (30 to 60 s, 16:9, voice-over) in this repository with HyperFrames and the pinned HeyGen skills, in 5 steps the user validates (script, voice, storyboard, animation, music and sound effects), then checks, delivery and, only if asked, distribution. Use when the user asks here for a launch, promo, landing page or product motion design video, or "a film like the flagship example". Not for editing filmed footage or talking-head videos.
+description: Makes an agency-grade launch motion design film (30 to 60 s, 16:9, voice-over) in this repository with HyperFrames and the pinned HeyGen skills, from a one-page brief (subject and global design), in 5 steps the user validates (script, voice, storyboard, animation, music and sound effects), then checks, delivery and, only if asked, distribution. Use when the user asks here for a launch, promo, landing page, product or LinkedIn motion design video, gives a subject and a design for a new video, or asks for "a film like the flagship example". Not for editing filmed footage or talking-head videos.
 ---
 
 # Motion design: launch film, end to end
@@ -23,19 +23,41 @@ object of shot N takes another role in shot N+1), elements that arrive too big a
 settle, three depth levels, one thing to look at at a time. The grammar, with its numbers and GSAP recipes:
 `patterns/STORYBOARD-CRAFT.md` (repository root).
 
+**The second reference film**: `ifs-maillot-club/` (Contino Sport, 52 s, 11 sequences, LinkedIn), made in a claude.ai
+cloud session with the ElevenLabs connector, the score composed on the edit and a brand changed after the montage. Its
+brief, filled after the fact, is `BRIEF.md`; its pilot frame `compositions/frames/01-juin.html` is the
+reference implementation for workers, its `assets/audio/` shows `musique.json`, `patch-voix.json` and `sfx-events.json`.
+
+## Quick start: from a brief
+
+The user gives a subject and a global design; everything else follows this skill. In order:
+
+1. Create the project (below), fill `<project>/BRIEF.md` from what the user said, write what is missing as stated
+   assumptions, and ask ONE grouped question only for what changes the film (the brand name exactly as said and
+   written, its logo, the URL, what must never be shown, the credits allowed).
+2. Run the 5 steps. With "reduced gates" in the brief, stop only at the script, the storyboard sheet, the pilot sheet
+   and the mix; otherwise at every gate.
+3. Show the work as sheets (`snapshots-lots.py` writes one in `<project>/planches/`) and draft renders, never as a
+   list of files. Commit after every gate (a cloud container is wiped after an idle period).
+4. Keep within the budget of `references/worker-dispatch.md` § Budget: pilot first, workers at medium effort, no
+   reviewer agents, one-line fixes yourself.
+
 ## Before step 1: preflight and project
 
-`test -f .env || cp .env.example .env` and `test -d node_modules || npm ci`. Ask once, in one grouped question, what is
-missing: the subject (the pain, the promise), where the film will be seen (landing page 16:9, reel 9:16), the call to
-action and its URL, the real interfaces to show (recent screenshots: site, apps, phone). Pick a kebab-case `<project>`
-name, then:
+`test -f .env || cp .env.example .env` and `test -d node_modules || npm ci`. Pick a kebab-case `<project>` name, then:
 
 ```bash
-bash .claude/skills/motion-design/scripts/new-project.sh <project> --fonts
+bash .claude/skills/motion-design/scripts/new-project.sh <project> --fonts=<fontsource ids of the brief, comma-separated>
 ```
 
-It creates `<project>/` at the repository root (folders, `meta.json`, `hyperframes.json`, the templates to fill, the
-fonts). All paths below are relative to the repository root. `references/method.md` § 2.
+It creates `<project>/` at the repository root (folders, `meta.json`, `hyperframes.json`, `BRIEF.md` and the templates
+to fill, GSAP vendored in `assets/vendor/`, the fonts from the npm registry). Fill `BRIEF.md` (template:
+`templates/BRIEF.md`): the subject (the pain, the promise, the steps to show), the global design, the brand exactly as
+it is said and written with its logo and URL, where the film will be seen, the real interfaces and photos (recent
+screenshots; raw ones stay out of the repository), what to anonymize and what never to show in the pain (a generic
+product, never the client's own), the voice, the music, the gates and the credits allowed. Shrink the heavy images:
+`python3 .claude/skills/motion-design/scripts/optimise-images.py <project>`. All paths below are relative to the
+repository root. `references/method.md` § 2.
 
 ## The 5 steps (each one ends on the user's approval)
 
@@ -51,7 +73,9 @@ The user chooses and corrects word by word. Rules and examples: `references/meth
 
 1. Give the user the text to paste and the settings: Eleven v4, no pause tag (punctuation, `...`, line breaks), few
    acting tags, numbers in letters, the language set explicitly, Stability 40 to 50 %, Similarity 80 to 90 %, 2 or 3
-   takes. Wait for `<project>/assets/audio/voix.mp3`. `references/voice-elevenlabs.md`.
+   takes. Wait for `<project>/assets/audio/voix.mp3`. With the ElevenLabs connector attached and the user's go for the
+   credits, generate the 2 takes yourself (`creative_generate_speech`, the voice of the brief) and download them.
+   `references/voice-elevenlabs.md`.
 2. Montage: `python3 .claude/skills/motion-design/scripts/onsets.py <project>/assets/audio/voix.mp3 --no-whisper`
    prints the cut points; make room for the silent gag and the pivot, cutting only in silences (5 ms fades): set
    `CUTS`, `TAIL`, `TOTAL` in `<project>/build-audio.sh`, then `MUSIC= bash <project>/build-audio.sh`.
@@ -94,10 +118,12 @@ animated before it. `references/method.md` § 5 and § 6.
 
 1. **Packets**: `node .claude/skills/product-launch-video/scripts/frame-packets.mjs --project <project> --storyboard <project>/STORYBOARD.md`
    (each under 48 KB: 1 or 2 rules per frame).
-2. **Pilot**: frame 1 alone, `bash <project>/assemble.sh`, `cd <project> && npx hyperframes snapshot --at <3 or 4 times in frame 1>`,
-   show it, lock the look.
-3. **One sub-agent per sequence**, in the background, in parallel, with the dispatch template below: the frames that
-   introduce a recurring object first, then the others. Done = the file exists on disk.
+2. **Pilot**: frame 1 alone, then `python3 .claude/skills/motion-design/scripts/lint-frames.py <project>` and
+   `python3 .claude/skills/motion-design/scripts/snapshots-lots.py <project> --at <8 to 11 times in frame 1>`, send the
+   sheet, lock the look. The pilot frame becomes the reference implementation the other workers read.
+3. **One sub-agent per sequence**, in the background, with the dispatch template below and the budget of
+   `references/worker-dispatch.md` (medium effort, one self-check, short report, no reviewers): the frames that
+   introduce a recurring object first, then the others. Done = the file exists on disk; then `lint-frames.py`.
 4. **Shared decor**: sequences that show the same place share the SAME build function, copied verbatim from
    `reference/<world>.html`; check it with a diff before assembling (`references/method.md` § 8).
 5. **Fixes**: resume the worker that built the frame (SendMessage with the finding) rather than dispatching a new one;
@@ -112,12 +138,17 @@ frames that are MISSING or BROKEN (`references/variants.md` § Resume).
 ### 5. Music and sound effects (gate: the user chooses by ear)
 
 - **Sound effects locked on the picture** in `<project>/assets/audio/sfx-events.json` (format:
-  `templates/sfx-events.json`, names from `.claude/skills/media-use/audio/assets/sfx/`): click, pop, whoosh, typing,
-  and ONE signature sound (a two-tone notification) on the key moment. The picture never moves for the sound.
-- **Music**: CC0 tracks in `<project>/assets/music/` (sources: `references/music.md`), never generated music. A
-  tension track from 0 to the pivot, with a riser in the 3 s before it and a low impact on the cut; silence; the élan
-  track back with its drop on the first word of the solution, faded out on the end card; ducked under the voice
-  (sidechain); `loudnorm` to -16 LUFS and -1.5 dBTP.
+  `templates/sfx-events.json`, names from `.claude/skills/media-use/audio/assets/sfx/` or from
+  `<project>/assets/audio/sfx/`): clicks, pops, impacts, and ONE signature sound (a two-tone notification) on the key
+  moment; about one sound per second, at most 7 whooshes and 1 sparkle. Real sounds on the hero gestures (a bounce, a
+  dunk, a stamp) generated with the ElevenLabs connector on the user's go. The picture never moves for the sound.
+- **Music**, in this order of preference: the CC0 tracks the user provides in `<project>/assets/music/` (sources:
+  `references/music.md`); otherwise the score composed on the edit by
+  `python3 .claude/skills/motion-design/scripts/musique-film.py <project>/assets/audio/musique.json` (sections on the
+  acts and cuts of the storyboard); ElevenLabs Music only on the user's explicit go (credits). Whatever the source: a
+  tension part up to the pivot, a cut on it, the élan back with its drop on the light or the payoff, an end on the end
+  card, ducked under the voice (sidechain in `build-audio.sh`) and loud enough in the silences to carry the film;
+  `loudnorm` to -16 LUFS and -1.5 dBTP.
 - **Level**: the tension 2 to 3 dB under the élan at most, taken from a full section of its track (the script
   measures it in LUFS). Lower, the start of the film feels soft.
 - **3 or 4 options** on the same edit:
@@ -127,9 +158,10 @@ frames that are MISSING or BROKEN (`references/variants.md` § Resume).
 
 ## Then: checks, delivery, distribution
 
-6. **Checks before the render.** Lint clean (end of `assemble.sh`), `cd <project> && npx hyperframes check` and
-   `validate`, then `cd <project> && npx hyperframes snapshot --at <every key image, and each seam -0.033, 0 and +0.033>`
-   and read `<project>/snapshots/contact-sheet.jpg`: every key image, the image before and after every seam (same
+6. **Checks before the render.** `lint-frames.py` and the lint of `assemble.sh` clean,
+   `cd <project> && npx hyperframes check`, then
+   `python3 .claude/skills/motion-design/scripts/snapshots-lots.py <project> --at <every key image, and each seam -0.04 and +0.04>`
+   (the whole film at once times out past 8 or 9 frames) and read the sheet in `<project>/planches/`: every key image, the image before and after every seam (same
    camera, same objects, same blur, nothing doubled, nothing missing), the subtitle band free, no element cut at the
    edge, balanced margins. Re-dispatch the frame concerned with the finding. `references/method.md` § 11.
 7. **Render and real control.** A draft render first
@@ -173,7 +205,17 @@ frames that are MISSING or BROKEN (`references/variants.md` § Resume).
 - **Script**: the offer is not detailed in the film (the page does it); the pains are concrete; the solution says
   who does the work ("l'IA le fait").
 - **Costs**: resume existing agents, make small fixes yourself; any paid generation in series starts with 1 or 2
-  tries.
+  tries; report the credits spent.
+- **The pain never shows the client's own product**: a generic, unbranded one (a plain red jersey, not the club's
+  jersey with its crest), so that the defect is never attached to the brand.
+- **Characters do the real gesture**: a player dribbles the ball while running before he dunks; a jersey never rises
+  to the hoop alone. A character drawn once and approved by the user is copied exactly in every frame.
+- **The brand is fixed at the brief**: its exact name in the voice and on screen, its logo file, its URL. A change
+  after the montage costs a voice patch, new cues and every visible mention (`references/voice-elevenlabs.md`).
+- **Anonymize real documents**: a redrawn interface carries only the names the user allows (no address, person,
+  price or quantity); raw screenshots stay out of the repository.
+- **Sound density**: dense, but at most 7 whooshes and 1 sparkle in the film, nothing on the letters of a logo; the
+  music follows the cuts (a calm loop reads as boring).
 
 ## Control grid (storyboard, then render)
 
@@ -247,6 +289,14 @@ Read first, in this order, and follow them as your role:
   from the frame duration. No `Math.random`.
 - Fonts, images and icons from `assets/...` (project-root relative), never from the network. No `<audio>`.
 - Only the copy quoted in the Scene lines appears on screen, in the language and typography of the voice.
+- Tween proxies, not colors: subtitle words fade by opacity (0, 0.35, 1), SVG strokes are drawn through the kit's
+  draw function, no negative z-index (a shadow goes in a drop-shadow filter). Every `var` name is declared once in the
+  frame (two declarations silently overwrite each other).
+- GSAP and every asset load from the project (`assets/vendor/gsap-3.14.2.min.js`, `assets/...`): the network is
+  blocked. Thread progress values are measured on the real path, never taken from the storyboard's numbers.
+- Budget: write the file in one or two passes; one self-check only (headless mount, no page error, at most 3
+  screenshots in one sheet), then stop. Report in 8 lines at most: what you built, each deviation and its reason, the
+  state of your first and last images.
 - Do not run any `npx hyperframes` command, do not edit any other file. Writing your file is your last action.
 ```
 
@@ -267,6 +317,7 @@ Read first, in this order, and follow them as your role:
 | `references/variants.md` | options, and to resume after a session cut |
 | `references/pitfalls.md` | before steps 3 and 4, and whenever something looks wrong |
 | `patterns/PATTERNS.md` (repository root) | steps 1 and 3 (choose patterns), checks (control) |
-| `templates/` | `frame.md`, `STORYBOARD.md`, `assemble.sh`, `build-audio.sh`, `sfx-events.json`, `build-music-options.py`, `LaunchFilm.tsx` |
-| `scripts/` | `new-project.sh` (project folder), `mots.py` (word timings), `onsets.py` (cut points, onsets), `render-styleframes.py` (styleframes to PNG), `analyze-music.py` (tempo, drops, sync), `contact-sheets.sh` (render control), `check-frames.py` (resume), `waveform.py` (real voice envelope) |
+| `templates/` | `BRIEF.md`, `frame.md`, `STORYBOARD.md`, `assemble.sh`, `build-audio.sh`, `sfx-events.json`, `musique.json`, `build-music-options.py`, `LaunchFilm.tsx` |
+| `scripts/` | `new-project.sh` (project folder, GSAP vendored, fonts from npm), `mots.py` (word timings), `onsets.py` (cut points, onsets), `render-styleframes.py` (styleframes to PNG), `optimise-images.py` (heavy images), `lint-frames.py` (static faults of the frames), `snapshots-lots.py` (key images of the whole film in batches, labelled sheet), `patch-voix.py` (lay a re-recorded sentence over its slot), `musique-film.py` (score composed on the edit), `analyze-music.py` (tempo, drops, sync), `contact-sheets.sh` (render control), `check-frames.py` (resume), `waveform.py` (real voice envelope) |
+| `ifs-maillot-club/` (repository root) | the second reference film: cloud session, ElevenLabs connector, composed score, voice patch, pilot frame to imitate |
 | `.claude/skills/hyperframes-animation/blueprints-index.md`, `rules-index.md` | step 3: shot shapes and motion recipes |

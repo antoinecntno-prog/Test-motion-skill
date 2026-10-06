@@ -13,9 +13,9 @@ cd "$(dirname "$0")"
 
 # ---- settings (all paths relative to this project folder) ----------------------------------------------------------
 RAW="${RAW:-assets/audio/voix.mp3}"                # raw voice exported from ElevenLabs
-CUTS="${CUTS:-}"                                   # "cut:silence" pairs in raw seconds, e.g. "14.00:0.8 34.75:0.4" (empty = no cut)
-TAIL="${TAIL:-4.0}"                                # silence added after the voice (end card hold)
-TOTAL="${TOTAL:-45.0}"                             # final duration in seconds = STORYBOARD duration = TOTAL in assemble.sh
+CUTS="${CUTS:-8.63:2.0 16.74:1.5}"                  # gag muet après « dans la poche » (2,0 s), silence du pivot après « dans le cours ? » (1,5 s)
+TAIL="${TAIL:-3.0}"                                # silence après la voix (carte de fin)
+TOTAL="${TOTAL:-50.6}"                             # 44.04 + 2.0 + 1.5 + 3.0
 MUSIC="${MUSIC-assets/audio/music.mp3}"            # CC0 track, or the score of musique-film.py (assets/audio/musique.wav); MUSIC="" for none
 MUSIC_START="${MUSIC_START:-0}"                    # where to start in the track (skip a quiet intro, see pitfalls.md)
 MUSIC_VOLUME="${MUSIC_VOLUME:-0.12}"               # 0.10 to 0.15 under a voice

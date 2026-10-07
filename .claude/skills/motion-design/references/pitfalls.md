@@ -174,3 +174,28 @@ added the cloud items and several frame and sound items below.
   frame: the desk variant rendered at 69 MB for 43 s, three times the flat one (21 MB). Never put a render on a site as
   is: re-encode it for the web (`landing-integration.md`; the flat film weighs 5.6 MB at `-crf 24`), and check the
   grain did not turn to mush (lower the `-crf` a little if it did).
+
+## Watercolour film (ia-etudiants, cloud session)
+
+- **SVG filters make the render slow.** With `feTurbulence` + `feDisplacementMap` on every wash, the headless render
+  ran at 0.4 frame/s with the default `--workers auto` (which picked one worker on a 4-CPU container): 1 524 frames did
+  not finish within the 1 h background limit. Pass `--workers 3` (one Chrome per worker, about 256 MB each) and give
+  the background command the 2 h maximum. Check the frame rate in the log after a minute before waiting.
+- **A world framing can put page objects in the subtitle band.** A 720 u window centred at y 470 at scale 1.25 ends
+  at screen y 990: its field sat under the subtitle. Compute the screen y of every object at each reference framing
+  (`540 + (y - cy) × s`) when writing frame.md: everything on the page stays above 880.
+- **`snapshots-lots.py` stashes frames while it runs.** It moves the frames outside the current lot out of
+  `compositions/frames/` and restores them in a `finally`. Never commit while it runs (a stop hook asked for a commit
+  mid-run and recorded 7 deletions); never kill it (the frames would stay in the stash folder).
+- **`querySelector` with a template literal** (`svg.querySelector(\`#${p}-aq\`)`) makes the HTML bundler's CSS parser
+  crash (`template_literal_selector` lint error). Write `"#" + p + "-aq"` in the kit.
+- **Compound CSS transforms break GSAP.** A kit class with `transform: scaleX(0) rotate(-1.2deg)` is decomposed by GSAP
+  into a singular matrix (skew of -90°). Tween `scaleX`, `scaleY`, `rotation` explicitly in `fromTo`, from values, as
+  the pilot does for the key-word box.
+- **A worker writes its self-check pages inside the project.** `.p10check.html` at the project root was taken for a
+  root composition by the lint (`multiple_root_compositions`). Tell workers to write their check pages in the
+  scratchpad; move strays out before assembling.
+- **Shared decor states between frames come from the frame that animates them.** The gag frame left two sheets turned
+  over and the pen flat; the two frames that showed the same desk afterwards had drawn a neat fan. Give the later
+  frames the end state in their dispatch (or port the code once the first is built).
+

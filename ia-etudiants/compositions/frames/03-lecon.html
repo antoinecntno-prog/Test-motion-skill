@@ -1,0 +1,464 @@
+<template>
+  <style>
+  /* ===================== CARNET : début du bloc CSS à copier ===================== */
+  @font-face{font-family:"Fraunces";font-weight:400;src:url("assets/fonts/fraunces-latin-400-normal.woff2") format("woff2")}
+  @font-face{font-family:"Fraunces";font-weight:600;src:url("assets/fonts/fraunces-latin-600-normal.woff2") format("woff2")}
+  @font-face{font-family:"Fraunces";font-weight:700;src:url("assets/fonts/fraunces-latin-700-normal.woff2") format("woff2")}
+  @font-face{font-family:"DM Sans";font-weight:400;src:url("assets/fonts/dm-sans-latin-400-normal.woff2") format("woff2")}
+  @font-face{font-family:"DM Sans";font-weight:500;src:url("assets/fonts/dm-sans-latin-500-normal.woff2") format("woff2")}
+  @font-face{font-family:"DM Sans";font-weight:600;src:url("assets/fonts/dm-sans-latin-600-normal.woff2") format("woff2")}
+  @font-face{font-family:"DM Sans";font-weight:700;src:url("assets/fonts/dm-sans-latin-700-normal.woff2") format("woff2")}
+  @font-face{font-family:"Caveat";font-weight:400;src:url("assets/fonts/caveat-latin-400-normal.woff2") format("woff2")}
+  @font-face{font-family:"Caveat";font-weight:600;src:url("assets/fonts/caveat-latin-600-normal.woff2") format("woff2")}
+  :root{--paper:#F4EBDD;--paper-2:#EDE1CF;--paper-dark:#E6D8C2;--canvas:#17110F;--canvas-2:#0F0A09;--ink:#3A2A24;--ink-2:#6B5A52;
+    --ink-light:#9C8C83;--accent:#7A1E2E;--accent-light:#9B2F3F;--accent-pale:#C98A93;--ocre:#C98A2E;--ocre-2:#E0A84A;--ocre-pale:#EFD7A6;
+    --gris:#A99F95;--gris-2:#8E847A;--brun:#B99A74}
+  .aq-layer{position:absolute;left:0;top:0;width:1920px;height:1080px}
+  /* sols : le bureau sous le carnet (clair), l'intérieur de la goutte (pivot) */
+  .aq-desk{background:var(--paper-dark)}
+  .aq-ink-ground{background:radial-gradient(120% 90% at 50% 45%,#1E1613 0%,var(--canvas) 55%,var(--canvas-2) 100%)}
+  .aq-grain{pointer-events:none;mix-blend-mode:multiply;opacity:.55;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='.012 .018' numOctaves='3' seed='7'/><feColorMatrix values='0 0 0 0 .93  0 0 0 0 .88  0 0 0 0 .78  0 0 0 .55 0'/></filter><rect width='400' height='400' filter='url(%23p)'/></svg>")}
+  .aq-fibres{pointer-events:none;mix-blend-mode:multiply;opacity:.35;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 .4  0 0 0 0 .3  0 0 0 0 .25  0 0 0 .22 0'/></filter><rect width='300' height='300' filter='url(%23f)'/></svg>")}
+  /* kit caméra : #stage > #drift > #cam > #world (le monde fait 14 700 × 1 080 u, 8 pages) */
+  .aq-stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden}
+  .aq-drift,.aq-cam{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:960px 540px}
+  .aq-world{position:absolute;left:0;top:0;transform-origin:0 0}
+  .aq-page{position:absolute;top:0;width:1700px;height:1080px;background:var(--paper);box-shadow:0 18px 40px rgba(58,42,36,.14)}
+  .aq-spine{position:absolute;top:0;width:34px;height:1080px;background:linear-gradient(90deg,rgba(58,42,36,0) 0,rgba(58,42,36,.16) 45%,rgba(58,42,36,.28) 50%,rgba(58,42,36,.16) 55%,rgba(58,42,36,0) 100%)}
+  .aq-svg{position:absolute;left:0;top:0;overflow:visible}
+  .aq-note{position:absolute;font:600 34px/1.2 "Caveat",cursive;color:var(--ink-2);white-space:nowrap}
+  /* fenêtre de chat générique (le contenu HTML est posé par la séquence) */
+  .aq-chat{position:absolute;font-family:"DM Sans",sans-serif;color:var(--ink)}
+  .aq-chat .t{position:absolute;left:28px;top:14px;font:600 16px/1 "DM Sans";color:var(--ink-2);letter-spacing:.08em}
+  .aq-chat .m,.aq-chat .r{position:absolute;left:28px;right:28px;padding:14px 20px;font:400 22px/30px "DM Sans";border-radius:12px 12px 12px 4px}
+  .aq-chat .m{background:rgba(201,138,46,.14)} .aq-chat .r{background:rgba(169,159,149,.16);border-radius:12px 12px 4px 12px}
+  .aq-chat.pain .m{background:rgba(169,159,149,.10)} .aq-chat.pain .r{color:var(--gris-2)}
+  .aq-chat b{display:block;font:600 16px/1 "DM Sans";letter-spacing:.08em;margin-bottom:8px;color:var(--ocre)} .aq-chat .r b{color:var(--gris-2)}
+  .aq-chat .in{position:absolute;left:28px;right:28px;bottom:20px;height:52px;border-radius:26px;background:rgba(58,42,36,.06);font:400 20px/52px "DM Sans";color:var(--ink-light);padding-left:22px}
+  .aq-chat .in i{position:absolute;right:10px;top:8px;width:36px;height:36px;border-radius:50%;background:var(--accent)}
+  /* sous-titre : la phrase de la voix, bas centre (bande y 890 à 980), mot par mot */
+  .aq-sub{position:absolute;left:0;top:896px;width:1920px;text-align:center;font:600 62px/74px "DM Sans",sans-serif;letter-spacing:-.005em;
+    color:var(--ink);white-space:nowrap;text-shadow:0 2px 14px rgba(244,235,221,.8)}
+  .aq-sw{display:inline-block;opacity:0;position:relative}
+  .aq-wt{position:relative;z-index:1}
+  .aq-box{position:absolute;left:-.14em;right:-.14em;top:.04em;bottom:.02em;background:var(--accent);border-radius:4px;transform:scaleX(0);transform-origin:0 50%;z-index:0}
+  .aq-sw.boxed{color:#F8F1E6}
+  .aq-stroke{position:absolute;left:-2%;right:-4%;bottom:-7px;height:9px;border-radius:50%;transform:scaleX(0) rotate(-1.2deg);transform-origin:0 50%;
+    background:linear-gradient(90deg,transparent,var(--ocre) 12%,var(--ocre) 70%,transparent);opacity:.9}
+  /* moment typographique du pivot (le sous-titre se tait) */
+  .aq-type{position:absolute;left:0;top:0;width:1920px;height:1080px;display:grid;place-items:center;font:600 84px/1.1 "Fraunces",serif;letter-spacing:-.01em;color:var(--paper)}
+  .aq-type .aq-stroke{bottom:-4px;height:10px;opacity:.95}
+  /* curseur et onde du clic */
+  .aq-cursor{position:absolute;left:0;top:0;width:34px;height:44px;filter:drop-shadow(0 3px 4px rgba(58,42,36,.3))}
+  .aq-ripple{position:absolute;width:120px;height:120px;margin:-60px 0 0 -60px;border:4px solid rgba(122,30,46,.55);border-radius:50%;opacity:0}
+  /* ===================== CARNET : fin du bloc CSS à copier ===================== */
+
+    /* ===================== séquence 03-lecon (préfixe p03) ===================== */
+    #p03-root{position:relative;width:1920px;height:1080px;overflow:hidden;font-family:"DM Sans",sans-serif;-webkit-font-smoothing:antialiased}
+    /* la note « Leçon » (révélée par un masque à 0.21 ; pâlit en ink-light à 4.94 par fondu croisé) */
+    #p03-lec{left:3600px;top:128px;transform:rotate(-2deg);opacity:0;clip-path:inset(0% 100% 0% 0%)}
+    #p03-lecB{position:absolute;left:0;top:0;color:var(--ink-light);opacity:0}
+    /* la note « 12 » dans son cadre (4760, 230, 200 × 160) : accent, puis ink-light par fondu croisé pendant le séchage */
+    #p03-n12{position:absolute;left:4760px;top:230px;width:200px;height:160px;text-align:center;font:600 150px/160px "Caveat",cursive;color:var(--accent);
+      opacity:0;clip-path:inset(0% 100% 0% 0%);transform:rotate(-3deg);white-space:nowrap}
+    #p03-n12b{position:absolute;left:0;top:0;width:200px;color:var(--ink-light);opacity:0}
+    .p03-copy-note{font:600 26px "Caveat",cursive}
+  </style>
+
+  <div id="p03-root" data-composition-id="03-lecon" data-width="1920" data-height="1080" data-duration="5.87">
+
+    <!-- sol : le bureau paper-dark sous le carnet (ground-paper) -->
+    <div id="p03-ground" class="clip aq-layer aq-desk" data-start="0" data-duration="5.87" data-track-index="0"></div>
+
+    <!-- le carnet sous la caméra : #stage > #drift > #cam > #world (pages P2, P3, P4, lavis, encres, notes posés par le script) -->
+    <div id="p03-scene" class="clip aq-layer" data-start="0" data-duration="5.87" data-track-index="1" data-layout-allow-overflow>
+      <div class="aq-stage" id="p03-stage"><div class="aq-drift" id="p03-drift"><div class="aq-cam" id="p03-cam"><div class="aq-world" id="p03-world"></div></div></div></div>
+    </div>
+
+    <!-- grain 55 % et fibres 35 % du papier -->
+    <div id="p03-grain" class="clip aq-layer aq-grain" data-start="0" data-duration="5.87" data-track-index="2"></div>
+    <div id="p03-fibres" class="clip aq-layer aq-fibres" data-start="0" data-duration="5.87" data-track-index="3"></div>
+
+    <!-- la phrase de la voix, bas centre, mot par mot (temps locaux) : trois phrases -->
+    <div id="p03-subs" class="clip aq-layer" data-start="0" data-duration="5.87" data-track-index="4" data-layout-allow-overflow>
+      <div id="p03-s1" class="aq-sub"></div>
+      <div id="p03-s2" class="aq-sub"></div>
+      <div id="p03-s3" class="aq-sub"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var FID = "03-lecon", DUR = 5.87;
+      var root = document.getElementById("p03-root");
+      function $(id) { return root.querySelector("#p03-" + id); }
+
+/* ===================== CARNET : début du kit JS à copier ===================== */
+const AQ = (() => {
+  const NS = "http://www.w3.org/2000/svg";
+  const C = { paper:"#F4EBDD", paper2:"#EDE1CF", desk:"#E6D8C2", canvas:"#17110F", ink:"#3A2A24", ink2:"#6B5A52", inkLight:"#9C8C83",
+    accent:"#7A1E2E", accentLight:"#9B2F3F", accentPale:"#C98A93", ocre:"#C98A2E", ocre2:"#E0A84A", ocrePale:"#EFD7A6", gris:"#A99F95", gris2:"#8E847A", brun:"#B99A74" };
+  const PAGE_W = 1700, GAP = 34, STEP = PAGE_W + GAP;                         // 8 pages : centre cx(k) = 850 + (k - 1) × 1734
+  const cx = k => 850 + (k - 1) * STEP, x0 = k => (k - 1) * STEP;
+  const FRAMING = { P1:[850,540,1.0], lampe:[430,600,1.6], ecranP1:[760,575,1.55], P2:[2584,540,1.0], copie:[2560,560,1.3], P3:[4318,540,1.0],
+    double:[3451,560,0.62], P4:[6052,540,1.0], P5:[7786,540,1.0], ecran:[7786,470,1.25], bulles:[7786,860,1.5], P6:[9520,540,1.0],
+    P7:[11254,540,1.0], carnet:[11254,430,1.4], mains:[11254,640,1.1], P8:[12988,540,1.0], signature:[12988,400,1.15], bouton:[12988,600,1.0] };
+  const rnd = seed => { let s = seed * 9301 + 49297; return () => { s = (s * 9301 + 49297) % 233280; return s / 233280; }; };
+  function el(name, attrs, parent) { const e = document.createElementNS(NS, name); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+  function div(cls, style, parent, html) { const d = document.createElement("div"); d.className = cls; d.style.cssText = style || ""; if (html) d.innerHTML = html; (parent || document.body).appendChild(d); return d; }
+  /* filtres partagés, un jeu par séquence : ids préfixés (aqDefs(svg, "p03") → #p03-aq, #p03-ink…) */
+  function aqDefs(svg, p = "aq") {
+    if (svg.querySelector("#" + p + "-aq")) return;
+    el("defs", {}, svg).innerHTML = `
+      <filter id="${p}-aq" x="-25%" y="-25%" width="150%" height="150%">
+        <feTurbulence type="fractalNoise" baseFrequency=".018" numOctaves="3" seed="11" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="46" xChannelSelector="R" yChannelSelector="G" result="d"/>
+        <feGaussianBlur in="d" stdDeviation="2.2" result="b"/>
+        <feMorphology in="d" operator="erode" radius="10" result="e"/><feGaussianBlur in="e" stdDeviation="8" result="eb"/>
+        <feComposite in="b" in2="eb" operator="arithmetic" k1="0" k2="1" k3="-0.35" k4="0" result="ring"/>
+        <feTurbulence type="fractalNoise" baseFrequency=".6" numOctaves="2" seed="4" result="g"/>
+        <feColorMatrix in="g" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .25 .85" result="gm"/>
+        <feComposite in="ring" in2="gm" operator="in"/>
+      </filter>
+      <filter id="${p}-aq-soft" x="-25%" y="-25%" width="150%" height="150%">
+        <feTurbulence type="fractalNoise" baseFrequency=".012" numOctaves="3" seed="21" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="70" xChannelSelector="R" yChannelSelector="G" result="d"/><feGaussianBlur in="d" stdDeviation="6"/>
+      </filter>
+      <filter id="${p}-ink" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency=".04" numOctaves="2" seed="5" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="5"/>
+      </filter>
+      <filter id="${p}-aq-blur" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="14"/></filter>`;
+    svg.dataset.aqPrefix = p;
+  }
+  const pf = svg => svg.dataset.aqPrefix || "aq";
+  /* une tache organique : rayon r, ondulation w (0 à 1), n sommets, ry aplatissement ; chemin fermé en courbes (déterministe) */
+  function aqBlob(cx, cy, r, seed, w = 0.22, n = 9, ry = 1) {
+    const R = rnd(seed), pts = [];
+    for (let i = 0; i < n; i++) { const a = (i / n) * Math.PI * 2 + (R() - 0.5) * 0.4, k = 1 + (R() - 0.5) * 2 * w; pts.push([cx + Math.cos(a) * r * k, cy + Math.sin(a) * r * k * ry]); }
+    let d = "";
+    for (let i = 0; i < n; i++) {
+      const p0 = pts[(i - 1 + n) % n], p1 = pts[i], p2 = pts[(i + 1) % n], p3 = pts[(i + 2) % n];
+      const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6], c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+      d += (i ? "" : `M${p1[0].toFixed(1)} ${p1[1].toFixed(1)}`) + ` C${c1[0].toFixed(1)} ${c1[1].toFixed(1)} ${c2[0].toFixed(1)} ${c2[1].toFixed(1)} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+    }
+    return d + " Z";
+  }
+  /* un lavis : shape = chemin ou {cx, cy, r, ry, seed, w, n} ; en multiply ; soft = lavis large. transform-origin au centre (pour l'impact ×0,2 → 1) */
+  function aqWash(svg, shape, color, opacity = 0.8, soft = false, parent) {
+    const g = el("g", { filter: `url(#${pf(svg)}-${soft ? "aq-soft" : "aq"})`, opacity, style: "mix-blend-mode:multiply" }, parent || svg);
+    const d = typeof shape === "string" ? shape : aqBlob(shape.cx, shape.cy, shape.r, shape.seed || 1, shape.w, shape.n, shape.ry);
+    const p = el("path", { d, fill: color }, g);
+    if (typeof shape !== "string") { g.style.transformOrigin = `${shape.cx}px ${shape.cy}px`; g.style.transformBox = "view-box"; }
+    g.dataset.color = color; return g;
+  }
+  /* un trait d'encre à main levée ; renvoie le path (sa longueur sert au tracé : stroke-dasharray / dashoffset) */
+  function aqInk(svg, d, width = 5, color = C.ink, parent, extra = {}) {
+    const g = parent || el("g", { filter: `url(#${pf(svg)}-ink)` }, svg);
+    return el("path", Object.assign({ d, fill: "none", stroke: color, "stroke-width": width, "stroke-linecap": "round", "stroke-linejoin": "round" }, extra), g);
+  }
+  /* prépare un trait pour se dessiner : dashoffset 1 = invisible, 0 = complet (tween GSAP sur strokeDashoffset, ou aqDraw(p, k)) */
+  function aqDrawPrep(path) { const L = path.getTotalLength(); path.style.strokeDasharray = `${L} ${L}`; path.style.strokeDashoffset = L; path.dataset.len = L; return path; }
+  function aqDraw(path, k) { path.style.strokeDashoffset = (+path.dataset.len) * (1 - Math.max(0, Math.min(1, k))); }
+  /* une goutte (signature 1) : tache ronde à 7 sommets ; aqDropFall la fait tomber (états à tweener par GSAP : scale, y, filter) */
+  function aqDrop(svg, x, y, r, color, seed = 3, parent) { return aqWash(svg, { cx: x, cy: y, r, seed, w: 0.18, n: 7 }, color, 0.85, false, parent); }
+  /* séchage (signature 2) : k 0 (humide : bord doux, pas de granulation, ×1,04) → 1 (sec : anneau foncé, granulation, ×1) */
+  function aqDry(g, k) { k = Math.max(0, Math.min(1, k)); g.style.transform = `scale(${1.04 - 0.04 * k})`; g.style.opacity = (+g.dataset.op || 0.8) * (0.7 + 0.3 * k); g.style.filter = k < 0.5 ? `url(#${g.dataset.pf || "aq"}-aq-soft)` : `url(#${g.dataset.pf || "aq"}-aq)`; }
+  /* effacement par le centre (séchage inversé) : k 0 (entière) → 1 (disparue) ; la couleur pâlit vers le gris en chemin */
+  function aqErase(g, k) { k = Math.max(0, Math.min(1, k)); g.style.clipPath = `circle(${(1 - k) * 75}% at 50% 50%)`; g.querySelector("path").setAttribute("fill", k < 0.5 ? g.dataset.color : C.gris); g.style.opacity = (+g.dataset.op || 0.8) * (1 - k * 0.6); }
+  /* silhouette peinte : buste en dôme + tête ronde, h de haut ; pose "dos", "penche", "bras-leve" */
+  function aqFigure(svg, x, y, h, color, seed = 5, pose = "dos", parent) {
+    const g = el("g", {}, parent || svg); const head = h * 0.16, sh = y + head * 2.4, bw = h * 0.3, bot = y + h, tilt = pose === "penche" ? h * 0.08 : 0;
+    aqWash(svg, `M${x - bw} ${bot} L${x - bw} ${sh + h * 0.12} C ${x - bw} ${sh - h * 0.1} ${x - bw * 0.5 + tilt} ${sh - h * 0.14} ${x + tilt} ${sh - h * 0.12} C ${x + bw * 0.5 + tilt} ${sh - h * 0.14} ${x + bw} ${sh - h * 0.1} ${x + bw} ${sh + h * 0.12} L${x + bw} ${bot} Z`, color, 0.82, false, g);
+    if (pose === "bras-leve") aqWash(svg, `M${x + bw * 0.7} ${sh + h * 0.06} C ${x + bw * 1.1} ${sh - h * 0.1} ${x + bw * 1.25} ${y - h * 0.02} ${x + bw * 1.3} ${y - h * 0.16} L ${x + bw * 1.42} ${y - h * 0.12} C ${x + bw * 1.36} ${y + h * 0.02} ${x + bw * 1.2} ${sh - h * 0.02} ${x + bw * 0.86} ${sh + h * 0.12} Z`, color, 0.82, false, g);
+    aqWash(svg, { cx: x + tilt * 1.4, cy: y + head, r: head, seed: seed + 1, w: 0.1, n: 8 }, color, 0.9, false, g);
+    return g;
+  }
+  /* fenêtre de chat générique : cadre à l'encre + barre ; le contenu HTML (.aq-chat) est posé par la séquence au même endroit */
+  function aqWindow(svg, x, y, w, h, opts = {}) {
+    const g = el("g", { transform: `translate(${x} ${y})` }, opts.parent || svg);
+    el("rect", { x: 0, y: 0, width: w, height: h, rx: 14, fill: opts.fill || "rgba(251,246,236,.92)" }, g);
+    const ink = el("g", { filter: `url(#${pf(svg)}-ink)` }, g);
+    aqInk(svg, `M14 0 L${w - 14} 0 Q${w} 0 ${w} 14 L${w} ${h - 14} Q${w} ${h} ${w - 14} ${h} L14 ${h} Q0 ${h} 0 ${h - 14} L0 14 Q0 0 14 0 Z`, opts.stroke || 4.5, opts.color || C.ink, ink);
+    if (opts.bar !== false) aqInk(svg, `M0 ${opts.barH || 48} L${w} ${opts.barH || 48}`, 3, opts.color || C.ink, ink);
+    return g;
+  }
+  /* la lampe de bureau à l'encre, pied en (x, y) ; renvoie {g, glow} ; glow = lavis ocre-2 doux (éteinte : aqErase(glow, 1)) */
+  function aqLamp(svg, x, y, scale = 1, lit = true, parent) {
+    const g = el("g", { transform: `translate(${x} ${y}) scale(${scale})` }, parent || svg);
+    const glow = aqWash(svg, { cx: 330, cy: -40, r: 300, seed: 2, w: 0.14, n: 10, ry: 0.72 }, C.ocre2, 0.75, true, g);
+    const ink = el("g", { filter: `url(#${pf(svg)}-ink)` }, g);
+    aqInk(svg, "M0 0 L0 -230 Q0 -290 70 -310 L180 -340", 6, C.ink, ink); aqInk(svg, "M150 -360 L220 -400 L270 -320 Z", 6, C.ink, ink); aqInk(svg, "M-50 2 L50 2", 6, C.ink, ink);
+    if (!lit) aqErase(glow, 1);
+    return { g, glow };
+  }
+  /* le portable à l'encre, centre de l'écran en (x, y) : écran 620 × 366, clavier ; renvoie {g, screenGlow} */
+  function aqLaptop(svg, x, y, pain = false, parent) {
+    const g = el("g", { transform: `translate(${x - 760} ${y - 575})` }, parent || svg);
+    const glow = aqWash(svg, { cx: 760, cy: 580, r: 230, seed: 4, w: 0.12, n: 9, ry: 0.6 }, pain ? C.gris : C.ocrePale, pain ? 0.6 : 0.9, false, g);
+    const ink = el("g", { filter: `url(#${pf(svg)}-ink)` }, g);
+    aqInk(svg, "M452 392 L1052 392 L1072 758 L430 758 Z", 5, C.ink, ink); aqInk(svg, "M400 760 L1100 760 L1130 800 L370 800 Z", 5, C.ink, ink); aqInk(svg, "M430 772 L1070 772", 2.5, C.inkLight, ink);
+    return { g, glow };
+  }
+  /* le stylo rouge, posé en (x, y), angle a ; corps lavis accent-light + cerne */
+  function aqPen(svg, x, y, a = -34, parent) {
+    const g = el("g", { transform: `translate(${x} ${y}) rotate(${a})` }, parent || svg);
+    aqWash(svg, "M-180 -10 L180 -10 L180 10 L-180 10 Z", C.accentLight, 0.9, false, g);
+    aqInk(svg, "M-180 -10 L180 -10 L180 10 L-180 10 Z M180 -10 L220 0 L180 10", 3.5, C.ink, el("g", { filter: `url(#${pf(svg)}-ink)` }, g));
+    return g;
+  }
+  /* une page du carnet (k = 1 à 8) dans #world, et la reliure à sa droite ; renvoie la page (les objets y vont en coordonnées PAGE : x - x0(k)) */
+  function aqPage(world, k) {
+    const p = div("aq-page", `left:${x0(k)}px`, world); p.dataset.page = k;
+    if (k < 8) div("aq-spine", `left:${x0(k) + PAGE_W}px`, world);
+    return p;
+  }
+  /* caméra : amène (x, y) du monde au centre du cadre à l'échelle s ; blur en px sur #cam */
+  function aqCam(world, cam, x, y, s, blur = 0) {
+    world.style.transform = `translate(${960 - x}px, ${540 - y}px)`; world.style.transformOrigin = `${x}px ${y}px`;
+    cam.style.transform = `scale(${s})`; cam.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : "none";
+  }
+  /* sous-titre mot par mot : words = [["Dimanche,", 0.02, "box"], ["vingt-trois", 0.74], ...] ; renvoie les spans .aq-sw (GSAP : opacity, y, blur ; .aq-box scaleX ; .aq-stroke scaleX) ; la boîte est sous le texte (.aq-wt), aucun z-index négatif */
+  function aqSubtitle(el_, words) {
+    el_.innerHTML = words.map(([w, , mark]) => `<span class="aq-sw${mark === "box" ? " boxed" : ""}">${mark === "box" ? '<i class="aq-box"></i>' : ""}<span class="aq-wt">${w}</span>${mark === "stroke" ? '<i class="aq-stroke"></i>' : ""}</span>`).join(" ");
+    return [...el_.querySelectorAll(".aq-sw")];
+  }
+  /* le curseur (flèche papier cernée d'encre) ; position par transform translate */
+  function aqCursor(parent) { return div("aq-cursor", "", parent, `<svg viewBox="0 0 34 44" width="34" height="44"><path d="M3 2 L31 24 L19 26 L26 40 L20 43 L13 29 L3 38 Z" fill="#F8F1E6" stroke="#3A2A24" stroke-width="2.5" stroke-linejoin="round"/></svg>`); }
+  return { C, NS, PAGE_W, GAP, STEP, cx, x0, FRAMING, rnd, el, div, aqDefs, aqBlob, aqWash, aqInk, aqDrawPrep, aqDraw, aqDrop, aqDry, aqErase, aqFigure, aqWindow, aqLamp, aqLaptop, aqPen, aqPage, aqCam, aqSubtitle, aqCursor };
+})();
+/* ===================== CARNET : fin du kit JS à copier ===================== */
+
+      var K = AQ.C, el = AQ.el, aqDefs = AQ.aqDefs, aqWash = AQ.aqWash, aqInk = AQ.aqInk, aqDrop = AQ.aqDrop, aqDry = AQ.aqDry, aqErase = AQ.aqErase,
+          aqLamp = AQ.aqLamp, aqPen = AQ.aqPen, aqPage = AQ.aqPage, aqCam = AQ.aqCam, aqSubtitle = AQ.aqSubtitle;
+
+      /* ===================== le monde : pages P2, P3 et P4 du carnet ===================== */
+      var world = $("world"), cam = $("cam");
+      aqPage(world, 2); aqPage(world, 3);
+      var page4 = aqPage(world, 4); page4.style.filter = "blur(7px)";          // avant-plan : le bord flou de P4 coupé par le bord droit
+      var svg = el("svg", { class: "aq-svg", width: 7000, height: 1080 }, world); aqDefs(svg, "p03");
+      var X2 = AQ.x0(2);
+
+      // ---- P2 (ce que la séquence 2 laisse) : plateau brun, lampe éteinte, trois copies grises, stylo posé à plat, deux taches restantes ----
+      aqWash(svg, { cx: 1900, cy: 300, r: 150, seed: 61, w: 0.2, n: 9, ry: 0.85 }, K.ocrePale, 0.6, true);
+      aqWash(svg, { cx: 1850, cy: 760, r: 130, seed: 62, w: 0.2, n: 9, ry: 0.9 }, K.accentPale, 0.55, true);
+      aqWash(svg, "M" + (X2 + 120) + " 860 L" + (X2 + 1580) + " 860 L" + (X2 + 1600) + " 940 L" + (X2 + 100) + " 940 Z", K.brun, 0.7);
+      aqLamp(svg, 3100, 640, 0.9, false);
+      [[2440, 540, 8], [2520, 560, 14], [2600, 580, 21]].forEach(function (c, i) {
+        var g = el("g", { transform: "translate(" + c[0] + " " + c[1] + ") rotate(" + c[2] + ")" }, svg);
+        g.style.filter = "drop-shadow(0 14px 30px rgba(58,42,36,.14))";
+        el("rect", { x: -150, y: -200, width: 300, height: 400, fill: K.paper2 }, g);
+        for (var j = 0; j < 5; j++) el("rect", { x: -120, y: -140 + j * 40, width: j === 2 ? 150 : 240, height: 3, fill: K.inkLight, opacity: 0.55 }, g);
+        if (i === 0) { var t = el("text", { x: -120, y: -162, fill: K.inkLight, "class": "p03-copy-note" }, g); t.textContent = "Dissertation · 1/3"; }
+      });
+      aqPen(svg, 2520, 500, -6);
+
+      // ---- P3 : la page de la leçon ----
+      // deux taches de couleur restantes aux coins (hors des lignes), présentes dès le début
+      aqWash(svg, { cx: 4950, cy: 240, r: 120, seed: 63, w: 0.2, n: 9, ry: 0.8 }, K.ocrePale, 0.6, true);
+      aqWash(svg, { cx: 5050, cy: 760, r: 130, seed: 64, w: 0.2, n: 9, ry: 0.9 }, K.accentPale, 0.55, true);
+      // le lavis gris à 35 % qui part de la lampe quand elle s'éteint (coup de pinceau depuis le coin : échelle 0 → 1 autour de la lampe)
+      var greyW = el("g", {}, svg); greyW.style.transformOrigin = "4900px 150px"; greyW.style.transformBox = "view-box";
+      aqWash(svg, { cx: 4500, cy: 440, r: 560, seed: 65, w: 0.15, n: 10, ry: 0.78 }, K.gris, 0.35, true, greyW);
+      // les neuf lignes de notes en lavis (1 ligne = 1 coup de pinceau), ocre-pale et accent-pale en alternance ; un calque gris par ligne pour pâlir
+      var linesG = el("g", {}, svg), lineG = [], linePath = [], lineGrey = [];
+      for (var j = 0; j < 9; j++) {
+        var r = 470 - (j % 2) * 70, cxl = 4100 + (((j * 7) % 3) - 1) * 40, cyl = 300 + j * 57.5;
+        var g = aqWash(svg, { cx: cxl, cy: cyl, r: r, seed: 30 + j, w: 0.2, n: 8, ry: 22 / r }, j % 2 ? K.accentPale : K.ocrePale, 0.6, false, linesG);
+        g.dataset.op = "0.6"; var p = g.querySelector("path");
+        var pg = el("path", { d: p.getAttribute("d"), fill: K.gris, opacity: 0 }, g);
+        lineG.push(g); linePath.push(p); lineGrey.push(pg);
+      }
+      // la lampe du coin, allumée (sa lueur ocre-2 s'efface par le centre à 1.02)
+      var lamp3 = aqLamp(svg, 4850, 300, 0.8, true);
+      lamp3.glow.dataset.pf = "p03"; lamp3.glow.dataset.op = "0.75";
+      var lampInkPaths = lamp3.g.lastElementChild.querySelectorAll("path"), lampArm = [lampInkPaths[0], lampInkPaths[1]];
+      // le cadre de la note (encre 4 px, 200 × 160) à (4760, 230), déjà tracé
+      var frG = el("g", { filter: "url(#p03-ink)" }, svg); frG.style.transformOrigin = "4860px 310px"; frG.style.transformBox = "view-box";
+      aqInk(svg, "M4760 230 L4960 230 L4960 390 L4760 390 Z", 4, K.ink, frG);
+      // la goutte accent posée au bas de la page (5080, 820), la même encre qu'en P1
+      var drop0 = aqDrop(svg, 5080, 820, 46, K.accent, 7); drop0.dataset.pf = "p03"; drop0.dataset.op = "0.85"; aqDry(drop0, 1);
+      // la goutte de la note : arrive de la caméra en haut à droite, plonge dans le cadre, s'ouvre, sèche (enveloppe pour le vol, intérieur pour le séchage)
+      var dropNW = el("g", { opacity: 0 }, svg); dropNW.style.transformOrigin = "4860px 320px"; dropNW.style.transformBox = "view-box";
+      var dropN = aqDrop(svg, 4860, 320, 38, K.accent, 9, dropNW); dropN.dataset.pf = "p03"; dropN.dataset.op = "0.85";
+      var splash = [[4800, 312], [4922, 328]].map(function (p) {
+        var c = el("circle", { cx: p[0], cy: p[1], r: 6, fill: K.accent, opacity: 0.85 }, svg);
+        c.style.transformOrigin = p[0] + "px " + p[1] + "px"; c.style.transformBox = "view-box"; c.style.transform = "scale(0)"; return c;
+      });
+
+      // HTML posé dans le monde : la note « Leçon » et la note « 12 »
+      world.insertAdjacentHTML("beforeend",
+        '<div class="aq-note" id="p03-lec"><span id="p03-lecA">Leçon</span><span id="p03-lecB">Leçon</span></div>' +
+        '<div id="p03-n12"><span id="p03-n12a">12</span><span id="p03-n12b">12</span></div>');
+      var lec = $("lec"), lecA = $("lecA"), lecB = $("lecB"), n12 = $("n12"), n12a = $("n12a"), n12b = $("n12b");
+
+      /* ---- sous-titres (aqSubtitle du kit) : trois phrases ---- */
+      function glue(a) { var n = a.nextSibling; if (n && n.nodeType === 3) n.parentNode.removeChild(n); }
+      var W1S = [["Il", 0.21], ["a", 0.36], ["gagné", 0.54], ["une", 0.76], ["soirée", 1.02, "box"], [".", 1.02]];
+      var W2S = [["Il", 1.67], ["a", 1.82], ["perdu", 2.04], ["la", 2.34], ["leçon", 2.50, "box"], [".", 2.50]];
+      var W3S = [["La", 3.11], ["note", 3.34, "box"], ["tombe,", 3.59], ["et", 4.25], ["personne", 4.47], ["n'a", 4.94], ["rien", 5.10], ["appris.", 5.40]];
+      var s1 = $("s1"), s2 = $("s2"), s3 = $("s3");
+      var sp1 = aqSubtitle(s1, W1S), sp2 = aqSubtitle(s2, W2S), sp3 = aqSubtitle(s3, W3S);
+      glue(sp1[4]); glue(sp2[4]);
+
+      /* ===================== état : proxies lus par UN seul render() ===================== */
+      var CAM = { x: 3650, y: 560, s: 1.05, b: 12 };       // caméra (handoff_in : cam(3650, 560, 1.05) flou 12, en plein whip)
+      var LG = { k: 1 };                                   // la lueur de la lampe respire
+      var LA = { dy: 0 };                                  // le bras de la lampe s'abaisse
+      var LE = { k: 0 };                                   // la lueur s'efface par le centre (clic)
+      var GW = { k: 0 };                                   // le lavis gris qui part de la lampe (échelle)
+      var LNO = { o: 1 };                                  // opacité commune des lignes
+      var LNB = { b: 0 };                                  // flou de profondeur des lignes (fond du plan 3)
+      var LN = []; for (var q = 0; q < 9; q++) LN.push({ s: 1, g: 0, e: 0 });   // par ligne : tassement, gris, effacement
+      var FR = { s: 1 };                                   // le cadre de la note se tasse
+      var DN = { y: -210, s: 4, b: 10, o: 0, dry: 0 };     // la goutte de la note : vol, plongée, impact, séchage
+      var SP = { k: 0 };                                   // les deux éclaboussures
+      function blur(v) { return v > 0.05 ? "blur(" + v.toFixed(2) + "px)" : "none"; }
+
+      function render() {
+        aqCam(world, cam, CAM.x, CAM.y, CAM.s, CAM.b);
+        // la lampe du coin
+        lamp3.glow.style.transform = "scale(" + LG.k.toFixed(4) + ")";
+        if (LE.k > 0) aqErase(lamp3.glow, LE.k); else { lamp3.glow.style.clipPath = "none"; lamp3.glow.querySelector("path").setAttribute("fill", lamp3.glow.dataset.color); lamp3.glow.style.opacity = ""; }
+        lampArm.forEach(function (p) { p.style.transform = "translate(0px," + LA.dy.toFixed(2) + "px)"; });
+        greyW.style.transform = "scale(" + GW.k.toFixed(4) + ")";
+        // les lignes de la leçon
+        linesG.style.filter = blur(LNB.b);
+        for (var i = 0; i < 9; i++) {
+          var L = LN[i], g = lineG[i];
+          g.style.transform = "scale(" + L.s.toFixed(4) + ")";
+          lineGrey[i].setAttribute("opacity", L.g.toFixed(3));
+          if (L.e > 0) aqErase(g, L.e); else { g.style.clipPath = "none"; linePath[i].setAttribute("fill", g.dataset.color); }
+          g.style.opacity = (0.6 * LNO.o * (1 - L.e * 0.6)).toFixed(4);
+        }
+        // le cadre et la note
+        frG.style.transform = "scale(" + FR.s.toFixed(4) + ")";
+        dropNW.style.transform = "translate(0px," + DN.y.toFixed(2) + "px) scale(" + DN.s.toFixed(4) + ")"; dropNW.style.opacity = DN.o; dropNW.style.filter = blur(DN.b);
+        aqDry(dropN, DN.dry);
+        splash.forEach(function (c) { c.style.transform = "scale(" + SP.k.toFixed(4) + ")"; });
+      }
+
+      /* ===================== la timeline unique, en pause ===================== */
+      var tl = gsap.timeline({ paused: true, onUpdate: render });
+      function ft(target, from, to, pos) { if (pos > 0) to.immediateRender = false; tl.fromTo(target, from, to, pos); }
+      function tw(target, from, to, dur, ease, pos) { var o = {}, k; for (k in to) o[k] = to[k]; o.duration = dur; o.ease = ease; ft(target, from, o, pos); }
+
+      /* ---- piste caméra (de gauche à droite ou s'enfonce ; crans expo.inOut avec flou au milieu) ---- */
+      // 0.00 à 0.20 fin du whip : atterrissage sur cam(4318, 540, 1.0) ; cubique qui part à +7000 u/s (la vitesse de la couture) et s'arrête net
+      var LAND = function (p) { return 0.096 * p * p * p - 1.192 * p * p + 2.096 * p; };
+      tw(CAM, { x: 3650, y: 560, s: 1.05 }, { x: 4318, y: 540, s: 1.0 }, 0.20, LAND, 0);
+      tw(CAM, { b: 12 }, { b: 0 }, 0.20, "power2.out", 0);
+      // dérive x +18 u/s, échelle +1,5 %/s de 0.20 à 1.60 (jusqu'au cran)
+      tw(CAM, { x: 4318, s: 1.0 }, { x: 4343.2, s: 1.021 }, 1.40, "none", 0.20);
+      // 1.60 cran sur les lignes cam(4150, 520, 1.25), 0,14 s expo.inOut, flou 8 px au milieu
+      tw(CAM, { x: 4343.2, y: 540, s: 1.021 }, { x: 4150, y: 520, s: 1.25 }, 0.14, "expo.inOut", 1.60);
+      tw(CAM, { b: 0 }, { b: 8 }, 0.07, "power2.in", 1.60); tw(CAM, { b: 8 }, { b: 0 }, 0.07, "power2.out", 1.67);
+      // dérive x +14 u/s, y -6 u/s de 1.74 à 3.00
+      tw(CAM, { x: 4150, y: 520 }, { x: 4167.64, y: 512.44 }, 1.26, "none", 1.74);
+      // 3.00 cran sur le cadre de la note cam(4760, 300, 1.5), 0,14 s, flou 8 px
+      tw(CAM, { x: 4167.64, y: 512.44, s: 1.25 }, { x: 4760, y: 300, s: 1.5 }, 0.14, "expo.inOut", 3.00);
+      tw(CAM, { b: 0 }, { b: 8 }, 0.07, "power2.in", 3.00); tw(CAM, { b: 8 }, { b: 0 }, 0.07, "power2.out", 3.07);
+      // dérive x +10 u/s, échelle +1 %/s de 3.14 à 4.40
+      tw(CAM, { x: 4760, s: 1.5 }, { x: 4772.6, s: 1.5189 }, 1.26, "none", 3.14);
+      // 3.59 « tombe » : petit coup de caméra (y +6 en 0,06 s, qui se pose)
+      tw(CAM, { y: 300 }, { y: 306 }, 0.06, "power2.out", 3.59); tw(CAM, { y: 306 }, { y: 300 }, 0.12, "power2.out", 3.65);
+      // 4.40 recul court vers cam(4400, 500, 1.05) en 0,3 s expo.out : toute la page
+      tw(CAM, { x: 4772.6, y: 300, s: 1.5189 }, { x: 4400, y: 500, s: 1.05 }, 0.30, "expo.out", 4.40);
+      // dérive échelle -1 %/s de 4.70 à 5.46
+      tw(CAM, { s: 1.05 }, { s: 1.04202 }, 0.76, "none", 4.70);
+      // 5.46 à 5.87 recul vers la double page (power2.in, flou 0 → 9) : à la couture cam(3700, 560, 0.70), x à -1500 u/s, échelle à -1,2/s
+      var PULLX = function (p) { return -1.12 * p * p * p + 2.12 * p * p; }, PULLS = function (p) { return -0.56 * p * p * p + 1.56 * p * p; };
+      tw(CAM, { x: 4400, y: 500 }, { x: 3700, y: 560 }, 0.41, PULLX, 5.46);
+      tw(CAM, { s: 1.04202 }, { s: 0.70 }, 0.41, PULLS, 5.46);
+      tw(CAM, { b: 0 }, { b: 9 }, 0.41, "power2.in", 5.46);
+
+      /* ---- scène 1 (0.00 à 1.60) : la page de la leçon, la lampe s'éteint ---- */
+      // 0.21 « Il » : la note « Leçon » se révèle (masque 0,3 s)
+      ft(lec, { opacity: 0 }, { opacity: 1, duration: 0.01, ease: "none" }, 0.21);
+      ft(lec, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.30, ease: "power1.inOut" }, 0.21);
+      // 0.40 la lueur de la lampe respire une fois (×1,04, 0,3 s)
+      tw(LG, { k: 1 }, { k: 1.04 }, 0.15, "sine.inOut", 0.40); tw(LG, { k: 1.04 }, { k: 1 }, 0.15, "sine.inOut", 0.55);
+      // 0.54 « gagné » : les neuf lignes se tassent (×1,01 → 1)
+      LN.forEach(function (L) { tw(L, { s: 1.01 }, { s: 1 }, 0.14, "power2.out", 0.54); });
+      // 0.90 le bras de la lampe s'abaisse de 6 u (0,1 s)
+      tw(LA, { dy: 0 }, { dy: 6 }, 0.10, "power2.out", 0.90);
+      // 1.02 « soirée » : clic, la lueur ocre-2 s'efface par le centre (0,3 s power2.in) et le lavis gris à 35 % se pose depuis la lampe (0,3 s)
+      tw(LE, { k: 0 }, { k: 1 }, 0.30, "power2.in", 1.02);
+      tw(GW, { k: 0 }, { k: 0.55 }, 0.30, "expo.out", 1.02);
+      // 1.30 les lignes de couleur perdent 20 % d'opacité
+      tw(LNO, { o: 1 }, { o: 0.8 }, 0.25, "power1.out", 1.30);
+
+      /* ---- scène 2 (1.60 à 3.00) : cran sur les lignes, la leçon pâlit ---- */
+      // 1.82 « a » : la ligne 1 se tasse
+      tw(LN[0], { s: 1.01 }, { s: 1 }, 0.14, "power2.out", 1.82);
+      // 2.04 « perdu » : les neuf lignes pâlissent une à une vers gris-lavis (la couleur part, la forme reste) ; la dernière est grise vers 2.58
+      LN.forEach(function (L, i) { tw(L, { g: 0 }, { g: 1 }, 0.14, "power1.inOut", 2.04 + i * 0.05); });
+      // 2.60 le lavis gris de la lampe atteint le bas de la page (0,3 s)
+      tw(GW, { k: 0.55 }, { k: 1 }, 0.30, "power2.inOut", 2.60);
+      // 2.80 la goutte accent arrive de la caméra en haut à droite (×4, flou 10) et approche jusqu'au cran
+      tw(DN, { o: 0 }, { o: 1 }, 0.06, "none", 2.80);
+      tw(DN, { s: 4, b: 10, y: -210 }, { s: 3, b: 7, y: -190 }, 0.40, "power1.inOut", 2.80);
+
+      /* ---- scène 3 (3.00 à 4.40) : le cadre de la note, « 12 » tombe et sèche en gris ---- */
+      // profondeur : les lignes grises passent au fond (6 px) pendant le cran
+      tw(LNB, { b: 0 }, { b: 6 }, 0.14, "power2.inOut", 3.00);
+      // 3.14 le cadre à l'encre se tasse (×1,02 → 1)
+      tw(FR, { s: 1.02 }, { s: 1 }, 0.14, "power2.out", 3.14);
+      // 3.20 la goutte plonge (0,16 s power2.in) ; 3.36 impact dans le cadre : ×0,2 → 1 (0,12 s expo.out), deux éclaboussures
+      tw(DN, { s: 3, b: 7, y: -190 }, { s: 0.2, b: 0, y: 0 }, 0.16, "power2.in", 3.20);
+      tw(DN, { s: 0.2 }, { s: 1 }, 0.12, "expo.out", 3.36);
+      tw(SP, { k: 0 }, { k: 1 }, 0.12, "expo.out", 3.36);
+      // 3.48 le « 12 » s'écrit depuis la tache (Caveat 150 px accent, masque 0,5 s power1.inOut)
+      ft(n12, { opacity: 0 }, { opacity: 1, duration: 0.01, ease: "none" }, 3.48);
+      ft(n12, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.50, ease: "power1.inOut" }, 3.48);
+      // 3.90 la note sèche (aqDry 0 → 1 en 0,4 s) pendant que la couleur passe de accent à ink-light ; 4.25 le « 12 » gris est posé
+      tw(DN, { dry: 0 }, { dry: 1 }, 0.40, "power1.inOut", 3.90);
+      ft(n12a, { opacity: 1 }, { opacity: 0, duration: 0.40, ease: "power1.inOut" }, 3.90);
+      ft(n12b, { opacity: 0 }, { opacity: 1, duration: 0.40, ease: "power1.inOut" }, 3.90);
+
+      /* ---- scène 4 (4.40 à 5.87) : les lignes s'effacent jusqu'au papier nu, recul ---- */
+      // les lignes redeviennent nettes avec le recul
+      tw(LNB, { b: 6 }, { b: 0 }, 0.30, "power2.inOut", 4.40);
+      // 4.47 « personne » : les neuf lignes grises s'effacent par le centre une à une (0,2 s chacune) ; 5.41 la dernière disparaît (« appris »)
+      LN.forEach(function (L, i) { tw(L, { e: 0 }, { e: 1 }, 0.20, "power2.in", 4.47 + i * 0.0925); });
+      // 4.94 « n'a » : la note « Leçon » pâlit en ink-light
+      ft(lecA, { opacity: 1 }, { opacity: 0, duration: 0.30, ease: "power1.inOut" }, 4.94);
+      ft(lecB, { opacity: 0 }, { opacity: 1, duration: 0.30, ease: "power1.inOut" }, 4.94);
+      // 5.10 « rien » : le lavis gris de la lampe se retire de 30 %
+      tw(GW, { k: 1 }, { k: 0.7 }, 0.30, "power2.inOut", 5.10);
+
+      /* ---- la phrase de la voix : mot par mot (0 → 0,35 → 1), chaque mot 1 image avant son temps ; une boîte par phrase ---- */
+      function sayWords(spans, listW) {
+        spans.forEach(function (w, i) {
+          var st = Math.max(0, listW[i][1] - 1 / 30), kw = listW[i][2] === "box";
+          ft(w, { y: 8, filter: "blur(6px)" }, { y: 0, filter: "blur(0px)", duration: 0.14, ease: "power2.out" }, st);
+          if (kw) ft(w, { opacity: 0 }, { opacity: 1, duration: 0.10, ease: "power2.out" }, st);
+          else {
+            ft(w, { opacity: 0 }, { opacity: 0.35, duration: 0.08, ease: "power2.out" }, st);
+            ft(w, { opacity: 0.35 }, { opacity: 1, duration: 0.20, ease: "power1.out" }, st + 0.10);
+          }
+        });
+      }
+      sayWords(sp1, W1S); sayWords(sp2, W2S); sayWords(sp3, W3S);
+      function boxAt(span, pos) {
+        ft(span.querySelector(".aq-box"), { scaleX: 0, scaleY: 1, rotation: 0, skewX: 0, skewY: 0 },
+          { scaleX: 1, scaleY: 1, rotation: 0, skewX: 0, skewY: 0, duration: 0.16, ease: "power3.out" }, pos);
+      }
+      boxAt(sp1[4], 0.98); boxAt(sp2[4], 2.46); boxAt(sp3[1], 3.30);
+      // chaque phrase sort avant la suivante et avant la couture (opacité 1 → 0, flou 0 → 6 px, 0,14 s)
+      ft(s1, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 1.46);
+      ft(s2, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 2.86);
+      ft(s3, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 5.66);
+
+      // durée exacte de la séquence
+      tl.set({}, {}, DUR);
+
+      // première image = handoff_in, avant tout seek
+      render();
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[FID] = tl;
+    })();
+  </script>
+</template>

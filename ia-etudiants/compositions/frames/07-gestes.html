@@ -64,7 +64,7 @@
     #p07-you q{quotes:none;color:var(--accent);font-weight:600}
     .p07-ln{white-space:nowrap}
     /* les étiquettes « IA » des deux bulles vides du bas de la page */
-    .p07-lab{position:absolute;font:600 16px/1 "DM Sans",sans-serif;letter-spacing:.08em;color:var(--ink-2)}
+    .p07-lab{position:absolute;font:600 16px/1 "DM Sans",sans-serif;letter-spacing:.08em;color:var(--ink-2);opacity:0}
     /* les notes manuscrites des gestes (révélées par un masque) */
     #p07-src{left:8050px;top:354px;width:100px;text-align:center;font-size:28px;transform:rotate(-3deg);opacity:0;clip-path:inset(0% 100% 0% 0%)}
     #p07-corr{left:7884px;top:446px;font-size:30px;color:var(--accent);transform:rotate(-4deg);opacity:0;clip-path:inset(0% 100% 0% 0%)}
@@ -264,8 +264,8 @@ const AQ = (() => {
             '<div class="p07-ln" id="p07-l4">Sarajevo déclenche l’engrenage.</div></div>' +
           '<div class="in">Écrire un message<i></i></div>' +
         '</div>' +
-        '<div class="p07-lab" style="left:7308px;top:823px">IA</div>' +
-        '<div class="p07-lab" style="left:7878px;top:823px">IA</div>');
+        '<div class="p07-lab" id="p07-lab1" style="left:7308px;top:823px">IA</div>' +
+        '<div class="p07-lab" id="p07-lab2" style="left:7878px;top:823px">IA</div>');
       var l1 = $("l1"), l2 = $("l2"), l3 = $("l3"), l4 = $("l4");
 
       // couche haute (au-dessus du texte) : les gouttes, la coche, la barre, le croquis ; mêmes filtres #p07-*
@@ -380,7 +380,8 @@ const AQ = (() => {
       // 3.70 départ du cran vers le bas : à 3.82 cam(7786, 700, 1.4) avec +1200 u/s en y (cubique à départ nul), flou 0 → 8
       var OUT = function (p) { return -0.971 * p * p * p + 1.971 * p * p; };
       tw(CAM, { x: 8170.4, y: 570, s: 1.4182 }, { x: 7786, y: 700, s: 1.4 }, 0.12, OUT, 3.70);
-      ft(bfr, { opacity: 0 }, { opacity: 1, duration: 0.10, ease: "none" }, 3.70);                 // les cadres des bulles vides paraissent avec le cran final (ils tomberaient dans la bande du sous-titre avant)
+      ft(bfr, { opacity: 0 }, { opacity: 1, duration: 0.10, ease: "none" }, 3.70);
+      ft([$("lab1"), $("lab2")], { opacity: 0 }, { opacity: 1, duration: 0.10, ease: "none" }, 3.70);   // leurs étiquettes « IA » avec eux                 // les cadres des bulles vides paraissent avec le cran final (ils tomberaient dans la bande du sous-titre avant)
       tw(CAM, { b: 0 }, { b: 8 }, 0.12, "power2.in", 3.70);
 
       /* ---- profondeur : le cadre de la fenêtre passe en avant-plan flou ; les lignes hors sujet floues (4 px) ---- */

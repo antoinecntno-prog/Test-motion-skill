@@ -326,7 +326,7 @@ Scene 2 (1.50 à 3.08 s) : P15, l'IA en marge, la main corrige, whip
 - scene: Le whip atterrit sur la page P5, nue : la première vignette s'ouvre d'une tache ocre-pale, quatre petites figures lèvent le bras ; la deuxième d'une tache bordeaux pâle, deux bulles se font face ; cran vers la droite
 - duration: 3.00s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/08-quiz-debat.html
 - voiceover: "Un quiz en direct, un débat avec la machine,"
 - type: demo
@@ -364,7 +364,7 @@ Scene 2 (1.30 à 3.00 s) : P17, la vignette du débat, cran vers la droite
 - scene: Le cran atterrit sur la droite de la page P5 : la troisième vignette s'ouvre, quatre tables et leurs points-figures ; la quatrième, une feuille à lignes grises que deux traits ocre annotent ; whip vers la page suivante
 - duration: 3.50s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/09-etude-correction.html
 - voiceover: "une étude de cas par équipe, une correction qui explique."
 - type: demo
@@ -402,7 +402,7 @@ Scene 2 (1.70 à 3.50 s) : P19, la vignette de la correction, whip
 - scene: Le whip atterrit sur la page P6, l'étudiant à sa table : dans la fenêtre de chat, une question se tape, une source se coche, une réponse se barre ; une goutte ocre tombe sur son cahier et sèche en deux traits, les réflexes ; cran vers le plan manuscrit
 - duration: 5.10s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/10-etudiants.html
 - voiceover: "Vos étudiants apprennent à s'en servir pour progresser. Des réflexes qu'ils garderont."
 - type: demo
@@ -440,7 +440,7 @@ Scene 2 (3.20 à 5.10 s) : P21, la tache sèche en réflexes, cran vers le plan 
 - scene: Le cran atterrit sur le plan de cours manuscrit du prof, à droite de la page P6 : « vos contenus », « vos objectifs » s'écrivent à la main ; l'IA s'inscrit en marge en traits ocre et deux lignes échangent leur place ; whip vers la page suivante
 - duration: 4.45s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/11-pedagogie.html
 - voiceover: "Vos contenus, vos objectifs. L'IA s'adapte à votre pédagogie."
 - type: reassurance
@@ -478,7 +478,7 @@ Scene 2 (2.10 à 4.45 s) : P23, l'IA en marge, les lignes se réordonnent, whip
 - scene: Le whip atterrit sur la page P7, la salle de la pénombre redessinée : le lavis gris s'efface, les élèves reprennent l'ocre et le bordeaux, trente bras se lèvent ; cran sur le prof qui apparaît dans l'allée et se penche vers une table ; whip vers la signature
 - duration: 3.95s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/12-vivant.html
 - voiceover: "Le cours redevient vivant. Et vous, disponible."
 - type: payoff
@@ -516,7 +516,7 @@ Scene 2 (2.10 à 3.95 s) : P25, le prof entre les tables, whip vers la signature
 - scene: Le whip atterrit sur la page P8, nue : la même goutte d'encre bordeaux qu'aux films 1 et 2 tombe et la signature se trace depuis elle, « formateur IA » s'écrit dessous ; la caméra descend vers une tache ocre qui tombe et sèche en bouton ; le curseur entre et commence sa courbe
 - duration: 4.00s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/13-signature.html
 - voiceover: "Antoine Contino, formateur IA. Réservez un appel."
 - type: cta
@@ -554,7 +554,7 @@ Scene 2 (2.36 à 4.00 s) : P27, la tache ocre sèche en bouton, le curseur entre
 - scene: Le curseur finit sa courbe et clique le bouton : pression, la tache passe au bordeaux puis revient ocre, une onde s'ouvre ; la page tient, vivante, puis le noir monte comme l'encre du pivot
 - duration: 3.10s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/14-clic.html
 - voiceover: ""
 - type: cta

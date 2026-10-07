@@ -307,8 +307,12 @@ const AQ = (() => {
       // 0.00 la goutte bordeaux (centre déjà canvas) se fond dans le sol d'encre : ×1 → ×1,35 et flou 10 → 0 expo.out, puis s'efface 0.10 → 0.20
       tw(PL, { s: 1, b: 10 }, { s: 1.35, b: 0 }, 0.20, "expo.out", 0);
       tw(PL, { o: 1 }, { o: 0 }, 0.10, "power1.in", 0.10);
-      // les ondes : ×0,2 → ×1,6, opacité 0,06 → 0, 2,0 s chacune (une toutes les 0,8 s, puis une toutes les 1,2 s après 2.60)
-      WAVE_T.forEach(function (t, i) { tw(WV[i], { s: 0.2, o: 0.06 }, { s: 1.6, o: 0 }, 2.0, "power1.out", t); });
+      // les ondes : ×0,2 → ×1,6, opacité 0,06 → 0, 2,0 s chacune à vitesse constante (une toutes les 0,8 s, puis une toutes les 1,2 s après 2.60) ;
+      // les deux dernières sont coupées à la fin de la séquence (même vitesse, fin proportionnelle) : rien ne dépasse 4.08
+      WAVE_T.forEach(function (t, i) {
+        var d = Math.min(2.0, DUR - t), k = d / 2.0;
+        tw(WV[i], { s: 0.2, o: 0.06 }, { s: 0.2 + 1.4 * k, o: 0.06 * (1 - k) }, d, "none", t);
+      });
       // chaque mot converge sur son temps (une image avant) : lettres depuis ±0,4 em (33,6 px), opacité 0 → 1, flou 12 → 0, 0,5 s expo.out
       WORDS.forEach(function (W, wi) {
         var n = W[0].length, st = Math.max(0, W[1] - 1 / 30), half = (n - 1) / 2 || 1;

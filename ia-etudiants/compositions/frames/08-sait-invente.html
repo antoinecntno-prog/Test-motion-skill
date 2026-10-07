@@ -67,7 +67,7 @@
     #p08-src{position:absolute;left:8076px;top:352px;font:600 26px/1 "Caveat",cursive;color:var(--ink-2);white-space:nowrap;transform:rotate(2deg)}
     #p08-skn{position:absolute;left:8086px;top:636px;font:600 26px/1 "Caveat",cursive;color:var(--ink-2);white-space:nowrap;transform:rotate(-2deg)}
     /* les deux bulles « IA » du bas de la page : étiquettes, lignes, « non » (révélés par masque) */
-    .p08-bl{position:absolute;font:600 16px/1 "DM Sans",sans-serif;letter-spacing:.08em;color:var(--ink-2);opacity:0;clip-path:inset(0% 100% 0% 0%)}
+    .p08-bl{position:absolute;font:600 16px/1 "DM Sans",sans-serif;letter-spacing:.08em;color:var(--ink-2)}
     #p08-bl1{left:7312px;top:821px}
     #p08-bl2{left:7882px;top:821px}
     .p08-ln{position:absolute;font:400 22px/30px "DM Sans",sans-serif;color:var(--ink);white-space:nowrap;opacity:0;clip-path:inset(0% 100% 0% 0%)}
@@ -396,11 +396,7 @@ const AQ = (() => {
       /* ---- scène 1 : les deux bulles côte à côte ---- */
       // profondeur : le bas de la chat-window passe au fond (flou 6 px) pendant l'atterrissage
       tw(DOF, { chat: 0 }, { chat: 6 }, 0.25, "power2.inOut", 0);
-      // 0.19 « Ils » : les étiquettes « IA » des deux bulles se révèlent (masque 0,2 s)
-      [bl1, bl2].forEach(function (b) {
-        ft(b, { opacity: 0 }, { opacity: 1, duration: 0.01, ease: "none" }, 0.19);
-        ft(b, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.20, ease: "power1.inOut" }, 0.19);
-      });
+      // les étiquettes « IA » des deux bulles sont déjà posées (la séquence 7 les montre à la couture)
       // 0.43 « découvrent » : la goutte ocre arrive de la caméra (×4 flou 10 → ×0,2, power2.in), impact 0.60 : la tache s'ouvre ×0,2 → 1, deux éclaboussures
       tw(DL, { o: 0 }, { o: 1 }, 0.04, "none", 0.43);
       tw(DL, { s: 4, b: 10 }, { s: 0.2, b: 0 }, 0.17, "power2.in", 0.43);

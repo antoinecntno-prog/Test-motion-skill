@@ -427,11 +427,11 @@ const AQ = (() => {
       // 3.90 le « ? » final se pose en accent (×1,3 → 1, 0,1 s) ; le caret s'éteint
       ft(qm, { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 0.10, ease: "power2.out" }, 3.90);
       ft(caret, { opacity: 1 }, { opacity: 0, duration: 0.01, ease: "none" }, 3.94);
-      // 4.00 la réponse « IA » se révèle en 4 lignes ink (masque 0,25 s ; les lignes 0,18 s, 0,04 s d'écart : tout est posé à 4.29)
+      // 4.00 la réponse « IA » se révèle en 4 lignes ink (masque 0,25 s ; les lignes 0,17 s, 0,04 s d'écart : tout est posé à 4.29)
       ft(ia, { opacity: 0 }, { opacity: 1, duration: 0.01, ease: "none" }, 4.00);
       ft(ia, { clipPath: "inset(0% 0% 100% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.25, ease: "power2.out" }, 4.00);
       lines.forEach(function (ln, i) {
-        ft(ln, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.18, ease: "power1.inOut" }, 4.00 + i * 0.04);
+        ft(ln, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.17, ease: "power1.inOut" }, 4.00 + i * 0.04);
       });
 
       /* ---- la phrase de la voix : mot par mot (0 → 0,35 → 1), chaque mot 1 image avant son temps ; une boîte par phrase ---- */

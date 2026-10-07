@@ -111,5 +111,5 @@ chronomètre dans le cadre. Rime : le bouton final est dans la fenêtre, et la f
 
 ## Choix
 
-Direction retenue : {{lettre}}, {{avec ses emprunts éventuels aux deux autres}}.
-Images de style de référence pour la charte et le storyboard : {{styleframes/A1.png, A2.png, A3.png}}.
+Direction retenue : A « Le carnet », sans emprunt (choix du 7 octobre 2026).
+Images de style de référence pour la charte et le storyboard : styleframes/png/A1.png, A2.png, A3.png.

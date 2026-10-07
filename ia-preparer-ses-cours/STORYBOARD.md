@@ -51,7 +51,7 @@ patterns: ../patterns/STORYBOARD-CRAFT.md, ../patterns/PATTERNS.md
 - scene: Sur la page P1 du carnet, le bureau du prof se dessine à l'encre autour d'une goutte grise qui sèche en lampe allumée ; le portable montre une diapositive, la pile à côté porte la même, datée « l'an dernier » ; la caméra passe du portable à la pile puis part en whip vers la salle
 - duration: 4.60s
 - transition_in: cut
-- status: animated
+- status: outline
 - src: compositions/frames/01-mardi.html
 - voiceover: "Mardi soir. Vous préparez le cours de demain. Le même que l'an dernier."
 - type: hook
@@ -98,7 +98,7 @@ Scene 3 (3.00 à 4.60 s) : P3, la pile identique, « l'an dernier », whip vers 
 - scene: Le whip atterrit sur la page P2 : la salle vue du fond, dans la pénombre grise, le tableau avec la même diapositive ; sur « trente téléphones », trente écrans s'allument en ocre par vagues, puis descendent dans les poches ; cran vers le premier rang
 - duration: 3.90s
 - transition_in: cut
-- status: animated
+- status: outline
 - src: compositions/frames/02-telephones.html
 - voiceover: "Dans la salle, trente téléphones ont déjà l'IA dans la poche."
 - type: problem
@@ -136,7 +136,7 @@ Scene 2 (1.10 à 3.90 s) : P5, trente écrans s'allument, dans la poche, cran ve
 - scene: Dans le silence, la caméra finit son cran sur le téléphone du premier rang : une fenêtre de chat, un pouce qui tape deux fois, une réponse ocre ; au-dessus, floue, la diapositive défile deux fois, identique ; whip vers la page suivante
 - duration: 2.15s
 - transition_in: cut
-- status: animated
+- status: outline
 - src: compositions/frames/03-gag.html
 - voiceover: ""
 - type: problem
@@ -174,7 +174,7 @@ Scene 2 (1.50 à 2.15 s) : P7, le tableau reste vide, whip vers la porte
 - scene: Le whip atterrit sur la page P3, la porte de la classe : le panneau « IA interdite » se colle, son cercle barré se trace ; puis la porte s'entrebâille et la lueur ocre des écrans passe par la fente ; cran vers le tableau
 - duration: 2.75s
 - transition_in: cut
-- status: animated
+- status: outline
 - src: compositions/frames/04-interdite.html
 - voiceover: "Vous l'interdisez. Ils s'en servent quand même."
 - type: problem
@@ -212,7 +212,7 @@ Scene 2 (1.20 à 2.75 s) : P9, la lueur dans la fente, cran vers le tableau
 - scene: Le cran atterrit sur le tableau de la page P3 : une main à la craie écrit pendant que six élèves, de dos, penchent la tête vers la lueur ocre de leur poche ; la craie pâlit ; la caméra plonge dans la goutte d'encre du bas de la page
 - duration: 3.00s
 - transition_in: cut
-- status: animated
+- status: outline
 - src: compositions/frames/05-ailleurs.html
 - voiceover: "Le cours avance au tableau, la classe est ailleurs."
 - type: problem
@@ -250,7 +250,7 @@ Scene 2 (1.60 à 3.00 s) : P11, les têtes se penchent vers les poches, plongée
 - scene: Dans le noir de l'encre, la question du film converge lettre à lettre au centre sur deux lignes, un trait ocre sous « entrer » ; elle tient dans le silence, puis une goutte ocre arrive de la caméra, tombe et éclate au centre : à l'impact le cadre entier est le lavis ocre
 - duration: 4.02s
 - transition_in: cut
-- status: animated
+- status: outline
 - src: compositions/frames/06-pivot.html
 - voiceover: "Et si vous la faisiez entrer dans le cours ?"
 - type: pivot
@@ -288,7 +288,7 @@ Scene 2 (2.20 à 4.02 s) : P13, la question tient, la goutte ocre tombe
 - scene: Le lavis ocre sèche et laisse apparaître la page P4, le même bureau du prof, coloré ; sur l'écran du portable, le plan de cours s'écrit à deux encres, la main au stylo barre une ligne et la réécrit ; whip vers la page suivante
 - duration: 3.08s
 - transition_in: cut
-- status: animated
+- status: outline
 - src: compositions/frames/07-plan.html
 - voiceover: "Je vous montre comment préparer un cours avec l'IA."
 - type: turn
@@ -326,7 +326,7 @@ Scene 2 (1.50 à 3.08 s) : P15, l'IA en marge, la main corrige, whip
 - scene: Le whip atterrit sur la page P5, nue : la première vignette s'ouvre d'une tache ocre-pale, quatre petites figures lèvent le bras ; la deuxième d'une tache bordeaux pâle, deux bulles se font face ; cran vers la droite
 - duration: 3.00s
 - transition_in: cut
-- status: animated
+- status: outline
 - src: compositions/frames/08-quiz-debat.html
 - voiceover: "Un quiz en direct, un débat avec la machine,"
 - type: demo
@@ -364,7 +364,7 @@ Scene 2 (1.30 à 3.00 s) : P17, la vignette du débat, cran vers la droite
 - scene: Le cran atterrit sur la droite de la page P5 : la troisième vignette s'ouvre, quatre tables et leurs points-figures ; la quatrième, une feuille à lignes grises que deux traits ocre annotent ; whip vers la page suivante
 - duration: 3.50s
 - transition_in: cut
-- status: animated
+- status: outline
 - src: compositions/frames/09-etude-correction.html
 - voiceover: "une étude de cas par équipe, une correction qui explique."
 - type: demo
@@ -402,7 +402,7 @@ Scene 2 (1.70 à 3.50 s) : P19, la vignette de la correction, whip
 - scene: Le whip atterrit sur la page P6, l'étudiant à sa table : dans la fenêtre de chat, une question se tape, une source se coche, une réponse se barre ; une goutte ocre tombe sur son cahier et sèche en deux traits, les réflexes ; cran vers le plan manuscrit
 - duration: 5.10s
 - transition_in: cut
-- status: animated
+- status: outline
 - src: compositions/frames/10-etudiants.html
 - voiceover: "Vos étudiants apprennent à s'en servir pour progresser. Des réflexes qu'ils garderont."
 - type: demo
@@ -554,7 +554,7 @@ Scene 2 (2.36 à 4.00 s) : P27, la tache ocre sèche en bouton, le curseur entre
 - scene: Le curseur finit sa courbe et clique le bouton : pression, la tache passe au bordeaux puis revient ocre, une onde s'ouvre ; la page tient, vivante, puis le noir monte comme l'encre du pivot
 - duration: 3.10s
 - transition_in: cut
-- status: animated
+- status: outline
 - src: compositions/frames/14-clic.html
 - voiceover: ""
 - type: cta

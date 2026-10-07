@@ -238,16 +238,17 @@ const AQ = (() => {
       // P2 : le plateau brun, la lampe éteinte, les trois copies grises (la première dessus, avec sa note), le stylo posé à plat
       var p2 = el("g", {}, svg);
       aqWash(svg, "M" + (X2 + 120) + " 860 L" + (X2 + 1580) + " 860 L" + (X2 + 1600) + " 940 L" + (X2 + 100) + " 940 Z", K.brun, 0.7, false, p2);
-      var lamp2 = aqLamp(svg, 3100, 640, 1, false, p2);
+      var lamp2 = aqLamp(svg, 3100, 860, 0.9, false, p2);                       // posée sur le plateau, comme à la fin de la séquence 2
       var pages = el("g", {}, p2); pages.style.filter = "drop-shadow(0 14px 30px rgba(58,42,36,.14))";
-      [[2600, 580, 21], [2520, 560, 14], [2440, 540, 8]].forEach(function (c, i) {
-        var g = el("g", { transform: "translate(" + c[0] + " " + c[1] + ") rotate(" + c[2] + ")" }, pages);
-        el("rect", { x: -150, y: -200, width: 300, height: 400, fill: K.paper2 }, g);
-        for (var j = 0; j < 5; j++) el("rect", { x: -120, y: -140 + j * 40, width: j === 2 ? 150 : 240, height: 3, fill: K.inkLight, opacity: 0.55 }, g);
-        if (i === 2) txt(g, -120, -162, 26, "Dissertation · 1/3");
+      // état laissé par le gag de la séquence 2 : la première copie (2440) à plat avec ses lignes ; les deux autres retournées
+      // sur leur bord gauche (rotateY -170° : miroir sur la charnière, dos vierge paper-2), le stylo couché pointe vers elles
+      [[2440, 540, 8, false], [2520, 560, 14, true], [2600, 580, 21, true]].forEach(function (c) {
+        var g = el("g", { transform: "translate(" + c[0] + " " + c[1] + ") rotate(" + c[2] + ") translate(-150 -200)" + (c[3] ? " scale(-0.985 1)" : "") }, pages);
+        el("rect", { x: 0, y: 0, width: 300, height: 400, fill: K.paper2 }, g);
+        if (!c[3]) for (var j = 0; j < 5; j++) el("rect", { x: 30, y: 80 + j * 44, width: j === 2 ? 150 : 240, height: 3, fill: K.inkLight, opacity: 0.55 }, g);
       });
       var penW = el("g", {}, p2);
-      aqPen(svg, 2520, 500, -6, penW);
+      aqPen(svg, 2520, 500, 174, penW);
 
       // P3 : le lavis gris de la lampe éteinte (35 %), la note « Leçon », la lampe du coin éteinte, le cadre et la note « 12 » séchée
       var grey = aqWash(svg, { cx: 4318, cy: 540, r: 840, seed: 23, w: 0.05, n: 12, ry: 0.64 }, K.gris, 0.35, true); grey.dataset.op = "0.35"; grey.dataset.pf = "p04";

@@ -278,6 +278,7 @@ const AQ = (() => {
       var profW = null, prof = null;
       function makeRow(i) {
         var g = el("g", {}, svg), arms = [];
+        aqWash(svg, "M10524 " + (492 + i * 80) + " L11984 " + (492 + i * 80) + " L11984 " + (504 + i * 80) + " L10524 " + (504 + i * 80) + " Z", K.brun, 0.7, false, g);   // le pupitre du rang (lavis brun), derrière les élèves
         for (var j = 0; j < 6; j++) {
           var x = 10604 + j * 260, yc = 500 + i * 80, h = 54 + ((i * 7 + j * 5) % 11); if (i === 4) h = Math.min(h, 60);
           var top = yc - h / 2, bw = h * 0.3, head = h * 0.16, sh = top + head * 2.4, col = j % 2 ? K.accent : K.ocre;

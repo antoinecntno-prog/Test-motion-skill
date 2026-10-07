@@ -249,6 +249,7 @@ const AQ = (() => {
       var p7ink = el("g", { filter: "url(#p13-ink)" }, p7);
       aqInk(svg, "M10754 90 L11754 90 L11754 510 L10754 510 Z", 6, K.ink, p7ink);                                  // le cadre
       var pupils = [];
+      for (var di = 0; di < 5; di++) aqWash(svg, "M10524 " + (520 + di * 80) + " L11984 " + (520 + di * 80) + " L11984 " + (520 + di * 80 + 12) + " L10524 " + (520 + di * 80 + 12) + " Z", K.brun, 0.7, false, p7);   // les pupitres de chaque rang (lavis brun), derrière les élèves
       for (var pi = 0; pi < 5; pi++) for (var pj = 0; pj < 6; pj++) {
         var px_ = 10604 + pj * 260, py_ = 500 + pi * 80, ph = 54 + pi * 3, pcol = (pj % 2 === 0) ? K.ocre : K.accent, pbw = ph * 0.3, psh = py_ + ph * 0.16 * 2.4;
         var pg = origin(el("g", {}, p7), px_, py_ + ph);

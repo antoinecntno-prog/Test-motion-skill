@@ -265,6 +265,7 @@ const AQ = (() => {
       aqInk(svg, "M" + (CX2 - 524) + " 522 L" + (CX2 + 524) + " 522", 16, K.brun, inkG(boardW), { "stroke-opacity": 0.85 });
       // cinq rangs de six élèves gris-lavis (centres x = 1934 + j × 260, y = 500 + i × 80), gabarits 90 à 110 u, seeds 10 + i × 6 + j
       var ROWS = 5, COLS = 6;
+      for (var di = 0; di < 5; di++) aqWash(svg, "M1854 " + (492 + di * 80) + " L3314 " + (492 + di * 80) + " L3314 " + (492 + di * 80 + 12) + " L1854 " + (492 + di * 80 + 12) + " Z", K.brun, 0.7, false, p2);   // les pupitres de chaque rang (lavis brun), derrière les élèves
       for (var i = 0; i < ROWS; i++) for (var j = 0; j < COLS; j++) {
         var seed = 10 + i * 6 + j, fx = 1934 + j * 260, fy = 500 + i * 80, fh = 54 + ((seed * 7) % 13);
         aqFigure(svg, fx, fy - fh / 2, fh, K.gris, seed, "dos", p2);

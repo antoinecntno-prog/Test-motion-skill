@@ -288,6 +288,7 @@ const AQ = (() => {
       el("rect", { x: 10994, y: 176, width: 280, height: 36, fill: K.gris, opacity: 0.7 }, g7);
       [520, 520, 380, 520, 300].forEach(function (w, i) { el("rect", { x: 10994, y: 250 + i * 40, width: w, height: 4, fill: K.inkLight, opacity: 0.6 }, g7); });
       // cinq rangs de six élèves gris (aqFigure 90 à 110 u, pose dos) centrés en x = 10604 + j × 260, y = 500 + i × 80 ; le téléphone éteint (gris-lavis-2 à 0,5) aux mains de chacun, à (x, y + 30)
+      for (var di = 0; di < 5; di++) aqWash(svg, "M10524 " + (492 + di * 80) + " L11984 " + (492 + di * 80) + " L11984 " + (492 + di * 80 + 12) + " L10524 " + (492 + di * 80 + 12) + " Z", K.brun, 0.7, false, g7);   // les pupitres de chaque rang (lavis brun), derrière les élèves
       for (var i = 0; i < 5; i++) for (var j = 0; j < 6; j++) {
         var px = 10604 + j * 260, py = 500 + i * 80, h = 54 + ((i * 7 + j * 5) % 3) * 6;
         aqFigure(svg, px, py - h / 2, h, K.gris, 200 + i * 6 + j, "dos", g7);

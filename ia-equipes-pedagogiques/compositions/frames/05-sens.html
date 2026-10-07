@@ -291,7 +291,7 @@ const AQ = (() => {
       var CAM = { x: 2584, y: 640, s: 1.15, b: 6 };        // caméra (handoff_in : cam(2584, 640, 1.15) flou 6, fin du cran vers le bas)
       var X1 = 2584 + 14 * 2.72, Y1 = 650, S1 = 1.15 * 1.0272;   // la caméra à 2.86, fin de la dérive (x +14 u/s, échelle +1 %/s)
       var DX0 = (3300 - X1) * S1, DY0 = (820 - Y1) * S1;  // décalage écran de la goutte au départ de la plongée
-      var PL = { q: 0 };                                   // la plongée : q 0 → 1 (power3.in) ; la goutte glisse vers le centre pendant que l'échelle caméra monte à 3 et que la goutte elle-même s'ouvre ×13 (même image qu'une caméra à 14, sans rastériser le monde 14 fois plus grand)
+      var PL = { q: 0 };                                   // la plongée : q 0 → 1 (power3.in) ; la goutte glisse vers le centre pendant que l'échelle caméra monte à 3 et que la goutte elle-même s'ouvre ×24 (même image qu'une caméra à 14, sans rastériser le monde 14 fois plus grand)
       var DOF = { b: 0 };                                  // profondeur de champ : le tableau (grille, cases, rebord) passe au fond
       var HD = { x: 0 };                                   // la main glisse de 10 u
       var DW = { s: 1 };                                   // la goutte grossit d'un cran puis s'ouvre dans la plongée
@@ -301,7 +301,7 @@ const AQ = (() => {
       function render() {
         // au coeur de la plongée (PL.q > 0.35, échelle caméra > 5) : flou de caméra coupé et décor masqué (la goutte seule reste), sinon le monde rastérisé 14 fois plus grand bloque le rendu
         var heavy = PL.q > 0.5;
-        if (PL.q > 0) { var cs = S1 + (3.0 - S1) * PL.q, cr = 1 - PL.q; aqCam(world, cam, 3300 - DX0 * cr / cs, 820 - DY0 * cr / cs, cs, heavy ? 0 : CAM.b); }
+        if (PL.q > 0) { var cs = S1 + (3.0 - S1) * PL.q, cr = 1 - PL.q; aqCam(world, cam, 3300 - DX0 * cr / cs, 820 - DY0 * cr / cs, cs, 0); }
         else aqCam(world, cam, CAM.x, CAM.y, CAM.s, CAM.b);
         boardG.style.display = heavy ? "none" : ""; handG.style.display = heavy ? "none" : "";
         pupils.forEach(function (ws) { ws.forEach(function (w) { w.style.display = heavy ? "none" : ""; }); });
@@ -311,7 +311,7 @@ const AQ = (() => {
         handG.style.transform = "translate(" + HD.x.toFixed(2) + "px, 0px)";
         dropW.style.transform = "scale(" + DW.s.toFixed(4) + ")";
         // au coeur de la plongée (échelle caméra × goutte > 10) le filtre aquarelle est retiré : la tache remplit le cadre, le filtre déplacé sur 3000 px bloquait le rendu (60 s par image)
-        drop.setAttribute("filter", heavy ? "none" : "url(#p05-aq)");
+        drop.setAttribute("filter", PL.q > 0 ? "none" : "url(#p05-aq)");
         dark.style.opacity = DK.o;
       }
 
@@ -347,7 +347,7 @@ const AQ = (() => {
 
       /* ---- scène 2 (2.86 à 3.11) : plongée dans la goutte ---- */
       // la goutte s'ouvre avec la plongée (×1,15 → 4,4 : à l'échelle 14 elle couvre tout le cadre deux images avant la couture)
-      tw(DW, { s: 1.15 }, { s: 13 }, 0.31, "power3.in", 2.80);
+      tw(DW, { s: 1.15 }, { s: 24 }, 0.31, "power3.in", 2.80);
       // 2.95 le centre de la goutte s'assombrit (dégradé radial accent → canvas, opacité 0 → 1, 0,15 s)
       tw(DK, { o: 0 }, { o: 1 }, 0.15, "power1.inOut", 2.95);
 

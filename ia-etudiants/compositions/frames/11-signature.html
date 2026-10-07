@@ -59,10 +59,11 @@
     #p11-root{position:relative;width:1920px;height:1080px;overflow:hidden;font-family:"DM Sans",sans-serif;-webkit-font-smoothing:antialiased}
     /* la carte de fin (coordonnées monde, page P8 : x 12138 à 13838) ; tout ce qui n'est pas là à t=0 part à opacity 0 */
     #p11-sigwrap{position:absolute;left:12138px;top:0;width:1700px;height:560px}
-    #p11-sig{position:absolute;left:250px;top:320px;width:1200px;height:120px;text-align:center;font:600 120px/120px "Caveat",cursive;color:var(--accent);white-space:nowrap;opacity:0;clip-path:inset(0% 100% 0% 0%)}
-    #p11-role{position:absolute;left:350px;top:450px;width:1000px;height:40px;text-align:center;font:600 34px/40px "DM Sans",sans-serif;color:var(--ink-2);white-space:nowrap;opacity:0;clip-path:inset(0% 100% 0% 0%)}
-    #p11-cta{position:absolute;left:12688px;top:640px;width:600px;height:40px;text-align:center;font:700 32px/40px "DM Sans",sans-serif;color:var(--ink);white-space:nowrap;opacity:0;clip-path:inset(0% 100% 0% 0%);transform-origin:50% 50%}
-    #p11-urls{position:absolute;left:12388px;top:744px;width:1200px;height:32px;text-align:center;font:500 24px/32px "DM Sans",sans-serif;color:var(--ink-2);white-space:nowrap;opacity:0;clip-path:inset(0% 100% 0% 0%)}
+    #p11-sig{position:absolute;left:250px;top:320px;width:1200px;height:120px;text-align:center;font:600 120px/120px "Caveat",cursive;color:var(--accent);white-space:nowrap;opacity:0}
+    #p11-role{position:absolute;left:350px;top:450px;width:1000px;height:40px;text-align:center;font:600 34px/40px "DM Sans",sans-serif;color:var(--ink-2);white-space:nowrap;opacity:0}
+    #p11-cta{position:absolute;left:12688px;top:640px;width:600px;height:40px;text-align:center;font:700 32px/40px "DM Sans",sans-serif;color:var(--ink);white-space:nowrap;opacity:0;transform-origin:50% 50%}
+    #p11-urls{position:absolute;left:12388px;top:744px;width:1200px;height:32px;text-align:center;font:500 24px/32px "DM Sans",sans-serif;color:var(--ink-2);white-space:nowrap;opacity:0}
+    .p11-m{display:inline-block;clip-path:inset(0% 100% 0% 0%)}   /* le masque avance sur la boîte serrée du texte, pas sur la boîte de centrage */
     #p11-cursor{opacity:0;transform-origin:3px 2px}
     #p11-ia{opacity:0}
   </style>
@@ -275,11 +276,12 @@ const AQ = (() => {
 
       // HTML posé dans le monde : la signature et son titre, le texte du bouton, les adresses, le curseur
       world.insertAdjacentHTML("beforeend",
-        '<div id="p11-sigwrap"><div id="p11-sig">Antoine Contino</div><div id="p11-role">formateur IA</div></div>' +
-        '<div id="p11-cta">Réserver un appel</div>' +
-        '<div id="p11-urls">calendly.com/antoine-cntno/30min · antoinecontino.fr/ecoles</div>');
+        '<div id="p11-sigwrap"><div id="p11-sig"><span class="p11-m" id="p11-sigm">Antoine Contino</span></div><div id="p11-role"><span class="p11-m" id="p11-rolem">formateur IA</span></div></div>' +
+        '<div id="p11-cta"><span class="p11-m" id="p11-ctam">Réserver un appel</span></div>' +
+        '<div id="p11-urls"><span class="p11-m" id="p11-urlsm">calendly.com/antoine-cntno/30min · antoinecontino.fr/ecoles</span></div>');
       var cursor = aqCursor(world); cursor.id = "p11-cursor";
-      var sigwrap = $("sigwrap"), sig = $("sig"), role = $("role"), cta = $("cta"), urls = $("urls");
+      var sigwrap = $("sigwrap"), sig = $("sig"), role = $("role"), cta = $("cta"), urls = $("urls"),
+          sigM = $("sigm"), roleM = $("rolem"), ctaM = $("ctam"), urlsM = $("urlsm");
 
       /* ---- sous-titres (aqSubtitle du kit) : « Antoine Contino, [formateur IA]. » puis « [Réservez] un appel. » ---- */
       function glue(a) { var n = a.nextSibling; if (n && n.nodeType === 3) n.parentNode.removeChild(n); }
@@ -354,12 +356,12 @@ const AQ = (() => {
       tw(DR, { dry: 0 }, { dry: 1 }, 0.60, "power1.inOut", 0.36);
       // 0.32 « Antoine » : la signature se trace depuis la goutte (masque de gauche à droite, 1,0 s power1.inOut, encre accent humide à 0,85)
       ft(sig, { opacity: 0 }, { opacity: 0.85, duration: 0.01, ease: "none" }, 0.32);
-      ft(sig, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.0, ease: "power1.inOut" }, 0.32);
+      ft(sigM, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.0, ease: "power1.inOut" }, 0.32);
       // 1.40 elle sèche : l'encre fonce (opacité 0,85 → 1, 0,5 s)
       ft(sig, { opacity: 0.85 }, { opacity: 1, duration: 0.50, ease: "power1.inOut" }, 1.40);
       // 1.51 « formateur » : « formateur IA » se révèle dessous (masque 0,3 s)
       ft(role, { opacity: 0 }, { opacity: 1, duration: 0.01, ease: "none" }, 1.51);
-      ft(role, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.30, ease: "power1.inOut" }, 1.51);
+      ft(roleM, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.30, ease: "power1.inOut" }, 1.51);
       // 2.20 « IA » : la traînée de la goutte s'allonge sous la signature (tracé 0,2 s)
       tw(TR, { p: 0 }, { p: 1 }, 0.20, "power2.out", 2.20);
 
@@ -373,12 +375,12 @@ const AQ = (() => {
       // 2.92 « Réservez » : la tache sèche (aqDry 0 → 1, 0,4 s) et « Réserver un appel » se révèle dedans (masque 0,25 s)
       tw(BT, { dry: 0 }, { dry: 1 }, 0.40, "power1.inOut", 2.92);
       ft(cta, { opacity: 0 }, { opacity: 1, duration: 0.01, ease: "none" }, 2.92);
-      ft(cta, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.25, ease: "power1.inOut" }, 2.92);
+      ft(ctaM, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.25, ease: "power1.inOut" }, 2.92);
       // 3.30 un cerne d'encre fin (3 px) se trace autour : c'est un bouton
       tw(BT, { p: 0 }, { p: 1 }, 0.20, "power2.out", 3.30);
       // 3.52 « un » : les deux adresses se révèlent dessous (masque 0,3 s)
       ft(urls, { opacity: 0 }, { opacity: 1, duration: 0.01, ease: "none" }, 3.52);
-      ft(urls, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.30, ease: "power1.inOut" }, 3.52);
+      ft(urlsM, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.30, ease: "power1.inOut" }, 3.52);
       // 3.72 « appel » : le bouton se tasse (×1,02 → 1)
       tw(BT, { k: 1 }, { k: 1.02 }, 0.06, "power2.out", 3.66);
       tw(BT, { k: 1.02 }, { k: 1 }, 0.12, "power2.out", 3.72);

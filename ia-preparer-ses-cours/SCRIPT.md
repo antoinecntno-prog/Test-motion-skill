@@ -22,7 +22,7 @@ Vouvoiement. Voix Paul K (Eleven v4). Durée visée : 45 à 50 s.
 | Partie | Voix | À l'écran (aquarelle, papier crème, bordeaux et ocre) |
 |---|---|---|
 | 1. Accroche datée | Mardi soir. Vous préparez le cours de demain. Le même que l'an dernier. | Un bureau de prof à l'aquarelle, une lampe, des diapositives qui défilent, identiques, datées de l'an dernier. |
-| | Dans la salle, trente téléphones ont déjà une IA dans la poche. | La salle de classe dans la pénombre, trente écrans qui s'allument en taches ocre. |
+| | Dans la salle, trente téléphones ont déjà l'IA dans la poche. | La salle de classe dans la pénombre, trente écrans qui s'allument en taches ocre. |
 | 2. Gag muet (2,5 s) | *(silence)* | Le prof fait défiler ses diapositives ; au premier rang, un pouce répond à un chat IA. Le tableau reste vide. |
 | 3. Diagnostic | Vous l'interdisez. Ils s'en servent quand même. | Un panneau « IA interdite » collé sur la porte ; derrière la porte, les écrans brillent. |
 | | Le cours avance au tableau, la classe est ailleurs. | Le tableau se remplit ; les têtes peintes regardent leurs poches. |
@@ -39,7 +39,7 @@ Vouvoiement. Voix Paul K (Eleven v4). Durée visée : 45 à 50 s.
 
 ```
 Mardi soir. Vous préparez le cours de demain. Le même que l'an dernier.
-Dans la salle, trente téléphones ont déjà une IA dans la poche.
+Dans la salle, trente téléphones ont déjà l'IA dans la poche.
 Vous l'interdisez. Ils s'en servent quand même.
 Le cours avance au tableau, la classe est ailleurs.
 Et si vous la faisiez entrer dans le cours ?

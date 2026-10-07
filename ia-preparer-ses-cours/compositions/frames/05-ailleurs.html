@@ -292,7 +292,7 @@ const AQ = (() => {
       });
 
       // la main à la craie (hand-chalk) : lavis ocre-pale + cerne d'encre 4 px, vue de dessus, 220 u, la craie paper 60 × 12 ; coordonnées locales, pointe de la craie à l'origine
-      var handG = el("g", {}, svg);
+      var handG = el("g", { opacity: 0 }, svg);                                                      // hors cadre et invisible avant 0.20 (handoff_in : aucune main)
       washStroke("M96 108 L150 172", 60, K.ocrePale, 0.9, handG);                                   // le poignet, vers le bas droit
       aqWash(svg, { cx: 66, cy: 60, r: 46, seed: 31, w: 0.14, n: 9, ry: 0.92 }, K.ocrePale, 0.9, false, handG);   // la paume
       washStroke("M44 44 L16 22", 20, K.ocrePale, 0.9, handG);                                       // index (tient la craie)
@@ -320,9 +320,9 @@ const AQ = (() => {
       var CAM = { x: 4300, y: 540, s: 1.0, b: 7 };          // caméra (handoff_in : cam(4300, 540, 1.0) flou 7, en plein cran vers la droite)
       var X1 = 4700 + 12 * 2.60, S1 = 1.05 * 1.026;         // la caméra à 2.74, fin de la dérive (x +12 u/s, échelle +1 %/s)
       var DX0 = (5050 - X1) * S1, DY0 = (820 - 520) * S1;  // décalage écran de la goutte au départ de la plongée
-      var PL = { q: 0, c: 0 };                              // la plongée : q 0 → 1 (power3.in) monte l'échelle caméra à 3 ; c 0 → 1 (power2.in) glisse la goutte au centre ; la goutte elle-même s'ouvre ×30 (même image qu'une caméra à 14, sans rastériser le monde 14 fois plus grand)
+      var PL = { q: 0, c: 0 };                              // la plongée : q 0 → 1 (power3.in) monte l'échelle caméra à 3 ; c 0 → 1 (power2.in) glisse la goutte au centre ; la goutte elle-même s'ouvre ×36 (même image qu'une caméra à 14, sans rastériser le monde 14 fois plus grand)
       var DOF = { pup: 0, board: 0 };                       // profondeur de champ : les élèves au fond au plan 1, le tableau au fond au plan 2
-      var HP = { x: 4590, y: 886 };                         // la pointe de la craie (hors cadre en bas à droite avant l'entrée)
+      var HP = { x: 4590, y: 886, o: 0 };                   // la pointe de la craie (hors cadre en bas à droite avant l'entrée) et l'opacité de la main
       var ST = [{ k: 0 }, { k: 0 }, { k: 0 }];              // les trois traits de craie se tracent
       var BD = { k: 1, lo: 0.8 };                           // le tableau se tasse, le rebord fonce
       var PK = PUPX.map(function () { return { k: 0.2, o: 0 }; });   // les lueurs des poches (impact)
@@ -351,7 +351,7 @@ const AQ = (() => {
         // la main : sa pointe suit le trait en cours, sinon le proxy HP
         var tx = HP.x, ty = HP.y;
         chalk.forEach(function (p, i) { if (ST[i].k > 0 && ST[i].k < 1) { var pt = p.getPointAtLength((+p.dataset.len) * ST[i].k); tx = pt.x; ty = pt.y; } });
-        handG.style.transform = "translate(" + tx.toFixed(2) + "px, " + ty.toFixed(2) + "px)";
+        handG.style.transform = "translate(" + tx.toFixed(2) + "px, " + ty.toFixed(2) + "px)"; handG.style.opacity = HP.o;
         // les élèves : lueur de poche, tête penchée, buste affaissé
         pupils.forEach(function (p, n) {
           p.pocket.style.transform = "scale(" + PK[n].k.toFixed(4) + ")"; p.pocket.style.opacity = (0.85 * PK[n].o).toFixed(3);
@@ -385,6 +385,7 @@ const AQ = (() => {
       // profondeur : les six élèves passent au fond (3 px) pendant que la main arrive ; le tableau reste net
       tw(DOF, { pup: 0 }, { pup: 3 }, 0.30, "power2.inOut", 0.14);
       // 0.20 la main à la craie entre par le bas droit (y +650, x +260 → la pointe au départ du premier trait, 0,18 s power2.out)
+      tw(HP, { o: 0 }, { o: 1 }, 0.01, "none", 0.20);
       tw(HP, { x: 4590, y: 886 }, { x: chalkEnd[0].x0, y: chalkEnd[0].y0 }, 0.18, "power2.out", 0.20);
       // 0.38 « cours » : premier trait (0,14 s) ; 0.52 saut au deuxième ; 0.56 « avance » : deuxième trait (0,28 s) ; 0.84 saut au troisième ; 0.90 « au » : troisième trait, plus court (0,20 s)
       [[0.38, 0.14], [0.56, 0.28], [0.90, 0.20]].forEach(function (t, i) {
@@ -418,8 +419,8 @@ const AQ = (() => {
       tw(ER, { k: 0 }, { k: 0.6 }, 0.30, "power1.inOut", 2.40);
       // 2.60 la goutte accent grossit d'un cran (×1 → 1,15, 0,12 s)
       tw(DW, { s: 1 }, { s: 1.15 }, 0.12, "power2.out", 2.60);
-      // 2.74 la goutte s'ouvre avec la plongée (×1,15 → 30, power2.in : à la dernière image (2.967) elle couvre tout le cadre, coins compris)
-      tw(DW, { s: 1.15 }, { s: 30 }, 0.26, "power2.in", 2.74);
+      // 2.74 la goutte s'ouvre avec la plongée (×1,15 → 36, power2.in : à la dernière image (2.967) elle couvre tout le cadre, coins compris)
+      tw(DW, { s: 1.15 }, { s: 36 }, 0.26, "power2.in", 2.74);
       // 2.88 son centre s'assombrit vers canvas (dégradé radial accent → canvas, opacité 0 → 1, 0,12 s)
       tw(DK, { o: 0 }, { o: 1 }, 0.12, "power1.inOut", 2.88);
 

@@ -285,7 +285,7 @@ const AQ = (() => {
       /* ---- P6 (8670 à 10370) : l'étudiant et le plan manuscrit, au repos (handoff_out) ; le bord gauche entre flou par la droite ---- */
       var p6 = el("g", {}, svg);
       // l'étudiant (aqFigure ocre 200 u de trois quarts à (9100, 600)) derrière sa table en lavis brun 500 × 50 à (9150, 700)
-      aqFigure(svg, 9100, 600, 200, K.ocre, 71, "penche", p6);
+      aqFigure(svg, 9100, 500, 200, K.ocre, 51, "penche", p6);   // même gabarit et même position que les séquences 10 et 11 (haut à 500, graine 51)
       aqWash(svg, "M8900 675 C9050 671 9250 671 9400 675 L9400 725 C9250 729 9050 729 8900 725 Z", K.brun, 0.7, false, p6);
       // le cahier paper-2 260 × 180 à (9080, 740), vierge : sa tache ocre (goutte r 34) et ses deux traits ocre sont construits, invisibles
       el("rect", { x: 8950, y: 650, width: 260, height: 180, fill: K.paper2, style: "filter:drop-shadow(0 6px 14px rgba(58,42,36,.16))" }, p6);

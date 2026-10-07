@@ -98,7 +98,7 @@ Scene 3 (2.00 à 4.64 s) : P3, l'écran : le sujet collé, la réponse grise, wh
 - scene: Le whip atterrit sur la page P2, le bureau du prof : une goutte grise s'ouvre et sèche en trois pages qui glissent et se posent sur le bureau ; le stylo rouge arrive au-dessus, tourne une page, puis l'autre, n'a rien à annoter et se pose ; whip vers la page suivante
 - duration: 5.16s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/02-lundi.html
 - voiceover: "Lundi, il rend trois pages qu'il n'a pas lues."
 - type: pain_point
@@ -144,7 +144,7 @@ Scene 3 (4.00 à 5.16 s) : P6, deuxième page tournée, rien à annoter, le styl
 - scene: Le whip atterrit sur la page P3, la page de la leçon : la lampe du coin s'éteint sur « soirée », les neuf lignes de notes en couleur pâlissent en gris sur « leçon », une goutte d'encre tombe dans le cadre de la note et écrit « 12 » qui sèche en gris, puis les lignes s'effacent jusqu'au papier nu ; recul vers la double page
 - duration: 5.87s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/03-lecon.html
 - voiceover: "Il a gagné une soirée. Il a perdu la leçon. La note tombe, et personne n'a rien appris."
 - type: pain_point
@@ -199,7 +199,7 @@ Scene 4 (4.40 à 5.87 s) : P10, personne n'a rien appris : les lignes s'effacent
 - scene: Le recul s'achève sur la double page P2 + P3 vue de plus loin : la copie grise et le stylo posé à gauche, la page de la leçon nue à droite ; les quatre dernières taches de couleur aux coins s'effacent une à une, un copier-coller à la fois ; il ne reste que la goutte d'encre bordeaux au coin, et la caméra plonge dedans jusqu'au noir
 - duration: 3.55s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/04-curiosite.html
 - voiceover: "La curiosité s'éteint, un copier-coller à la fois."
 - type: pain_point
@@ -236,7 +236,7 @@ Scene 2 (3.10 à 3.55 s) : P12, plongée dans la goutte
 - scene: Dans le noir de l'encre, la question du film converge lettre à lettre au centre, un trait ocre sous « apprendre » ; elle tient dans le silence, puis une goutte ocre arrive de la caméra, tombe et éclate au centre : à l'impact le cadre entier est le lavis ocre
 - duration: 4.08s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/05-pivot.html
 - voiceover: "Et si l'IA servait à apprendre ?"
 - type: pivot
@@ -273,7 +273,7 @@ Scene 2 (2.40 à 4.08 s) : P14, le silence, la goutte ocre tombe et éclate
 - scene: Le lavis ocre sèche et laisse apparaître la page P4, la classe : quatre tables, huit silhouettes peintes en taches ocre et bordeaux, un portable par table ; puis la caméra file vers la page P5, l'écran dessiné en grand, où une première goutte tombe et sèche en question tapée ; cran vers la coche
 - duration: 4.29s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/06-classe.html
 - voiceover: "Je forme vos étudiants à l'IA. Ils apprennent à la questionner,"
 - type: demo
@@ -310,7 +310,7 @@ Scene 2 (2.50 à 4.29 s) : P16, whip vers l'écran, la première goutte : questi
 - scene: Sur l'écran de P5, trois gouttes sèchent en trois gestes : une coche ocre à côté d'une source, une barre bordeaux à travers une ligne de la réponse, un croquis coloré qui s'étale dans la marge ; la caméra fait un cran vers chaque geste, puis descend vers le bas de la page
 - duration: 3.82s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/07-gestes.html
 - voiceover: "à la vérifier, à la contredire, à créer avec elle."
 - type: demo
@@ -356,7 +356,7 @@ Scene 3 (2.40 à 3.82 s) : P19, le croquis : créer avec elle, cran vers le bas
 - scene: En bas de la page P5, deux bulles côte à côte : à gauche une tache ocre nette qui sèche en bulle propre (ce qu'elle sait), à droite une tache bordeaux pâle qui bave, coule, et qu'un trait d'encre corrige (ce qu'elle invente) ; whip vers la page du défi
 - duration: 3.07s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/08-sait-invente.html
 - voiceover: "Ils découvrent ce qu'elle sait, et ce qu'elle invente."
 - type: demo
@@ -384,7 +384,7 @@ Scene 1 (0.00 à 3.07 s) : P20, les deux bulles côte à côte, whip
 - scene: Le whip atterrit sur la page P6, le défi : deux gouttes deviennent deux équipes de silhouettes, ocre à gauche, bordeaux à droite ; le chronomètre à l'encre se dessine et ses chiffres roulent ; les deux colonnes de points montent goutte à goutte et la couleur revient sur toute la page ; whip vers la page suivante
 - duration: 3.66s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/09-defi.html
 - voiceover: "En équipes, par défis, la curiosité revient."
 - type: payoff
@@ -430,7 +430,7 @@ Scene 3 (2.00 à 3.66 s) : P23, les points montent, la couleur revient, whip
 - scene: Le whip atterrit sur la page P7 : un petit carnet manuscrit ouvert où quatre réflexes s'écrivent et se cochent, puis se referme ; sous lui, la page du début, colorée cette fois, tenue par deux mains peintes ; whip vers la dernière page
 - duration: 5.12s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/10-reflexes.html
 - blueprint: spatial-pan-stations (Adapt)
 - voiceover: "Une méthode et de bons réflexes suffisent. Et le cours redevient le leur."
@@ -467,7 +467,7 @@ Scene 2 (2.70 à 5.12 s) : P25, la page du début, colorée, dans les mains, whi
 - scene: Le whip atterrit sur la page P8, nue : la même goutte d'encre bordeaux qu'au début tombe et la signature « Antoine Contino » se trace depuis elle, « formateur IA » s'écrit dessous ; la caméra descend vers une tache ocre qui tombe et sèche en bouton « Réserver un appel » avec les deux adresses ; le curseur entre en courbe
 - duration: 4.34s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/11-signature.html
 - voiceover: "Antoine Contino, formateur IA. Réservez un appel."
 - type: cta
@@ -504,7 +504,7 @@ Scene 2 (2.60 à 4.34 s) : P27, la tache ocre sèche en bouton, le curseur entre
 - scene: Le curseur finit sa courbe et clique le bouton : pression, la tache passe au bordeaux puis revient ocre, une onde s'ouvre ; la page tient, vivante (la granulation des taches dérive, le grain glisse, la traînée de la goutte sèche), puis le noir
 - duration: 3.20s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/12-clic.html
 - voiceover: ""
 - type: cta

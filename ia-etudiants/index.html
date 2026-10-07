@@ -37,10 +37,12 @@
       id="root"
       data-composition-id="main"
       data-start="0"
-      data-duration="23.3"
+      data-duration="50.8"
       data-width="1920"
       data-height="1080"
     >
+      <div id="paperbed" class="clip" data-start="0.0" data-duration="50.8" data-track-index="12" style="position:absolute;inset:0;background:#E6D8C2"></div>
+
       <div
         id="el-01-dimanche"
         class="scene"
@@ -91,11 +93,85 @@
         data-track-index="1"
       ></div>
 
+      <div
+        id="el-06-classe"
+        class="scene"
+        data-composition-id="06-classe"
+        data-composition-src="compositions/frames/06-classe.html"
+        data-start="23.300000000000004"
+        data-duration="4.29"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-07-gestes"
+        class="scene"
+        data-composition-id="07-gestes"
+        data-composition-src="compositions/frames/07-gestes.html"
+        data-start="27.590000000000003"
+        data-duration="3.82"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-08-sait-invente"
+        class="scene"
+        data-composition-id="08-sait-invente"
+        data-composition-src="compositions/frames/08-sait-invente.html"
+        data-start="31.410000000000004"
+        data-duration="3.07"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-09-defi"
+        class="scene"
+        data-composition-id="09-defi"
+        data-composition-src="compositions/frames/09-defi.html"
+        data-start="34.480000000000004"
+        data-duration="3.66"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-10-reflexes"
+        class="scene"
+        data-composition-id="10-reflexes"
+        data-composition-src="compositions/frames/10-reflexes.html"
+        data-start="38.14"
+        data-duration="5.12"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-11-signature"
+        class="scene"
+        data-composition-id="11-signature"
+        data-composition-src="compositions/frames/11-signature.html"
+        data-start="43.26"
+        data-duration="4.34"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-12-clic"
+        class="scene"
+        data-composition-id="12-clic"
+        data-composition-src="compositions/frames/12-clic.html"
+        data-start="47.599999999999994"
+        data-duration="3.2"
+        data-track-index="1"
+      ></div>
+      <audio id="mix" data-start="0" data-duration="50.8" data-track-index="11" src="assets/audio/mix.wav" data-volume="1"></audio>
+
     </div>
 
     <script>
       window.__timelines = window.__timelines || {};
-      window.__timelines["main"] = gsap.timeline({ paused: true });
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines["main"] = tl;
+        // orchestrator layer (motion-design skill): light flash and iris
+      tl.to({}, { duration: 50.8 }, 0);
     </script>
   </body>
 </html>

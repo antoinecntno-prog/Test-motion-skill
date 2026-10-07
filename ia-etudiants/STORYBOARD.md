@@ -31,7 +31,7 @@ patterns: ../patterns/STORYBOARD-CRAFT.md, ../patterns/PATTERNS.md
 - Couleurs de rôle : accent bordeaux = boîte du mot clé, goutte signature, note « 12 » avant séchage, stylo rouge, signature finale, équipe bordeaux ; ocre = la couleur qui revient (4 traits, lampe allumée, tables, équipe ocre, bulle nette, bouton) ; gris de lavis = la douleur (eau sale, copie, note séchée, lampe éteinte) ; brun = bureau et tables ; encre = traits et texte.
 
 **SIGNATURES**
-- Mécanisme 1 « la goutte » (frame.md, drop : elle tombe, s'ouvre en tache, sèche en objet) : 0.02 goutte accent au coin de P1, sa traînée allume l'écran · 4.86 goutte grise sur P2 qui sèche en trois pages · 13.39 goutte accent dans le cadre de la note, « 12 » · 18.77 la caméra plonge dans la goutte du coin de P3 (noir) · 23.23 goutte ocre sur le noir qui ouvre P4 · 26.60, 27.80, 28.90, 30.20 quatre gouttes sur l'écran (question, coche, barre, croquis) · 33.64 goutte accent-pale qui bave (« invente ») · 34.96 deux gouttes qui deviennent deux équipes · 43.50 goutte accent qui trace la signature · 45.90 goutte ocre qui sèche en bouton (12 occurrences).
+- Mécanisme 1 « la goutte » (frame.md, drop : elle tombe, s'ouvre en tache, sèche en objet) : 0.02 goutte accent au pied du portable de P1, sa traînée allume l'écran · 4.86 goutte grise sur P2 qui sèche en trois pages · 13.39 goutte accent dans le cadre de la note, « 12 » · 18.77 la caméra plonge dans la goutte du bas de P3 (noir) · 23.23 goutte ocre sur le noir qui ouvre P4 · 26.60, 27.80, 28.90, 30.20 quatre gouttes sur l'écran (question, coche, barre, croquis) · 33.64 goutte accent-pale qui bave (« invente ») · 34.96 deux gouttes qui deviennent deux équipes · 43.50 goutte accent qui trace la signature · 45.90 goutte ocre qui sèche en bouton (12 occurrences).
 - Mécanisme 2 « le séchage » (aqDry : l'anneau de bord fonce, la granulation paraît, l'objet dedans devient net ; inverse aqErase : la couleur pâlit puis la tache s'efface par le centre) : 1.60 l'écran · 5.90 la copie · 10.82 lampe éteinte (inverse) · 12.30 la leçon pâlit (inverse) · 13.90 la note sèche en gris · 16.14, 16.80, 17.78, 18.20, 18.88 cinq effacements · 23.60 les tables · 27.00, 28.10, 29.20, 30.60 les quatre gestes · 33.00 la bulle nette · 37.52 la page entière · 44.60 la signature · 46.40 le bouton (17 occurrences).
 - Registres de texte : sous-titre mot à mot = gris flou → net (0,14 s) puis encre (0,2 s) ; boîte = tracée depuis la gauche (0,16 s power3.out) ; trait = pinceau depuis la gauche (0,4 s power2.out) ; moment typographique = lettres qui convergent (0,5 s expo.out) ; notes Caveat = révélées par un masque qui avance (vitesse d'une main, 0,3 à 1,0 s).
 - Rimes : la goutte de la signature (43.50) rejoue la goutte de l'ouverture (0.02), même encre, même chute, même traînée ; la page du début revient colorée dans les mains (41.11) ; le bouton (45.90) est une goutte ocre séchée comme les tables (23.60) ; le curseur qui colle le sujet (2.90) revient cliquer le bouton (47.85).
@@ -51,7 +51,7 @@ patterns: ../patterns/STORYBOARD-CRAFT.md, ../patterns/PATTERNS.md
 - scene: Sur la page P1 du carnet, le bureau de l'étudiant la nuit : la lampe allumée, une goutte d'encre bordeaux tombe au coin de la page et sa traînée allume l'écran du portable ; la caméra s'approche de l'écran où le curseur colle le sujet dans une fenêtre de chat et où la réponse s'écrit en gris ; whip vers la page suivante
 - duration: 4.64s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/01-dimanche.html
 - voiceover: "Dimanche, vingt-trois heures. Votre étudiant colle le sujet dans une IA."
 - type: hook
@@ -60,19 +60,19 @@ patterns: ../patterns/STORYBOARD-CRAFT.md, ../patterns/PATTERNS.md
 - rules: depth-of-field-blur, coordinate-target-zoom
 - world: light
 - handoff_in: aucun (ouverture du film) ; première image = la page P1 au cadrage cam(430, 600, 1.6) flou 0 : la lampe à l'encre allumée (lavis ocre-2) à gauche, le bord du portable à droite, la nuit en lavis bordeaux pâle en haut, la note Caveat « dim. 23 h 04 », le bord flou de P2 coupé par le bord droit ; aucune goutte encore ; sous-titre vide
-- handoff_out: à 4.64 : cam(1900, 560, 1.1) flou 12 px ; caméra en plein whip vers la droite (+7000 u/s en x), dérive 0 ; monde : carnet, pages P1 et P2 posées sur le bureau paper-dark ; P1 : lampe allumée (lavis ocre-2), portable avec la chat-window (sujet collé, réponse grise), goutte accent au coin (1090, 930) et sa traînée ; P2 encore vide (bureau brun, lampe éteinte) ; aucune page grise à l'écran ; sous-titre sorti ; grain 55 %
+- handoff_out: à 4.64 : cam(1900, 560, 1.1) flou 12 px ; caméra en plein whip vers la droite (+7000 u/s en x), dérive 0 ; monde : carnet, pages P1 et P2 posées sur le bureau paper-dark ; P1 : lampe allumée (lavis ocre-2), portable avec la chat-window (sujet collé, réponse grise), goutte accent au pied du portable (1180, 740) et sa traînée ; P2 encore vide (bureau brun, lampe éteinte) ; aucune page grise à l'écran ; sous-titre sorti ; grain 55 %
 
 Word cues: Dimanche@0.02 vingt-trois@0.74 heures@1.26 Votre@2.11 étudiant@2.42 colle@2.90 le@3.20 sujet@3.50 dans@3.72 une@4.00 IA@4.24
 
 Scene 1 (0.00 à 0.90 s) : P1, la lampe, la goutte tombe
   TEXTE ÉCRAN : sous-titre « [boîte : Dimanche], vingt-trois heures. » (boîte tracée 0.00, Dimanche 0.02, vingt-trois 0.74, heures 1.26) ; écart synchro.
   IMAGE DE DÉPART : handoff_in.
-  ÉTAPES : 0.00 la lueur de la lampe respire (lavis ocre-2 ×1,03, 0,3 s sine.inOut) et la boîte se trace ; 0.02 la goutte accent arrive de la caméra (×4, flou 10 px, 0,16 s power2.in) vers le coin (1090, 930) ; 0.18 impact : la tache s'ouvre ×0,2 → ×1 (0,12 s expo.out), deux éclaboussures de 6 u ; 0.30 la traînée accent-light se dessine de la goutte vers le portable (aqDrawPrep, 0,5 s power1.inOut) ; 0.50 la note « dim. 23 h 04 » se révèle (masque, 0,3 s) ; 0.74 « vingt-trois » ; 0.80 la lueur de l'écran commence à monter (lavis ocre-pale opacité 0 → 0,9 en 0,2 s, depuis le point où la traînée touche le clavier).
+  ÉTAPES : 0.00 la lueur de la lampe respire (lavis ocre-2 ×1,03, 0,3 s sine.inOut) et la boîte se trace ; 0.02 la goutte accent arrive de la caméra (×4, flou 10 px, 0,16 s power2.in) vers le pied du portable (1180, 740) ; 0.18 impact : la tache s'ouvre ×0,2 → ×1 (0,12 s expo.out), deux éclaboussures de 6 u ; 0.30 la traînée accent-light se dessine de la goutte vers le bout du clavier (aqDrawPrep, 0,5 s power1.inOut) ; 0.50 la note « dim. 23 h 04 » se révèle (masque, 0,3 s) ; 0.74 « vingt-trois » ; 0.80 la lueur de l'écran commence à monter (lavis ocre-pale opacité 0 → 0,9 en 0,2 s, depuis le point où la traînée touche le clavier).
   PISTE CAMÉRA : dérive x +24 u/s, échelle +2 %/s de 0.00 à 0.90 ; 0.90 départ du cran vers le portable.
-  COUCHES ET PROFONDEUR : avant-plan le bord flou de P2 (7 px) coupé par le bord droit et la goutte en vol ; sujet la lampe et le coin de la page nets ; fond le bureau paper-dark grainé ; couches animées 3.
+  COUCHES ET PROFONDEUR : avant-plan le bord flou de P2 (7 px) coupé par le bord droit et la goutte en vol ; sujet la lampe et le pied du portable nets ; fond le bureau paper-dark grainé ; couches animées 3.
   OBJET-PONT ET VECTEUR : la traînée de la goutte mène la caméra au portable (le cran suit la traînée).
   SON : goutte à 0.02 ; pinceau à 0.30 (la traînée).
-  IMAGE CLÉ : 0.20 : la lampe allumée à gauche, au coin bas droit la goutte bordeaux qui vient de s'ouvrir, sa traînée qui part vers le portable, « Dimanche » en boîte dans le sous-titre.
+  IMAGE CLÉ : 0.20 : la lampe allumée à gauche, au pied du portable la goutte bordeaux qui vient de s'ouvrir, sa traînée qui part vers le clavier, « Dimanche » en boîte dans le sous-titre.
 
 Scene 2 (0.90 à 2.00 s) : P2, cran vers le portable, l'écran s'allume
   TEXTE ÉCRAN : fin de « vingt-trois heures. » (heures 1.26) ; le sous-titre sort de 1.86 à 2.00 ; écart synchro.
@@ -106,8 +106,8 @@ Scene 3 (2.00 à 4.64 s) : P3, l'écran : le sujet collé, la réponse grise, wh
 - focal: les trois pages grises qui se posent, puis le stylo rouge au-dessus de la copie
 - rules: depth-of-field-blur, waterfall-entry
 - world: light
-- handoff_in: à 0.00 : cam(1900, 560, 1.1) flou 12 px ; caméra en plein whip vers la droite (+7000 u/s en x), dérive 0 ; monde : carnet, pages P1 et P2 posées sur le bureau paper-dark ; P1 : lampe allumée (lavis ocre-2), portable avec la chat-window (sujet collé, réponse grise), goutte accent au coin (1090, 930) et sa traînée ; P2 encore vide (bureau brun, lampe éteinte) ; aucune page grise à l'écran ; sous-titre sorti ; grain 55 %
-- handoff_out: à 5.16 : cam(3650, 560, 1.05) flou 12 px ; caméra en plein whip vers la droite (+7000 u/s en x), dérive 0 ; monde : carnet ; P2 : les trois pages grises posées à (2440, 540), (2520, 560), (2600, 580), le stylo rouge posé à plat sur la première à (2520, 500) rotation -6°, lampe éteinte ; P3 encore nette au cadrage de référence : lampe du coin allumée, 9 lignes de notes en couleur, cadre de note vide, goutte accent au coin (5080, 960) ; sous-titre sorti ; grain 55 %
+- handoff_in: à 0.00 : cam(1900, 560, 1.1) flou 12 px ; caméra en plein whip vers la droite (+7000 u/s en x), dérive 0 ; monde : carnet, pages P1 et P2 posées sur le bureau paper-dark ; P1 : lampe allumée (lavis ocre-2), portable avec la chat-window (sujet collé, réponse grise), goutte accent au pied du portable (1180, 740) et sa traînée ; P2 encore vide (bureau brun, lampe éteinte) ; aucune page grise à l'écran ; sous-titre sorti ; grain 55 %
+- handoff_out: à 5.16 : cam(3650, 560, 1.05) flou 12 px ; caméra en plein whip vers la droite (+7000 u/s en x), dérive 0 ; monde : carnet ; P2 : les trois pages grises posées à (2440, 540), (2520, 560), (2600, 580), le stylo rouge posé à plat sur la première à (2520, 500) rotation -6°, lampe éteinte ; P3 encore nette au cadrage de référence : lampe du coin allumée, 9 lignes de notes en couleur, cadre de note vide, goutte accent au bas de la page (5080, 820) ; sous-titre sorti ; grain 55 %
 
 Word cues: Lundi@0.22 il@0.92 rend@1.16 trois@1.32 pages@1.62 qu'il@1.94 n'a@2.18 pas@2.38 lues@2.58
 
@@ -152,8 +152,8 @@ Scene 3 (4.00 à 5.16 s) : P6, deuxième page tournée, rien à annoter, le styl
 - focal: la lampe qui s'éteint, puis les lignes de la leçon, puis la note « 12 »
 - rules: coordinate-target-zoom, svg-path-draw
 - world: light
-- handoff_in: à 0.00 : cam(3650, 560, 1.05) flou 12 px ; caméra en plein whip vers la droite (+7000 u/s en x), dérive 0 ; monde : carnet ; P2 : les trois pages grises posées à (2440, 540), (2520, 560), (2600, 580), le stylo rouge posé à plat sur la première à (2520, 500) rotation -6°, lampe éteinte ; P3 encore nette au cadrage de référence : lampe du coin allumée, 9 lignes de notes en couleur, cadre de note vide, goutte accent au coin (5080, 960) ; sous-titre sorti ; grain 55 %
-- handoff_out: à 5.87 : cam(3700, 560, 0.70) flou 9 px ; caméra en plein recul (échelle -1,2/s, x -1500 u/s), dérive 0 ; monde : carnet, double page P2 + P3 ; P2 : trois pages grises et stylo posé ; P3 : lampe éteinte (lavis gris à 35 %), lignes de notes effacées (papier nu), note « 12 » séchée en ink-light dans son cadre ; quatre taches de couleur restantes aux coins de la double page : ocre-pale (1900, 300) et accent-pale (1850, 760) sur P2, ocre-pale (4950, 240) et accent-pale (5050, 760) sur P3 ; la goutte accent au coin (5080, 960) ; sous-titre sorti ; grain 55 %
+- handoff_in: à 0.00 : cam(3650, 560, 1.05) flou 12 px ; caméra en plein whip vers la droite (+7000 u/s en x), dérive 0 ; monde : carnet ; P2 : les trois pages grises posées à (2440, 540), (2520, 560), (2600, 580), le stylo rouge posé à plat sur la première à (2520, 500) rotation -6°, lampe éteinte ; P3 encore nette au cadrage de référence : lampe du coin allumée, 9 lignes de notes en couleur, cadre de note vide, goutte accent au bas de la page (5080, 820) ; sous-titre sorti ; grain 55 %
+- handoff_out: à 5.87 : cam(3700, 560, 0.70) flou 9 px ; caméra en plein recul (échelle -1,2/s, x -1500 u/s), dérive 0 ; monde : carnet, double page P2 + P3 ; P2 : trois pages grises et stylo posé ; P3 : lampe éteinte (lavis gris à 35 %), lignes de notes effacées (papier nu), note « 12 » séchée en ink-light dans son cadre ; quatre taches de couleur restantes aux coins de la double page : ocre-pale (1900, 300) et accent-pale (1850, 760) sur P2, ocre-pale (4950, 240) et accent-pale (5050, 760) sur P3 ; la goutte accent au bas de la page (5080, 820) ; sous-titre sorti ; grain 55 %
 
 Word cues: Il@0.21 a@0.36 gagné@0.54 une@0.76 soirée@1.02 Il@1.67 a@1.82 perdu@2.04 la@2.34 leçon@2.50 La@3.11 note@3.34 tombe@3.59 et@4.25 personne@4.47 n'a@4.94 rien@5.10 appris@5.40
 
@@ -207,24 +207,24 @@ Scene 4 (4.40 à 5.87 s) : P10, personne n'a rien appris : les lignes s'effacent
 - focal: les quatre taches de couleur qui s'effacent, puis la goutte d'encre du coin
 - rules: depth-of-field-blur, coordinate-target-zoom
 - world: light
-- handoff_in: à 0.00 : cam(3700, 560, 0.70) flou 9 px ; caméra en plein recul (échelle -1,2/s, x -1500 u/s), dérive 0 ; monde : carnet, double page P2 + P3 ; P2 : trois pages grises et stylo posé ; P3 : lampe éteinte (lavis gris à 35 %), lignes de notes effacées (papier nu), note « 12 » séchée en ink-light dans son cadre ; quatre taches de couleur restantes aux coins de la double page : ocre-pale (1900, 300) et accent-pale (1850, 760) sur P2, ocre-pale (4950, 240) et accent-pale (5050, 760) sur P3 ; la goutte accent au coin (5080, 960) ; sous-titre sorti ; grain 55 %
-- handoff_out: à 3.55 : cam(5080, 960, 14) flou 10 px ; caméra en pleine plongée (échelle ×2,2/s, power3.in) dans la goutte accent du coin de P3 ; la goutte couvre 95 % du cadre, son accent s'assombrit vers canvas au centre ; aucune autre tache (toutes effacées) ; sous-titre sorti ; grain 55 %
+- handoff_in: à 0.00 : cam(3700, 560, 0.70) flou 9 px ; caméra en plein recul (échelle -1,2/s, x -1500 u/s), dérive 0 ; monde : carnet, double page P2 + P3 ; P2 : trois pages grises et stylo posé ; P3 : lampe éteinte (lavis gris à 35 %), lignes de notes effacées (papier nu), note « 12 » séchée en ink-light dans son cadre ; quatre taches de couleur restantes aux coins de la double page : ocre-pale (1900, 300) et accent-pale (1850, 760) sur P2, ocre-pale (4950, 240) et accent-pale (5050, 760) sur P3 ; la goutte accent au bas de la page (5080, 820) ; sous-titre sorti ; grain 55 %
+- handoff_out: à 3.55 : cam(5080, 820, 14) flou 10 px ; caméra en pleine plongée (échelle ×2,2/s, power3.in) dans la goutte accent du bas de P3 ; la goutte couvre 95 % du cadre, son accent s'assombrit vers canvas au centre ; aucune autre tache (toutes effacées) ; sous-titre sorti ; grain 55 %
 
 Word cues: La@0.21 curiosité@0.47 s'éteint@1.13 un@1.86 copier@2.11 -coller@2.53 à@2.81 la@2.99 fois@3.21
 
 Scene 1 (0.00 à 3.10 s) : P11, la double page, les taches s'effacent une à une
   TEXTE ÉCRAN : sous-titre « La [trait : curiosité] s'éteint, un [boîte : copier-coller] à la fois. » (La 0.21, curiosité 0.47 avec le trait ocre tracé de 0.47 à 0.87, s'éteint 1.13, un 1.86, boîte tracée 2.07, copier-coller 2.11 puis 2.53, à 2.81, la 2.99, fois 3.21) ; il sort de 3.30 à 3.44 ; écart : chaque effacement tombe sur son mot, synchro.
   IMAGE DE DÉPART : handoff_in (le recul en cours).
-  ÉTAPES : 0.00 à 0.23 fin du recul, atterrissage sur cam(3451, 560, 0.62) (expo.out, flou 9 → 0) : la double page entière, la reliure au centre ; 0.30 le stylo posé sur la copie roule de 4 u (0,1 s) ; 0.47 « curiosité » : la tache ocre-pale (1900, 300) pâlit et s'efface par le centre (aqErase 0 → 1, 0,3 s power2.in) ; 1.13 « s'éteint » : la tache accent-pale (1850, 760) s'efface ; 1.60 le lavis gris de P3 gagne 10 % ; 2.11 « copier » : la tache ocre-pale (4950, 240) s'efface ; 2.53 « -coller » : la tache accent-pale (5050, 760) s'efface ; 2.70 la goutte accent du coin (5080, 960) grossit d'un cran (×1 → 1,15, 0,1 s) : seule couleur restante ; 2.99 « la » : elle luit (opacité 0,85 → 1) ; 3.00 départ de la plongée.
+  ÉTAPES : 0.00 à 0.23 fin du recul, atterrissage sur cam(3451, 560, 0.62) (expo.out, flou 9 → 0) : la double page entière, la reliure au centre ; 0.30 le stylo posé sur la copie roule de 4 u (0,1 s) ; 0.47 « curiosité » : la tache ocre-pale (1900, 300) pâlit et s'efface par le centre (aqErase 0 → 1, 0,3 s power2.in) ; 1.13 « s'éteint » : la tache accent-pale (1850, 760) s'efface ; 1.60 le lavis gris de P3 gagne 10 % ; 2.11 « copier » : la tache ocre-pale (4950, 240) s'efface ; 2.53 « -coller » : la tache accent-pale (5050, 760) s'efface ; 2.70 la goutte accent du bas de la page (5080, 820) grossit d'un cran (×1 → 1,15, 0,1 s) : seule couleur restante ; 2.99 « la » : elle luit (opacité 0,85 → 1) ; 3.00 départ de la plongée.
   PISTE CAMÉRA : atterrissage 0.00 à 0.23 ; dérive x +16 u/s, échelle -0,8 %/s de 0.23 à 3.00 (la double page recule encore un peu).
   COUCHES ET PROFONDEUR : avant-plan le bord flou de P4 (7 px) coupé par le bord droit ; sujet la double page nette ; fond le bureau paper-dark grainé qui déborde ; parallaxe 2,5 : 1 : 0,4 ; couches animées 2 à 3 (taches, caméra, stylo).
-  OBJET-PONT ET VECTEUR : la goutte accent du coin devient le noir du pivot (la caméra plonge dedans).
+  OBJET-PONT ET VECTEUR : la goutte accent du bas de la page devient le noir du pivot (la caméra plonge dedans).
   SON : pinceau 16.14, 16.80, 17.78, 18.20 global (0.47, 1.13, 2.11, 2.53 local : les effacements).
-  IMAGE CLÉ : 1.80 : la double page vue de plus loin, la copie grise et le stylo rouge à gauche, la page nue à droite, deux taches de couleur déjà effacées, deux encore là, la goutte bordeaux au coin (styleframes/png/A2.png).
+  IMAGE CLÉ : 1.80 : la double page vue de plus loin, la copie grise et le stylo rouge à gauche, la page nue à droite, deux taches de couleur déjà effacées, deux encore là, la goutte bordeaux en bas (styleframes/png/A2.png).
 
 Scene 2 (3.10 à 3.55 s) : P12, plongée dans la goutte
   TEXTE ÉCRAN : fin du sous-titre (fois 3.21) ; il sort de 3.30 à 3.44 ; écart : la plongée commence dans le silence après « fois ».
-  ÉTAPES : 3.10 plongée vers cam(5080, 960, 14) (power3.in, 0,45 s, flou 0 → 10 au sommet 3.55) : la goutte grandit jusqu'à couvrir le cadre ; 3.21 « fois » ; 3.30 le dernier pinceau : la tache accent-pale résiduelle (s'il en reste un éclat) disparaît ; 3.40 le centre de la goutte s'assombrit (dégradé radial accent → canvas, opacité 0 → 1, 0,15 s) ; 3.55 couture au sommet du flou.
+  ÉTAPES : 3.10 plongée vers cam(5080, 820, 14) (power3.in, 0,45 s, flou 0 → 10 au sommet 3.55) : la goutte grandit jusqu'à couvrir le cadre ; 3.21 « fois » ; 3.30 le dernier pinceau : la tache accent-pale résiduelle (s'il en reste un éclat) disparaît ; 3.40 le centre de la goutte s'assombrit (dégradé radial accent → canvas, opacité 0 → 1, 0,15 s) ; 3.55 couture au sommet du flou.
   PISTE CAMÉRA : 3.10 à 3.55 plongée power3.in (échelle ×2,2/s à la couture).
   COUCHES ET PROFONDEUR : la goutte seule (avant, net) ; le papier qui sort du cadre ; couches animées 2 (caméra, dégradé).
   OBJET-PONT ET VECTEUR : la goutte devient le fond noir de la séquence 5 (même objet, autre échelle) ; vecteur : plongée reprise par la séquence 5.
@@ -244,7 +244,7 @@ Scene 2 (3.10 à 3.55 s) : P12, plongée dans la goutte
 - focal: la question centrée, puis la goutte ocre qui tombe
 - rules: depth-of-field-blur
 - world: dark
-- handoff_in: à 0.00 : cam(5080, 960, 14) flou 10 px ; caméra en pleine plongée (échelle ×2,2/s, power3.in) dans la goutte accent du coin de P3 ; la goutte couvre 95 % du cadre, son accent s'assombrit vers canvas au centre ; aucune autre tache (toutes effacées) ; sous-titre sorti ; grain 55 %
+- handoff_in: à 0.00 : cam(5080, 820, 14) flou 10 px ; caméra en pleine plongée (échelle ×2,2/s, power3.in) dans la goutte accent du bas de P3 ; la goutte couvre 95 % du cadre, son accent s'assombrit vers canvas au centre ; aucune autre tache (toutes effacées) ; sous-titre sorti ; grain 55 %
 - handoff_out: à 4.08 : aucun raccord de caméra (coupe franche voulue à 23.30, à l'impact de la goutte ocre) ; raccord de couleur des deux côtés : le cadre entier est le lavis ocre-pale #EFD7A6 à 100 %, sans grain ni texte
 
 Word cues: Et@0.25 si@0.56 l'IA@0.72 servait@1.12 à@1.70 apprendre@1.98

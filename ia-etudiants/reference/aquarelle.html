@@ -98,7 +98,7 @@ const AQ = (() => {
   function div(cls, style, parent, html) { const d = document.createElement("div"); d.className = cls; d.style.cssText = style || ""; if (html) d.innerHTML = html; (parent || document.body).appendChild(d); return d; }
   /* filtres partagés, un jeu par séquence : ids préfixés (aqDefs(svg, "p03") → #p03-aq, #p03-ink…) */
   function aqDefs(svg, p = "aq") {
-    if (svg.querySelector(`#${p}-aq`)) return;
+    if (svg.querySelector("#" + p + "-aq")) return;
     el("defs", {}, svg).innerHTML = `
       <filter id="${p}-aq" x="-25%" y="-25%" width="150%" height="150%">
         <feTurbulence type="fractalNoise" baseFrequency=".018" numOctaves="3" seed="11" result="n"/>
@@ -231,7 +231,7 @@ function demo(what = 1) {
   aqWash(svg, { cx: 1010, cy: 180, r: 190, seed: 9, w: 0.2, n: 9, ry: 0.8 }, C.accentPale, 0.55, true);
   aqWash(svg, "M120 790 C 400 760 800 770 1100 780 L1100 860 C 800 850 400 860 120 870 Z", C.brun, 0.7);
   aqLamp(svg, 150, 790, 1, true); aqLaptop(svg, 760, 575, false);
-  aqDrop(svg, 1090, 930, 46, C.accent, 7); aqWash(svg, "M1060 940 C 1000 980 940 1000 880 1010 L 884 1024 C 946 1016 1010 998 1066 962 Z", C.accentLight, 0.6);
+  aqDrop(svg, 1180, 740, 46, C.accent, 7); aqInk(svg, "M1150 748 C1140 760 1134 772 1128 784 C1124 790 1120 794 1116 796", 8, C.accentLight);
   // P2 : bureau du prof, trois pages grises, stylo
   aqWash(svg, `M${x0(2) + 120} 860 L${x0(2) + 1580} 860 L${x0(2) + 1600} 940 L${x0(2) + 100} 940 Z`, C.brun, 0.7); aqLamp(svg, x0(2) + 1250, 860, 0.9, false);
   [[2440, 540, 8], [2520, 560, 14], [2600, 580, 21]].forEach(([x, y, a], i) => { const g = el("g", { transform: `translate(${x} ${y}) rotate(${a})` }, svg); el("rect", { x: -150, y: -200, width: 300, height: 400, fill: C.paper2 }, g); for (let j = 0; j < 5; j++) el("rect", { x: -120, y: -140 + j * 40, width: j === 2 ? 150 : 240, height: 3, fill: C.inkLight, opacity: 0.55 }, g); });
@@ -239,7 +239,7 @@ function demo(what = 1) {
   // P3 : la leçon
   aqLamp(svg, x0(3) + 1500, 560, 0.8, true);
   for (let j = 0; j < 9; j++) aqWash(svg, { cx: x0(3) + 400 + (j % 3) * 60, cy: 320 + j * 50, r: 190 - (j % 2) * 40, seed: 30 + j, w: 0.2, n: 8, ry: 0.12 }, j % 2 ? C.accentPale : C.ocrePale, 0.6);
-  aqInk(svg, `M${x0(3) + 1240} 150 L${x0(3) + 1440} 150 L${x0(3) + 1440} 310 L${x0(3) + 1240} 310 Z`, 4, C.ink); aqDrop(svg, 5080, 960, 46, C.accent, 7);
+  aqInk(svg, `M${x0(3) + 1240} 150 L${x0(3) + 1440} 150 L${x0(3) + 1440} 310 L${x0(3) + 1240} 310 Z`, 4, C.ink); aqDrop(svg, 5080, 820, 46, C.accent, 7);
   // P4 : la classe
   aqWash(svg, { cx: 6052, cy: 760, r: 760, seed: 20, w: 0.1, n: 12, ry: 0.42 }, C.ocrePale, 0.55, true);
   [[5592, 560, 230], [6052, 520, 230], [5622, 800, 260], [6112, 770, 260]].forEach(([x, y, w]) => aqWash(svg, `M${x - w / 2} ${y} L${x + w / 2} ${y} L${x + w / 2 + 14} ${y + 70} L${x - w / 2 - 14} ${y + 70} Z`, C.brun, 0.8));

@@ -189,6 +189,12 @@ added the cloud items and several frame and sound items below.
   mid-run and recorded 7 deletions); never kill it and never wrap it in `timeout` (SIGTERM skips the `finally`: the
   frames stay in `/tmp/lots-*`, restore them with `mv /tmp/lots-*/*.html <project>/compositions/frames/`). Run it in
   the background with a long timeout and wait for its notification.
+- **A plunge at camera scale 14 freezes the renderer.** `hyperframes render` stalled on one frame ("no frame progress for
+  60000ms") and Playwright screenshots of that frame never returned (load average 0: a hang, not slow work): the
+  camera layer carried a CSS blur and a filtered SVG wash at scale 10 to 14, so Chromium had to rasterise a layer of
+  150 000 px. Fix used in `ia-equipes-pedagogiques/05-sens.html`: cap the camera scale at 3, grow the drop's own
+  group instead (×24), set the camera blur to 0 and the drop's filter to `none` for the whole plunge, hide the decor
+  once the drop covers half the frame. Rule: no camera blur and no SVG filter when the camera scale is above 3.
 - **`querySelector` with a template literal** (`svg.querySelector(\`#${p}-aq\`)`) makes the HTML bundler's CSS parser
   crash (`template_literal_selector` lint error). Write `"#" + p + "-aq"` in the kit.
 - **Compound CSS transforms break GSAP.** A kit class with `transform: scaleX(0) rotate(-1.2deg)` is decomposed by GSAP

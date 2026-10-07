@@ -268,7 +268,7 @@ const AQ = (() => {
 
       // ---- P2 : le bureau du prof. Fond (lampe éteinte, mur en lavis gris) flou ; plateau brun à y 860 ----
       var bgG = el("g", {}, svg);
-      aqWash(svg, { cx: 3000, cy: 420, r: 420, seed: 15, w: 0.18, n: 10, ry: 0.8 }, K.gris, 0.35, true, bgG);
+      aqWash(svg, { cx: 3160, cy: 400, r: 290, seed: 15, w: 0.18, n: 10, ry: 0.75 }, K.gris, 0.25, true, bgG);
       var lamp2 = aqLamp(svg, 3100, 860, 0.9, false, bgG);
       var deskG = el("g", {}, svg);
       aqWash(svg, "M" + (X2 + 120) + " 860 L" + (X2 + 1580) + " 860 L" + (X2 + 1600) + " 890 L" + (X2 + 100) + " 890 Z", K.brun, 0.7, false, deskG);

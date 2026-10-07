@@ -186,7 +186,9 @@ added the cloud items and several frame and sound items below.
   (`540 + (y - cy) × s`) when writing frame.md: everything on the page stays above 880.
 - **`snapshots-lots.py` stashes frames while it runs.** It moves the frames outside the current lot out of
   `compositions/frames/` and restores them in a `finally`. Never commit while it runs (a stop hook asked for a commit
-  mid-run and recorded 7 deletions); never kill it (the frames would stay in the stash folder).
+  mid-run and recorded 7 deletions); never kill it and never wrap it in `timeout` (SIGTERM skips the `finally`: the
+  frames stay in `/tmp/lots-*`, restore them with `mv /tmp/lots-*/*.html <project>/compositions/frames/`). Run it in
+  the background with a long timeout and wait for its notification.
 - **`querySelector` with a template literal** (`svg.querySelector(\`#${p}-aq\`)`) makes the HTML bundler's CSS parser
   crash (`template_literal_selector` lint error). Write `"#" + p + "-aq"` in the kit.
 - **Compound CSS transforms break GSAP.** A kit class with `transform: scaleX(0) rotate(-1.2deg)` is decomposed by GSAP

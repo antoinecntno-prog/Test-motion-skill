@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="assets/vendor/gsap-3.14.2.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #000;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #F4EBDD;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="52"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="paperbed" class="clip" data-start="0.0" data-duration="52.0" data-track-index="12" style="position:absolute;inset:0;background:#E6D8C2"></div>
+
+      <div
+        id="el-01-lundi"
+        class="scene"
+        data-composition-id="01-lundi"
+        data-composition-src="compositions/frames/01-lundi.html"
+        data-start="0"
+        data-duration="3.55"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-02-copies"
+        class="scene"
+        data-composition-id="02-copies"
+        data-composition-src="compositions/frames/02-copies.html"
+        data-start="3.55"
+        data-duration="3.48"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-03-gag"
+        class="scene"
+        data-composition-id="03-gag"
+        data-composition-src="compositions/frames/03-gag.html"
+        data-start="7.029999999999999"
+        data-duration="3.37"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-04-tableau"
+        class="scene"
+        data-composition-id="04-tableau"
+        data-composition-src="compositions/frames/04-tableau.html"
+        data-start="10.399999999999999"
+        data-duration="5.38"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-05-sens"
+        class="scene"
+        data-composition-id="05-sens"
+        data-composition-src="compositions/frames/05-sens.html"
+        data-start="15.779999999999998"
+        data-duration="3.11"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-06-pivot"
+        class="scene"
+        data-composition-id="06-pivot"
+        data-composition-src="compositions/frames/06-pivot.html"
+        data-start="18.889999999999997"
+        data-duration="3.51"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-07-salle-pleine"
+        class="scene"
+        data-composition-id="07-salle-pleine"
+        data-composition-src="compositions/frames/07-salle-pleine.html"
+        data-start="22.4"
+        data-duration="4.87"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-08-bulletin"
+        class="scene"
+        data-composition-id="08-bulletin"
+        data-composition-src="compositions/frames/08-bulletin.html"
+        data-start="27.27"
+        data-duration="4.87"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-09-mail-grille"
+        class="scene"
+        data-composition-id="09-mail-grille"
+        data-composition-src="compositions/frames/09-mail-grille.html"
+        data-start="32.14"
+        data-duration="5.11"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-10-quotidien"
+        class="scene"
+        data-composition-id="10-quotidien"
+        data-composition-src="compositions/frames/10-quotidien.html"
+        data-start="37.25"
+        data-duration="3.7"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-11-eleves"
+        class="scene"
+        data-composition-id="11-eleves"
+        data-composition-src="compositions/frames/11-eleves.html"
+        data-start="40.95"
+        data-duration="4.05"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-12-signature"
+        class="scene"
+        data-composition-id="12-signature"
+        data-composition-src="compositions/frames/12-signature.html"
+        data-start="45"
+        data-duration="4"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-13-clic"
+        class="scene"
+        data-composition-id="13-clic"
+        data-composition-src="compositions/frames/13-clic.html"
+        data-start="49"
+        data-duration="3"
+        data-track-index="1"
+      ></div>
+      <audio id="mix" data-start="0" data-duration="52.0" data-track-index="11" src="assets/audio/mix.wav" data-volume="1"></audio>
+
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines["main"] = tl;
+        // orchestrator layer (motion-design skill): light flash and iris
+      tl.to({}, { duration: 52.0 }, 0);
+    </script>
+  </body>
+</html>

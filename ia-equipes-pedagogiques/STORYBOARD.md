@@ -51,7 +51,7 @@ patterns: ../patterns/STORYBOARD-CRAFT.md, ../patterns/PATTERNS.md
 - scene: Sur la page P1 du carnet, la salle des profs se dessine à l'encre autour d'une goutte grise qui sèche en horloge à dix-huit heures ; les chaises se rentrent, la lumière grise de la nuit tombe aux fenêtres ; la caméra part vers la pile de copies
 - duration: 3.55s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/01-lundi.html
 - voiceover: "Lundi, dix-huit heures. La salle des profs est vide."
 - type: hook
@@ -88,7 +88,7 @@ Scene 2 (1.80 à 3.55 s) : P2, la salle est vide, les chaises se rentrent, cran 
 - scene: Gros plan sur la pile de copies : une goutte grise y tombe et la pile monte de deux feuilles ; cran vers l'écran du portable qui s'allume en gris et aligne les objets des mails aux familles ; cran vers la feuille des bulletins
 - duration: 3.48s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/02-copies.html
 - voiceover: "Les copies sont encore là. Les mails aux familles attendent."
 - type: pain_point
@@ -125,7 +125,7 @@ Scene 2 (1.60 à 3.48 s) : P4, l'écran s'allume, les mails aux familles s'align
 - scene: La feuille des bulletins se remplit de gris sur la table ; puis, dans le silence, la caméra recule sur la salle vide : l'horloge saute de dix minutes en dix minutes, la pile monte d'une copie, la vapeur de la tasse s'éteint ; whip vers la page suivante
 - duration: 3.37s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/03-gag.html
 - voiceover: "Les bulletins aussi."
 - type: pain_point
@@ -162,7 +162,7 @@ Scene 2 (1.10 à 3.37 s) : P6, gag muet : l'horloge tourne, la pile monte, la ta
 - scene: Le whip atterrit sur la page P2, le tableau de la classe : une main peinte écrit à la craie devant six élèves en taches ocre ; puis la craie s'efface, le tableau se quadrille en cases et la même main les remplit de gris ; cran vers les élèves
 - duration: 5.38s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/04-tableau.html
 - voiceover: "Vous avez choisi ce métier pour transmettre. Vous passez vos soirées à remplir des tableaux."
 - type: pain_point
@@ -199,7 +199,7 @@ Scene 2 (2.60 à 5.38 s) : P8, la craie s'efface, la grille, la main remplit les
 - scene: Le cran descend sur les six élèves devant la grille : les dernières cases se remplissent, les taches ocre pâlissent puis s'effacent une à une, une case à la fois ; il ne reste que la goutte d'encre au bas de la page et la caméra plonge dedans jusqu'au noir
 - duration: 3.11s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/05-sens.html
 - voiceover: "Et le sens s'use. Une case à la fois."
 - type: pain_point
@@ -236,7 +236,7 @@ Scene 2 (2.86 à 3.11 s) : P10, plongée dans la goutte
 - scene: Dans le noir de l'encre, la question du film converge lettre à lettre au centre, un trait ocre sous « temps » ; elle tient dans le silence, puis une goutte ocre arrive de la caméra, tombe et éclate au centre : à l'impact le cadre entier est le lavis ocre
 - duration: 3.51s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/06-pivot.html
 - voiceover: "Et si vous repreniez ce temps ?"
 - type: pivot
@@ -273,7 +273,7 @@ Scene 2 (1.95 à 3.51 s) : P12, le silence, la goutte ocre tombe et éclate
 - scene: Le lavis ocre sèche et laisse apparaître la page P3, la même salle des profs, pleine : six silhouettes autour de la table, portables allumés ; la caméra s'approche des vrais documents sur la table ; whip vers la page suivante
 - duration: 4.87s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/07-salle-pleine.html
 - voiceover: "Je forme vos équipes pédagogiques à l'IA, sur leurs outils et leurs vrais documents."
 - type: demo
@@ -310,7 +310,7 @@ Scene 2 (2.60 à 4.87 s) : P14, les outils et les vrais documents sur la table, 
 - scene: Le whip atterrit sur la page P4 : une goutte bordeaux tombe sur la feuille du bulletin et cinq lignes s'écrivent à l'encre, une coche relit ; cran vers la fiche de séquence qui se dédouble en deux versions, ocre et bordeaux ; whip
 - duration: 4.87s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/08-bulletin.html
 - voiceover: "Un bulletin se rédige en quelques minutes. Une séquence s'adapte à chaque classe."
 - type: demo
@@ -347,7 +347,7 @@ Scene 2 (2.40 à 4.87 s) : P16, la fiche se dédouble pour deux classes, whip
 - scene: Le whip atterrit sur la page P5 : la fenêtre d'un long mail se replie en trois lignes qui trouvent leur ton ; cran vers la droite où une grille d'évaluation se trace ligne à ligne avec ses étiquettes et ses coches ; whip
 - duration: 5.11s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/09-mail-grille.html
 - voiceover: "Un mail difficile trouve son ton. Une grille d'évaluation se construit en direct."
 - type: demo
@@ -384,7 +384,7 @@ Scene 2 (2.10 à 5.11 s) : P18, la grille d'évaluation se construit en direct, 
 - scene: Le whip atterrit sur la page P6 : un petit carnet manuscrit où « vos documents » et « vos outils » s'écrivent et se cochent ; à côté, la tasse se remplit d'un café ocre et sa vapeur se retrace ; whip vers la page suivante
 - duration: 3.70s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/10-quotidien.html
 - voiceover: "Aucun prérequis technique. On part de votre quotidien."
 - type: reassurance
@@ -412,7 +412,7 @@ Scene 1 (0.00 à 3.70 s) : P19, le carnet des outils et la tasse qui fume, whip
 - scene: Le whip atterrit sur la page P7, le tableau de la classe redessiné avec sa grille pleine de gris : les cases s'effacent ligne par ligne, les six élèves reviennent en ocre, nets ; le cadre du tableau s'efface et un grand lavis ocre les entoure ; whip vers la dernière page
 - duration: 4.05s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/11-eleves.html
 - voiceover: "Le temps gagné revient aux élèves. Et le sens avec."
 - type: payoff
@@ -449,7 +449,7 @@ Scene 2 (2.30 à 4.05 s) : P21, et le sens avec : le tableau s'efface, le lavis 
 - scene: Le whip atterrit sur la page P8, nue : la même goutte d'encre bordeaux qu'au début du film 1 tombe et la signature se trace depuis elle, « formateur IA » s'écrit dessous ; la caméra descend vers une tache ocre qui tombe et sèche en bouton « Réserver un appel » avec les deux adresses ; le curseur entre en courbe
 - duration: 4.00s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/12-signature.html
 - voiceover: "Antoine Contino, formateur IA. Réservez un appel."
 - type: cta
@@ -486,7 +486,7 @@ Scene 2 (2.50 à 4.00 s) : P23, la tache ocre sèche en bouton, le curseur entre
 - scene: Le curseur finit sa courbe et clique le bouton : pression, la tache passe au bordeaux puis revient ocre, une onde s'ouvre ; la page tient, vivante, puis le noir monte comme l'encre du pivot
 - duration: 3.00s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/13-clic.html
 - voiceover: ""
 - type: cta

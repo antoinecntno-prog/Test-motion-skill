@@ -1,13 +1,13 @@
 {
-  "total": 45.0,
-  "bpm": 120,
-  "seed": 11,
+  "total": 50.6,
+  "bpm": 96,
+  "seed": 13,
   "sections": [
-    {"type": "tension", "start": 0.0,  "end": 14.0, "key": "A"},
-    {"type": "pivot",   "start": 14.0, "end": 16.5, "key": "C"},
-    {"type": "groove",  "start": 16.5, "end": 33.0, "key": "C"},
-    {"type": "hymne",   "start": 33.0, "end": 42.5, "key": "F"},
-    {"type": "fin",     "start": 42.5, "end": 45.0, "key": "C"}
+    {"type": "tension", "start": 0.0,   "end": 16.40, "key": "A"},
+    {"type": "pivot",   "start": 16.40, "end": 20.42, "key": "C"},
+    {"type": "groove",  "start": 20.42, "end": 39.55, "key": "C"},
+    {"type": "hymne",   "start": 39.55, "end": 47.50, "key": "F"},
+    {"type": "fin",     "start": 47.50, "end": 50.6,  "key": "C"}
   ],
-  "hits": []
+  "hits": [20.42]
 }

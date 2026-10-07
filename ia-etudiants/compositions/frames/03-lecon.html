@@ -244,15 +244,16 @@ const AQ = (() => {
       aqWash(svg, { cx: 1900, cy: 300, r: 150, seed: 61, w: 0.2, n: 9, ry: 0.85 }, K.ocrePale, 0.6, true);
       aqWash(svg, { cx: 1850, cy: 760, r: 130, seed: 62, w: 0.2, n: 9, ry: 0.9 }, K.accentPale, 0.55, true);
       aqWash(svg, "M" + (X2 + 120) + " 860 L" + (X2 + 1580) + " 860 L" + (X2 + 1600) + " 940 L" + (X2 + 100) + " 940 Z", K.brun, 0.7);
-      aqLamp(svg, 3100, 640, 0.9, false);
-      [[2440, 540, 8], [2520, 560, 14], [2600, 580, 21]].forEach(function (c, i) {
-        var g = el("g", { transform: "translate(" + c[0] + " " + c[1] + ") rotate(" + c[2] + ")" }, svg);
+      aqLamp(svg, 3100, 860, 0.9, false);                                          // posée sur le plateau, comme à la fin de la séquence 2
+      // état laissé par le gag de la séquence 2 : la première copie (2440) à plat avec ses lignes ; les deux autres retournées
+      // sur leur bord gauche (rotateY -170° : miroir sur la charnière, dos vierge paper-2), le stylo couché pointe vers elles
+      [[2440, 540, 8, false], [2520, 560, 14, true], [2600, 580, 21, true]].forEach(function (c) {
+        var g = el("g", { transform: "translate(" + c[0] + " " + c[1] + ") rotate(" + c[2] + ") translate(-150 -200)" + (c[3] ? " scale(-0.985 1)" : "") }, svg);
         g.style.filter = "drop-shadow(0 14px 30px rgba(58,42,36,.14))";
-        el("rect", { x: -150, y: -200, width: 300, height: 400, fill: K.paper2 }, g);
-        for (var j = 0; j < 5; j++) el("rect", { x: -120, y: -140 + j * 40, width: j === 2 ? 150 : 240, height: 3, fill: K.inkLight, opacity: 0.55 }, g);
-        if (i === 0) { var t = el("text", { x: -120, y: -162, fill: K.inkLight, "class": "p03-copy-note" }, g); t.textContent = "Dissertation · 1/3"; }
+        el("rect", { x: 0, y: 0, width: 300, height: 400, fill: K.paper2 }, g);
+        if (!c[3]) for (var j = 0; j < 5; j++) el("rect", { x: 30, y: 80 + j * 44, width: j === 2 ? 150 : 240, height: 3, fill: K.inkLight, opacity: 0.55 }, g);
       });
-      aqPen(svg, 2520, 500, -6);
+      aqPen(svg, 2520, 500, 174);
 
       // ---- P3 : la page de la leçon ----
       // deux taches de couleur restantes aux coins (hors des lignes), présentes dès le début
@@ -274,9 +275,10 @@ const AQ = (() => {
       var lamp3 = aqLamp(svg, 4850, 300, 0.8, true);
       lamp3.glow.dataset.pf = "p03"; lamp3.glow.dataset.op = "0.75";
       var lampInkPaths = lamp3.g.lastElementChild.querySelectorAll("path"), lampArm = [lampInkPaths[0], lampInkPaths[1]];
-      // le cadre de la note (encre 4 px, 200 × 160) à (4760, 230), déjà tracé
-      var frG = el("g", { filter: "url(#p03-ink)" }, svg); frG.style.transformOrigin = "4860px 310px"; frG.style.transformBox = "view-box";
-      aqInk(svg, "M4760 230 L4960 230 L4960 390 L4760 390 Z", 4, K.ink, frG);
+      // le cadre de la note (encre 4 px, 200 × 160) à (4760, 230), déjà tracé : une carte de papier sous le trait, le pied de la lampe passe derrière
+      var frG = el("g", {}, svg); frG.style.transformOrigin = "4860px 310px"; frG.style.transformBox = "view-box";
+      el("rect", { x: 4760, y: 230, width: 200, height: 160, fill: K.paper }, frG);
+      aqInk(svg, "M4760 230 L4960 230 L4960 390 L4760 390 Z", 4, K.ink, el("g", { filter: "url(#p03-ink)" }, frG));
       // la goutte accent posée au bas de la page (5080, 820), la même encre qu'en P1
       var drop0 = aqDrop(svg, 5080, 820, 46, K.accent, 7); drop0.dataset.pf = "p03"; drop0.dataset.op = "0.85"; aqDry(drop0, 1);
       // la goutte de la note : arrive de la caméra en haut à droite, plonge dans le cadre, s'ouvre, sèche (enveloppe pour le vol, intérieur pour le séchage)

@@ -255,6 +255,7 @@ const AQ = (() => {
       var p3 = el("g", {}, svg);
       txt(p3, 3600, 150, 34, "Leçon", { transform: "rotate(-2 3600 150)" });
       var lamp3 = aqLamp(svg, 4850, 300, 0.8, false, p3);
+      el("rect", { x: 4760, y: 230, width: 200, height: 160, fill: K.paper }, p3);   // la carte de la note : le pied de la lampe passe derrière (comme en séquence 3)
       aqInk(svg, "M4760 230 L4960 230 L4960 390 L4760 390 Z", 4, K.ink, el("g", { filter: "url(#p04-ink)" }, p3));
       txt(p3, 4860, 318, 150, "12", { "text-anchor": "middle", "dominant-baseline": "central" });
 

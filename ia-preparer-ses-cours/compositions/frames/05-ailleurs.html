@@ -1,0 +1,455 @@
+<template>
+  <style>
+  /* ===================== CARNET : début du bloc CSS à copier ===================== */
+  @font-face{font-family:"Fraunces";font-weight:400;src:url("assets/fonts/fraunces-latin-400-normal.woff2") format("woff2")}
+  @font-face{font-family:"Fraunces";font-weight:600;src:url("assets/fonts/fraunces-latin-600-normal.woff2") format("woff2")}
+  @font-face{font-family:"Fraunces";font-weight:700;src:url("assets/fonts/fraunces-latin-700-normal.woff2") format("woff2")}
+  @font-face{font-family:"DM Sans";font-weight:400;src:url("assets/fonts/dm-sans-latin-400-normal.woff2") format("woff2")}
+  @font-face{font-family:"DM Sans";font-weight:500;src:url("assets/fonts/dm-sans-latin-500-normal.woff2") format("woff2")}
+  @font-face{font-family:"DM Sans";font-weight:600;src:url("assets/fonts/dm-sans-latin-600-normal.woff2") format("woff2")}
+  @font-face{font-family:"DM Sans";font-weight:700;src:url("assets/fonts/dm-sans-latin-700-normal.woff2") format("woff2")}
+  @font-face{font-family:"Caveat";font-weight:400;src:url("assets/fonts/caveat-latin-400-normal.woff2") format("woff2")}
+  @font-face{font-family:"Caveat";font-weight:600;src:url("assets/fonts/caveat-latin-600-normal.woff2") format("woff2")}
+  :root{--paper:#F4EBDD;--paper-2:#EDE1CF;--paper-dark:#E6D8C2;--canvas:#17110F;--canvas-2:#0F0A09;--ink:#3A2A24;--ink-2:#6B5A52;
+    --ink-light:#9C8C83;--accent:#7A1E2E;--accent-light:#9B2F3F;--accent-pale:#C98A93;--ocre:#C98A2E;--ocre-2:#E0A84A;--ocre-pale:#EFD7A6;
+    --gris:#A99F95;--gris-2:#8E847A;--brun:#B99A74}
+  .aq-layer{position:absolute;left:0;top:0;width:1920px;height:1080px}
+  /* sols : le bureau sous le carnet (clair), l'intérieur de la goutte (pivot) */
+  .aq-desk{background:var(--paper-dark)}
+  .aq-ink-ground{background:radial-gradient(120% 90% at 50% 45%,#1E1613 0%,var(--canvas) 55%,var(--canvas-2) 100%)}
+  .aq-grain{pointer-events:none;mix-blend-mode:multiply;opacity:.55;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='.012 .018' numOctaves='3' seed='7'/><feColorMatrix values='0 0 0 0 .93  0 0 0 0 .88  0 0 0 0 .78  0 0 0 .55 0'/></filter><rect width='400' height='400' filter='url(%23p)'/></svg>")}
+  .aq-fibres{pointer-events:none;mix-blend-mode:multiply;opacity:.35;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 .4  0 0 0 0 .3  0 0 0 0 .25  0 0 0 .22 0'/></filter><rect width='300' height='300' filter='url(%23f)'/></svg>")}
+  /* kit caméra : #stage > #drift > #cam > #world (le monde fait 14 700 × 1 080 u, 8 pages) */
+  .aq-stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden}
+  .aq-drift,.aq-cam{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:960px 540px}
+  .aq-world{position:absolute;left:0;top:0;transform-origin:0 0}
+  .aq-page{position:absolute;top:0;width:1700px;height:1080px;background:var(--paper);box-shadow:0 18px 40px rgba(58,42,36,.14)}
+  .aq-spine{position:absolute;top:0;width:34px;height:1080px;background:linear-gradient(90deg,rgba(58,42,36,0) 0,rgba(58,42,36,.16) 45%,rgba(58,42,36,.28) 50%,rgba(58,42,36,.16) 55%,rgba(58,42,36,0) 100%)}
+  .aq-svg{position:absolute;left:0;top:0;overflow:visible}
+  .aq-note{position:absolute;font:600 34px/1.2 "Caveat",cursive;color:var(--ink-2);white-space:nowrap}
+  /* fenêtre de chat générique (le contenu HTML est posé par la séquence) */
+  .aq-chat{position:absolute;font-family:"DM Sans",sans-serif;color:var(--ink)}
+  .aq-chat .t{position:absolute;left:28px;top:14px;font:600 16px/1 "DM Sans";color:var(--ink-2);letter-spacing:.08em}
+  .aq-chat .m,.aq-chat .r{position:absolute;left:28px;right:28px;padding:14px 20px;font:400 22px/30px "DM Sans";border-radius:12px 12px 12px 4px}
+  .aq-chat .m{background:rgba(201,138,46,.14)} .aq-chat .r{background:rgba(169,159,149,.16);border-radius:12px 12px 4px 12px}
+  .aq-chat.pain .m{background:rgba(169,159,149,.10)} .aq-chat.pain .r{color:var(--gris-2)}
+  .aq-chat b{display:block;font:600 16px/1 "DM Sans";letter-spacing:.08em;margin-bottom:8px;color:var(--ocre)} .aq-chat .r b{color:var(--gris-2)}
+  .aq-chat .in{position:absolute;left:28px;right:28px;bottom:20px;height:52px;border-radius:26px;background:rgba(58,42,36,.06);font:400 20px/52px "DM Sans";color:var(--ink-light);padding-left:22px}
+  .aq-chat .in i{position:absolute;right:10px;top:8px;width:36px;height:36px;border-radius:50%;background:var(--accent)}
+  /* sous-titre : la phrase de la voix, bas centre (bande y 890 à 980), mot par mot */
+  .aq-sub{position:absolute;left:0;top:896px;width:1920px;text-align:center;font:600 62px/74px "DM Sans",sans-serif;letter-spacing:-.005em;
+    color:var(--ink);white-space:nowrap;text-shadow:0 2px 14px rgba(244,235,221,.8)}
+  .aq-sw{display:inline-block;opacity:0;position:relative}
+  .aq-wt{position:relative;z-index:1}
+  .aq-box{position:absolute;left:-.14em;right:-.14em;top:.04em;bottom:.02em;background:var(--accent);border-radius:4px;transform:scaleX(0);transform-origin:0 50%;z-index:0}
+  .aq-sw.boxed{color:#F8F1E6}
+  .aq-stroke{position:absolute;left:-2%;right:-4%;bottom:-7px;height:9px;border-radius:50%;transform:scaleX(0) rotate(-1.2deg);transform-origin:0 50%;
+    background:linear-gradient(90deg,transparent,var(--ocre) 12%,var(--ocre) 70%,transparent);opacity:.9}
+  /* moment typographique du pivot (le sous-titre se tait) */
+  .aq-type{position:absolute;left:0;top:0;width:1920px;height:1080px;display:grid;place-items:center;font:600 84px/1.1 "Fraunces",serif;letter-spacing:-.01em;color:var(--paper)}
+  .aq-type .aq-stroke{bottom:-4px;height:10px;opacity:.95}
+  /* curseur et onde du clic */
+  .aq-cursor{position:absolute;left:0;top:0;width:34px;height:44px;filter:drop-shadow(0 3px 4px rgba(58,42,36,.3))}
+  .aq-ripple{position:absolute;width:120px;height:120px;margin:-60px 0 0 -60px;border:4px solid rgba(122,30,46,.55);border-radius:50%;opacity:0}
+  /* ===================== CARNET : fin du bloc CSS à copier ===================== */
+
+    /* ===================== séquence 05-ailleurs (préfixe p05) ===================== */
+    #p05-root{position:relative;width:1920px;height:1080px;overflow:hidden;font-family:"DM Sans",sans-serif;-webkit-font-smoothing:antialiased}
+  </style>
+
+  <div id="p05-root" data-composition-id="05-ailleurs" data-width="1920" data-height="1080" data-duration="3.00">
+
+    <!-- sol : le bureau paper-dark sous le carnet (ground-paper) -->
+    <div id="p05-ground" class="clip aq-layer aq-desk" data-start="0" data-duration="3.00" data-track-index="0"></div>
+
+    <!-- le carnet sous la caméra : #stage > #drift > #cam > #world (bord de P2, page P3 : porte, panneau, tableau, main à la craie, élèves, goutte ; bord de P4 ; posés par le script) -->
+    <div id="p05-scene" class="clip aq-layer" data-start="0" data-duration="3.00" data-track-index="1" data-layout-allow-overflow>
+      <div class="aq-stage" id="p05-stage"><div class="aq-drift" id="p05-drift"><div class="aq-cam" id="p05-cam"><div class="aq-world" id="p05-world"></div></div></div></div>
+    </div>
+
+    <!-- grain 55 % et fibres 35 % du papier -->
+    <div id="p05-grain" class="clip aq-layer aq-grain" data-start="0" data-duration="3.00" data-track-index="2"></div>
+    <div id="p05-fibres" class="clip aq-layer aq-fibres" data-start="0" data-duration="3.00" data-track-index="3"></div>
+
+    <!-- la phrase de la voix, bas centre, mot par mot (temps locaux) -->
+    <div id="p05-subs" class="clip aq-layer" data-start="0" data-duration="3.00" data-track-index="4" data-layout-allow-overflow>
+      <div id="p05-s1" class="aq-sub"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var FID = "05-ailleurs", DUR = 3.00;
+      var root = document.getElementById("p05-root");
+      function $(id) { return root.querySelector("#p05-" + id); }
+
+/* ===================== CARNET : début du kit JS à copier ===================== */
+const AQ = (() => {
+  const NS = "http://www.w3.org/2000/svg";
+  const C = { paper:"#F4EBDD", paper2:"#EDE1CF", desk:"#E6D8C2", canvas:"#17110F", ink:"#3A2A24", ink2:"#6B5A52", inkLight:"#9C8C83",
+    accent:"#7A1E2E", accentLight:"#9B2F3F", accentPale:"#C98A93", ocre:"#C98A2E", ocre2:"#E0A84A", ocrePale:"#EFD7A6", gris:"#A99F95", gris2:"#8E847A", brun:"#B99A74" };
+  const PAGE_W = 1700, GAP = 34, STEP = PAGE_W + GAP;                         // 8 pages : centre cx(k) = 850 + (k - 1) × 1734
+  const cx = k => 850 + (k - 1) * STEP, x0 = k => (k - 1) * STEP;
+  const FRAMING = { P1:[850,540,1.0], lampe:[430,600,1.6], ecranP1:[760,575,1.55], P2:[2584,540,1.0], copie:[2560,560,1.3], P3:[4318,540,1.0],
+    double:[3451,560,0.62], P4:[6052,540,1.0], P5:[7786,540,1.0], ecran:[7786,470,1.25], bulles:[7786,860,1.5], P6:[9520,540,1.0],
+    P7:[11254,540,1.0], carnet:[11254,430,1.4], mains:[11254,640,1.1], P8:[12988,540,1.0], signature:[12988,400,1.15], bouton:[12988,600,1.0] };
+  const rnd = seed => { let s = seed * 9301 + 49297; return () => { s = (s * 9301 + 49297) % 233280; return s / 233280; }; };
+  function el(name, attrs, parent) { const e = document.createElementNS(NS, name); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+  function div(cls, style, parent, html) { const d = document.createElement("div"); d.className = cls; d.style.cssText = style || ""; if (html) d.innerHTML = html; (parent || document.body).appendChild(d); return d; }
+  /* filtres partagés, un jeu par séquence : ids préfixés (aqDefs(svg, "p03") → #p03-aq, #p03-ink…) */
+  function aqDefs(svg, p = "aq") {
+    if (svg.querySelector("#" + p + "-aq")) return;
+    el("defs", {}, svg).innerHTML = `
+      <filter id="${p}-aq" x="-25%" y="-25%" width="150%" height="150%">
+        <feTurbulence type="fractalNoise" baseFrequency=".018" numOctaves="3" seed="11" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="46" xChannelSelector="R" yChannelSelector="G" result="d"/>
+        <feGaussianBlur in="d" stdDeviation="2.2" result="b"/>
+        <feMorphology in="d" operator="erode" radius="10" result="e"/><feGaussianBlur in="e" stdDeviation="8" result="eb"/>
+        <feComposite in="b" in2="eb" operator="arithmetic" k1="0" k2="1" k3="-0.35" k4="0" result="ring"/>
+        <feTurbulence type="fractalNoise" baseFrequency=".6" numOctaves="2" seed="4" result="g"/>
+        <feColorMatrix in="g" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .25 .85" result="gm"/>
+        <feComposite in="ring" in2="gm" operator="in"/>
+      </filter>
+      <filter id="${p}-aq-soft" x="-25%" y="-25%" width="150%" height="150%">
+        <feTurbulence type="fractalNoise" baseFrequency=".012" numOctaves="3" seed="21" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="70" xChannelSelector="R" yChannelSelector="G" result="d"/><feGaussianBlur in="d" stdDeviation="6"/>
+      </filter>
+      <filter id="${p}-ink" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency=".04" numOctaves="2" seed="5" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="5"/>
+      </filter>
+      <filter id="${p}-aq-blur" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="14"/></filter>`;
+    svg.dataset.aqPrefix = p;
+  }
+  const pf = svg => svg.dataset.aqPrefix || "aq";
+  /* une tache organique : rayon r, ondulation w (0 à 1), n sommets, ry aplatissement ; chemin fermé en courbes (déterministe) */
+  function aqBlob(cx, cy, r, seed, w = 0.22, n = 9, ry = 1) {
+    const R = rnd(seed), pts = [];
+    for (let i = 0; i < n; i++) { const a = (i / n) * Math.PI * 2 + (R() - 0.5) * 0.4, k = 1 + (R() - 0.5) * 2 * w; pts.push([cx + Math.cos(a) * r * k, cy + Math.sin(a) * r * k * ry]); }
+    let d = "";
+    for (let i = 0; i < n; i++) {
+      const p0 = pts[(i - 1 + n) % n], p1 = pts[i], p2 = pts[(i + 1) % n], p3 = pts[(i + 2) % n];
+      const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6], c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+      d += (i ? "" : `M${p1[0].toFixed(1)} ${p1[1].toFixed(1)}`) + ` C${c1[0].toFixed(1)} ${c1[1].toFixed(1)} ${c2[0].toFixed(1)} ${c2[1].toFixed(1)} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+    }
+    return d + " Z";
+  }
+  /* un lavis : shape = chemin ou {cx, cy, r, ry, seed, w, n} ; en multiply ; soft = lavis large. transform-origin au centre (pour l'impact ×0,2 → 1) */
+  function aqWash(svg, shape, color, opacity = 0.8, soft = false, parent) {
+    const g = el("g", { filter: `url(#${pf(svg)}-${soft ? "aq-soft" : "aq"})`, opacity, style: "mix-blend-mode:multiply" }, parent || svg);
+    const d = typeof shape === "string" ? shape : aqBlob(shape.cx, shape.cy, shape.r, shape.seed || 1, shape.w, shape.n, shape.ry);
+    const p = el("path", { d, fill: color }, g);
+    if (typeof shape !== "string") { g.style.transformOrigin = `${shape.cx}px ${shape.cy}px`; g.style.transformBox = "view-box"; }
+    g.dataset.color = color; return g;
+  }
+  /* un trait d'encre à main levée ; renvoie le path (sa longueur sert au tracé : stroke-dasharray / dashoffset) */
+  function aqInk(svg, d, width = 5, color = C.ink, parent, extra = {}) {
+    const g = parent || el("g", { filter: `url(#${pf(svg)}-ink)` }, svg);
+    return el("path", Object.assign({ d, fill: "none", stroke: color, "stroke-width": width, "stroke-linecap": "round", "stroke-linejoin": "round" }, extra), g);
+  }
+  /* prépare un trait pour se dessiner : dashoffset 1 = invisible, 0 = complet (tween GSAP sur strokeDashoffset, ou aqDraw(p, k)) */
+  function aqDrawPrep(path) { const L = path.getTotalLength(); path.style.strokeDasharray = `${L} ${L}`; path.style.strokeDashoffset = L; path.dataset.len = L; return path; }
+  function aqDraw(path, k) { path.style.strokeDashoffset = (+path.dataset.len) * (1 - Math.max(0, Math.min(1, k))); }
+  /* une goutte (signature 1) : tache ronde à 7 sommets ; aqDropFall la fait tomber (états à tweener par GSAP : scale, y, filter) */
+  function aqDrop(svg, x, y, r, color, seed = 3, parent) { return aqWash(svg, { cx: x, cy: y, r, seed, w: 0.18, n: 7 }, color, 0.85, false, parent); }
+  /* séchage (signature 2) : k 0 (humide : bord doux, pas de granulation, ×1,04) → 1 (sec : anneau foncé, granulation, ×1) */
+  function aqDry(g, k) { k = Math.max(0, Math.min(1, k)); g.style.transform = `scale(${1.04 - 0.04 * k})`; g.style.opacity = (+g.dataset.op || 0.8) * (0.7 + 0.3 * k); g.style.filter = k < 0.5 ? `url(#${g.dataset.pf || "aq"}-aq-soft)` : `url(#${g.dataset.pf || "aq"}-aq)`; }
+  /* effacement par le centre (séchage inversé) : k 0 (entière) → 1 (disparue) ; la couleur pâlit vers le gris en chemin */
+  function aqErase(g, k) { k = Math.max(0, Math.min(1, k)); g.style.clipPath = `circle(${(1 - k) * 75}% at 50% 50%)`; g.querySelector("path").setAttribute("fill", k < 0.5 ? g.dataset.color : C.gris); g.style.opacity = (+g.dataset.op || 0.8) * (1 - k * 0.6); }
+  /* silhouette peinte : buste en dôme + tête ronde, h de haut ; pose "dos", "penche", "bras-leve" */
+  function aqFigure(svg, x, y, h, color, seed = 5, pose = "dos", parent) {
+    const g = el("g", {}, parent || svg); const head = h * 0.16, sh = y + head * 2.4, bw = h * 0.3, bot = y + h, tilt = pose === "penche" ? h * 0.08 : 0;
+    aqWash(svg, `M${x - bw} ${bot} L${x - bw} ${sh + h * 0.12} C ${x - bw} ${sh - h * 0.1} ${x - bw * 0.5 + tilt} ${sh - h * 0.14} ${x + tilt} ${sh - h * 0.12} C ${x + bw * 0.5 + tilt} ${sh - h * 0.14} ${x + bw} ${sh - h * 0.1} ${x + bw} ${sh + h * 0.12} L${x + bw} ${bot} Z`, color, 0.82, false, g);
+    if (pose === "bras-leve") aqWash(svg, `M${x + bw * 0.7} ${sh + h * 0.06} C ${x + bw * 1.1} ${sh - h * 0.1} ${x + bw * 1.25} ${y - h * 0.02} ${x + bw * 1.3} ${y - h * 0.16} L ${x + bw * 1.42} ${y - h * 0.12} C ${x + bw * 1.36} ${y + h * 0.02} ${x + bw * 1.2} ${sh - h * 0.02} ${x + bw * 0.86} ${sh + h * 0.12} Z`, color, 0.82, false, g);
+    aqWash(svg, { cx: x + tilt * 1.4, cy: y + head, r: head, seed: seed + 1, w: 0.1, n: 8 }, color, 0.9, false, g);
+    return g;
+  }
+  /* fenêtre de chat générique : cadre à l'encre + barre ; le contenu HTML (.aq-chat) est posé par la séquence au même endroit */
+  function aqWindow(svg, x, y, w, h, opts = {}) {
+    const g = el("g", { transform: `translate(${x} ${y})` }, opts.parent || svg);
+    el("rect", { x: 0, y: 0, width: w, height: h, rx: 14, fill: opts.fill || "rgba(251,246,236,.92)" }, g);
+    const ink = el("g", { filter: `url(#${pf(svg)}-ink)` }, g);
+    aqInk(svg, `M14 0 L${w - 14} 0 Q${w} 0 ${w} 14 L${w} ${h - 14} Q${w} ${h} ${w - 14} ${h} L14 ${h} Q0 ${h} 0 ${h - 14} L0 14 Q0 0 14 0 Z`, opts.stroke || 4.5, opts.color || C.ink, ink);
+    if (opts.bar !== false) aqInk(svg, `M0 ${opts.barH || 48} L${w} ${opts.barH || 48}`, 3, opts.color || C.ink, ink);
+    return g;
+  }
+  /* la lampe de bureau à l'encre, pied en (x, y) ; renvoie {g, glow} ; glow = lavis ocre-2 doux (éteinte : aqErase(glow, 1)) */
+  function aqLamp(svg, x, y, scale = 1, lit = true, parent) {
+    const g = el("g", { transform: `translate(${x} ${y}) scale(${scale})` }, parent || svg);
+    const glow = aqWash(svg, { cx: 330, cy: -40, r: 300, seed: 2, w: 0.14, n: 10, ry: 0.72 }, C.ocre2, 0.75, true, g);
+    const ink = el("g", { filter: `url(#${pf(svg)}-ink)` }, g);
+    aqInk(svg, "M0 0 L0 -230 Q0 -290 70 -310 L180 -340", 6, C.ink, ink); aqInk(svg, "M150 -360 L220 -400 L270 -320 Z", 6, C.ink, ink); aqInk(svg, "M-50 2 L50 2", 6, C.ink, ink);
+    if (!lit) aqErase(glow, 1);
+    return { g, glow };
+  }
+  /* le portable à l'encre, centre de l'écran en (x, y) : écran 620 × 366, clavier ; renvoie {g, screenGlow} */
+  function aqLaptop(svg, x, y, pain = false, parent) {
+    const g = el("g", { transform: `translate(${x - 760} ${y - 575})` }, parent || svg);
+    const glow = aqWash(svg, { cx: 760, cy: 580, r: 230, seed: 4, w: 0.12, n: 9, ry: 0.6 }, pain ? C.gris : C.ocrePale, pain ? 0.6 : 0.9, false, g);
+    const ink = el("g", { filter: `url(#${pf(svg)}-ink)` }, g);
+    aqInk(svg, "M452 392 L1052 392 L1072 758 L430 758 Z", 5, C.ink, ink); aqInk(svg, "M400 760 L1100 760 L1130 800 L370 800 Z", 5, C.ink, ink); aqInk(svg, "M430 772 L1070 772", 2.5, C.inkLight, ink);
+    return { g, glow };
+  }
+  /* le stylo rouge, posé en (x, y), angle a ; corps lavis accent-light + cerne */
+  function aqPen(svg, x, y, a = -34, parent) {
+    const g = el("g", { transform: `translate(${x} ${y}) rotate(${a})` }, parent || svg);
+    aqWash(svg, "M-180 -10 L180 -10 L180 10 L-180 10 Z", C.accentLight, 0.9, false, g);
+    aqInk(svg, "M-180 -10 L180 -10 L180 10 L-180 10 Z M180 -10 L220 0 L180 10", 3.5, C.ink, el("g", { filter: `url(#${pf(svg)}-ink)` }, g));
+    return g;
+  }
+  /* une page du carnet (k = 1 à 8) dans #world, et la reliure à sa droite ; renvoie la page (les objets y vont en coordonnées PAGE : x - x0(k)) */
+  function aqPage(world, k) {
+    const p = div("aq-page", `left:${x0(k)}px`, world); p.dataset.page = k;
+    if (k < 8) div("aq-spine", `left:${x0(k) + PAGE_W}px`, world);
+    return p;
+  }
+  /* caméra : amène (x, y) du monde au centre du cadre à l'échelle s ; blur en px sur #cam */
+  function aqCam(world, cam, x, y, s, blur = 0) {
+    world.style.transform = `translate(${960 - x}px, ${540 - y}px)`; world.style.transformOrigin = `${x}px ${y}px`;
+    cam.style.transform = `scale(${s})`; cam.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : "none";
+  }
+  /* sous-titre mot par mot : words = [["Dimanche,", 0.02, "box"], ["vingt-trois", 0.74], ...] ; renvoie les spans .aq-sw (GSAP : opacity, y, blur ; .aq-box scaleX ; .aq-stroke scaleX) ; la boîte est sous le texte (.aq-wt), aucun z-index négatif */
+  function aqSubtitle(el_, words) {
+    el_.innerHTML = words.map(([w, , mark]) => `<span class="aq-sw${mark === "box" ? " boxed" : ""}">${mark === "box" ? '<i class="aq-box"></i>' : ""}<span class="aq-wt">${w}</span>${mark === "stroke" ? '<i class="aq-stroke"></i>' : ""}</span>`).join(" ");
+    return [...el_.querySelectorAll(".aq-sw")];
+  }
+  /* le curseur (flèche papier cernée d'encre) ; position par transform translate */
+  function aqCursor(parent) { return div("aq-cursor", "", parent, `<svg viewBox="0 0 34 44" width="34" height="44"><path d="M3 2 L31 24 L19 26 L26 40 L20 43 L13 29 L3 38 Z" fill="#F8F1E6" stroke="#3A2A24" stroke-width="2.5" stroke-linejoin="round"/></svg>`); }
+  return { C, NS, PAGE_W, GAP, STEP, cx, x0, FRAMING, rnd, el, div, aqDefs, aqBlob, aqWash, aqInk, aqDrawPrep, aqDraw, aqDrop, aqDry, aqErase, aqFigure, aqWindow, aqLamp, aqLaptop, aqPen, aqPage, aqCam, aqSubtitle, aqCursor };
+})();
+/* ===================== CARNET : fin du kit JS à copier ===================== */
+
+      var K = AQ.C, el = AQ.el, aqDefs = AQ.aqDefs, aqWash = AQ.aqWash, aqInk = AQ.aqInk, aqDrawPrep = AQ.aqDrawPrep, aqDraw = AQ.aqDraw,
+          aqDrop = AQ.aqDrop, aqFigure = AQ.aqFigure, aqPage = AQ.aqPage, aqCam = AQ.aqCam, aqSubtitle = AQ.aqSubtitle;
+
+      /* ===================== le monde : le bord de P2, la page P3, le bord de P4 ===================== */
+      var world = $("world"), cam = $("cam");
+      aqPage(world, 2); aqPage(world, 3); aqPage(world, 4);
+      var svg = el("svg", { class: "aq-svg", width: 7000, height: 1080 }, world); aqDefs(svg, "p05");
+      function inkG(parent) { return el("g", { filter: "url(#p05-ink)" }, parent || svg); }
+      function originAt(g, x, y) { g.style.transformOrigin = x + "px " + y + "px"; g.style.transformBox = "view-box"; return g; }
+      function rectD(x, y, w, h) { return "M" + (x - w / 2) + " " + (y - h / 2) + " L" + (x + w / 2) + " " + (y - h / 2) + " L" + (x + w / 2) + " " + (y + h / 2) + " L" + (x - w / 2) + " " + (y + h / 2) + " Z"; }
+      /* un tableau (chalkboard) : rebord brun, lavis gris-lavis-2 à 85 %, cadre d'encre 6 px ; centré en (x, y), w × h ; renvoie {g, ledge} */
+      function chalkboard(x, y, w, h, parent) {
+        var g = el("g", {}, parent);
+        var ledge = inkG(g); el("path", { d: "M" + (x - w / 2 - 24) + " " + (y + h / 2) + " L" + (x + w / 2 + 24) + " " + (y + h / 2) + " L" + (x + w / 2 + 32) + " " + (y + h / 2 + 22) + " L" + (x - w / 2 - 32) + " " + (y + h / 2 + 22) + " Z", fill: K.brun, opacity: 0.8, style: "mix-blend-mode:multiply" }, ledge);
+        aqWash(svg, rectD(x, y, w - 48, h - 48), K.gris2, 0.85, false, g);
+        aqInk(svg, rectD(x, y, w, h), 6, K.ink, inkG(g));
+        return { g: g, ledge: ledge };
+      }
+      /* un téléphone : une tache 26 × 40 (ocre allumé, gris-lavis-2 éteint) centrée en (x, y) */
+      function phone(x, y, lit, parent) { return originAt(aqWash(svg, rectD(x, y, 26, 40), lit ? K.ocre : K.gris2, lit ? 0.85 : 0.5, false, parent), x, y); }
+      /* un trait de lavis (la main) */
+      function washStroke(d, w, color, op, parent) {
+        var g = el("g", { filter: "url(#p05-aq)", opacity: op, style: "mix-blend-mode:multiply" }, parent);
+        el("path", { d: d, fill: "none", stroke: color, "stroke-width": w, "stroke-linecap": "round" }, g); return g;
+      }
+
+      /* ---- P2 (1734 à 3434) : seul son bord droit paraît à l'image de départ (flou du cran) : la pénombre, lavis gris-lavis à 35 % ---- */
+      var p2 = el("g", {}, svg);
+      aqWash(svg, "M1690 -60 L3445 -60 L3445 1140 L1690 1140 Z", K.gris, 0.35, true, p2);
+
+      /* ---- P3 (3468 à 5168) : la porte et le panneau à gauche (état final de la séquence 04), le tableau et les six élèves à droite ---- */
+      // la porte : rectangle d'encre 420 × 640 centré à (3900, 540), bord gauche en avant-plan flou (6 px), la poignée à (4070, 560), le lavis gris à 15 %
+      var doorG = originAt(el("g", {}, svg), 3900, 540);
+      var doorL = inkG(doorG); aqInk(svg, "M3690 860 L3690 220", 6, K.ink, doorL); doorL.style.filter = "blur(6px)";
+      var doorR = inkG(doorG); aqInk(svg, "M3690 220 L4110 220 L4110 860 L3690 860", 6, K.ink, doorR);
+      var handleG = inkG(doorG); aqInk(svg, "M4052 552 Q4088 548 4088 560 Q4088 572 4052 568", 5, K.ink, handleG); aqInk(svg, "M4052 560 L4066 560", 5, K.ink, handleG);
+      aqWash(svg, "M3696 226 L4104 226 L4104 854 L3696 854 Z", K.gris, 0.15, false, doorG);
+      // la fente de 40 u : la lueur ocre-pale 40 × 600 à (4130, 540), avivée (0,85) et débordante (×1,3 depuis 4150) ; deux écrans ocre dans la fente
+      var glowOuter = originAt(el("g", {}, svg), 4150, 540); glowOuter.style.transform = "scaleX(1.3)"; glowOuter.style.opacity = 0.85;
+      aqWash(svg, "M4110 240 L4150 240 L4150 840 L4110 840 Z", K.ocrePale, 1, false, glowOuter);
+      phone(4130, 500, true, svg); phone(4130, 610, true, svg);
+      // le panneau gondolé de 4° : carte paper 260 × 140 à (3900, 380), la note Caveat « IA interdite », le cercle barré accent tracé, quatre coins de ruban paper-2
+      var signG = originAt(el("g", {}, svg), 3900, 380); signG.style.transform = "rotate(4deg)";
+      el("rect", { x: 3770, y: 310, width: 260, height: 140, fill: K.paper, style: "filter:drop-shadow(0 5px 12px rgba(58,42,36,.18))" }, signG);
+      var noteT = el("text", { x: 3782, y: 393, fill: K.ink2, transform: "rotate(-2 3860 382)", style: "font:600 34px/1.2 'Caveat',cursive" }, signG); noteT.textContent = "IA interdite";
+      var circG = inkG(signG);
+      aqInk(svg, "M4034 380 A50 50 0 1 1 4033.9 379.9", 6, K.accent, circG); aqInk(svg, "M4019 345 L3949 415", 6, K.accent, circG);
+      [[3770, 310, -45], [4030, 310, 45], [3770, 450, 45], [4030, 450, -45]].forEach(function (t) {
+        el("rect", { x: t[0] - 26, y: t[1] - 9, width: 52, height: 18, fill: K.paper2, opacity: 0.9, transform: "rotate(" + t[2] + " " + t[0] + " " + t[1] + ")" }, signG);
+      });
+
+      // le tableau-ailleurs : chalkboard 900 × 440 à (4700, 320) (haut 100, bas 540) ; dedans les trois traits de craie (paper à 85 %, 6 px, main levée, aucun mot lisible)
+      var boardG = originAt(el("g", {}, svg), 4700, 320);
+      var board = chalkboard(4700, 320, 900, 440, boardG);
+      var CHALK = ["M4330 236 C4360 206 4390 262 4420 232 C4450 202 4470 258 4500 230 C4530 204 4560 254 4590 226 C4605 214 4615 220 4625 224",
+                   "M4330 312 C4370 282 4400 338 4440 306 C4480 276 4510 336 4550 304 C4590 274 4620 332 4660 302 C4700 274 4730 328 4770 300",
+                   "M4330 388 C4365 360 4390 410 4425 384 C4460 358 4485 408 4520 382"];
+      var chalkGs = CHALK.map(function () { return el("g", { filter: "url(#p05-ink)", opacity: 0.85 }, boardG); });
+      var chalk = CHALK.map(function (d, i) { return aqDrawPrep(aqInk(svg, d, 6, K.paper, chalkGs[i])); });
+      var chalkEnd = chalk.map(function (p) { var L = +p.dataset.len, a = p.getPointAtLength(0), b = p.getPointAtLength(L); return { x0: a.x, y0: a.y, x1: b.x, y1: b.y }; });
+
+      // six élèves (aqFigure 150 u, pose 'dos', gris-lavis) ; chacun : buste + tête (la tête pivote autour de la nuque), la lueur ocre de la poche (éteinte)
+      var PUPX = [4330, 4480, 4630, 4780, 4930, 5080], PUPY = [640, 700, 660, 720, 650, 710];
+      var pupils = PUPX.map(function (x, n) {
+        var g = aqFigure(svg, x, PUPY[n], 150, K.gris, 50 + n, "dos", svg);
+        var ws = Array.prototype.slice.call(g.querySelectorAll("g"));
+        originAt(ws[1], x - 16, PUPY[n] + 50);
+        var pk = phone(x, PUPY[n] + 55, true, svg); pk.style.opacity = 0;
+        return { g: g, bust: ws[0], head: ws[1], pocket: pk };
+      });
+
+      // la main à la craie (hand-chalk) : lavis ocre-pale + cerne d'encre 4 px, vue de dessus, 220 u, la craie paper 60 × 12 ; coordonnées locales, pointe de la craie à l'origine
+      var handG = el("g", {}, svg);
+      washStroke("M96 108 L150 172", 60, K.ocrePale, 0.9, handG);                                   // le poignet, vers le bas droit
+      aqWash(svg, { cx: 66, cy: 60, r: 46, seed: 31, w: 0.14, n: 9, ry: 0.92 }, K.ocrePale, 0.9, false, handG);   // la paume
+      washStroke("M44 44 L16 22", 20, K.ocrePale, 0.9, handG);                                       // index (tient la craie)
+      washStroke("M58 36 L34 10", 20, K.ocrePale, 0.9, handG);                                       // majeur
+      washStroke("M74 34 L58 6", 18, K.ocrePale, 0.9, handG);                                        // annulaire
+      washStroke("M90 42 L84 14", 16, K.ocrePale, 0.9, handG);                                       // auriculaire
+      washStroke("M50 76 L22 58", 22, K.ocrePale, 0.9, handG);                                       // pouce
+      el("rect", { x: -30, y: -6, width: 60, height: 12, rx: 4, fill: K.paper, stroke: K.inkLight, "stroke-width": 2, transform: "translate(23 19) rotate(40)" }, handG);   // la craie
+      aqInk(svg, "M118 196 C96 160 76 130 60 100 C50 88 30 74 20 62 C28 56 44 70 54 84 C44 62 30 36 28 20 C38 14 54 40 62 56 C58 36 54 14 58 6 C70 4 80 36 84 54 C86 36 86 16 94 14 C104 20 106 50 104 66 C110 54 116 46 124 48 C128 60 126 86 120 106 C132 130 150 164 160 198", 4, K.ink, inkG(handG));
+
+      // la goutte accent au bas de la page (5050, 820), r 30, seed 5 : enveloppe pour la croissance et la plongée ; dedans, le noir radial du pivot
+      var dropW = originAt(el("g", {}, svg), 5050, 820);
+      var drop = aqDrop(svg, 5050, 820, 30, K.accent, 5, dropW);
+      el("defs", {}, svg).innerHTML = '<radialGradient id="p05-dark" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#17110F" stop-opacity="1"/><stop offset=".45" stop-color="#17110F" stop-opacity=".92"/><stop offset="1" stop-color="#17110F" stop-opacity="0"/></radialGradient>';
+      var dark = el("circle", { cx: 5050, cy: 820, r: 27, fill: "url(#p05-dark)" }, dropW);
+
+      /* ---- sous-titre (aqSubtitle du kit) : la phrase reste et se complète ---- */
+      function glue(a) { var n = a.nextSibling; if (n && n.nodeType === 3) n.parentNode.removeChild(n); }
+      var W1S = [["Le", 0.16], ["cours", 0.38], ["avance", 0.56], ["au", 0.90], ["tableau,", 1.12], ["la", 1.68], ["classe", 1.92], ["est", 2.16], ["ailleurs", 2.40, "box"], [".", 2.40]];
+      var s1 = $("s1");
+      var sp1 = aqSubtitle(s1, W1S);
+      glue(sp1[8]);
+
+      /* ===================== état : proxies lus par UN seul render() ===================== */
+      var CAM = { x: 4300, y: 540, s: 1.0, b: 7 };          // caméra (handoff_in : cam(4300, 540, 1.0) flou 7, en plein cran vers la droite)
+      var X1 = 4700 + 12 * 2.60, S1 = 1.05 * 1.026;         // la caméra à 2.74, fin de la dérive (x +12 u/s, échelle +1 %/s)
+      var DX0 = (5050 - X1) * S1, DY0 = (820 - 520) * S1;  // décalage écran de la goutte au départ de la plongée
+      var PL = { q: 0, c: 0 };                              // la plongée : q 0 → 1 (power3.in) monte l'échelle caméra à 3 ; c 0 → 1 (power2.in) glisse la goutte au centre ; la goutte elle-même s'ouvre ×30 (même image qu'une caméra à 14, sans rastériser le monde 14 fois plus grand)
+      var DOF = { pup: 0, board: 0 };                       // profondeur de champ : les élèves au fond au plan 1, le tableau au fond au plan 2
+      var HP = { x: 4590, y: 886 };                         // la pointe de la craie (hors cadre en bas à droite avant l'entrée)
+      var ST = [{ k: 0 }, { k: 0 }, { k: 0 }];              // les trois traits de craie se tracent
+      var BD = { k: 1, lo: 0.8 };                           // le tableau se tasse, le rebord fonce
+      var PK = PUPX.map(function () { return { k: 0.2, o: 0 }; });   // les lueurs des poches (impact)
+      var TL = PUPX.map(function () { return { r: 0 }; });           // les têtes se penchent
+      var SAG = { y: 0 };                                   // les bustes s'affaissent
+      var ER = { k: 0 };                                    // la craie pâlit (loi d'opacité de aqErase)
+      var DW = { s: 1 };                                    // la goutte grossit d'un cran puis s'ouvre dans la plongée
+      var DK = { o: 0 };                                    // le centre de la goutte s'assombrit vers canvas
+      function blur(v) { return v > 0.05 ? "blur(" + v.toFixed(2) + "px)" : "none"; }
+
+      function render() {
+        // la plongée (PL.q > 0) : flou de caméra coupé et filtre aquarelle retiré de la goutte dès la première image ; au coeur (q > 0.5) le décor est masqué (la goutte seule reste), sinon le monde rastérisé 14 fois plus grand bloque le rendu
+        var plunge = PL.q > 0, heavy = PL.q > 0.5;
+        if (plunge) { var cs = S1 + (3.0 - S1) * PL.q, cr = 1 - PL.c; aqCam(world, cam, 5050 - DX0 * cr / cs, 820 - DY0 * cr / cs, cs, 0); }
+        else aqCam(world, cam, CAM.x, CAM.y, CAM.s, CAM.b);
+        p2.style.display = (CAM.x > 4600 || plunge) ? "none" : "";
+        doorG.style.display = heavy ? "none" : ""; glowOuter.style.display = heavy ? "none" : ""; signG.style.display = heavy ? "none" : "";
+        boardG.style.display = heavy ? "none" : ""; handG.style.display = heavy ? "none" : "";
+        pupils.forEach(function (p) { p.g.style.display = heavy ? "none" : ""; p.pocket.style.display = heavy ? "none" : ""; });
+        // profondeur de champ
+        boardG.style.filter = blur(DOF.board);
+        pupils.forEach(function (p) { p.g.style.filter = blur(DOF.pup); });
+        // le tableau et la craie
+        boardG.style.transform = "scale(" + BD.k.toFixed(4) + ")"; board.ledge.style.opacity = BD.lo.toFixed(3);
+        chalk.forEach(function (p, i) { aqDraw(p, ST[i].k); chalkGs[i].style.opacity = (0.85 * (1 - ER.k * 0.6)).toFixed(3); });
+        // la main : sa pointe suit le trait en cours, sinon le proxy HP
+        var tx = HP.x, ty = HP.y;
+        chalk.forEach(function (p, i) { if (ST[i].k > 0 && ST[i].k < 1) { var pt = p.getPointAtLength((+p.dataset.len) * ST[i].k); tx = pt.x; ty = pt.y; } });
+        handG.style.transform = "translate(" + tx.toFixed(2) + "px, " + ty.toFixed(2) + "px)";
+        // les élèves : lueur de poche, tête penchée, buste affaissé
+        pupils.forEach(function (p, n) {
+          p.pocket.style.transform = "scale(" + PK[n].k.toFixed(4) + ")"; p.pocket.style.opacity = (0.85 * PK[n].o).toFixed(3);
+          p.head.style.transform = "translate(0px, " + SAG.y.toFixed(2) + "px) rotate(" + TL[n].r.toFixed(3) + "deg)";
+          p.bust.style.transform = "translate(0px, " + SAG.y.toFixed(2) + "px)";
+        });
+        // la goutte
+        dropW.style.transform = "scale(" + DW.s.toFixed(4) + ")";
+        drop.setAttribute("filter", plunge ? "none" : "url(#p05-aq)");
+        dark.style.opacity = DK.o;
+      }
+
+      /* ===================== la timeline unique, en pause ===================== */
+      var tl = gsap.timeline({ paused: true, onUpdate: render });
+      function ft(target, from, to, pos) { if (pos > 0) to.immediateRender = false; tl.fromTo(target, from, to, pos); }
+      function tw(target, from, to, dur, ease, pos) { var o = {}, k; for (k in to) o[k] = to[k]; o.duration = dur; o.ease = ease; ft(target, from, o, pos); }
+
+      /* ---- piste caméra ---- */
+      // 0.00 à 0.14 fin du cran : cubique à départ +900 u/s en x (la couture avec la séquence 04) et arrivée nulle sur cam(4700, 520, 1.05), flou 7 → 0
+      var kin = 900 * 0.14 / (4700 - 4300), ia = kin - 2, ib = 1 - kin - ia;
+      var CRAN_IN = function (p) { return ia * p * p * p + ib * p * p + kin * p; };
+      tw(CAM, { x: 4300, y: 540, s: 1.0 }, { x: 4700, y: 520, s: 1.05 }, 0.14, CRAN_IN, 0);
+      tw(CAM, { b: 7 }, { b: 0 }, 0.14, "power2.out", 0);
+      // 0.14 à 2.74 dérive x +12 u/s, échelle +1 %/s
+      tw(CAM, { x: 4700, s: 1.05 }, { x: X1, s: S1 }, 2.60, "none", 0.14);
+      // 2.74 à 3.00 plongée dans la goutte vers cam(5050, 820, 14) : échelle caméra power3.in (plafonnée à 3), glissement de la goutte au centre power2.in
+      tw(PL, { q: 0 }, { q: 1 }, 0.26, "power3.in", 2.74);
+      tw(PL, { c: 0 }, { c: 1 }, 0.26, "power2.in", 2.74);
+
+      /* ---- scène 1 (0.00 à 1.60) : la craie avance au tableau ---- */
+      // profondeur : les six élèves passent au fond (3 px) pendant que la main arrive ; le tableau reste net
+      tw(DOF, { pup: 0 }, { pup: 3 }, 0.30, "power2.inOut", 0.14);
+      // 0.20 la main à la craie entre par le bas droit (y +650, x +260 → la pointe au départ du premier trait, 0,18 s power2.out)
+      tw(HP, { x: 4590, y: 886 }, { x: chalkEnd[0].x0, y: chalkEnd[0].y0 }, 0.18, "power2.out", 0.20);
+      // 0.38 « cours » : premier trait (0,14 s) ; 0.52 saut au deuxième ; 0.56 « avance » : deuxième trait (0,28 s) ; 0.84 saut au troisième ; 0.90 « au » : troisième trait, plus court (0,20 s)
+      [[0.38, 0.14], [0.56, 0.28], [0.90, 0.20]].forEach(function (t, i) {
+        tw(ST[i], { k: 0 }, { k: 1 }, t[1], "power1.inOut", t[0]);
+        tw(HP, { x: chalkEnd[i].x0, y: chalkEnd[i].y0 }, { x: chalkEnd[i].x1, y: chalkEnd[i].y1 }, t[1], "power1.inOut", t[0]);
+        if (i < 2) tw(HP, { x: chalkEnd[i].x1, y: chalkEnd[i].y1 }, { x: chalkEnd[i + 1].x0, y: chalkEnd[i + 1].y0 }, 0.04, "power2.inOut", t[0] + t[1]);
+      });
+      // 1.12 « tableau » : le cadre du tableau se tasse (×1,01 → 1) et le rebord brun fonce (0,2 s)
+      tw(BD, { k: 1.01 }, { k: 1 }, 0.20, "power2.out", 1.12);
+      tw(BD, { lo: 0.8 }, { lo: 1 }, 0.20, "power1.out", 1.12);
+      // 1.30 la main lève la craie (y -10, 0,1 s)
+      tw(HP, { y: chalkEnd[2].y1 }, { y: chalkEnd[2].y1 - 10 }, 0.10, "power2.out", 1.30);
+      // 1.44 la main sort par le bas droit (y +640, x +260, 0,16 s power2.in)
+      tw(HP, { x: chalkEnd[2].x1, y: chalkEnd[2].y1 - 10 }, { x: chalkEnd[2].x1 + 260, y: chalkEnd[2].y1 + 640 }, 0.16, "power2.in", 1.44);
+
+      /* ---- scène 2 (1.60 à 3.00) : les têtes se penchent vers les poches, plongée dans la goutte ---- */
+      // profondeur : les élèves redeviennent nets (1.60), le tableau pâli passe au fond (3 px, 1.68)
+      tw(DOF, { pup: 3 }, { pup: 0 }, 0.30, "power2.inOut", 1.60);
+      tw(DOF, { board: 0 }, { board: 3 }, 0.40, "power2.inOut", 1.68);
+      // 1.68 « la » : la lueur ocre de la première poche s'ouvre (impact ×0,2 → 1, 0,12 s) ; 1.92 « classe » : les cinq autres (0,05 s d'écart)
+      PK.forEach(function (p, n) {
+        var t = n === 0 ? 1.68 : 1.92 + (n - 1) * 0.05;
+        tw(p, { o: 0 }, { o: 1 }, 0.02, "none", t);
+        tw(p, { k: 0.2 }, { k: 1 }, 0.12, "expo.out", t);
+      });
+      // 1.92 « classe » : les six têtes se penchent vers la lueur (rotation 0 → 8°, 0,16 s power2.out, 0,04 s d'écart)
+      TL.forEach(function (t, n) { tw(t, { r: 0 }, { r: 8 }, 0.16, "power2.out", 1.92 + n * 0.04); });
+      // 2.16 « est » : les bustes s'affaissent de 6 u (0,12 s)
+      tw(SAG, { y: 0 }, { y: 6 }, 0.12, "power2.out", 2.16);
+      // 2.40 « ailleurs » : les trois traits de craie pâlissent (loi d'opacité de aqErase, k 0 → 0,6, 0,3 s)
+      tw(ER, { k: 0 }, { k: 0.6 }, 0.30, "power1.inOut", 2.40);
+      // 2.60 la goutte accent grossit d'un cran (×1 → 1,15, 0,12 s)
+      tw(DW, { s: 1 }, { s: 1.15 }, 0.12, "power2.out", 2.60);
+      // 2.74 la goutte s'ouvre avec la plongée (×1,15 → 30, power2.in : à la dernière image (2.967) elle couvre tout le cadre, coins compris)
+      tw(DW, { s: 1.15 }, { s: 30 }, 0.26, "power2.in", 2.74);
+      // 2.88 son centre s'assombrit vers canvas (dégradé radial accent → canvas, opacité 0 → 1, 0,12 s)
+      tw(DK, { o: 0 }, { o: 1 }, 0.12, "power1.inOut", 2.88);
+
+      /* ---- la phrase de la voix : mot par mot (0 → 0,35 → 1), chaque mot 1 image avant son temps ; une boîte ---- */
+      function sayWords(spans, listW) {
+        spans.forEach(function (w, i) {
+          var st = Math.max(0, listW[i][1] - 1 / 30), kw = listW[i][2] === "box";
+          ft(w, { y: 8, filter: "blur(6px)" }, { y: 0, filter: "blur(0px)", duration: 0.14, ease: "power2.out" }, st);
+          if (kw) ft(w, { opacity: 0 }, { opacity: 1, duration: 0.10, ease: "power2.out" }, st);
+          else {
+            ft(w, { opacity: 0 }, { opacity: 0.35, duration: 0.08, ease: "power2.out" }, st);
+            ft(w, { opacity: 0.35 }, { opacity: 1, duration: 0.20, ease: "power1.out" }, st + 0.10);
+          }
+        });
+      }
+      sayWords(sp1, W1S);
+      // la boîte d'« ailleurs » se trace à 2.36
+      var BOXZ = { scaleX: 0, scaleY: 1, rotation: 0, skewX: 0, skewY: 0 }, BOX1 = { scaleX: 1, scaleY: 1, rotation: 0, skewX: 0, skewY: 0, duration: 0.16, ease: "power3.out" };
+      ft(sp1[8].querySelector(".aq-box"), BOXZ, BOX1, 2.36);
+      // la phrase sort avant la couture (opacité 1 → 0, flou 0 → 6 px, 2.72 à 2.86)
+      ft(s1, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 2.72);
+
+      // durée exacte de la séquence
+      tl.set({}, {}, DUR);
+
+      // première image = handoff_in, avant tout seek
+      render();
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[FID] = tl;
+    })();
+  </script>
+</template>

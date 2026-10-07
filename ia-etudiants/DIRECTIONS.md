@@ -10,9 +10,30 @@ autres films (équipes pédagogiques, préparer ses cours), avec leurs propres s
 
 ## Minutage global de la voix (secondes du film)
 
-{{MINUTAGE depuis onsets.json, après le montage}}
+Voix montée : 50.80 s, 16 phrases. Repères complets mot à mot dans `onsets.json`.
 
-## A. « Le carnet » (recommandée)
+| # | Phrase | Début | Fin | Silence après |
+|---|---|---|---|---|
+| 1 | Dimanche 23 heures. | 0.02 | 1.61 | 0.50 s |
+| 2 | Votre étudiant colle le sujet dans une IA. | 2.11 | 4.43 | 0.43 s |
+| 3 | Lundi, il rend trois pages qu'il n'a pas lues. | 4.86 | 7.29 | 2.72 s |
+| 4 | Il a gagné une soirée. | 10.01 | 11.12 | 0.35 s |
+| 5 | Il a perdu la leçon. | 11.47 | 12.54 | 0.37 s |
+| 6 | La note tombe et personne n'a rien appris. | 12.91 | 15.46 | 0.42 s |
+| 7 | La curiosité s'éteint, un copier-coller à la fois. | 15.88 | 18.97 | 0.50 s |
+| 8 | Et si l'IA servait à apprendre | 19.47 | 21.59 | 2.08 s |
+| 9 | Je forme vos étudiants à l'IA. | 23.67 | 25.61 | 0.40 s |
+| 10 | Ils apprennent à la questionner, à la vérifier, à la contredire, à créer avec elle. | 26.01 | 31.21 | 0.39 s |
+| 11 | Ils découvrent ce qu'elle sait et ce qu'elle invente. | 31.60 | 34.25 | 0.47 s |
+| 12 | En équipes, par défis, la curiosité revient. | 34.72 | 37.96 | 0.37 s |
+| 13 | Une méthode et de bons réflexes suffisent. | 38.33 | 40.75 | 0.36 s |
+| 14 | Et le cours redevient le leur. | 41.11 | 42.94 | 0.64 s |
+| 15 | Antoine Contino, formateur IA. | 43.58 | 45.81 | 0.37 s |
+| 16 | Réservez un appel. | 46.18 | 47.26 | 3.54 s |
+
+Repères de montage : gag muet 7,29 à 10,01 s (2,72 s), pivot 21,59 à 23,67 s (2,08 s), carte de fin à partir de 47,26 s (3,54 s de queue, fin à 50,80 s).
+
+## A. « Le carnet » (recommandée, retenue le 7 octobre 2026)
 
 **Concept.** Le film est un carnet de croquis ouvert : la caméra voyage de page en page, de gauche à droite, et chaque
 page est une scène peinte. Les pages de la douleur sont lavées de gris et de bordeaux pâle, les taches s'effacent ;

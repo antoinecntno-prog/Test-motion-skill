@@ -1,5 +1,5 @@
 {
- "duration": 44.04,
+ "duration": 50.6,
  "words": [
   {
    "w": "Mardi",
@@ -7,13 +7,13 @@
    "end": 0.5
   },
   {
-   "w": "soir,",
+   "w": "soir.",
    "start": 0.5,
-   "end": 1.0
+   "end": 0.94
   },
   {
-   "w": "vous",
-   "start": 1.42,
+   "w": "Vous",
+   "start": 1.29,
    "end": 1.56
   },
   {
@@ -29,21 +29,21 @@
   {
    "w": "cours",
    "start": 2.18,
-   "end": 2.34
+   "end": 2.32
   },
   {
    "w": "de",
-   "start": 2.34,
-   "end": 2.56
+   "start": 2.32,
+   "end": 2.58
   },
   {
-   "w": "demain,",
-   "start": 2.56,
-   "end": 2.86
+   "w": "demain.",
+   "start": 2.58,
+   "end": 2.82
   },
   {
-   "w": "le",
-   "start": 3.3,
+   "w": "Le",
+   "start": 3.15,
    "end": 3.52
   },
   {
@@ -57,559 +57,509 @@
    "end": 3.9
   },
   {
-   "w": "l",
+   "w": "l'an",
    "start": 3.9,
-   "end": 3.98
-  },
-  {
-   "w": "'an",
-   "start": 3.98,
    "end": 4.14
   },
   {
    "w": "dernier.",
    "start": 4.14,
-   "end": 4.5
+   "end": 4.48
   },
   {
    "w": "Dans",
-   "start": 4.84,
-   "end": 5.0
+   "start": 4.81,
+   "end": 5.04
   },
   {
    "w": "la",
-   "start": 5.0,
-   "end": 5.28
+   "start": 5.04,
+   "end": 5.3
   },
   {
    "w": "salle,",
-   "start": 5.28,
-   "end": 5.6
+   "start": 5.3,
+   "end": 5.66
   },
   {
-   "w": "30",
+   "w": "trente",
    "start": 5.8,
-   "end": 6.1
+   "end": 6.18
   },
   {
    "w": "téléphones",
-   "start": 6.1,
-   "end": 6.6
+   "start": 6.18,
+   "end": 6.68
   },
   {
    "w": "ont",
-   "start": 6.6,
-   "end": 6.76
+   "start": 6.68,
+   "end": 6.86
   },
   {
    "w": "déjà",
-   "start": 6.76,
-   "end": 7.14
+   "start": 6.86,
+   "end": 7.3
   },
   {
-   "w": "une",
-   "start": 7.14,
-   "end": 7.5
-  },
-  {
-   "w": "IA",
-   "start": 7.5,
-   "end": 7.8
+   "w": "l'IA",
+   "start": 7.3,
+   "end": 7.66
   },
   {
    "w": "dans",
-   "start": 7.8,
-   "end": 8.0
+   "start": 7.66,
+   "end": 7.9
   },
   {
    "w": "la",
-   "start": 8.0,
-   "end": 8.22
+   "start": 7.9,
+   "end": 8.14
   },
   {
    "w": "poche.",
-   "start": 8.22,
-   "end": 8.5
+   "start": 8.14,
+   "end": 10.06
   },
   {
    "w": "Vous",
-   "start": 8.8,
-   "end": 8.96
+   "start": 10.79,
+   "end": 10.96
   },
   {
-   "w": "l",
-   "start": 8.96,
-   "end": 9.1
-  },
-  {
-   "w": "'interdisez.",
-   "start": 9.1,
-   "end": 9.92
+   "w": "l'interdisez.",
+   "start": 10.96,
+   "end": 11.88
   },
   {
    "w": "Ils",
-   "start": 10.04,
-   "end": 10.24
+   "start": 12.05,
+   "end": 12.26
   },
   {
-   "w": "s",
-   "start": 10.24,
-   "end": 10.36
-  },
-  {
-   "w": "'en",
-   "start": 10.36,
-   "end": 10.54
+   "w": "s'en",
+   "start": 12.26,
+   "end": 12.54
   },
   {
    "w": "servent",
-   "start": 10.54,
-   "end": 10.72
+   "start": 12.54,
+   "end": 12.72
   },
   {
    "w": "quand",
-   "start": 10.72,
-   "end": 10.98
+   "start": 12.72,
+   "end": 12.98
   },
   {
    "w": "même.",
-   "start": 10.98,
-   "end": 11.26
+   "start": 12.98,
+   "end": 13.24
   },
   {
    "w": "Le",
-   "start": 11.58,
-   "end": 11.78
+   "start": 13.56,
+   "end": 13.78
   },
   {
    "w": "cours",
-   "start": 11.78,
-   "end": 11.98
+   "start": 13.78,
+   "end": 13.96
   },
   {
    "w": "avance",
-   "start": 11.98,
-   "end": 12.3
+   "start": 13.96,
+   "end": 14.3
   },
   {
    "w": "au",
-   "start": 12.3,
-   "end": 12.52
+   "start": 14.3,
+   "end": 14.52
   },
   {
    "w": "tableau,",
-   "start": 12.52,
-   "end": 12.94
+   "start": 14.52,
+   "end": 14.94
   },
   {
    "w": "la",
-   "start": 13.14,
-   "end": 13.34
+   "start": 15.08,
+   "end": 15.32
   },
   {
    "w": "classe",
-   "start": 13.34,
-   "end": 13.56
+   "start": 15.32,
+   "end": 15.56
   },
   {
    "w": "est",
-   "start": 13.56,
-   "end": 13.8
+   "start": 15.56,
+   "end": 15.8
   },
   {
    "w": "ailleurs.",
-   "start": 13.8,
-   "end": 14.24
+   "start": 15.8,
+   "end": 16.2
   },
   {
    "w": "Et",
-   "start": 14.48,
-   "end": 14.7
+   "start": 16.51,
+   "end": 16.7
   },
   {
    "w": "si",
-   "start": 14.7,
-   "end": 14.84
+   "start": 16.7,
+   "end": 16.84
   },
   {
    "w": "vous",
-   "start": 14.84,
-   "end": 15.0
-  },
-  {
-   "w": "la",
-   "start": 15.0,
-   "end": 15.18
-  },
-  {
-   "w": "faisiez",
-   "start": 15.18,
-   "end": 15.5
-  },
-  {
-   "w": "entrer",
-   "start": 15.5,
-   "end": 15.96
-  },
-  {
-   "w": "dans",
-   "start": 15.96,
-   "end": 16.12
-  },
-  {
-   "w": "le",
-   "start": 16.12,
-   "end": 16.34
-  },
-  {
-   "w": "cours",
-   "start": 16.34,
-   "end": 16.54
-  },
-  {
-   "w": "?",
-   "start": 16.54,
+   "start": 16.84,
    "end": 17.0
   },
   {
-   "w": "Je",
+   "w": "la",
    "start": 17.0,
-   "end": 17.22
+   "end": 17.18
+  },
+  {
+   "w": "faisiez",
+   "start": 17.18,
+   "end": 17.52
+  },
+  {
+   "w": "entrer",
+   "start": 17.52,
+   "end": 17.96
+  },
+  {
+   "w": "dans",
+   "start": 17.96,
+   "end": 18.12
+  },
+  {
+   "w": "le",
+   "start": 18.12,
+   "end": 18.36
+  },
+  {
+   "w": "cours",
+   "start": 18.36,
+   "end": 18.54
+  },
+  {
+   "w": "Je",
+   "start": 20.5,
+   "end": 20.72
   },
   {
    "w": "vous",
-   "start": 17.22,
-   "end": 17.42
+   "start": 20.72,
+   "end": 20.92
   },
   {
    "w": "montre",
-   "start": 17.42,
-   "end": 17.74
+   "start": 20.92,
+   "end": 21.24
   },
   {
    "w": "comment",
-   "start": 17.74,
-   "end": 18.1
+   "start": 21.24,
+   "end": 21.62
   },
   {
    "w": "préparer",
-   "start": 18.1,
-   "end": 18.62
+   "start": 21.62,
+   "end": 22.12
   },
   {
    "w": "un",
-   "start": 18.62,
-   "end": 18.86
+   "start": 22.12,
+   "end": 22.34
   },
   {
    "w": "cours",
-   "start": 18.86,
-   "end": 19.06
+   "start": 22.34,
+   "end": 22.56
   },
   {
    "w": "avec",
-   "start": 19.06,
-   "end": 19.44
+   "start": 22.56,
+   "end": 22.94
   },
   {
-   "w": "l",
-   "start": 19.44,
-   "end": 19.64
-  },
-  {
-   "w": "'IA.",
-   "start": 19.64,
-   "end": 19.82
-  },
-  {
-   "w": "Un",
-   "start": 20.2,
-   "end": 20.42
-  },
-  {
-   "w": "quiz",
-   "start": 20.42,
-   "end": 20.68
-  },
-  {
-   "w": "en",
-   "start": 20.68,
-   "end": 20.94
-  },
-  {
-   "w": "direct,",
-   "start": 20.94,
-   "end": 21.22
-  },
-  {
-   "w": "un",
-   "start": 21.52,
-   "end": 21.74
-  },
-  {
-   "w": "débat",
-   "start": 21.74,
-   "end": 22.02
-  },
-  {
-   "w": "avec",
-   "start": 22.02,
-   "end": 22.22
-  },
-  {
-   "w": "la",
-   "start": 22.22,
-   "end": 22.48
-  },
-  {
-   "w": "machine,",
-   "start": 22.48,
-   "end": 22.78
-  },
-  {
-   "w": "une",
-   "start": 23.16,
+   "w": "l'IA.",
+   "start": 22.94,
    "end": 23.34
   },
   {
-   "w": "étude",
-   "start": 23.34,
-   "end": 23.58
+   "w": "Un",
+   "start": 23.69,
+   "end": 23.94
   },
   {
-   "w": "de",
-   "start": 23.58,
-   "end": 23.82
+   "w": "quiz",
+   "start": 23.94,
+   "end": 24.16
   },
   {
-   "w": "cas",
-   "start": 23.82,
-   "end": 23.96
+   "w": "en",
+   "start": 24.16,
+   "end": 24.44
   },
   {
-   "w": "par",
-   "start": 23.96,
-   "end": 24.22
-  },
-  {
-   "w": "équipe,",
-   "start": 24.22,
-   "end": 24.68
-  },
-  {
-   "w": "une",
-   "start": 24.84,
-   "end": 25.06
-  },
-  {
-   "w": "correction",
-   "start": 25.06,
-   "end": 25.58
-  },
-  {
-   "w": "qui",
-   "start": 25.58,
-   "end": 25.92
-  },
-  {
-   "w": "explique.",
-   "start": 25.92,
-   "end": 26.64
-  },
-  {
-   "w": "Vos",
-   "start": 26.78,
-   "end": 27.04
-  },
-  {
-   "w": "étudiants",
-   "start": 27.04,
-   "end": 27.64
-  },
-  {
-   "w": "apprennent",
-   "start": 27.64,
-   "end": 27.98
-  },
-  {
-   "w": "à",
-   "start": 27.98,
-   "end": 28.14
-  },
-  {
-   "w": "s",
-   "start": 28.14,
-   "end": 28.2
-  },
-  {
-   "w": "'en",
-   "start": 28.2,
-   "end": 28.36
-  },
-  {
-   "w": "servir",
-   "start": 28.36,
-   "end": 28.7
-  },
-  {
-   "w": "pour",
-   "start": 28.7,
-   "end": 29.02
-  },
-  {
-   "w": "progresser.",
-   "start": 29.02,
-   "end": 29.72
-  },
-  {
-   "w": "Des",
-   "start": 29.72,
-   "end": 30.12
-  },
-  {
-   "w": "réflexes",
-   "start": 30.12,
-   "end": 30.7
-  },
-  {
-   "w": "qu",
-   "start": 30.7,
-   "end": 30.78
-  },
-  {
-   "w": "'ils",
-   "start": 30.78,
-   "end": 30.94
-  },
-  {
-   "w": "garderont.",
-   "start": 30.94,
-   "end": 31.62
-  },
-  {
-   "w": "Vos",
-   "start": 31.92,
-   "end": 32.12
-  },
-  {
-   "w": "contenus,",
-   "start": 32.12,
-   "end": 32.7
-  },
-  {
-   "w": "vos",
-   "start": 32.86,
-   "end": 33.04
-  },
-  {
-   "w": "objectifs,",
-   "start": 33.04,
-   "end": 33.78
-  },
-  {
-   "w": "l",
-   "start": 34.04,
-   "end": 34.22
-  },
-  {
-   "w": "'IA",
-   "start": 34.22,
-   "end": 34.3
-  },
-  {
-   "w": "s",
-   "start": 34.3,
-   "end": 34.68
-  },
-  {
-   "w": "'adapte",
-   "start": 34.68,
-   "end": 34.92
-  },
-  {
-   "w": "à",
-   "start": 34.92,
-   "end": 35.06
-  },
-  {
-   "w": "votre",
-   "start": 35.06,
-   "end": 35.28
-  },
-  {
-   "w": "pédagogie.",
-   "start": 35.28,
-   "end": 36.06
-  },
-  {
-   "w": "Le",
-   "start": 36.3,
-   "end": 36.44
-  },
-  {
-   "w": "cours",
-   "start": 36.44,
-   "end": 36.82
-  },
-  {
-   "w": "redevient",
-   "start": 36.82,
-   "end": 37.66
-  },
-  {
-   "w": "vivant.",
-   "start": 37.66,
-   "end": 38.26
-  },
-  {
-   "w": "Et",
-   "start": 38.44,
-   "end": 38.62
-  },
-  {
-   "w": "vous,",
-   "start": 38.62,
-   "end": 38.92
-  },
-  {
-   "w": "disponible.",
-   "start": 39.5,
-   "end": 39.94
-  },
-  {
-   "w": "Antoine",
-   "start": 40.36,
-   "end": 40.64
-  },
-  {
-   "w": "Contineau,",
-   "start": 40.64,
-   "end": 41.32
-  },
-  {
-   "w": "formateur",
-   "start": 41.64,
-   "end": 42.0
-  },
-  {
-   "w": "IA.",
-   "start": 42.0,
-   "end": 42.64
-  },
-  {
-   "w": "Réservez",
-   "start": 42.92,
-   "end": 43.3
+   "w": "direct,",
+   "start": 24.44,
+   "end": 24.72
   },
   {
    "w": "un",
-   "start": 43.3,
-   "end": 43.5
+   "start": 24.97,
+   "end": 25.24
+  },
+  {
+   "w": "débat",
+   "start": 25.24,
+   "end": 25.52
+  },
+  {
+   "w": "avec",
+   "start": 25.52,
+   "end": 25.72
+  },
+  {
+   "w": "la",
+   "start": 25.72,
+   "end": 25.98
+  },
+  {
+   "w": "machine,",
+   "start": 25.98,
+   "end": 26.28
+  },
+  {
+   "w": "une",
+   "start": 26.57,
+   "end": 26.82
+  },
+  {
+   "w": "étude",
+   "start": 26.82,
+   "end": 27.1
+  },
+  {
+   "w": "de",
+   "start": 27.1,
+   "end": 27.34
+  },
+  {
+   "w": "cas",
+   "start": 27.34,
+   "end": 27.46
+  },
+  {
+   "w": "par",
+   "start": 27.46,
+   "end": 27.74
+  },
+  {
+   "w": "équipe,",
+   "start": 27.74,
+   "end": 28.14
+  },
+  {
+   "w": "une",
+   "start": 28.31,
+   "end": 28.56
+  },
+  {
+   "w": "correction",
+   "start": 28.56,
+   "end": 29.08
+  },
+  {
+   "w": "qui",
+   "start": 29.08,
+   "end": 29.42
+  },
+  {
+   "w": "explique.",
+   "start": 29.42,
+   "end": 29.98
+  },
+  {
+   "w": "Vos",
+   "start": 30.27,
+   "end": 30.54
+  },
+  {
+   "w": "étudiants",
+   "start": 30.54,
+   "end": 31.14
+  },
+  {
+   "w": "apprennent",
+   "start": 31.14,
+   "end": 31.48
+  },
+  {
+   "w": "à",
+   "start": 31.48,
+   "end": 31.62
+  },
+  {
+   "w": "s'en",
+   "start": 31.62,
+   "end": 31.88
+  },
+  {
+   "w": "servir",
+   "start": 31.88,
+   "end": 32.2
+  },
+  {
+   "w": "pour",
+   "start": 32.2,
+   "end": 32.56
+  },
+  {
+   "w": "progresser.",
+   "start": 32.56,
+   "end": 33.32
+  },
+  {
+   "w": "Des",
+   "start": 33.43,
+   "end": 33.62
+  },
+  {
+   "w": "réflexes",
+   "start": 33.62,
+   "end": 34.18
+  },
+  {
+   "w": "qu'ils",
+   "start": 34.18,
+   "end": 34.42
+  },
+  {
+   "w": "garderont.",
+   "start": 34.42,
+   "end": 35.0
+  },
+  {
+   "w": "Vos",
+   "start": 35.26,
+   "end": 35.62
+  },
+  {
+   "w": "contenus,",
+   "start": 35.62,
+   "end": 36.2
+  },
+  {
+   "w": "vos",
+   "start": 36.34,
+   "end": 36.54
+  },
+  {
+   "w": "objectifs.",
+   "start": 36.54,
+   "end": 37.2
+  },
+  {
+   "w": "L'IA",
+   "start": 37.4,
+   "end": 37.8
+  },
+  {
+   "w": "s'adapte",
+   "start": 37.8,
+   "end": 38.4
+  },
+  {
+   "w": "à",
+   "start": 38.4,
+   "end": 38.56
+  },
+  {
+   "w": "votre",
+   "start": 38.56,
+   "end": 38.8
+  },
+  {
+   "w": "pédagogie.",
+   "start": 38.8,
+   "end": 39.58
+  },
+  {
+   "w": "Le",
+   "start": 39.7,
+   "end": 39.96
+  },
+  {
+   "w": "cours",
+   "start": 39.96,
+   "end": 40.38
+  },
+  {
+   "w": "redevient",
+   "start": 40.38,
+   "end": 41.16
+  },
+  {
+   "w": "vivant.",
+   "start": 41.16,
+   "end": 41.74
+  },
+  {
+   "w": "Et",
+   "start": 41.87,
+   "end": 42.14
+  },
+  {
+   "w": "vous,",
+   "start": 42.14,
+   "end": 42.42
+  },
+  {
+   "w": "disponible.",
+   "start": 42.94,
+   "end": 43.26
+  },
+  {
+   "w": "Antoine",
+   "start": 43.69,
+   "end": 44.16
+  },
+  {
+   "w": "Contino,",
+   "start": 44.16,
+   "end": 44.66
+  },
+  {
+   "w": "formateur",
+   "start": 45.14,
+   "end": 45.5
+  },
+  {
+   "w": "IA.",
+   "start": 45.5,
+   "end": 46.14
+  },
+  {
+   "w": "Réservez",
+   "start": 46.23,
+   "end": 46.8
+  },
+  {
+   "w": "un",
+   "start": 46.8,
+   "end": 47.04
   },
   {
    "w": "appel.",
-   "start": 43.5,
-   "end": 43.74
+   "start": 47.04,
+   "end": 47.26
   }
  ]
 }

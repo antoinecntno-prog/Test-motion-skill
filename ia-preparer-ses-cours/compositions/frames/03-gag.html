@@ -266,7 +266,7 @@ const AQ = (() => {
       // cinq rangs de six élèves gris-lavis (centres x = 1934 + j × 260, y = 500 + i × 80), gabarits 90 à 110 u, seeds 10 + i × 6 + j
       var ROWS = 5, COLS = 6;
       for (var i = 0; i < ROWS; i++) for (var j = 0; j < COLS; j++) {
-        var seed = 10 + i * 6 + j, fx = 1934 + j * 260, fy = 500 + i * 80, fh = 90 + ((seed * 7) % 21);
+        var seed = 10 + i * 6 + j, fx = 1934 + j * 260, fy = 500 + i * 80, fh = 54 + ((seed * 7) % 13);
         aqFigure(svg, fx, fy - fh / 2, fh, K.gris, seed, "dos", p2);
       }
       // la pénombre : lavis gris-lavis à 35 % + 10 % sur toute la page, le vignettage à 10 % (état final de la séquence 02)

@@ -279,7 +279,7 @@ const AQ = (() => {
       function makeRow(i) {
         var g = el("g", {}, svg), arms = [];
         for (var j = 0; j < 6; j++) {
-          var x = 10604 + j * 260, yc = 500 + i * 80, h = 90 + ((i * 7 + j * 5) % 17); if (i === 4) h = Math.min(h, 98);
+          var x = 10604 + j * 260, yc = 500 + i * 80, h = 54 + ((i * 7 + j * 5) % 11); if (i === 4) h = Math.min(h, 60);
           var top = yc - h / 2, bw = h * 0.3, head = h * 0.16, sh = top + head * 2.4, col = j % 2 ? K.accent : K.ocre;
           var rot = el("g", {}, g); rot.style.transformOrigin = x + "px " + (top + h) + "px"; rot.style.transformBox = "view-box";
           var grey = aqFigure(svg, x, top, h, K.gris, 50 + i * 6 + j, "dos", rot);

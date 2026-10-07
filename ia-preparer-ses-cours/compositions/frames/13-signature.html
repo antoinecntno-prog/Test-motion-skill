@@ -250,7 +250,7 @@ const AQ = (() => {
       aqInk(svg, "M10754 90 L11754 90 L11754 510 L10754 510 Z", 6, K.ink, p7ink);                                  // le cadre
       var pupils = [];
       for (var pi = 0; pi < 5; pi++) for (var pj = 0; pj < 6; pj++) {
-        var px_ = 10604 + pj * 260, py_ = 500 + pi * 80, ph = 90 + pi * 5, pcol = (pj % 2 === 0) ? K.ocre : K.accent, pbw = ph * 0.3, psh = py_ + ph * 0.16 * 2.4;
+        var px_ = 10604 + pj * 260, py_ = 500 + pi * 80, ph = 54 + pi * 3, pcol = (pj % 2 === 0) ? K.ocre : K.accent, pbw = ph * 0.3, psh = py_ + ph * 0.16 * 2.4;
         var pg = origin(el("g", {}, p7), px_, py_ + ph);
         aqFigure(svg, px_, py_, ph, pcol, 40 + pi * 6 + pj, "dos", pg);
         aqWash(svg, { cx: px_, cy: py_ + 30, r: 20, seed: 70 + pi * 6 + pj, w: 0.12, n: 7, ry: 1.5 }, K.ocre, 0.85, false, pg);   // le téléphone 26 × 40

@@ -282,7 +282,7 @@ const AQ = (() => {
       // cinq rangs de six élèves gris-lavis (centres x = 1934 + j × 260, y = 500 + i × 80), gabarits 90 à 110 u, seeds 10 + i × 6 + j
       var ROWS = 5, COLS = 6, figs = [], phones = [];
       for (var i = 0; i < ROWS; i++) for (var j = 0; j < COLS; j++) {
-        var seed = 10 + i * 6 + j, fx = 1934 + j * 260, fy = 500 + i * 80, fh = 90 + ((seed * 7) % 21);
+        var seed = 10 + i * 6 + j, fx = 1934 + j * 260, fy = 500 + i * 80, fh = 54 + ((seed * 7) % 13);
         var fw = el("g", {}, svg); fw.style.transformOrigin = fx + "px " + (fy + fh / 2) + "px"; fw.style.transformBox = "view-box";
         aqFigure(svg, fx, fy - fh / 2, fh, K.gris, seed, "dos", fw);
         figs.push({ g: fw, j: j });

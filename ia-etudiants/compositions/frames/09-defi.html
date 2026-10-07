@@ -268,8 +268,8 @@ const AQ = (() => {
       var chInk = el("g", { filter: "url(#p09-ink)" }, chG);
       aqInk(svg, "M9520 160 A140 140 0 1 1 9519 160", 6, K.ink2, chInk);
       var chRe = aqDrawPrep(aqInk(svg, "M9520 160 A140 140 0 1 1 9519 160", 6, K.ink, chInk));
-      var handG = org(el("g", { filter: "url(#p09-ink)" }, chG), 9520, 300);
-      aqInk(svg, "M9520 300 L9520 190", 5, K.accent, handG);
+      // l'aiguille vit dans le groupe d'encre du cercle (un trait seul a une boîte de largeur nulle : le filtre #ink ne le rendrait pas) ; la rotation porte sur le trait
+      var handG = org(aqInk(svg, "M9520 300 L9520 190", 5, K.accent, chInk), 9520, 300);
 
       // les deux équipes : une tache (goutte venue de la caméra) qui se divise en deux silhouettes, une table brune devant
       var teamG = el("g", {}, svg);
@@ -299,7 +299,9 @@ const AQ = (() => {
 
       // les colonnes de points : trait de base à l'encre (9330 à 9710, y 870), gouttes r 20 au pas de 44 u, 7 ocre et 9 bordeaux
       var colG = el("g", {}, svg);
-      aqInk(svg, "M9330 870 L9710 870", 4, K.ink, el("g", { filter: "url(#p09-ink)" }, colG));
+      var baseInk = el("g", { filter: "url(#p09-ink)" }, colG);
+      el("path", { d: "M9330 850 L9710 850 L9710 890 L9330 890 Z", fill: "none", stroke: "none" }, baseInk);   // boîte non nulle pour le filtre du trait horizontal
+      aqInk(svg, "M9330 870 L9710 870", 4, K.ink, baseInk);
       var COLS = [{ x: 9420, n: 7, c: K.ocre, seed: 50, pitch: 0.12 }, { x: 9620, n: 9, c: K.accent, seed: 60, pitch: 0.11 }];
       var piles = [], drops = [];
       COLS.forEach(function (c, ci) {
@@ -486,7 +488,7 @@ const AQ = (() => {
       sayWords(sp1, W1S);
       var BOXZ = { scaleX: 0, scaleY: 1, rotation: 0, skewX: 0, skewY: 0 }, BOX1 = { scaleX: 1, scaleY: 1, rotation: 0, skewX: 0, skewY: 0, duration: 0.16, ease: "power3.out" };
       ft(sp1[1].querySelector(".aq-box"), BOXZ, BOX1, 0.44);
-      ft(sp1[7].querySelector(".aq-stroke"), { scaleX: 0, rotation: -1.2 }, { scaleX: 1, rotation: -1.2, duration: 0.40, ease: "power2.out" }, 3.04);
+      ft(sp1[7].querySelector(".aq-stroke"), { scaleX: 0, scaleY: 1, rotation: -1.2, skewX: 0, skewY: 0 }, { scaleX: 1, scaleY: 1, rotation: -1.2, skewX: 0, skewY: 0, duration: 0.40, ease: "power2.out" }, 3.04);
       // la phrase sort avant la couture (opacité 1 → 0, flou 0 → 6 px, 0,14 s)
       ft(s1, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 3.52);
 

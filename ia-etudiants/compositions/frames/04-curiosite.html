@@ -250,7 +250,7 @@ const AQ = (() => {
       aqPen(svg, 2520, 500, -6, penW);
 
       // P3 : le lavis gris de la lampe éteinte (35 %), la note « Leçon », la lampe du coin éteinte, le cadre et la note « 12 » séchée
-      var grey = aqWash(svg, { cx: 4318, cy: 560, r: 820, seed: 23, w: 0.08, n: 12, ry: 0.6 }, K.gris, 0.35, true); grey.dataset.op = "0.35"; grey.dataset.pf = "p04";
+      var grey = aqWash(svg, { cx: 4318, cy: 540, r: 840, seed: 23, w: 0.05, n: 12, ry: 0.64 }, K.gris, 0.35, true); grey.dataset.op = "0.35"; grey.dataset.pf = "p04";
       var p3 = el("g", {}, svg);
       txt(p3, 3600, 150, 34, "Leçon", { transform: "rotate(-2 3600 150)" });
       var lamp3 = aqLamp(svg, 4850, 300, 0.8, false, p3);
@@ -361,7 +361,7 @@ const AQ = (() => {
         ft(w, { opacity: 0.35 }, { opacity: 1, duration: 0.20, ease: "power1.out" }, st + 0.10);
       });
       // le trait ocre sous « curiosité » se trace de 0.47 à 0.87
-      ft(sp[1].querySelector(".aq-stroke"), { scaleX: 0, rotation: -1.2 }, { scaleX: 1, rotation: -1.2, duration: 0.40, ease: "power2.out" }, 0.47);
+      ft(sp[1].querySelector(".aq-stroke"), { scaleX: 0, scaleY: 1, rotation: -1.2, skewX: 0, skewY: 0 }, { scaleX: 1, scaleY: 1, rotation: -1.2, skewX: 0, skewY: 0, duration: 0.40, ease: "power2.out" }, 0.47);
       // la boîte de « copier-coller » se trace à 2.07 ; « copier » paraît à 2.11, « -coller » à 2.53
       ft(cc, { opacity: 0 }, { opacity: 1, duration: 0.01, ease: "none" }, 2.07);
       ft(cc.querySelector(".aq-box"), { scaleX: 0, scaleY: 1, rotation: 0, skewX: 0, skewY: 0 }, { scaleX: 1, scaleY: 1, rotation: 0, skewX: 0, skewY: 0, duration: 0.16, ease: "power3.out" }, 2.07);

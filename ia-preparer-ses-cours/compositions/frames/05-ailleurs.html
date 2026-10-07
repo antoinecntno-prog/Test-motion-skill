@@ -320,7 +320,7 @@ const AQ = (() => {
       var CAM = { x: 4300, y: 540, s: 1.0, b: 7 };          // caméra (handoff_in : cam(4300, 540, 1.0) flou 7, en plein cran vers la droite)
       var X1 = 4700 + 12 * 2.60, S1 = 1.05 * 1.026;         // la caméra à 2.74, fin de la dérive (x +12 u/s, échelle +1 %/s)
       var DX0 = (5050 - X1) * S1, DY0 = (820 - 520) * S1;  // décalage écran de la goutte au départ de la plongée
-      var PL = { q: 0, c: 0 };                              // la plongée : q 0 → 1 (power3.in) monte l'échelle caméra à 3 ; c 0 → 1 (power2.in) glisse la goutte au centre ; la goutte elle-même s'ouvre ×36 (même image qu'une caméra à 14, sans rastériser le monde 14 fois plus grand)
+      var PL = { q: 0, c: 0 };                              // la plongée : q 0 → 1 (power3.in) monte l'échelle caméra à 3 ; c 0 → 1 (power2.in) glisse la goutte au centre ; la goutte elle-même s'ouvre ×40 (même image qu'une caméra à 14, sans rastériser le monde 14 fois plus grand)
       var DOF = { pup: 0, board: 0 };                       // profondeur de champ : les élèves au fond au plan 1, le tableau au fond au plan 2
       var HP = { x: 4590, y: 886, o: 0 };                   // la pointe de la craie (hors cadre en bas à droite avant l'entrée) et l'opacité de la main
       var ST = [{ k: 0 }, { k: 0 }, { k: 0 }];              // les trois traits de craie se tracent
@@ -329,7 +329,7 @@ const AQ = (() => {
       var TL = PUPX.map(function () { return { r: 0 }; });           // les têtes se penchent
       var SAG = { y: 0 };                                   // les bustes s'affaissent
       var ER = { k: 0 };                                    // la craie pâlit (loi d'opacité de aqErase)
-      var DW = { s: 1 };                                    // la goutte grossit d'un cran puis s'ouvre dans la plongée
+      var DW = { s: 1, o: 0.85 };                           // la goutte grossit d'un cran puis s'ouvre dans la plongée (opacité 0,85 → 1 : rien ne transparaît à la couture)
       var DK = { o: 0 };                                    // le centre de la goutte s'assombrit vers canvas
       function blur(v) { return v > 0.05 ? "blur(" + v.toFixed(2) + "px)" : "none"; }
 
@@ -360,7 +360,7 @@ const AQ = (() => {
         });
         // la goutte
         dropW.style.transform = "scale(" + DW.s.toFixed(4) + ")";
-        drop.setAttribute("filter", plunge ? "none" : "url(#p05-aq)");
+        drop.setAttribute("filter", plunge ? "none" : "url(#p05-aq)"); drop.style.mixBlendMode = plunge ? "normal" : "multiply"; drop.style.opacity = DW.o.toFixed(3);
         dark.style.opacity = DK.o;
       }
 
@@ -419,8 +419,9 @@ const AQ = (() => {
       tw(ER, { k: 0 }, { k: 0.6 }, 0.30, "power1.inOut", 2.40);
       // 2.60 la goutte accent grossit d'un cran (×1 → 1,15, 0,12 s)
       tw(DW, { s: 1 }, { s: 1.15 }, 0.12, "power2.out", 2.60);
-      // 2.74 la goutte s'ouvre avec la plongée (×1,15 → 36, power2.in : à la dernière image (2.967) elle couvre tout le cadre, coins compris)
-      tw(DW, { s: 1.15 }, { s: 36 }, 0.26, "power2.in", 2.74);
+      // 2.74 la goutte s'ouvre avec la plongée (×1,15 → 40, power2.in : à la dernière image (2.967) elle couvre tout le cadre, coins compris)
+      tw(DW, { s: 1.15 }, { s: 40 }, 0.26, "power2.in", 2.74);
+      tw(DW, { o: 0.85 }, { o: 1 }, 0.26, "power2.in", 2.74);
       // 2.88 son centre s'assombrit vers canvas (dégradé radial accent → canvas, opacité 0 → 1, 0,12 s)
       tw(DK, { o: 0 }, { o: 1 }, 0.12, "power1.inOut", 2.88);
 

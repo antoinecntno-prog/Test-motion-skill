@@ -55,36 +55,48 @@
   .aq-ripple{position:absolute;width:120px;height:120px;margin:-60px 0 0 -60px;border:4px solid rgba(122,30,46,.55);border-radius:50%;opacity:0}
   /* ===================== CARNET : fin du bloc CSS à copier ===================== */
 
-    /* ===================== séquence 05-sens (préfixe p05) ===================== */
-    #p05-root{position:relative;width:1920px;height:1080px;overflow:hidden;font-family:"DM Sans",sans-serif;-webkit-font-smoothing:antialiased}
+    /* ===================== séquence 07-plan (préfixe p07) ===================== */
+    #p07-root{position:relative;width:1920px;height:1080px;overflow:hidden;font-family:"DM Sans",sans-serif;-webkit-font-smoothing:antialiased}
+    /* le grain et les fibres sont absents de la première image (le lavis à 100 %) et reviennent à 0.30 */
+    #p07-grain{opacity:0}
+    #p07-fibres{opacity:0}
+    /* le lavis ocre-pale plein cadre qui sèche et s'ouvre par le centre (le trou est un chemin evenodd piloté par le render) */
+    #p07-wash{overflow:hidden}
+    #p07-wash svg{position:absolute;left:0;top:0}
+    /* la fenêtre « PLAN DE COURS » dans l'écran du portable (coordonnées monde) : seule l'étiquette est en HTML */
+    #p07-win{left:5764px;top:410px;width:560px;height:330px}
+    #p07-win .t{opacity:0;clip-path:inset(0% 100% 0% 0%)}
   </style>
 
-  <div id="p05-root" data-composition-id="05-sens" data-width="1920" data-height="1080" data-duration="3.11">
+  <div id="p07-root" data-composition-id="07-plan" data-width="1920" data-height="1080" data-duration="3.08">
 
     <!-- sol : le bureau paper-dark sous le carnet (ground-paper) -->
-    <div id="p05-ground" class="clip aq-layer aq-desk" data-start="0" data-duration="3.11" data-track-index="0"></div>
+    <div id="p07-ground" class="clip aq-layer aq-desk" data-start="0" data-duration="3.08" data-track-index="0"></div>
 
-    <!-- le carnet sous la caméra : #stage > #drift > #cam > #world (pages, tableau, élèves, main, goutte posés par le script) -->
-    <div id="p05-scene" class="clip aq-layer" data-start="0" data-duration="3.11" data-track-index="1" data-layout-allow-overflow>
-      <div class="aq-stage" id="p05-stage"><div class="aq-drift" id="p05-drift"><div class="aq-cam" id="p05-cam"><div class="aq-world" id="p05-world"></div></div></div></div>
+    <!-- le carnet sous la caméra : #stage > #drift > #cam > #world (pages P3, P4, P5 ; objets posés par le script) -->
+    <div id="p07-scene" class="clip aq-layer" data-start="0" data-duration="3.08" data-track-index="1" data-layout-allow-overflow>
+      <div class="aq-stage" id="p07-stage"><div class="aq-drift" id="p07-drift"><div class="aq-cam" id="p07-cam"><div class="aq-world" id="p07-world"></div></div></div></div>
     </div>
 
-    <!-- grain 55 % et fibres 35 % du papier -->
-    <div id="p05-grain" class="clip aq-layer aq-grain" data-start="0" data-duration="3.11" data-track-index="2"></div>
-    <div id="p05-fibres" class="clip aq-layer aq-fibres" data-start="0" data-duration="3.11" data-track-index="3"></div>
+    <!-- grain 55 % et fibres 35 % du papier (reviennent à 0.30) -->
+    <div id="p07-grain" class="clip aq-layer aq-grain" data-start="0" data-duration="3.08" data-track-index="2"></div>
+    <div id="p07-fibres" class="clip aq-layer aq-fibres" data-start="0" data-duration="3.08" data-track-index="3"></div>
+
+    <!-- le lavis ocre-pale plein cadre (handoff_in) : il sèche et s'ouvre par le centre sur P4 -->
+    <div id="p07-wash" class="clip aq-layer" data-start="0" data-duration="3.08" data-track-index="4"></div>
 
     <!-- la phrase de la voix, bas centre, mot par mot (temps locaux) -->
-    <div id="p05-subs" class="clip aq-layer" data-start="0" data-duration="3.11" data-track-index="4" data-layout-allow-overflow>
-      <div id="p05-s1" class="aq-sub"></div>
-      <div id="p05-s2" class="aq-sub"></div>
+    <div id="p07-subs" class="clip aq-layer" data-start="0" data-duration="3.08" data-track-index="5" data-layout-allow-overflow>
+      <div id="p07-s1" class="aq-sub"></div>
     </div>
   </div>
 
   <script>
     (function () {
-      var FID = "05-sens", DUR = 3.11;
-      var root = document.getElementById("p05-root");
-      function $(id) { return root.querySelector("#p05-" + id); }
+      var FID = "07-plan", DUR = 3.08;
+      var root = document.getElementById("p07-root");
+      function $(id) { return root.querySelector("#p07-" + id); }
+
 
 /* ===================== CARNET : début du kit JS à copier ===================== */
 const AQ = (() => {
@@ -221,98 +233,133 @@ const AQ = (() => {
 })();
 /* ===================== CARNET : fin du kit JS à copier ===================== */
 
-      var K = AQ.C, el = AQ.el, aqDefs = AQ.aqDefs, aqWash = AQ.aqWash, aqInk = AQ.aqInk, aqDrop = AQ.aqDrop, aqErase = AQ.aqErase,
-          aqFigure = AQ.aqFigure, aqPage = AQ.aqPage, aqCam = AQ.aqCam, aqSubtitle = AQ.aqSubtitle;
+      var K = AQ.C, el = AQ.el, aqDefs = AQ.aqDefs, aqWash = AQ.aqWash, aqInk = AQ.aqInk, aqDrawPrep = AQ.aqDrawPrep, aqDraw = AQ.aqDraw,
+          aqDrop = AQ.aqDrop, aqDry = AQ.aqDry, aqFigure = AQ.aqFigure, aqWindow = AQ.aqWindow, aqLamp = AQ.aqLamp, aqLaptop = AQ.aqLaptop,
+          aqPen = AQ.aqPen, aqPage = AQ.aqPage, aqCam = AQ.aqCam, aqSubtitle = AQ.aqSubtitle;
 
-      /* ===================== le monde : le bord de P1, la page P2 (le tableau), le bord de P3 ===================== */
+      /* ===================== le monde : pages P3, P4 et P5 du carnet ===================== */
       var world = $("world"), cam = $("cam");
-      aqPage(world, 1); aqPage(world, 2); aqPage(world, 3);
-      var svg = el("svg", { class: "aq-svg", width: 5300, height: 1080 }, world); aqDefs(svg, "p05");
-
-      // P2 : le tableau 1100 × 560 centré (2584, 400) : x 2034 à 3134, y 120 à 680 ; cases 110 × 112
-      var BX = 2034, BY = 120, BW = 1100, BH = 560, CW = BW / 10, CH = BH / 5;
-      var boardG = el("g", {}, svg);                          // le fond : lavis gris-2, cadre, grille, cases, rebord (flou de profondeur)
-      aqWash(svg, "M" + BX + " " + BY + " L" + (BX + BW) + " " + (BY + 2) + " L" + (BX + BW - 3) + " " + (BY + BH) + " L" + (BX + 2) + " " + (BY + BH - 2) + " Z", K.gris2, 0.85, false, boardG);
-      var frameG = el("g", { filter: "url(#p05-ink)" }, boardG);
-      aqInk(svg, "M" + BX + " " + BY + " L" + (BX + BW) + " " + BY + " L" + (BX + BW) + " " + (BY + BH) + " L" + BX + " " + (BY + BH) + " Z", 6, K.ink, frameG);
-      // la grille 10 × 5 à l'encre ink-light 3 px (déjà tracée : handoff_in)
-      var gridG = el("g", { filter: "url(#p05-ink)" }, boardG);
-      for (var gi = 1; gi < 10; gi++) aqInk(svg, "M" + (BX + gi * CW) + " " + BY + " L" + (BX + gi * CW + 2) + " " + (BY + BH), 3, K.inkLight, gridG);
-      for (var gj = 1; gj < 5; gj++) aqInk(svg, "M" + BX + " " + (BY + gj * CH) + " L" + (BX + BW) + " " + (BY + gj * CH - 2), 3, K.inkLight, gridG);
-      // les cases grises : 8 pleines à l'image de départ (rangée 1 : six cases ; rangée 2 : deux), puis 4 de plus dans ce plan (rangée 2)
-      var CELLS = [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [1, 0], [1, 1], [1, 2], [1, 3], [1, 4], [1, 5]];
-      var cells = CELLS.map(function (rc, i) {
-        return aqWash(svg, { cx: BX + rc[1] * CW + CW / 2, cy: BY + rc[0] * CH + CH / 2, r: 46, seed: 40 + i, w: 0.2, n: 8, ry: 0.96 }, K.gris, 0.75, false, boardG);
-      });
-      var CL = CELLS.map(function (rc, i) { return i < 8 ? { k: 1, o: 1 } : { k: 0.2, o: 0 }; });
-      // le rebord brun au bas du tableau
-      aqWash(svg, "M" + (BX - 20) + " " + (BY + BH) + " L" + (BX + BW + 20) + " " + (BY + BH) + " L" + (BX + BW + 26) + " " + (BY + BH + 26) + " L" + (BX - 26) + " " + (BY + BH + 26) + " Z", K.brun, 0.8, false, boardG);
-
-      // les six élèves en taches ocre (150 à 180 u, poses dos / penche), x 2130 à 3040, y 620 à 800 ; chaque figure = buste + tête (deux lavis)
-      var PUP = [[2130, 640, 160, "dos", 51], [2310, 622, 178, "penche", 53], [2490, 648, 152, "dos", 55], [2670, 630, 170, "penche", 57], [2850, 620, 180, "dos", 59], [3040, 644, 156, "penche", 61]];
-      var pupils = PUP.map(function (p) {
-        var g = aqFigure(svg, p[0], p[1], p[2], K.ocre, p[4], p[3]);
-        var ws = Array.prototype.slice.call(g.querySelectorAll("g"));
-        ws[0].dataset.op = "0.82"; ws[1].dataset.op = "0.9";
-        return ws;
-      });
-      var ER = PUP.map(function () { return { k: 0 }; });
-
-      // la main à la craie posée au bord droit du tableau (3100, 560) : lavis ocre-pale + cerne d'encre 4 px, vue de dessus, craie paper 60 × 12
-      function washStroke(d, w, color, op, parent) {
-        var g = el("g", { filter: "url(#p05-aq)", opacity: op, style: "mix-blend-mode:multiply" }, parent);
-        el("path", { d: d, fill: "none", stroke: color, "stroke-width": w, "stroke-linecap": "round" }, g); return g;
-      }
-      var handG = el("g", {}, svg);
-      washStroke("M3150 640 L3215 722", 64, K.ocrePale, 0.9, handG);                                   // le poignet, vers le bas droit
-      aqWash(svg, { cx: 3108, cy: 585, r: 58, seed: 31, w: 0.14, n: 9, ry: 0.92 }, K.ocrePale, 0.9, false, handG);   // la paume
-      washStroke("M3090 548 L3052 512", 22, K.ocrePale, 0.9, handG);                                   // index
-      washStroke("M3105 542 L3072 500", 22, K.ocrePale, 0.9, handG);                                   // majeur
-      washStroke("M3122 546 L3102 502", 20, K.ocrePale, 0.9, handG);                                   // annulaire
-      washStroke("M3140 560 L3132 520", 18, K.ocrePale, 0.9, handG);                                   // auriculaire
-      washStroke("M3078 586 L3040 560", 24, K.ocrePale, 0.9, handG);                                   // pouce
-      el("rect", { x: -30, y: -6, width: 60, height: 12, rx: 4, fill: K.paper, stroke: K.inkLight, "stroke-width": 2, transform: "translate(3034 532) rotate(-52)" }, handG);   // la craie
-      var handInk = el("g", { filter: "url(#p05-ink)" }, handG);
-      aqInk(svg, "M3118 652 C3080 622 3062 602 3052 582 C3042 570 3030 562 3030 554 C3040 550 3058 562 3072 572 C3066 548 3050 522 3046 508 C3056 503 3070 528 3082 544 C3080 520 3068 498 3068 492 C3080 489 3094 520 3100 542 C3100 522 3096 502 3102 498 C3112 500 3122 530 3126 548 C3128 530 3130 517 3136 517 C3144 523 3148 548 3150 568 C3160 592 3176 622 3184 652", 4, K.ink, handInk);
-
-      // la goutte accent au bas de la page (3300, 820), r 30, seed 5 : enveloppe pour la croissance et la plongée ; dedans, le noir radial du pivot
-      var dropW = el("g", {}, svg); dropW.style.transformOrigin = "3300px 820px"; dropW.style.transformBox = "view-box";
-      var drop = aqDrop(svg, 3300, 820, 30, K.accent, 5, dropW); drop.dataset.pf = "p05"; drop.dataset.op = "0.85";
-      el("defs", {}, svg).innerHTML = '<radialGradient id="p05-dark" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#17110F" stop-opacity="1"/><stop offset=".45" stop-color="#17110F" stop-opacity=".92"/><stop offset="1" stop-color="#17110F" stop-opacity="0"/></radialGradient>';
-      var dark = el("circle", { cx: 3300, cy: 820, r: 27, fill: "url(#p05-dark)" }, dropW);
-
-      /* ---- sous-titres (aqSubtitle du kit) : deux morceaux ---- */
-      var W1S = [["Et", 0.19], ["le", 0.36], ["sens", 0.62, "box"], ["s'use.", 0.98]];
-      var W2S = [["Une", 1.80], ["case", 2.12, "box"], ["à", 2.34], ["la", 2.60], ["fois.", 2.74]];
-      var s1 = $("s1"), s2 = $("s2");
-      var sp1 = aqSubtitle(s1, W1S), sp2 = aqSubtitle(s2, W2S);
-
-      /* ===================== état : proxies lus par UN seul render() ===================== */
-      var CAM = { x: 2584, y: 640, s: 1.15, b: 6 };        // caméra (handoff_in : cam(2584, 640, 1.15) flou 6, fin du cran vers le bas)
-      var X1 = 2584 + 14 * 2.72, Y1 = 650, S1 = 1.15 * 1.0272;   // la caméra à 2.86, fin de la dérive (x +14 u/s, échelle +1 %/s)
-      var DX0 = (3300 - X1) * S1, DY0 = (820 - Y1) * S1;  // décalage écran de la goutte au départ de la plongée
-      var PL = { q: 0 };                                   // la plongée : q 0 → 1 (power3.in) ; la goutte glisse vers le centre pendant que l'échelle caméra monte à 3 et que la goutte elle-même s'ouvre ×13 (même image qu'une caméra à 14, sans rastériser le monde 14 fois plus grand)
-      var DOF = { b: 0 };                                  // profondeur de champ : le tableau (grille, cases, rebord) passe au fond
-      var HD = { x: 0 };                                   // la main glisse de 10 u
-      var DW = { s: 1 };                                   // la goutte grossit d'un cran puis s'ouvre dans la plongée
-      var DK = { o: 0 };                                   // le centre de la goutte s'assombrit vers canvas
+      var page3 = aqPage(world, 3), page4 = aqPage(world, 4), page5 = aqPage(world, 5);
+      var svg = el("svg", { class: "aq-svg", width: 8700, height: 1080 }, world); aqDefs(svg, "p07");
+      function inkG(parent) { return el("g", { filter: "url(#p07-ink)" }, parent || svg); }
       function blur(v) { return v > 0.05 ? "blur(" + v.toFixed(2) + "px)" : "none"; }
 
+      /* ---- P3 (3468 à 5168) : le bord droit de la page de la porte (board-ailleurs), statique, page voisine floue ---- */
+      var p3 = el("g", {}, svg); p3.style.filter = blur(4);
+      aqWash(svg, "M4250 100 L5150 100 L5150 540 L4250 540 Z", K.gris2, 0.85, false, p3);                       // le tableau 900 × 440 à (4700, 320)
+      aqInk(svg, "M4250 100 L5150 100 L5150 540 L4250 540 Z", 6, K.ink, inkG(p3));                             // son cadre d'encre
+      aqWash(svg, "M4240 540 L5160 540 L5164 562 L4236 562 Z", K.brun, 0.8, false, p3);                         // le rebord brun
+      aqFigure(svg, 4930, 650, 150, K.gris, 35, "penche", p3); aqFigure(svg, 5080, 710, 150, K.gris, 36, "penche", p3);   // les deux derniers élèves
+      aqWash(svg, { cx: 4930, cy: 705, r: 20, seed: 41, w: 0.14, n: 7, ry: 1.5 }, K.ocre, 0.85, false, p3); aqWash(svg, { cx: 5080, cy: 765, r: 20, seed: 42, w: 0.14, n: 7, ry: 1.5 }, K.ocre, 0.85, false, p3);
+      var p3drop = aqDrop(svg, 5050, 820, 46, K.accent, 7, p3); aqDry(p3drop, 1);                               // la goutte accent au bas de la page
+
+      /* ---- P4 (5202 à 6902) : le même bureau du prof, coloré (desk-prof, page 4) ---- */
+      // le grand lavis de sol ocre-pale à 55 % (statique : il reste quand le lavis plein cadre s'ouvre)
+      aqWash(svg, { cx: 6052, cy: 640, r: 760, seed: 20, w: 0.1, n: 12, ry: 0.3 }, K.ocrePale, 0.55, true);
+      // la bande du bureau : son bord à l'encre se dessine, son lavis brun se pose d'un coup de pinceau depuis la gauche puis sèche
+      var deskG = el("g", {}, svg);
+      var deskWashW = el("g", {}, deskG); deskWashW.style.transformOrigin = "5322px 850px"; deskWashW.style.transformBox = "view-box"; deskWashW.style.transform = "scaleX(0)";
+      var deskWash = aqWash(svg, "M5322 822 C 5700 814 6400 814 6782 822 L6782 878 C 6400 886 5700 886 5322 878 Z", K.brun, 0.7, false, deskWashW);
+      deskWash.dataset.pf = "p07"; deskWash.dataset.op = "0.7";
+      var deskEdge = aqDrawPrep(aqInk(svg, "M5322 822 C 5700 814 6400 814 6782 822", 3, K.ink2, inkG(deskG)));
+      // la lampe allumée, pied à (5462, 800), échelle 0,9 : ses traits se dessinent, sa lueur ocre-2 pleine s'ouvre (×0,2 → 1)
+      var lamp = aqLamp(svg, 5462, 800, 0.9, true);
+      var lampPaths = Array.prototype.slice.call(lamp.g.querySelectorAll("path[stroke]")).map(aqDrawPrep);
+      lamp.glow.style.opacity = 0;
+      // le portable à (6052, 575), échelle 1,0 : enveloppe pour la pose (×1,1 flou 6 → net) ; sa lueur d'écran ocre-pale est dans le kit
+      var lapW = el("g", {}, svg); lapW.style.transformOrigin = "6052px 575px"; lapW.style.transformBox = "view-box"; lapW.style.opacity = 0;
+      var lap = aqLaptop(svg, 6052, 575, false, lapW);
+      // la fenêtre « PLAN DE COURS » (aqWindow 560 × 330) dans l'écran : cadre tracé, fond paper 92 % qui monte à 0,7
+      var WX = 5764, WY = 410, WW = 560, WH = 330;
+      var win = aqWindow(svg, WX, WY, WW, WH, { barH: 48 });
+      var winRect = win.querySelector("rect"), winPaths = Array.prototype.slice.call(win.querySelectorAll("path")).map(aqDrawPrep);
+      winRect.style.opacity = 0;
+      // quatre lignes d'encre (le prof, traits 4 u), la rature accent de la ligne 3 et la ligne réécrite dessous, quatre traits ocre en marge (l'IA)
+      var linesG = inkG(win);
+      var lines = [
+        "M40 96 C 90 90 140 102 200 96 C 260 90 330 100 410 94",
+        "M40 148 C 100 142 160 154 230 148 C 290 142 340 152 380 146",
+        "M40 200 C 95 194 150 206 215 200 C 280 194 350 204 420 198",
+        "M40 252 C 90 246 150 258 210 252 C 270 246 320 254 360 250"
+      ].map(function (d) { return aqDrawPrep(aqInk(svg, d, 4, K.ink, linesG)); });
+      var strike = aqDrawPrep(aqInk(svg, "M32 203 C 150 196 300 200 430 194", 5, K.accent, inkG(win)));
+      var newLine = aqDrawPrep(aqInk(svg, "M40 226 C 100 220 160 232 230 226 C 290 220 360 230 430 224", 4, K.ink, linesG));
+      var margins = [96, 148, 200, 252].map(function (y) {
+        var w = el("g", {}, win); w.style.transformOrigin = "470px " + y + "px"; w.style.transformBox = "view-box"; w.style.transform = "scaleX(0)";
+        aqInk(svg, "M470 " + y + " C 490 " + (y - 3) + " 510 " + (y + 1) + " 526 " + (y - 2), 4, K.ocre, inkG(w));
+        w.style.opacity = 0.8; return w;
+      });
+      // le stylo (kit aqPen) : posé par le render à partir de la pointe (PEN.x, PEN.y) et de l'angle PEN.a
+      var pen = aqPen(svg, 0, 0, 0); pen.style.opacity = 0; pen.style.transformOrigin = "0px 0px"; pen.style.transformBox = "view-box";
+
+      /* ---- P5 (6936 à 8636) : la page nue (aucune vignette encore) ; floue 7 px en avant-plan puis nette avant le whip ---- */
+      page5.style.filter = blur(7);
+
+      // HTML posé dans le monde (coordonnées monde) : l'étiquette « PLAN DE COURS » de la fenêtre
+      world.insertAdjacentHTML("beforeend", '<div class="aq-chat" id="p07-win"><div class="t" id="p07-lbl">PLAN DE COURS</div></div>');
+      var lbl = $("lbl");
+
+      /* ---- le lavis plein cadre (handoff_in) : rect ocre-pale troué par une ellipse qui grandit (evenodd), anneau foncé qui sèche à son bord ---- */
+      var washLayer = $("wash");
+      var osvg = el("svg", { class: "aq-svg", width: 1920, height: 1080 }, washLayer); aqDefs(osvg, "p07o");
+      var hole = el("path", { d: "M0 0 H1920 V1080 H0 Z", fill: K.ocrePale, "fill-rule": "evenodd" }, osvg);
+      var ringG = el("g", { filter: "url(#p07o-aq-soft)", style: "mix-blend-mode:multiply" }, osvg);
+      var ring = el("ellipse", { cx: 960, cy: 540, rx: 0, ry: 0, fill: "none", stroke: K.ocre, "stroke-width": 70 }, ringG);
+      ringG.style.opacity = 0;
+
+      /* ---- sous-titre (aqSubtitle du kit) : une seule phrase, la boîte sur « montre », le trait ocre sous « préparer » ---- */
+      var W1S = [["Je", 0.08], ["vous", 0.30], ["montre", 0.50, "box"], ["comment", 0.82], ["préparer", 1.20, "stroke"], ["un", 1.70], ["cours", 1.92], ["avec", 2.14], ["l'IA.", 2.52]];
+      var s1 = $("s1");
+      var sp1 = aqSubtitle(s1, W1S);
+
+      /* ===================== état : proxies lus par UN seul render() ===================== */
+      var CAM = { x: 6052, y: 540, s: 1.0, b: 0 };         // caméra (handoff_in : cam(6052, 540, 1.0), coupe franche)
+      var HOLE = { r: 0 };                                  // le trou du lavis plein cadre (0 : fermé, 1 : plus grand que le cadre)
+      var DRY = { k: 0 };                                   // le séchage du lavis : son anneau fonce
+      var GR = { o: 0 };                                    // le grain et les fibres reviennent (0 → 1 × leurs opacités)
+      var DK = { k: 0, dry: 0, p: 0 };                      // la bande du bureau : coup de pinceau, séchage, bord à l'encre
+      var LP = { p: 0 };                                    // la lampe se dessine
+      var LG = { k: 0.2, o: 0 };                            // la lueur ocre-2 de la lampe s'ouvre
+      var LAP = { o: 0, k: 1.1, b: 6 };                     // le portable se pose
+      var WN = { p: 0, f: 0 };                              // la fenêtre : cadre tracé, fond
+      var LN = { p0: 0, p1: 0, p2: 0, p3: 0 };              // les quatre lignes d'encre
+      var MG = { k0: 0, k1: 0, k2: 0, k3: 0, o2: 0.8, s2: 1 }; // les quatre traits ocre en marge ; le troisième s'avive
+      var ST = { p: 0 };                                    // la rature accent
+      var NL = { p: 0 };                                    // la ligne réécrite
+      var PEN = { x: 6090, y: 930, a: 196, o: 0 };          // le stylo : pointe (x, y) monde, angle, opacité (hors cadre au départ)
+      var DOF = { lamp: 0, desk: 0, lap: 0, p5: 7 };        // profondeur de champ (flou en px sur les groupes hors sujet)
+      var RAD = Math.PI / 180;
+
       function render() {
-        // au coeur de la plongée (PL.q > 0.35, échelle caméra > 5) : flou de caméra coupé et décor masqué (la goutte seule reste), sinon le monde rastérisé 14 fois plus grand bloque le rendu
-        var heavy = PL.q > 0.5;
-        if (PL.q > 0) { var cs = S1 + (3.0 - S1) * PL.q, cr = 1 - PL.q; aqCam(world, cam, 3300 - DX0 * cr / cs, 820 - DY0 * cr / cs, cs, heavy ? 0 : CAM.b); }
-        else aqCam(world, cam, CAM.x, CAM.y, CAM.s, CAM.b);
-        boardG.style.display = heavy ? "none" : ""; handG.style.display = heavy ? "none" : "";
-        pupils.forEach(function (ws) { ws.forEach(function (w) { w.style.display = heavy ? "none" : ""; }); });
-        boardG.style.filter = blur(DOF.b);
-        cells.forEach(function (g, i) { g.style.transform = "scale(" + CL[i].k.toFixed(4) + ")"; g.style.opacity = (0.75 * CL[i].o).toFixed(4); });
-        pupils.forEach(function (ws, i) { ws.forEach(function (w) { aqErase(w, ER[i].k); }); });
-        handG.style.transform = "translate(" + HD.x.toFixed(2) + "px, 0px)";
-        dropW.style.transform = "scale(" + DW.s.toFixed(4) + ")";
-        // au coeur de la plongée (échelle caméra × goutte > 10) le filtre aquarelle est retiré : la tache remplit le cadre, le filtre déplacé sur 3000 px bloquait le rendu (60 s par image)
-        drop.setAttribute("filter", heavy ? "none" : "url(#p05-aq)");
-        dark.style.opacity = DK.o;
+        aqCam(world, cam, CAM.x, CAM.y, CAM.s, CAM.b);
+        // le lavis plein cadre : trou elliptique (evenodd) et anneau de séchage à son bord, qui s'éteint quand le trou dépasse le cadre
+        var rx = Math.max(0.5, 1420 * HOLE.r), ry = Math.max(0.3, 800 * HOLE.r);
+        hole.setAttribute("d", "M0 0 H1920 V1080 H0 Z M" + (960 - rx).toFixed(2) + " 540 a" + rx.toFixed(2) + " " + ry.toFixed(2) + " 0 1 0 " + (2 * rx).toFixed(2) + " 0 a" + rx.toFixed(2) + " " + ry.toFixed(2) + " 0 1 0 " + (-2 * rx).toFixed(2) + " 0 Z");
+        ring.setAttribute("rx", (rx + 35).toFixed(2)); ring.setAttribute("ry", (ry + 35).toFixed(2));
+        ringG.style.opacity = (0.5 * DRY.k * Math.max(0, Math.min(1, (1 - HOLE.r) / 0.25))).toFixed(4);
+        // le grain et les fibres
+        $("grain").style.opacity = (0.55 * GR.o).toFixed(4); $("fibres").style.opacity = (0.35 * GR.o).toFixed(4);
+        // la bande du bureau
+        deskWashW.style.transform = "scaleX(" + DK.k.toFixed(4) + ")"; aqDry(deskWash, DK.dry); aqDraw(deskEdge, DK.p);
+        deskG.style.filter = blur(DOF.desk);
+        // la lampe et sa lueur
+        lampPaths.forEach(function (p, i) { aqDraw(p, LP.p * 3 - i); });
+        lamp.glow.style.transform = "scale(" + LG.k.toFixed(4) + ")"; lamp.glow.style.opacity = (0.75 * LG.o).toFixed(4);
+        lamp.g.style.filter = blur(DOF.lamp);
+        // le portable (pose) et sa profondeur
+        lapW.style.opacity = LAP.o; lapW.style.transform = "scale(" + LAP.k.toFixed(4) + ")"; lapW.style.filter = blur(Math.max(LAP.b, DOF.lap));
+        // la fenêtre et son contenu
+        winPaths.forEach(function (p) { aqDraw(p, WN.p); }); winRect.style.opacity = WN.f;
+        aqDraw(lines[0], LN.p0); aqDraw(lines[1], LN.p1); aqDraw(lines[2], LN.p2); aqDraw(lines[3], LN.p3);
+        aqDraw(strike, ST.p); aqDraw(newLine, NL.p);
+        margins[0].style.transform = "scaleX(" + MG.k0.toFixed(4) + ")"; margins[1].style.transform = "scaleX(" + MG.k1.toFixed(4) + ")";
+        margins[2].style.transform = "scaleX(" + MG.k2.toFixed(4) + ") scaleY(" + MG.s2.toFixed(4) + ")"; margins[2].style.opacity = MG.o2.toFixed(4);
+        margins[3].style.transform = "scaleX(" + MG.k3.toFixed(4) + ")";
+        // le stylo : le groupe est posé pour que sa pointe (local 220, 0) tombe en (PEN.x, PEN.y)
+        var cx = PEN.x - 220 * Math.cos(PEN.a * RAD), cy = PEN.y - 220 * Math.sin(PEN.a * RAD);
+        pen.style.transform = "translate(" + cx.toFixed(2) + "px," + cy.toFixed(2) + "px) rotate(" + PEN.a.toFixed(3) + "deg)"; pen.style.opacity = PEN.o;
+        // profondeur de champ sur P5
+        page5.style.filter = blur(DOF.p5);
       }
 
       /* ===================== la timeline unique, en pause ===================== */
@@ -321,37 +368,71 @@ const AQ = (() => {
       function tw(target, from, to, dur, ease, pos) { var o = {}, k; for (k in to) o[k] = to[k]; o.duration = dur; o.ease = ease; ft(target, from, o, pos); }
 
       /* ---- piste caméra ---- */
-      // 0.00 à 0.14 fin du cran : la caméra se pose (y 640 → 650, power3.out), le flou 6 → 0
-      tw(CAM, { y: 640, b: 6 }, { y: 650, b: 0 }, 0.14, "power3.out", 0);
-      // 0.14 à 2.86 dérive x +14 u/s, échelle +1 %/s
-      tw(CAM, { x: 2584, s: 1.15 }, { x: X1, s: S1 }, 2.72, "none", 0.14);
-      // 2.80 à 3.11 plongée dans la goutte vers cam(3300, 820, 14), power3.in ; flou 0 → 10 au sommet (départ avancé de 0,06 s : la goutte couvre tout le cadre dès 3.05)
-      tw(PL, { q: 0 }, { q: 1 }, 0.31, "power3.in", 2.80);
-      tw(CAM, { b: 0 }, { b: 6 }, 0.31, "power2.in", 2.80);
+      // 0.00 à 1.30 : cam(6052, 540, 1.0), dérive x +14 u/s, échelle +1 %/s (coupe franche à l'entrée : aucun raccord)
+      tw(CAM, { x: 6052, s: 1.0 }, { x: 6070.2, s: 1.013 }, 1.30, "none", 0);
+      // 1.30 cran vers l'écran cam(6070.2, 500, 1.4) (x gardé devant la dérive : jamais de retour), 0,3 s expo.inOut, flou 0 → 6 → 0
+      tw(CAM, { x: 6070.2, y: 540, s: 1.013 }, { x: 6070.2, y: 500, s: 1.4 }, 0.30, "expo.inOut", 1.30);
+      tw(CAM, { b: 0 }, { b: 6 }, 0.15, "power2.in", 1.30); tw(CAM, { b: 6 }, { b: 0 }, 0.15, "power2.out", 1.45);
+      // dérive x +10 u/s, échelle +1 %/s de 1.60 à 2.92
+      tw(CAM, { x: 6070.2, s: 1.4 }, { x: 6083.4, s: 1.4185 }, 1.32, "none", 1.60);
+      // 2.92 whip vers la droite jusqu'à la couture cam(6900, 540, 1.1) flou 12 à 3.08 : cubique à départ nul et sortie à +7000 u/s en x
+      var SEAM = { x: 6900, y: 540, s: 1.1 }, WT = 0.16, kq = 7000 * WT / (SEAM.x - 6083.4), qa = kq - 2, qb = 3 - kq;
+      var WHIP = function (p) { return qa * p * p * p + qb * p * p; };
+      tw(CAM, { x: 6083.4, y: 500, s: 1.4185 }, SEAM, WT, WHIP, DUR - WT);
+      tw(CAM, { b: 0 }, { b: 12 }, WT, "power2.in", DUR - WT);
 
-      /* ---- scène 1 (0.00 à 2.86) : les élèves pâlissent derrière la grille ---- */
-      // profondeur : le tableau passe au fond (4 px) pendant que le cran se pose ; les élèves restent nets
-      tw(DOF, { b: 0 }, { b: 4 }, 0.50, "power2.inOut", 0);
-      // 0.19 « Et » : deux cases de plus se remplissent de gris (impact ×0,2 → 1, 0,12 s expo.out, 0,08 s d'écart)
-      [8, 9].forEach(function (i, j) { tw(CL[i], { o: 0 }, { o: 1 }, 0.02, "none", 0.19 + j * 0.08); tw(CL[i], { k: 0.2 }, { k: 1 }, 0.12, "expo.out", 0.19 + j * 0.08); });
-      // 0.62 « sens » : les six élèves pâlissent vers gris-lavis (aqErase 0 → 0,5, 0,3 s, 0,06 s d'écart)
-      ER.forEach(function (e, i) { tw(e, { k: 0 }, { k: 0.5 }, 0.30, "power1.inOut", 0.62 + i * 0.06); });
-      // 0.98 « s'use » : encore deux cases
-      [10, 11].forEach(function (i, j) { tw(CL[i], { o: 0 }, { o: 1 }, 0.02, "none", 0.98 + j * 0.08); tw(CL[i], { k: 0.2 }, { k: 1 }, 0.12, "expo.out", 0.98 + j * 0.08); });
-      // 1.40 la main posée glisse de 10 u
-      tw(HD, { x: 0 }, { x: 10 }, 0.20, "power2.out", 1.40);
-      // 1.80 « Une » le premier élève s'efface par le centre (aqErase 0,5 → 1, 0,2 s) ; 2.12 « case » le deuxième ; 2.34 « à » le troisième ; 2.60 « la » le quatrième et le cinquième ; 2.74 « fois » le dernier
-      [1.80, 2.12, 2.34, 2.60, 2.60, 2.74].forEach(function (t, i) { tw(ER[i], { k: 0.5 }, { k: 1 }, 0.20, "power2.in", t); });
-      // 2.78 la goutte accent grossit d'un cran (×1 → 1,15, 0,1 s) : seule couleur restante
-      tw(DW, { s: 1 }, { s: 1.15 }, 0.10, "power2.out", 2.78);
+      /* ---- scène 1 (0.00 à 1.50) : le lavis sèche en bureau coloré, la fenêtre du plan ---- */
+      // 0.00 le lavis sèche de l'intérieur : son anneau fonce (0,6 s), le papier de P4 apparaît par le centre (trou 0 → plein cadre, 0,5 s expo.out)
+      tw(DRY, { k: 0 }, { k: 1 }, 0.60, "power1.inOut", 0);
+      tw(HOLE, { r: 0 }, { r: 1 }, 0.50, "expo.out", 0);
+      // 0.30 « vous » : le grain revient (0,2 s) ; la bande du bureau se dessine (0,3 s) et son lavis brun se pose (coup de pinceau 0,2 s) puis sèche
+      tw(GR, { o: 0 }, { o: 1 }, 0.20, "power1.out", 0.30);
+      tw(DK, { p: 0 }, { p: 1 }, 0.30, "power2.out", 0.30);
+      tw(DK, { k: 0 }, { k: 1 }, 0.20, "expo.out", 0.30);
+      tw(DK, { dry: 0 }, { dry: 1 }, 0.40, "power1.inOut", 0.40);
+      // 0.40 la lampe se dessine (trois traits enchaînés, 0,3 s) et sa lueur ocre-2 pleine s'ouvre (×0,2 → 1, 0,12 s)
+      tw(LP, { p: 0 }, { p: 1 }, 0.30, "power2.out", 0.40);
+      tw(LG, { o: 0 }, { o: 1 }, 0.02, "none", 0.40);
+      tw(LG, { k: 0.2 }, { k: 1 }, 0.12, "expo.out", 0.40);
+      // 0.50 « montre » : le portable se pose (×1,1 flou 6 → net, 0,12 s) et la fenêtre « PLAN DE COURS » se trace dans l'écran (0,3 s)
+      tw(LAP, { o: 0 }, { o: 1 }, 0.02, "none", 0.50);
+      tw(LAP, { k: 1.1, b: 6 }, { k: 1, b: 0 }, 0.12, "power2.out", 0.50);
+      tw(WN, { p: 0 }, { p: 1 }, 0.30, "power2.out", 0.50);
+      tw(WN, { f: 0 }, { f: 0.7 }, 0.30, "power1.out", 0.50);
+      // 0.82 « comment » : l'étiquette se révèle (masque 0,2 s) et quatre lignes d'encre s'écrivent (0,12 s chacune, 0,02 s d'écart) jusqu'à 1.36
+      ft(lbl, { opacity: 0 }, { opacity: 1, duration: 0.01, ease: "none" }, 0.82);
+      ft(lbl, { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.20, ease: "power1.inOut" }, 0.82);
+      tw(LN, { p0: 0 }, { p0: 1 }, 0.12, "power1.inOut", 0.82);
+      tw(LN, { p1: 0 }, { p1: 1 }, 0.12, "power1.inOut", 0.96);
+      tw(LN, { p2: 0 }, { p2: 1 }, 0.12, "power1.inOut", 1.10);
+      tw(LN, { p3: 0 }, { p3: 1 }, 0.12, "power1.inOut", 1.24);
+      // 1.30 profondeur pendant le cran : la lampe (6 px), le bureau et le cadre du portable (4 px) passent au fond ; la fenêtre reste nette
+      tw(DOF, { lamp: 0, desk: 0, lap: 0 }, { lamp: 6, desk: 4, lap: 4 }, 0.30, "power2.inOut", 1.30);
 
-      /* ---- scène 2 (2.86 à 3.11) : plongée dans la goutte ---- */
-      // la goutte s'ouvre avec la plongée (×1,15 → 4,4 : à l'échelle 14 elle couvre tout le cadre deux images avant la couture)
-      tw(DW, { s: 1.15 }, { s: 13 }, 0.31, "power3.in", 2.80);
-      // 2.95 le centre de la goutte s'assombrit (dégradé radial accent → canvas, opacité 0 → 1, 0,15 s)
-      tw(DK, { o: 0 }, { o: 1 }, 0.15, "power1.inOut", 2.95);
+      /* ---- scène 2 (1.50 à 3.08) : l'IA en marge, la main corrige, whip ---- */
+      // 1.70 « un » : quatre traits ocre courts se peignent en marge droite (coup de pinceau depuis la gauche, 0,12 s, 0,06 s d'écart)
+      tw(MG, { k0: 0 }, { k0: 1 }, 0.12, "expo.out", 1.70);
+      tw(MG, { k1: 0 }, { k1: 1 }, 0.12, "expo.out", 1.76);
+      tw(MG, { k2: 0 }, { k2: 1 }, 0.12, "expo.out", 1.82);
+      tw(MG, { k3: 0 }, { k3: 1 }, 0.12, "expo.out", 1.88);
+      // 1.92 « cours » : le stylo entre par le bas droit, hors cadre (pointe (6090, 930) → début de la ligne 3 (5804, 610), 0,16 s power2.out)
+      tw(PEN, { o: 0 }, { o: 1 }, 0.01, "none", 1.92);
+      tw(PEN, { x: 6090, y: 930 }, { x: 5804, y: 610 }, 0.16, "power2.out", 1.92);
+      // 2.14 « avec » : le stylo barre la ligne 3 (trait accent tracé 0,2 s), la pointe suit le trait
+      tw(ST, { p: 0 }, { p: 1 }, 0.18, "power2.out", 2.14);
+      tw(PEN, { x: 5804, y: 610 }, { x: 6194, y: 604 }, 0.18, "power2.out", 2.14);
+      // 2.32 la pointe revient au début de la ligne réécrite ; 2.36 la nouvelle ligne d'encre s'écrit dessous (0,25 s) et le stylo la suit
+      tw(PEN, { x: 6194, y: 604 }, { x: 5804, y: 636 }, 0.04, "power2.inOut", 2.32);
+      tw(NL, { p: 0 }, { p: 1 }, 0.25, "power1.inOut", 2.36);
+      tw(PEN, { x: 5804, y: 636 }, { x: 6194, y: 634 }, 0.25, "power1.inOut", 2.36);
+      // 2.52 « l'IA » : le trait ocre de la marge de cette ligne s'avive (0,1 s)
+      tw(MG, { o2: 0.8, s2: 1 }, { o2: 1, s2: 1.5 }, 0.10, "power2.out", 2.52);
+      // 2.50 P5 (hors champ) redevient nette avant le whip, pour arriver au repos sous le flou de la couture
+      tw(DOF, { p5: 7 }, { p5: 0 }, 0.40, "power1.inOut", 2.50);
+      // 2.70 le stylo se pose au bord droit de l'écran, corps centré en (6360, 520) (pointe (6178, 397), angle 214°), 0,12 s
+      tw(PEN, { x: 6194, y: 634, a: 196 }, { x: 6178, y: 397, a: 214 }, 0.12, "power2.out", 2.70);
 
-      /* ---- la phrase de la voix : mot par mot (0 → 0,35 → 1), chaque mot 1 image avant son temps ; une boîte par morceau ---- */
+      /* ---- la phrase de la voix : mot par mot (0 → 0,35 → 1), chaque mot 1 image avant son temps ; la boîte à 0.46, le trait ocre à 1.20 ---- */
       function sayWords(spans, listW) {
         spans.forEach(function (w, i) {
           var st = Math.max(0, listW[i][1] - 1 / 30), kw = listW[i][2] === "box";
@@ -364,14 +445,11 @@ const AQ = (() => {
         });
       }
       sayWords(sp1, W1S);
-      sayWords(sp2, W2S);
       var BOXZ = { scaleX: 0, scaleY: 1, rotation: 0, skewX: 0, skewY: 0 }, BOX1 = { scaleX: 1, scaleY: 1, rotation: 0, skewX: 0, skewY: 0, duration: 0.16, ease: "power3.out" };
-      ft(sp1[2].querySelector(".aq-box"), BOXZ, BOX1, 0.58);
-      var BOX2 = {}; for (var bk in BOX1) BOX2[bk] = BOX1[bk];
-      ft(sp2[1].querySelector(".aq-box"), BOXZ, BOX2, 2.08);
-      // chaque morceau sort (opacité 1 → 0, flou 0 → 6 px, 0,14 s) : 1.60 à 1.74, puis 2.86 à 3.00 avant la couture
-      ft(s1, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 1.60);
-      ft(s2, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 2.86);
+      ft(sp1[2].querySelector(".aq-box"), BOXZ, BOX1, 0.46);
+      ft(sp1[4].querySelector(".aq-stroke"), { scaleX: 0, rotation: -1.2 }, { scaleX: 1, rotation: -1.2, duration: 0.20, ease: "power3.out" }, 1.20);
+      // la phrase sort avant la couture (opacité 1 → 0, flou 0 → 6 px, 0,14 s)
+      ft(s1, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 2.86);
 
       // durée exacte de la séquence
       tl.set({}, {}, DUR);

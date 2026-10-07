@@ -40,7 +40,7 @@ fonts:
 
 typography:
   subtitle:   { fontFamily: "DM Sans", px: 62, weight: 600, lineHeight: 74, tracking: "-0.005em", note: "la phrase de la voix EN BAS AU CENTRE (haut à y 896, bande y 890 à 980 qui ne porte rien d'autre), 45 signes au plus par morceau (une phrase plus longue se coupe en morceaux qui se remplacent), mot par mot sur ses temps ; encre ink sur le papier, ombre papier légère (0 2px 14px paper à 80 %). Jamais en haut à gauche" }
-  type:       { fontFamily: "Fraunces", px: 84, weight: 600, lineHeight: 1.1, tracking: "-0.01em", note: "SEUL moment typographique : le pivot « Et si l'IA servait à apprendre ? » (séquence 5), centré sur le noir en ink-paper, 84 px au plus, sans sous-titre en bas pendant ce temps ; trait ocre sous « apprendre »" }
+  type:       { fontFamily: "Fraunces", px: 84, weight: 600, lineHeight: 1.1, tracking: "-0.01em", note: "SEUL moment typographique : le pivot « Et si vous repreniez ce temps ? » (séquence 6), centré sur le noir en ink-paper, 84 px au plus, sans sous-titre en bas pendant ce temps ; trait ocre sous « temps »" }
   note:       { fontFamily: "Caveat", px: 34, weight: 600, lineHeight: 1.2, note: "les notes manuscrites des pages du carnet, en ink-2 (« lundi, 18 h », « Séquence 3 », « classe A », « classe B », « critère », « acquis », « en cours », « vos documents », « vos outils »), légèrement penchées (-3 à 3°) ; aucune note chiffrée dans ce film" }
   ui:         { fontFamily: "DM Sans", px: 22, weight: 400, lineHeight: 1.35, note: "le texte des fenêtres dessinées (objets des mails, lignes du mail) ; étiquettes 16 px 600 espacées de 0,08 em (BOÎTE DE RÉCEPTION, NOUVEAU MESSAGE)" }
   title:      { fontFamily: "Fraunces", px: 72, weight: 600, tracking: "-0.02em", note: "aucun titre imprimé dans ce film ; réservé" }
@@ -97,7 +97,7 @@ components:
   cursor:
     description: "flèche papier (#F8F1E6) cernée d'encre 2,5 px, ombre douce, 34 × 44 u ; arrive en UN mouvement courbe (0,5 s power3.out en x, power2.out en y) et clique directement : pression + onde accent. Jamais d'hésitation. Dans la douleur elle colle le sujet dans la fenêtre (clic sur le champ)."
   end-card:
-    description: "page 8 du carnet : la signature, « formateur IA », le bouton ocre, les deux adresses, le curseur qui arrive et clique, puis 2,5 s de tenue vivante (granulation des taches qui dérive, grain du papier qui glisse, la traînée de la goutte qui sèche) avant le noir à 50.80."
+    description: "page 8 du carnet : la signature, « formateur IA », le bouton ocre, les deux adresses, le curseur qui arrive et clique, puis 2,5 s de tenue vivante (granulation des taches qui dérive, grain du papier qui glisse, la traînée de la goutte qui sèche) avant le noir à 52.00."
 
 world:
   camera: "kit de reference/aquarelle.html : #stage > #drift > #cam > #world ; aqCam(world, cam, x, y, s, blur) amène le point (x, y) du monde au centre du cadre (960, 540) à l'échelle s. Dérive permanente sur #drift (10 à 30 u/s ou 1 à 3 %/s), crans et whips sur #world et #cam (expo.inOut, flou 6 à 12 px au milieu). Toute la caméra du film va de gauche à droite ou s'enfonce ; jamais de retour."
@@ -119,7 +119,7 @@ negative:
   - "Aucune seconde mise en valeur : la boîte accent est la SEULE façon de souligner un mot du sous-titre, le trait ocre marque les 4 pics (aucun autre texte coloré, aucun texte lumineux)."
   - "Aucune grande phrase : sous-titre 62 px, moment typographique 84 px au plus (le pivot seulement) ; aucun mot géant, aucune grosse boîte. Rien d'autre que le sous-titre dans la bande y 890 à 980 ; jamais de sous-titre en haut à gauche ; aucun titre Fraunces qui répète la voix sur la page."
   - "Une seule chose à regarder : la caméra isole le sujet de la phrase ; marges gauche et droite égales ; la caméra va de gauche à droite ou s'enfonce, jamais d'aller-retour ; jamais d'hésitation du curseur."
-  - "Aucun décor sans sens, aucun symbole abstrait, aucun compteur hors le chronomètre du défi ; aucune ligne du décor ne traverse une phrase (la reliure et les lignes des pages restent au-dessus de y 880)."
+  - "Aucun décor sans sens, aucun symbole abstrait, aucun compteur, aucun chronomètre ; aucune ligne du décor ne traverse une phrase (la reliure et les lignes des pages restent au-dessus de y 880)."
   - "Aucune teinte hors charte : accent et ses pâles, ocre et ses pâles, gris de lavis, brun des tables, encre."
   - "Aucun outil d'IA nommé, aucun logo, aucun nom d'élève, de famille, d'établissement ou de prof (les objets des mails restent génériques), aucune note, aucun chiffre de gain, aucune durée ni prix de formation."
   - "Aucune tache ni aucun trait qui apparaît en fondu : goutte, pinceau ou tracé ; aucune tache dédoublée pendant une couture."

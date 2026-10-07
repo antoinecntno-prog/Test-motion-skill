@@ -244,11 +244,12 @@ const AQ = (() => {
       var WX = 7136, WY = 110, WW = 1300, WH = 720;
       var win = aqWindow(svg, WX, WY, WW, WH, { barH: 56, stroke: 6 });
       // les deux bulles « IA » encore vides en bas de la page : cadres à l'encre 4 px, 420 × 150, centrés à (7500, 880) et (8070, 880)
+      var bfr = el("g", {}, svg); bfr.style.opacity = 0;
       [7500, 8070].forEach(function (bx) {
         var x = bx - 210, y = 805;
         aqInk(svg, "M" + (x + 12) + " " + y + " L" + (x + 408) + " " + y + " Q" + (x + 420) + " " + y + " " + (x + 420) + " " + (y + 12) +
           " L" + (x + 420) + " " + (y + 138) + " Q" + (x + 420) + " " + (y + 150) + " " + (x + 408) + " " + (y + 150) +
-          " L" + (x + 12) + " " + (y + 150) + " Q" + x + " " + (y + 150) + " " + x + " " + (y + 138) + " L" + x + " " + (y + 12) + " Q" + x + " " + y + " " + (x + 12) + " " + y + " Z", 4, K.ink);
+          " L" + (x + 12) + " " + (y + 150) + " Q" + x + " " + (y + 150) + " " + x + " " + (y + 138) + " L" + x + " " + (y + 12) + " Q" + x + " " + y + " " + (x + 12) + " " + y + " Z", 4, K.ink, bfr);
       });
 
       // HTML posé dans le monde : la fenêtre de chat (question, réponse en 4 lignes, champ), les étiquettes des bulles vides
@@ -372,13 +373,14 @@ const AQ = (() => {
       // dérive x +10 u/s, y +6 u/s de 1.13 à 2.28
       tw(CAM, { x: 7900, y: 420 }, { x: 7911.5, y: 426.9 }, 1.15, "none", 1.13);
       // 2.28 à 2.40 cran vers la marge basse : cam(8160, 560, 1.5), expo.inOut, flou 6 px au milieu
-      tw(CAM, { x: 7911.5, y: 426.9, s: 1.6 }, { x: 8160, y: 560, s: 1.5 }, 0.12, "expo.inOut", 2.28);
+      tw(CAM, { x: 7911.5, y: 426.9, s: 1.6 }, { x: 8160, y: 570, s: 1.4 }, 0.12, "expo.inOut", 2.28);
       tw(CAM, { b: 0 }, { b: 6 }, 0.06, "power2.in", 2.28); tw(CAM, { b: 6 }, { b: 0 }, 0.06, "power2.out", 2.34);
       // dérive x +8 u/s, échelle +1 %/s de 2.40 à 3.70
-      tw(CAM, { x: 8160, s: 1.5 }, { x: 8170.4, s: 1.5195 }, 1.30, "none", 2.40);
+      tw(CAM, { x: 8160, s: 1.4 }, { x: 8170.4, s: 1.4182 }, 1.30, "none", 2.40);
       // 3.70 départ du cran vers le bas : à 3.82 cam(7786, 700, 1.4) avec +1200 u/s en y (cubique à départ nul), flou 0 → 8
       var OUT = function (p) { return -0.971 * p * p * p + 1.971 * p * p; };
-      tw(CAM, { x: 8170.4, y: 560, s: 1.5195 }, { x: 7786, y: 700, s: 1.4 }, 0.12, OUT, 3.70);
+      tw(CAM, { x: 8170.4, y: 570, s: 1.4182 }, { x: 7786, y: 700, s: 1.4 }, 0.12, OUT, 3.70);
+      ft(bfr, { opacity: 0 }, { opacity: 1, duration: 0.10, ease: "none" }, 3.70);                 // les cadres des bulles vides paraissent avec le cran final (ils tomberaient dans la bande du sous-titre avant)
       tw(CAM, { b: 0 }, { b: 8 }, 0.12, "power2.in", 3.70);
 
       /* ---- profondeur : le cadre de la fenêtre passe en avant-plan flou ; les lignes hors sujet floues (4 px) ---- */

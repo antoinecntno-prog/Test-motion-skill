@@ -370,18 +370,18 @@ const AQ = (() => {
       /* ---- piste caméra ---- */
       // 0.00 à 2.50 : cam(6052, 540, 1.08), dérive x +14 u/s et échelle -1,5 %/s (vers 1.0)
       tw(CAM, { x: 6052, s: 1.08 }, { x: 6087, s: 1.0395 }, 2.50, "none", 0);
-      // 2.50 whip vers la droite (power2.in, flou 0 → 12, sommet 2.63) puis atterrissage sur cam(7786, 470, 1.25) à 2.72 (expo.out)
+      // 2.50 whip vers la droite (power2.in, flou 0 → 12, sommet 2.63) puis atterrissage sur cam(7786, 545, 1.2) à 2.72 (expo.out) : le bas de la fenêtre reste hors de la bande du sous-titre
       tw(CAM, { x: 6087, y: 540, s: 1.0395 }, { x: 7250, y: 480, s: 1.22 }, 0.13, "power2.in", 2.50);
       tw(CAM, { b: 0 }, { b: 12 }, 0.13, "power2.in", 2.50);
-      tw(CAM, { x: 7250, y: 480, s: 1.22 }, { x: 7786, y: 470, s: 1.25 }, 0.09, "expo.out", 2.63);
+      tw(CAM, { x: 7250, y: 530, s: 1.18 }, { x: 7786, y: 545, s: 1.2 }, 0.09, "expo.out", 2.63);
       tw(CAM, { b: 12 }, { b: 0 }, 0.09, "power2.out", 2.63);
       // dérive x +12 u/s, échelle +1 %/s de 2.72 à 4.15
-      tw(CAM, { x: 7786, s: 1.25 }, { x: 7803.2, s: 1.2679 }, 1.43, "none", 2.72);
+      tw(CAM, { x: 7786, s: 1.2 }, { x: 7803.2, s: 1.2172 }, 1.43, "none", 2.72);
       // 4.15 cran vers cam(7420, 330, 1.6) : cubique à départ nul qui passe EXACTEMENT par la cible à 4.29 en plein mouvement
       // (vitesse à la couture 1400 u/s en x, flou 6 px) ; la séquence 7 reprend le cran
       var kq = 1400 * 0.14 / (7803.2 - 7420), qa = kq - 2, qb = 3 - kq;
       var CRAN = function (p) { return qa * p * p * p + qb * p * p; };
-      tw(CAM, { x: 7803.2, y: 470, s: 1.2679 }, { x: 7420, y: 330, s: 1.6 }, 0.14, CRAN, 4.15);
+      tw(CAM, { x: 7803.2, y: 545, s: 1.2172 }, { x: 7420, y: 330, s: 1.6 }, 0.14, CRAN, 4.15);
       tw(CAM, { b: 0 }, { b: 6 }, 0.14, "power2.in", 4.15);
 
       /* ---- scène 1 (0.00 à 2.50) : P4, le lavis sèche en classe ---- */

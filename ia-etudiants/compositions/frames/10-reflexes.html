@@ -428,7 +428,7 @@ const AQ = (() => {
       var BOX2 = {}; for (var bk in BOX1) BOX2[bk] = BOX1[bk];
       ft(sp2[2].querySelector(".aq-box"), BOXZ, BOX2, 3.34);
       // 4.36 « le leur » : le trait ocre se trace sous les deux mots (0,4 s)
-      ft(stroke, { scaleX: 0, rotation: -1.2 }, { scaleX: 1, rotation: -1.2, duration: 0.40, ease: "power2.out" }, 4.36);
+      ft(stroke, { scaleX: 0, scaleY: 1, rotation: -1.2, skewX: 0, skewY: 0 }, { scaleX: 1, scaleY: 1, rotation: -1.2, skewX: 0, skewY: 0, duration: 0.40, ease: "power2.out" }, 4.36);   // toutes les composantes : scaleX(0) en CSS ne se décompose pas
       // la phrase sort avant la suivante et avant la couture (opacité 1 → 0, flou 0 → 6 px, 0,14 s)
       ft(s1, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 2.56);
       ft(s2, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 4.98);

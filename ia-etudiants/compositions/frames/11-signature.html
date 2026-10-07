@@ -254,10 +254,7 @@ const AQ = (() => {
         aqInk(svg, aqBlob(h[0], h[1], 154, h[2], 0.2, 9, 0.8), 4, K.ink, el("g", { filter: "url(#p11-ink)" }, p7));
       });
       // le carnet des réflexes refermé : couverture paper-2 520 × 360 à (11254, 430), cerne d'encre, 6 anneaux de spirale
-      el("rect", { x: 10994, y: 250, width: 520, height: 360, rx: 6, fill: K.paper2, style: "filter:drop-shadow(0 14px 30px rgba(58,42,36,.14))" }, p7);
-      var coverInk = el("g", { filter: "url(#p11-ink)" }, p7);
-      aqInk(svg, "M11000 250 L11508 250 Q11514 250 11514 256 L11514 604 Q11514 610 11508 610 L11000 610 Q10994 610 10994 604 L10994 256 Q10994 250 11000 250 Z", 4, K.ink, coverInk);
-      for (var ri = 0; ri < 6; ri++) aqInk(svg, "M" + (10994 - 12) + " " + (290 + ri * 56) + " A12 12 0 0 1 " + (10994 + 12) + " " + (290 + ri * 56), 4, K.ink, coverInk);
+      // (la séquence 10 fait sortir le carnet refermé par le haut à 3.16 : à la couture, seules les mains et la page colorée restent)
 
       // P8 : la carte de fin. Tout part invisible (la page est nue à la première image).
       var sigSvg = el("g", {}, svg);                                                           // groupe profondeur (flou 4 px en scène 2)

@@ -1,0 +1,384 @@
+<template>
+  <style>
+  /* ===================== CARNET : début du bloc CSS à copier ===================== */
+  @font-face{font-family:"Fraunces";font-weight:400;src:url("assets/fonts/fraunces-latin-400-normal.woff2") format("woff2")}
+  @font-face{font-family:"Fraunces";font-weight:600;src:url("assets/fonts/fraunces-latin-600-normal.woff2") format("woff2")}
+  @font-face{font-family:"Fraunces";font-weight:700;src:url("assets/fonts/fraunces-latin-700-normal.woff2") format("woff2")}
+  @font-face{font-family:"DM Sans";font-weight:400;src:url("assets/fonts/dm-sans-latin-400-normal.woff2") format("woff2")}
+  @font-face{font-family:"DM Sans";font-weight:500;src:url("assets/fonts/dm-sans-latin-500-normal.woff2") format("woff2")}
+  @font-face{font-family:"DM Sans";font-weight:600;src:url("assets/fonts/dm-sans-latin-600-normal.woff2") format("woff2")}
+  @font-face{font-family:"DM Sans";font-weight:700;src:url("assets/fonts/dm-sans-latin-700-normal.woff2") format("woff2")}
+  @font-face{font-family:"Caveat";font-weight:400;src:url("assets/fonts/caveat-latin-400-normal.woff2") format("woff2")}
+  @font-face{font-family:"Caveat";font-weight:600;src:url("assets/fonts/caveat-latin-600-normal.woff2") format("woff2")}
+  :root{--paper:#F4EBDD;--paper-2:#EDE1CF;--paper-dark:#E6D8C2;--canvas:#17110F;--canvas-2:#0F0A09;--ink:#3A2A24;--ink-2:#6B5A52;
+    --ink-light:#9C8C83;--accent:#7A1E2E;--accent-light:#9B2F3F;--accent-pale:#C98A93;--ocre:#C98A2E;--ocre-2:#E0A84A;--ocre-pale:#EFD7A6;
+    --gris:#A99F95;--gris-2:#8E847A;--brun:#B99A74}
+  .aq-layer{position:absolute;left:0;top:0;width:1920px;height:1080px}
+  /* sols : le bureau sous le carnet (clair), l'intérieur de la goutte (pivot) */
+  .aq-desk{background:var(--paper-dark)}
+  .aq-ink-ground{background:radial-gradient(120% 90% at 50% 45%,#1E1613 0%,var(--canvas) 55%,var(--canvas-2) 100%)}
+  .aq-grain{pointer-events:none;mix-blend-mode:multiply;opacity:.55;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='.012 .018' numOctaves='3' seed='7'/><feColorMatrix values='0 0 0 0 .93  0 0 0 0 .88  0 0 0 0 .78  0 0 0 .55 0'/></filter><rect width='400' height='400' filter='url(%23p)'/></svg>")}
+  .aq-fibres{pointer-events:none;mix-blend-mode:multiply;opacity:.35;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 .4  0 0 0 0 .3  0 0 0 0 .25  0 0 0 .22 0'/></filter><rect width='300' height='300' filter='url(%23f)'/></svg>")}
+  /* kit caméra : #stage > #drift > #cam > #world (le monde fait 14 700 × 1 080 u, 8 pages) */
+  .aq-stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden}
+  .aq-drift,.aq-cam{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:960px 540px}
+  .aq-world{position:absolute;left:0;top:0;transform-origin:0 0}
+  .aq-page{position:absolute;top:0;width:1700px;height:1080px;background:var(--paper);box-shadow:0 18px 40px rgba(58,42,36,.14)}
+  .aq-spine{position:absolute;top:0;width:34px;height:1080px;background:linear-gradient(90deg,rgba(58,42,36,0) 0,rgba(58,42,36,.16) 45%,rgba(58,42,36,.28) 50%,rgba(58,42,36,.16) 55%,rgba(58,42,36,0) 100%)}
+  .aq-svg{position:absolute;left:0;top:0;overflow:visible}
+  .aq-note{position:absolute;font:600 34px/1.2 "Caveat",cursive;color:var(--ink-2);white-space:nowrap}
+  /* fenêtre de chat générique (le contenu HTML est posé par la séquence) */
+  .aq-chat{position:absolute;font-family:"DM Sans",sans-serif;color:var(--ink)}
+  .aq-chat .t{position:absolute;left:28px;top:14px;font:600 16px/1 "DM Sans";color:var(--ink-2);letter-spacing:.08em}
+  .aq-chat .m,.aq-chat .r{position:absolute;left:28px;right:28px;padding:14px 20px;font:400 22px/30px "DM Sans";border-radius:12px 12px 12px 4px}
+  .aq-chat .m{background:rgba(201,138,46,.14)} .aq-chat .r{background:rgba(169,159,149,.16);border-radius:12px 12px 4px 12px}
+  .aq-chat.pain .m{background:rgba(169,159,149,.10)} .aq-chat.pain .r{color:var(--gris-2)}
+  .aq-chat b{display:block;font:600 16px/1 "DM Sans";letter-spacing:.08em;margin-bottom:8px;color:var(--ocre)} .aq-chat .r b{color:var(--gris-2)}
+  .aq-chat .in{position:absolute;left:28px;right:28px;bottom:20px;height:52px;border-radius:26px;background:rgba(58,42,36,.06);font:400 20px/52px "DM Sans";color:var(--ink-light);padding-left:22px}
+  .aq-chat .in i{position:absolute;right:10px;top:8px;width:36px;height:36px;border-radius:50%;background:var(--accent)}
+  /* sous-titre : la phrase de la voix, bas centre (bande y 890 à 980), mot par mot */
+  .aq-sub{position:absolute;left:0;top:896px;width:1920px;text-align:center;font:600 62px/74px "DM Sans",sans-serif;letter-spacing:-.005em;
+    color:var(--ink);white-space:nowrap;text-shadow:0 2px 14px rgba(244,235,221,.8)}
+  .aq-sw{display:inline-block;opacity:0;position:relative}
+  .aq-wt{position:relative;z-index:1}
+  .aq-box{position:absolute;left:-.14em;right:-.14em;top:.04em;bottom:.02em;background:var(--accent);border-radius:4px;transform:scaleX(0);transform-origin:0 50%;z-index:0}
+  .aq-sw.boxed{color:#F8F1E6}
+  .aq-stroke{position:absolute;left:-2%;right:-4%;bottom:-7px;height:9px;border-radius:50%;transform:scaleX(0) rotate(-1.2deg);transform-origin:0 50%;
+    background:linear-gradient(90deg,transparent,var(--ocre) 12%,var(--ocre) 70%,transparent);opacity:.9}
+  /* moment typographique du pivot (le sous-titre se tait) */
+  .aq-type{position:absolute;left:0;top:0;width:1920px;height:1080px;display:grid;place-items:center;font:600 84px/1.1 "Fraunces",serif;letter-spacing:-.01em;color:var(--paper)}
+  .aq-type .aq-stroke{bottom:-4px;height:10px;opacity:.95}
+  /* curseur et onde du clic */
+  .aq-cursor{position:absolute;left:0;top:0;width:34px;height:44px;filter:drop-shadow(0 3px 4px rgba(58,42,36,.3))}
+  .aq-ripple{position:absolute;width:120px;height:120px;margin:-60px 0 0 -60px;border:4px solid rgba(122,30,46,.55);border-radius:50%;opacity:0}
+  /* ===================== CARNET : fin du bloc CSS à copier ===================== */
+
+    /* ===================== séquence 04-curiosite (préfixe p04) ===================== */
+    #p04-root{position:relative;width:1920px;height:1080px;overflow:hidden;font-family:"DM Sans",sans-serif;-webkit-font-smoothing:antialiased}
+    /* les deux moitiés du mot clé « copier-coller » (une seule boîte, deux temps) */
+    .p04-wp{display:inline-block;opacity:0;position:relative}
+  </style>
+
+  <div id="p04-root" data-composition-id="04-curiosite" data-width="1920" data-height="1080" data-duration="3.55">
+
+    <!-- sol : le bureau paper-dark sous le carnet (ground-paper) -->
+    <div id="p04-ground" class="clip aq-layer aq-desk" data-start="0" data-duration="3.55" data-track-index="0"></div>
+
+    <!-- le carnet sous la caméra : #stage > #drift > #cam > #world (pages P2, P3, bord de P4, lavis, encres posés par le script) -->
+    <div id="p04-scene" class="clip aq-layer" data-start="0" data-duration="3.55" data-track-index="1" data-layout-allow-overflow>
+      <div class="aq-stage" id="p04-stage"><div class="aq-drift" id="p04-drift"><div class="aq-cam" id="p04-cam"><div class="aq-world" id="p04-world"></div></div></div></div>
+    </div>
+
+    <!-- grain 55 % et fibres 35 % du papier -->
+    <div id="p04-grain" class="clip aq-layer aq-grain" data-start="0" data-duration="3.55" data-track-index="2"></div>
+    <div id="p04-fibres" class="clip aq-layer aq-fibres" data-start="0" data-duration="3.55" data-track-index="3"></div>
+
+    <!-- la phrase de la voix, bas centre, mot par mot (temps locaux) -->
+    <div id="p04-subs" class="clip aq-layer" data-start="0" data-duration="3.55" data-track-index="4" data-layout-allow-overflow>
+      <div id="p04-s1" class="aq-sub"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var FID = "04-curiosite", DUR = 3.55;
+      var root = document.getElementById("p04-root");
+      function $(id) { return root.querySelector("#p04-" + id); }
+
+/* ===================== CARNET : début du kit JS à copier ===================== */
+const AQ = (() => {
+  const NS = "http://www.w3.org/2000/svg";
+  const C = { paper:"#F4EBDD", paper2:"#EDE1CF", desk:"#E6D8C2", canvas:"#17110F", ink:"#3A2A24", ink2:"#6B5A52", inkLight:"#9C8C83",
+    accent:"#7A1E2E", accentLight:"#9B2F3F", accentPale:"#C98A93", ocre:"#C98A2E", ocre2:"#E0A84A", ocrePale:"#EFD7A6", gris:"#A99F95", gris2:"#8E847A", brun:"#B99A74" };
+  const PAGE_W = 1700, GAP = 34, STEP = PAGE_W + GAP;                         // 8 pages : centre cx(k) = 850 + (k - 1) × 1734
+  const cx = k => 850 + (k - 1) * STEP, x0 = k => (k - 1) * STEP;
+  const FRAMING = { P1:[850,540,1.0], lampe:[430,600,1.6], ecranP1:[760,575,1.55], P2:[2584,540,1.0], copie:[2560,560,1.3], P3:[4318,540,1.0],
+    double:[3451,560,0.62], P4:[6052,540,1.0], P5:[7786,540,1.0], ecran:[7786,470,1.25], bulles:[7786,860,1.5], P6:[9520,540,1.0],
+    P7:[11254,540,1.0], carnet:[11254,430,1.4], mains:[11254,640,1.1], P8:[12988,540,1.0], signature:[12988,400,1.15], bouton:[12988,600,1.0] };
+  const rnd = seed => { let s = seed * 9301 + 49297; return () => { s = (s * 9301 + 49297) % 233280; return s / 233280; }; };
+  function el(name, attrs, parent) { const e = document.createElementNS(NS, name); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+  function div(cls, style, parent, html) { const d = document.createElement("div"); d.className = cls; d.style.cssText = style || ""; if (html) d.innerHTML = html; (parent || document.body).appendChild(d); return d; }
+  /* filtres partagés, un jeu par séquence : ids préfixés (aqDefs(svg, "p03") → #p03-aq, #p03-ink…) */
+  function aqDefs(svg, p = "aq") {
+    if (svg.querySelector("#" + p + "-aq")) return;
+    el("defs", {}, svg).innerHTML = `
+      <filter id="${p}-aq" x="-25%" y="-25%" width="150%" height="150%">
+        <feTurbulence type="fractalNoise" baseFrequency=".018" numOctaves="3" seed="11" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="46" xChannelSelector="R" yChannelSelector="G" result="d"/>
+        <feGaussianBlur in="d" stdDeviation="2.2" result="b"/>
+        <feMorphology in="d" operator="erode" radius="10" result="e"/><feGaussianBlur in="e" stdDeviation="8" result="eb"/>
+        <feComposite in="b" in2="eb" operator="arithmetic" k1="0" k2="1" k3="-0.35" k4="0" result="ring"/>
+        <feTurbulence type="fractalNoise" baseFrequency=".6" numOctaves="2" seed="4" result="g"/>
+        <feColorMatrix in="g" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .25 .85" result="gm"/>
+        <feComposite in="ring" in2="gm" operator="in"/>
+      </filter>
+      <filter id="${p}-aq-soft" x="-25%" y="-25%" width="150%" height="150%">
+        <feTurbulence type="fractalNoise" baseFrequency=".012" numOctaves="3" seed="21" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="70" xChannelSelector="R" yChannelSelector="G" result="d"/><feGaussianBlur in="d" stdDeviation="6"/>
+      </filter>
+      <filter id="${p}-ink" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency=".04" numOctaves="2" seed="5" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="5"/>
+      </filter>
+      <filter id="${p}-aq-blur" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="14"/></filter>`;
+    svg.dataset.aqPrefix = p;
+  }
+  const pf = svg => svg.dataset.aqPrefix || "aq";
+  /* une tache organique : rayon r, ondulation w (0 à 1), n sommets, ry aplatissement ; chemin fermé en courbes (déterministe) */
+  function aqBlob(cx, cy, r, seed, w = 0.22, n = 9, ry = 1) {
+    const R = rnd(seed), pts = [];
+    for (let i = 0; i < n; i++) { const a = (i / n) * Math.PI * 2 + (R() - 0.5) * 0.4, k = 1 + (R() - 0.5) * 2 * w; pts.push([cx + Math.cos(a) * r * k, cy + Math.sin(a) * r * k * ry]); }
+    let d = "";
+    for (let i = 0; i < n; i++) {
+      const p0 = pts[(i - 1 + n) % n], p1 = pts[i], p2 = pts[(i + 1) % n], p3 = pts[(i + 2) % n];
+      const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6], c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+      d += (i ? "" : `M${p1[0].toFixed(1)} ${p1[1].toFixed(1)}`) + ` C${c1[0].toFixed(1)} ${c1[1].toFixed(1)} ${c2[0].toFixed(1)} ${c2[1].toFixed(1)} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+    }
+    return d + " Z";
+  }
+  /* un lavis : shape = chemin ou {cx, cy, r, ry, seed, w, n} ; en multiply ; soft = lavis large. transform-origin au centre (pour l'impact ×0,2 → 1) */
+  function aqWash(svg, shape, color, opacity = 0.8, soft = false, parent) {
+    const g = el("g", { filter: `url(#${pf(svg)}-${soft ? "aq-soft" : "aq"})`, opacity, style: "mix-blend-mode:multiply" }, parent || svg);
+    const d = typeof shape === "string" ? shape : aqBlob(shape.cx, shape.cy, shape.r, shape.seed || 1, shape.w, shape.n, shape.ry);
+    const p = el("path", { d, fill: color }, g);
+    if (typeof shape !== "string") { g.style.transformOrigin = `${shape.cx}px ${shape.cy}px`; g.style.transformBox = "view-box"; }
+    g.dataset.color = color; return g;
+  }
+  /* un trait d'encre à main levée ; renvoie le path (sa longueur sert au tracé : stroke-dasharray / dashoffset) */
+  function aqInk(svg, d, width = 5, color = C.ink, parent, extra = {}) {
+    const g = parent || el("g", { filter: `url(#${pf(svg)}-ink)` }, svg);
+    return el("path", Object.assign({ d, fill: "none", stroke: color, "stroke-width": width, "stroke-linecap": "round", "stroke-linejoin": "round" }, extra), g);
+  }
+  /* prépare un trait pour se dessiner : dashoffset 1 = invisible, 0 = complet (tween GSAP sur strokeDashoffset, ou aqDraw(p, k)) */
+  function aqDrawPrep(path) { const L = path.getTotalLength(); path.style.strokeDasharray = `${L} ${L}`; path.style.strokeDashoffset = L; path.dataset.len = L; return path; }
+  function aqDraw(path, k) { path.style.strokeDashoffset = (+path.dataset.len) * (1 - Math.max(0, Math.min(1, k))); }
+  /* une goutte (signature 1) : tache ronde à 7 sommets ; aqDropFall la fait tomber (états à tweener par GSAP : scale, y, filter) */
+  function aqDrop(svg, x, y, r, color, seed = 3, parent) { return aqWash(svg, { cx: x, cy: y, r, seed, w: 0.18, n: 7 }, color, 0.85, false, parent); }
+  /* séchage (signature 2) : k 0 (humide : bord doux, pas de granulation, ×1,04) → 1 (sec : anneau foncé, granulation, ×1) */
+  function aqDry(g, k) { k = Math.max(0, Math.min(1, k)); g.style.transform = `scale(${1.04 - 0.04 * k})`; g.style.opacity = (+g.dataset.op || 0.8) * (0.7 + 0.3 * k); g.style.filter = k < 0.5 ? `url(#${g.dataset.pf || "aq"}-aq-soft)` : `url(#${g.dataset.pf || "aq"}-aq)`; }
+  /* effacement par le centre (séchage inversé) : k 0 (entière) → 1 (disparue) ; la couleur pâlit vers le gris en chemin */
+  function aqErase(g, k) { k = Math.max(0, Math.min(1, k)); g.style.clipPath = `circle(${(1 - k) * 75}% at 50% 50%)`; g.querySelector("path").setAttribute("fill", k < 0.5 ? g.dataset.color : C.gris); g.style.opacity = (+g.dataset.op || 0.8) * (1 - k * 0.6); }
+  /* silhouette peinte : buste en dôme + tête ronde, h de haut ; pose "dos", "penche", "bras-leve" */
+  function aqFigure(svg, x, y, h, color, seed = 5, pose = "dos", parent) {
+    const g = el("g", {}, parent || svg); const head = h * 0.16, sh = y + head * 2.4, bw = h * 0.3, bot = y + h, tilt = pose === "penche" ? h * 0.08 : 0;
+    aqWash(svg, `M${x - bw} ${bot} L${x - bw} ${sh + h * 0.12} C ${x - bw} ${sh - h * 0.1} ${x - bw * 0.5 + tilt} ${sh - h * 0.14} ${x + tilt} ${sh - h * 0.12} C ${x + bw * 0.5 + tilt} ${sh - h * 0.14} ${x + bw} ${sh - h * 0.1} ${x + bw} ${sh + h * 0.12} L${x + bw} ${bot} Z`, color, 0.82, false, g);
+    if (pose === "bras-leve") aqWash(svg, `M${x + bw * 0.7} ${sh + h * 0.06} C ${x + bw * 1.1} ${sh - h * 0.1} ${x + bw * 1.25} ${y - h * 0.02} ${x + bw * 1.3} ${y - h * 0.16} L ${x + bw * 1.42} ${y - h * 0.12} C ${x + bw * 1.36} ${y + h * 0.02} ${x + bw * 1.2} ${sh - h * 0.02} ${x + bw * 0.86} ${sh + h * 0.12} Z`, color, 0.82, false, g);
+    aqWash(svg, { cx: x + tilt * 1.4, cy: y + head, r: head, seed: seed + 1, w: 0.1, n: 8 }, color, 0.9, false, g);
+    return g;
+  }
+  /* fenêtre de chat générique : cadre à l'encre + barre ; le contenu HTML (.aq-chat) est posé par la séquence au même endroit */
+  function aqWindow(svg, x, y, w, h, opts = {}) {
+    const g = el("g", { transform: `translate(${x} ${y})` }, opts.parent || svg);
+    el("rect", { x: 0, y: 0, width: w, height: h, rx: 14, fill: opts.fill || "rgba(251,246,236,.92)" }, g);
+    const ink = el("g", { filter: `url(#${pf(svg)}-ink)` }, g);
+    aqInk(svg, `M14 0 L${w - 14} 0 Q${w} 0 ${w} 14 L${w} ${h - 14} Q${w} ${h} ${w - 14} ${h} L14 ${h} Q0 ${h} 0 ${h - 14} L0 14 Q0 0 14 0 Z`, opts.stroke || 4.5, opts.color || C.ink, ink);
+    if (opts.bar !== false) aqInk(svg, `M0 ${opts.barH || 48} L${w} ${opts.barH || 48}`, 3, opts.color || C.ink, ink);
+    return g;
+  }
+  /* la lampe de bureau à l'encre, pied en (x, y) ; renvoie {g, glow} ; glow = lavis ocre-2 doux (éteinte : aqErase(glow, 1)) */
+  function aqLamp(svg, x, y, scale = 1, lit = true, parent) {
+    const g = el("g", { transform: `translate(${x} ${y}) scale(${scale})` }, parent || svg);
+    const glow = aqWash(svg, { cx: 330, cy: -40, r: 300, seed: 2, w: 0.14, n: 10, ry: 0.72 }, C.ocre2, 0.75, true, g);
+    const ink = el("g", { filter: `url(#${pf(svg)}-ink)` }, g);
+    aqInk(svg, "M0 0 L0 -230 Q0 -290 70 -310 L180 -340", 6, C.ink, ink); aqInk(svg, "M150 -360 L220 -400 L270 -320 Z", 6, C.ink, ink); aqInk(svg, "M-50 2 L50 2", 6, C.ink, ink);
+    if (!lit) aqErase(glow, 1);
+    return { g, glow };
+  }
+  /* le portable à l'encre, centre de l'écran en (x, y) : écran 620 × 366, clavier ; renvoie {g, screenGlow} */
+  function aqLaptop(svg, x, y, pain = false, parent) {
+    const g = el("g", { transform: `translate(${x - 760} ${y - 575})` }, parent || svg);
+    const glow = aqWash(svg, { cx: 760, cy: 580, r: 230, seed: 4, w: 0.12, n: 9, ry: 0.6 }, pain ? C.gris : C.ocrePale, pain ? 0.6 : 0.9, false, g);
+    const ink = el("g", { filter: `url(#${pf(svg)}-ink)` }, g);
+    aqInk(svg, "M452 392 L1052 392 L1072 758 L430 758 Z", 5, C.ink, ink); aqInk(svg, "M400 760 L1100 760 L1130 800 L370 800 Z", 5, C.ink, ink); aqInk(svg, "M430 772 L1070 772", 2.5, C.inkLight, ink);
+    return { g, glow };
+  }
+  /* le stylo rouge, posé en (x, y), angle a ; corps lavis accent-light + cerne */
+  function aqPen(svg, x, y, a = -34, parent) {
+    const g = el("g", { transform: `translate(${x} ${y}) rotate(${a})` }, parent || svg);
+    aqWash(svg, "M-180 -10 L180 -10 L180 10 L-180 10 Z", C.accentLight, 0.9, false, g);
+    aqInk(svg, "M-180 -10 L180 -10 L180 10 L-180 10 Z M180 -10 L220 0 L180 10", 3.5, C.ink, el("g", { filter: `url(#${pf(svg)}-ink)` }, g));
+    return g;
+  }
+  /* une page du carnet (k = 1 à 8) dans #world, et la reliure à sa droite ; renvoie la page (les objets y vont en coordonnées PAGE : x - x0(k)) */
+  function aqPage(world, k) {
+    const p = div("aq-page", `left:${x0(k)}px`, world); p.dataset.page = k;
+    if (k < 8) div("aq-spine", `left:${x0(k) + PAGE_W}px`, world);
+    return p;
+  }
+  /* caméra : amène (x, y) du monde au centre du cadre à l'échelle s ; blur en px sur #cam */
+  function aqCam(world, cam, x, y, s, blur = 0) {
+    world.style.transform = `translate(${960 - x}px, ${540 - y}px)`; world.style.transformOrigin = `${x}px ${y}px`;
+    cam.style.transform = `scale(${s})`; cam.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : "none";
+  }
+  /* sous-titre mot par mot : words = [["Dimanche,", 0.02, "box"], ["vingt-trois", 0.74], ...] ; renvoie les spans .aq-sw (GSAP : opacity, y, blur ; .aq-box scaleX ; .aq-stroke scaleX) ; la boîte est sous le texte (.aq-wt), aucun z-index négatif */
+  function aqSubtitle(el_, words) {
+    el_.innerHTML = words.map(([w, , mark]) => `<span class="aq-sw${mark === "box" ? " boxed" : ""}">${mark === "box" ? '<i class="aq-box"></i>' : ""}<span class="aq-wt">${w}</span>${mark === "stroke" ? '<i class="aq-stroke"></i>' : ""}</span>`).join(" ");
+    return [...el_.querySelectorAll(".aq-sw")];
+  }
+  /* le curseur (flèche papier cernée d'encre) ; position par transform translate */
+  function aqCursor(parent) { return div("aq-cursor", "", parent, `<svg viewBox="0 0 34 44" width="34" height="44"><path d="M3 2 L31 24 L19 26 L26 40 L20 43 L13 29 L3 38 Z" fill="#F8F1E6" stroke="#3A2A24" stroke-width="2.5" stroke-linejoin="round"/></svg>`); }
+  return { C, NS, PAGE_W, GAP, STEP, cx, x0, FRAMING, rnd, el, div, aqDefs, aqBlob, aqWash, aqInk, aqDrawPrep, aqDraw, aqDrop, aqDry, aqErase, aqFigure, aqWindow, aqLamp, aqLaptop, aqPen, aqPage, aqCam, aqSubtitle, aqCursor };
+})();
+/* ===================== CARNET : fin du kit JS à copier ===================== */
+
+      var K = AQ.C, el = AQ.el, aqDefs = AQ.aqDefs, aqWash = AQ.aqWash, aqInk = AQ.aqInk, aqDrop = AQ.aqDrop, aqErase = AQ.aqErase,
+          aqLamp = AQ.aqLamp, aqPen = AQ.aqPen, aqPage = AQ.aqPage, aqCam = AQ.aqCam, aqSubtitle = AQ.aqSubtitle;
+
+      /* ===================== le monde : double page P2 + P3, bord de P4 ===================== */
+      var world = $("world"), cam = $("cam");
+      aqPage(world, 2); aqPage(world, 3); aqPage(world, 4);
+      var svg = el("svg", { class: "aq-svg", width: 7000, height: 1080 }, world); aqDefs(svg, "p04");
+      var X2 = AQ.x0(2);
+      function txt(parent, x, y, size, str, attrs) {
+        var t = el("text", Object.assign({ x: x, y: y, "font-family": "Caveat, cursive", "font-weight": 600, "font-size": size, fill: K.inkLight }, attrs || {}), parent);
+        t.textContent = str; return t;
+      }
+
+      // P2 : le plateau brun, la lampe éteinte, les trois copies grises (la première dessus, avec sa note), le stylo posé à plat
+      var p2 = el("g", {}, svg);
+      aqWash(svg, "M" + (X2 + 120) + " 860 L" + (X2 + 1580) + " 860 L" + (X2 + 1600) + " 940 L" + (X2 + 100) + " 940 Z", K.brun, 0.7, false, p2);
+      var lamp2 = aqLamp(svg, 3100, 640, 1, false, p2);
+      var pages = el("g", {}, p2); pages.style.filter = "drop-shadow(0 14px 30px rgba(58,42,36,.14))";
+      [[2600, 580, 21], [2520, 560, 14], [2440, 540, 8]].forEach(function (c, i) {
+        var g = el("g", { transform: "translate(" + c[0] + " " + c[1] + ") rotate(" + c[2] + ")" }, pages);
+        el("rect", { x: -150, y: -200, width: 300, height: 400, fill: K.paper2 }, g);
+        for (var j = 0; j < 5; j++) el("rect", { x: -120, y: -140 + j * 40, width: j === 2 ? 150 : 240, height: 3, fill: K.inkLight, opacity: 0.55 }, g);
+        if (i === 2) txt(g, -120, -162, 26, "Dissertation · 1/3");
+      });
+      var penW = el("g", {}, p2);
+      aqPen(svg, 2520, 500, -6, penW);
+
+      // P3 : le lavis gris de la lampe éteinte (35 %), la note « Leçon », la lampe du coin éteinte, le cadre et la note « 12 » séchée
+      var grey = aqWash(svg, { cx: 4318, cy: 560, r: 820, seed: 23, w: 0.08, n: 12, ry: 0.6 }, K.gris, 0.35, true); grey.dataset.op = "0.35"; grey.dataset.pf = "p04";
+      var p3 = el("g", {}, svg);
+      txt(p3, 3600, 150, 34, "Leçon", { transform: "rotate(-2 3600 150)" });
+      var lamp3 = aqLamp(svg, 4850, 300, 0.8, false, p3);
+      aqInk(svg, "M4760 230 L4960 230 L4960 390 L4760 390 Z", 4, K.ink, el("g", { filter: "url(#p04-ink)" }, p3));
+      txt(p3, 4860, 318, 150, "12", { "text-anchor": "middle", "dominant-baseline": "central" });
+
+      // les quatre dernières taches de couleur (lavis larges) : elles s'effacent une à une (aqErase)
+      var WSH = [[1900, 300, K.ocrePale, 160, 41, 0.8, 0.6], [1850, 760, K.accentPale, 140, 42, 0.85, 0.55], [4950, 240, K.ocrePale, 150, 43, 0.8, 0.6], [5050, 760, K.accentPale, 130, 44, 0.85, 0.55]];
+      var washes = WSH.map(function (w) {
+        var g = aqWash(svg, { cx: w[0], cy: w[1], r: w[3], seed: w[4], w: 0.2, n: 9, ry: w[5] }, w[2], w[6], true);
+        g.dataset.op = String(w[6]); g.dataset.pf = "p04"; return g;
+      });
+
+      // la goutte accent du coin de P3 (enveloppe pour le cran d'échelle), et le dégradé qui l'assombrit vers canvas pendant la plongée
+      var dropW = el("g", {}, svg); dropW.style.transformOrigin = "5080px 820px"; dropW.style.transformBox = "view-box";
+      var drop = aqDrop(svg, 5080, 820, 46, K.accent, 7, dropW); drop.dataset.pf = "p04"; drop.dataset.op = "0.85";
+      var rg = el("radialGradient", { id: "p04-dark", cx: "50%", cy: "50%", r: "50%" }, svg.querySelector("defs"));
+      [["0%", K.canvas, 1], ["30%", K.canvas, 1], ["56%", K.accent, 1], ["80%", K.accent, 0.9], ["100%", K.accent, 0]].forEach(function (s) { el("stop", { offset: s[0], "stop-color": s[1], "stop-opacity": s[2] }, rg); });
+      var dark = el("circle", { cx: 5080, cy: 820, r: 100, fill: "url(#p04-dark)" }, svg); dark.style.opacity = 0;
+
+      /* ---- sous-titre (aqSubtitle du kit) : une phrase, le trait ocre sous « curiosité », la boîte de « copier-coller » en deux temps ---- */
+      var WS = [["La", 0.21], ["curiosité", 0.47, "stroke"], ["s'éteint,", 1.13], ["un", 1.86], ["copier-coller", 2.11, "box"], ["à", 2.81], ["la", 2.99], ["fois.", 3.21]];
+      var s1 = $("s1"), sp = aqSubtitle(s1, WS);
+      var cc = sp[4]; cc.querySelector(".aq-wt").innerHTML = '<span class="p04-wp" id="p04-w-copier">copier</span><span class="p04-wp" id="p04-w-coller">-coller</span>';
+      var wCopier = $("w-copier"), wColler = $("w-coller");
+
+      /* ===================== état : proxies lus par UN seul render() ===================== */
+      var CAM = { x: 3700, y: 560, s: 0.70, b: 9 };        // caméra (handoff_in : cam(3700, 560, 0.70) flou 9, en plein recul)
+      var PL = { p: 0 };                                   // la plongée (3.10 à 3.55) : progression power3.in
+      var PEN = { y: 0 };                                  // le stylo roule de 4 u
+      var WK = [{ k: 0 }, { k: 0 }, { k: 0 }, { k: 0 }];   // effacement des quatre taches (aqErase)
+      var GR = { o: 0.35 };                                // le lavis gris de P3
+      var DR = { s: 1, o: 0.85 };                          // la goutte : cran ×1,15, puis elle luit
+      var DK = { o: 0 };                                   // le dégradé accent → canvas au centre de la goutte
+      var DOF = { p2: 0, p3: 0 };                          // profondeur de champ pendant la plongée (P2 puis les encres de P3 passent flous)
+      // état de la caméra au départ de la plongée (fin de la dérive, 3.10), et décalage écran de la goutte à cet instant
+      var PX0 = 3451 + 16 * 2.87, PS0 = 0.56 * (1 - 0.008 * 2.87);
+      var OFF0 = [(5080 - PX0) * PS0, (820 - 560) * PS0];
+      function blur(v) { return v > 0.05 ? "blur(" + v.toFixed(2) + "px)" : "none"; }
+      // boîtes monde des groupes filtrés : hors champ ils ne sont pas peints (la plongée monte à ×14)
+      var M = 150, CULL = [{ el: p2, b: [2100, 200, 3640, 950] }, { el: p3, b: [3560, -40, 5080, 400] }, { el: grey, b: [3400, 20, 5240, 1080] }];
+      washes.forEach(function (g, i) { var w = WSH[i]; CULL.push({ el: g, b: [w[0] - w[3] * 1.35, w[1] - w[3] * w[5] * 1.35, w[0] + w[3] * 1.35, w[1] + w[3] * w[5] * 1.35] }); });
+
+      function render() {
+        var x = CAM.x, y = CAM.y, s = CAM.s;
+        if (PL.p > 0) { var q = (1 - PL.p) * (1 - PL.p); s = PS0 + (14 - PS0) * PL.p; x = 5080 - OFF0[0] * q / s; y = 820 - OFF0[1] * q / s; }
+        aqCam(world, cam, x, y, s, CAM.b);
+        penW.style.transform = "translate(0px," + PEN.y.toFixed(2) + "px)";
+        washes.forEach(function (g, i) {
+          if (WK[i].k > 0) aqErase(g, WK[i].k);
+          else { g.style.clipPath = "none"; g.querySelector("path").setAttribute("fill", g.dataset.color); g.style.opacity = g.dataset.op; }
+        });
+        grey.style.opacity = GR.o;
+        dropW.style.transform = "scale(" + DR.s.toFixed(4) + ")"; drop.style.opacity = DR.o;
+        dark.style.opacity = DK.o;
+        p2.style.filter = blur(DOF.p2); p3.style.filter = blur(DOF.p3);
+        CULL.forEach(function (c) {
+          var b = c.b, l = 960 + (b[0] - x) * s, r = 960 + (b[2] - x) * s, t = 540 + (b[1] - y) * s, bt = 540 + (b[3] - y) * s;
+          c.el.style.visibility = (r < -M || l > 1920 + M || bt < -M || t > 1080 + M) ? "hidden" : "inherit";
+        });
+        washes.forEach(function (g, i) { if (WK[i].k >= 1) g.style.visibility = "hidden"; });
+        if (GR.o < 0.02) grey.style.visibility = "hidden";
+      }
+
+      /* ===================== la timeline unique, en pause ===================== */
+      var tl = gsap.timeline({ paused: true, onUpdate: render });
+      function ft(target, from, to, pos) { if (pos > 0) to.immediateRender = false; tl.fromTo(target, from, to, pos); }
+      function tw(target, from, to, dur, ease, pos) { var o = {}, k; for (k in to) o[k] = to[k]; o.duration = dur; o.ease = ease; ft(target, from, o, pos); }
+      // cubique à vitesse d'entrée c (normalisée) et sortie nulle : le recul de la séquence 3 atterrit sans à-coup
+      function cubic(c) { var a = c - 2, b = 3 - 2 * c; return function (p) { return a * p * p * p + b * p * p + c * p; }; }
+
+      /* ---- piste caméra ---- */
+      // 0.00 à 0.23 fin du recul : x 3700 → 3451 (entrée à -1500 u/s), échelle 0,70 → 0,56 (entrée à -1,2/s), flou 9 → 0 ; la double page entière, la goutte du coin dans le cadre
+      tw(CAM, { x: 3700 }, { x: 3451 }, 0.23, cubic(1500 * 0.23 / 249), 0);
+      tw(CAM, { s: 0.70 }, { s: 0.56 }, 0.23, cubic(1.2 * 0.23 / 0.14), 0);
+      tw(CAM, { b: 9 }, { b: 0 }, 0.23, "power2.out", 0);
+      // 0.23 à 3.10 dérive : x +16 u/s, échelle -0,8 %/s (la double page recule encore un peu)
+      tw(CAM, { x: 3451, s: 0.56 }, { x: PX0, s: PS0 }, 2.87, "none", 0.23);
+      // 3.10 à 3.55 plongée dans la goutte : power3.in, la goutte glisse vers le centre et grandit jusqu'à cam(5080, 820, 14) ; flou 0 → 10 au sommet
+      tw(PL, { p: 0 }, { p: 1 }, 0.45, "power3.in", 3.10);
+      tw(CAM, { b: 0 }, { b: 10 }, 0.45, "power2.in", 3.10);
+
+      /* ---- scène 1 (0.00 à 3.10) : la double page, les taches s'effacent une à une ---- */
+      // 0.30 le stylo posé roule de 4 u
+      tw(PEN, { y: 0 }, { y: 4 }, 0.10, "power2.out", 0.30);
+      // 0.47 « curiosité », 1.13 « s'éteint », 2.11 « copier », 2.53 « -coller » : une tache s'efface par le centre (aqErase 0 → 1, 0,3 s power2.in)
+      [0.47, 1.13, 2.11, 2.53].forEach(function (t, i) { tw(WK[i], { k: 0 }, { k: 1 }, 0.30, "power2.in", t); });
+      // 1.60 le lavis gris de P3 gagne 10 %
+      tw(GR, { o: 0.35 }, { o: 0.45 }, 0.40, "power1.inOut", 1.60);
+      // 2.70 la goutte grossit d'un cran (×1 → 1,15) : seule couleur restante ; 2.99 « la » : elle luit (0,85 → 1)
+      tw(DR, { s: 1 }, { s: 1.15 }, 0.10, "power2.out", 2.70);
+      tw(DR, { o: 0.85 }, { o: 1 }, 0.12, "power1.out", 2.99);
+
+      /* ---- scène 2 (3.10 à 3.55) : plongée dans la goutte ---- */
+      // profondeur : P2 (8 px) puis les encres de P3 (6 px) passent flous, la goutte reste nette jusqu'au flou de la caméra
+      tw(DOF, { p2: 0, p3: 0 }, { p2: 8, p3: 6 }, 0.30, "power2.inOut", 3.10);
+      // le lavis gris s'en va avec le papier qui sort du cadre
+      tw(GR, { o: 0.45 }, { o: 0 }, 0.26, "power1.in", 3.10);
+      // 3.40 le centre de la goutte s'assombrit (dégradé accent → canvas, opacité 0 → 1, 0,15 s)
+      tw(DK, { o: 0 }, { o: 1 }, 0.15, "power1.inOut", 3.40);
+
+      /* ---- la phrase de la voix : mot par mot (0 → 0,35 → 1), chaque mot 1 image avant son temps ---- */
+      sp.forEach(function (w, i) {
+        if (i === 4) return;
+        var st = Math.max(0, WS[i][1] - 1 / 30);
+        ft(w, { y: 8, filter: "blur(6px)" }, { y: 0, filter: "blur(0px)", duration: 0.14, ease: "power2.out" }, st);
+        ft(w, { opacity: 0 }, { opacity: 0.35, duration: 0.08, ease: "power2.out" }, st);
+        ft(w, { opacity: 0.35 }, { opacity: 1, duration: 0.20, ease: "power1.out" }, st + 0.10);
+      });
+      // le trait ocre sous « curiosité » se trace de 0.47 à 0.87
+      ft(sp[1].querySelector(".aq-stroke"), { scaleX: 0, rotation: -1.2 }, { scaleX: 1, rotation: -1.2, duration: 0.40, ease: "power2.out" }, 0.47);
+      // la boîte de « copier-coller » se trace à 2.07 ; « copier » paraît à 2.11, « -coller » à 2.53
+      ft(cc, { opacity: 0 }, { opacity: 1, duration: 0.01, ease: "none" }, 2.07);
+      ft(cc.querySelector(".aq-box"), { scaleX: 0, scaleY: 1, rotation: 0, skewX: 0, skewY: 0 }, { scaleX: 1, scaleY: 1, rotation: 0, skewX: 0, skewY: 0, duration: 0.16, ease: "power3.out" }, 2.07);
+      [[wCopier, 2.11], [wColler, 2.53]].forEach(function (c) {
+        ft(c[0], { y: 8, filter: "blur(6px)", opacity: 0 }, { y: 0, filter: "blur(0px)", opacity: 1, duration: 0.12, ease: "power2.out" }, c[1] - 1 / 30);
+      });
+      // la phrase sort de 3.30 à 3.44 (opacité 1 → 0, flou 0 → 6 px), avant le noir
+      ft(s1, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.14, ease: "power2.in" }, 3.30);
+
+      // durée exacte de la séquence
+      tl.set({}, {}, DUR);
+
+      // première image = handoff_in, avant tout seek
+      render();
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[FID] = tl;
+    })();
+  </script>
+</template>

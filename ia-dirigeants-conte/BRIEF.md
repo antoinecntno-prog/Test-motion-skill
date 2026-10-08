@@ -31,8 +31,9 @@ Rempli le 08/10/2026 d'après la demande d'Antoine. Les hypothèses sont marqué
   clé des sous-titres et à la carte de fin (signature, bouton).
 - Polices : fraunces (moment typographique du pivot, titre de conte éventuel), dm-sans (sous-titres, CTA), caveat
   (signature manuscrite).
-- Personnages : marionnettes d'ombres à pivots, une dirigeante (deux personnages au plus) et une grande figure de voiles
-  et de lumière pour l'IA, de forme originale (ni squelette, ni capuche, ni mains griffues, ni faux).
+- Personnages : marionnettes d'ombres à pivots ; lui, un dirigeant, et sa fille de sept ans ; elle, la lycéenne
+  à la longue tresse, qui revient en jeune femme à taille humaine découpée en lumière dorée, au cœur d'une lumière
+  faite de milliers de pages (aucune grande figure drapée, pour rester loin de la référence).
 
 ## 3. Marque et appel à l'action
 

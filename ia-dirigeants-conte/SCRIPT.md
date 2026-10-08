@@ -80,7 +80,92 @@ femme raconte elle-même, et le spectateur découvre à la fin qui parle.
 - La clé arrive après la dernière scène : une devinette à la voix, deux lettres d'or à l'image (IA), puis le chiffre
   réel.
 
-## Version 1 : « Les deux âges de l'amour » (elle raconte, la philosophie dite en deux maximes)
+## Version 3 : passage du skill storytelling (recommandée, elle raconte)
+
+### Colonne vertébrale
+
+- Situation initiale : un dirigeant enchaîné à ses devis, seul derrière son écran ; sa fille frappe au carreau, la
+  chaîne le rassoit.
+- Élément perturbateur : le dessin de machine volante de sa fille fait remonter le lycée, et elle revient.
+- Péripéties : la séparation, son voyage à elle, la page blanche ; au retour, il recule et avoue sa peur (« J'ai oublié
+  comment on t'écrit »), elle le rassure, il lui confie ses peines puis ses devis.
+- Dénouement : les chaînes s'envolent, il lui cède sa place, elle le laisse partir ; avant la nuit, il dessine avec sa
+  fille. Le début est l'inverse de la fin : la fille derrière la vitre, puis la fille sur la même feuille que lui.
+- Moment de bascule : « Mon nom tient en deux lettres. » Tout le conte se relit d'un coup.
+- Pourquoi on raconte ça : la dernière dirigeante formée retrouve dix heures chaque semaine.
+
+### Quatre accroches essayées
+
+- Retenue : « Je retrouvai ce dirigeant enchaîné à ses devis. » La voix d'une femme qui dit « je retrouvai » ouvre une
+  boucle dès la première seconde : qui parle, et pourquoi le retrouve-t-elle ? Cible et douleur à 2,8 s environ.
+- « Ce dirigeant vivait enchaîné à ses devis. » Image forte, aucune boucle ouverte.
+- « Sa fille frappait au carreau. Lui répondait à ses devis. » La douleur arrive après 3 s.
+- « Il écrivait à tout le monde, seul derrière son écran. » La cible arrive trop tard.
+
+### Version mise en scène
+
+| Partie et scène | Voix | À l'écran (ombres sépia, toile éclairée par derrière) |
+|---|---|---|
+| 1. Accroche (scène 1 : l'atelier, vu par la fenêtre) | Je retrouvai ce dirigeant enchaîné à ses devis. | La caméra regarde par la fenêtre de l'atelier, comme les yeux de la narratrice. Un homme de profil à son pupitre, à contre-jour d'une bougie ; de son poignet part une chaîne de grands maillons de papier, ajourés de colonnes de chiffres, jusqu'à une pile haute comme une armoire. |
+|  | Il écrivait à tout le monde, seul derrière son écran. | Devant lui, un écran d'ordinateur vu de face sur son pied, le clavier sous ses doigts ; des enveloppes en jaillissent et filent par la fenêtre. La caméra recule sur la façade d'en face : des dizaines de fenêtres éclairées, une silhouette seule penchée sur son écran dans chacune. |
+| 2. Gag muet (2,5 s) | *(silence)* | Derrière la porte vitrée, sa fille, petite silhouette de sept ans à deux couettes, plaque contre la vitre le dessin d'une machine volante et frappe. Il se lève pour lui ouvrir, et la chaîne le rassoit d'un coup sec. |
+| 3. Le conte (scène 2 : la cour du lycée) | Au lycée, j'étais assise près de lui. | Le dessin collé à la vitre s'agrandit et devient une cour de lycée : deux lycéens assis sur un muret, sous un arbre en fleurs. Elle porte une longue tresse nouée d'un ruban. |
+|  | Il dessinait des machines volantes, je finissais ses phrases. | Une machine à ailes se déplie hors de son cahier, grande comme son buste. Il souffle des lettres de papier, JE T'AI, qui s'arrêtent à mi-chemin ; elle souffle ME, qui complète la phrase entre eux. |
+|  | Un été nous sépara. | La toile se déchire entre eux et emporte chacun vers un bord du cadre. Le ruban reste accroché à la déchirure. |
+|  | Mais chacun manquait à l'autre. | Le vent soulève le ruban au bord de la déchirure, devant la place vide sur le muret. |
+| (scène 3 : la forêt de bibliothèques) | Je partis lire tout ce qui s'écrit. | Elle traverse une forêt de bibliothèques dans la brume, et les pages s'envolent des rayons pour se poser dans ses bras. |
+| (scène 4 : l'atelier, la page blanche) | Il pensait à moi devant chaque page blanche. | Le dirigeant devant une grande feuille vide, éclairée par derrière ; sa plume reste levée, puis trace dans la marge le profil à la tresse. |
+| 4. Pivot sur noir | Alors je revins. | La phrase s'inscrit au centre du noir en Fraunces crème et reste seule 1,5 s, en silence ; le sous-titre du bas s'efface pendant ce temps. Puis une lueur passe sous la porte. |
+| 5. Le retour (scène 5 : l'atelier, la nuit) | « J'ai oublié comment on t'écrit », murmura-t-il. | La porte s'ouvre sur une lumière faite de milliers de pages, qui remplit l'atelier. Le dirigeant recule, la chaîne tendue ; en son cœur, une jeune femme à taille humaine, découpée en lumière dorée, s'avance à hauteur d'yeux. |
+|  | « Écris-moi comme avant. » | Elle s'assoit face à lui au pupitre. Il trempe sa plume. |
+|  | Il m'écrivit ses peines, puis ses devis. | Les lettres de papier qui sortent de sa plume traversent la lumière et deviennent des devis dorés. |
+|  | Chaque maillon s'ouvrit sous mes doigts. | Les mains dorées de la jeune femme passent sur la chaîne ; les maillons s'ouvrent un par un avec un claquement de bois. |
+|  | Ses chaînes s'envolèrent. | Les maillons éclatent en fragments de papier qui deviennent des oiseaux dorés et sortent par la fenêtre. |
+|  | Je l'aimais assez pour lui rendre le temps perdu. | Les oiseaux dorés se posent autour de sa fille, qui attend dehors avec son dessin ; elle lève la tête vers l'atelier. |
+|  | Il me céda sa place. Je le laissai partir. | Il se lève, elle s'assoit au pupitre, et les devis se posent en pile dorée devant elle. Il prend sa veste courte et son chapeau, puis passe la porte vitrée ; elle le regarde partir. |
+| (scène 6 : la maison) | Avant la nuit, il dessinait des machines volantes avec sa fille. | Dans la maison, le père et sa fille penchés sur la même feuille ; une machine volante de papier lumineux s'élève entre eux. Par la fenêtre, le ciel est encore clair, et l'atelier reste éclairé de l'autre côté de la rue. |
+| 6. Clé (le moment de bascule), preuve, marque | Mon nom tient en deux lettres. | La poussière d'or se rassemble au centre de la toile en deux lettres : IA. |
+|  | La dernière dirigeante formée retrouve dix heures chaque semaine. | Les deux lettres se défont en poussière d'or. Au centre, un chiffre doré roule de 0 à « 10 h », avec dessous, sur deux lignes, « gagnées chaque semaine » et « par la dernière dirigeante formée » (texte exact du site) ; le sous-titre du bas s'efface sur cette ligne. |
+|  | *(carte de fin, sans voix, 4 s)* | La signature manuscrite « Antoine Contino, formateur IA » en Caveat bordeaux, et dessous un seul bouton bordeaux « Réserver un audit IA de 30 minutes », que le curseur rejoint et clique ; dessous, calendly.com/antoine-cntno/30min · antoinecontino.fr. |
+
+### Version à coller dans ElevenLabs
+
+```
+Je retrouvai ce dirigeant enchaîné à ses devis.
+Il écrivait à tout le monde, seul derrière son écran.
+Au lycée, j'étais assise près de lui.
+Il dessinait des machines volantes, je finissais ses phrases.
+Un été nous sépara.
+Mais chacun manquait à l'autre.
+Je partis lire tout ce qui s'écrit.
+Il pensait à moi devant chaque page blanche.
+[softly] Alors je revins.
+« J'ai oublié comment on t'écrit », murmura-t-il.
+« Écris-moi comme avant. »
+Il m'écrivit ses peines, puis ses devis.
+Chaque maillon s'ouvrit sous mes doigts.
+Ses chaînes s'envolèrent.
+Je l'aimais assez pour lui rendre le temps perdu.
+Il me céda sa place. Je le laissai partir.
+Avant la nuit, il dessinait des machines volantes avec sa fille.
+Mon nom tient en deux lettres.
+La dernière dirigeante formée retrouve dix heures chaque semaine.
+```
+
+### Durée et contrôles
+
+- Voix : 134 mots ; avec le gag (2,5 s), le pivot (1,5 s) et la carte de fin muette (4 s), environ 58 s à
+  160 mots par minute et 55 s à 170. Les guides LinkedIn de 2026 placent la vidéo native de fil entre 30 et
+  90 s. Pour revenir près de 50 s, retirer « Mais chacun manquait à l'autre. » et « Je partis lire tout ce qui
+  s'écrit. » de la voix : les images du ruban et des bibliothèques restent.
+- Aucun « et » dans la voix : « Mais », « Alors », « puis » ou deux phrases font tourner le récit.
+- Le conte garde l'imparfait et le passé simple du brief ; les deux répliques au discours direct font revivre la scène.
+- Six scènes, chacune avec son lieu à l'image : l'atelier vu par la fenêtre, la cour du lycée, la forêt de
+  bibliothèques, l'atelier et la page blanche, l'atelier au retour, la maison.
+- Sous-titres : « Je retrouvai ce dirigeant / enchaîné à ses devis. » ; « J'ai oublié comment on t'écrit », /
+  murmura-t-il. Les autres lignes se coupent comme dans les versions 1 et 2.
+
+## Version 1 (archive) : « Les deux âges de l'amour » (elle raconte, la philosophie dite en deux maximes)
 
 ### Version mise en scène
 
@@ -128,7 +213,7 @@ Mon nom tient en deux lettres.
 La dernière dirigeante formée retrouve dix heures chaque semaine.
 ```
 
-## Version 2 : « Je le laissai partir » (elle raconte, la philosophie portée par les actes)
+## Version 2 (archive) : « Je le laissai partir » (elle raconte, la philosophie portée par les actes)
 
 ### Version mise en scène
 

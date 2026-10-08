@@ -80,90 +80,91 @@ femme raconte elle-même, et le spectateur découvre à la fin qui parle.
 - La clé arrive après la dernière scène : une devinette à la voix, deux lettres d'or à l'image (IA), puis le chiffre
   réel.
 
-## Version 4 : « Le Temps perdu » (structure du conte d'Antoine, 08/10/2026)
+## Version 4 : « Le Temps perdu » (structure du conte d'Antoine, 08/10/2026, relue)
 
 ### La pyramide
 
 | Étape | Dans le film |
 |---|---|
-| Introduction | Du banal au saisissant : un dirigeant rentre chez lui avec ses devis, puis le Temps perdu entre derrière lui. |
-| Élément déclencheur | Sa fille l'attend pour la balançoire ; il ouvre un dossier, et le Temps perdu garde l'heure. |
-| Péripéties montantes | Deuxième tour, même formule : elle l'attend pour dessiner, il ouvre ses devis, le Temps perdu garde la soirée. À chaque heure perdue, le père s'éloigne de la toile et s'efface. |
-| Climax | Le troisième tour casse la formule : sa fille retrouve leur dessin (un petit dinosaure sous un champignon) et le glisse sur ses devis. Il voit enfin la chaîne, puis tend ses devis au Temps perdu. Le Temps perdu venait prendre le père, il finit par travailler pour lui. |
+| Introduction | Du banal au saisissant : un dirigeant rentre chez lui avec ses devis, puis le Temps perdu passe la porte derrière lui. |
+| Élément déclencheur | Sa fille l'attend pour la balançoire ; il ouvre un dossier, et le Temps perdu lui prend une heure. |
+| Péripéties montantes | Deuxième tour, même formule : elle l'attend pour dessiner, il ouvre ses devis, le Temps perdu lui prend la soirée. Soir après soir, le père s'éloigne de la toile et s'efface. |
+| Climax | Le troisième tour casse la formule : sa fille retrouve leur petit dinosaure et le glisse sur ses devis. Il voit enfin la chaîne, puis règle lui-même le Temps perdu sur ses devis. L'horloge qui le tenait enchaîné travaille désormais pour lui. |
 | Péripéties descendantes | Second passage dans le même ordre, la promesse puis son paiement : la balançoire revient d'abord. |
-| Dénouement | Le dessin revient ensuite : sur la même feuille, un second dinosaure. Clôture calme, à la position finale. |
-| Clé | Le Temps perdu a changé de nom : deux lettres d'or, IA. Puis le chiffre réel des 10 h. |
+| Dénouement | Le dessin revient ensuite : un second dinosaure rejoint le premier. Clôture calme, à la position finale. |
+| Clé | Le Temps perdu a changé de camp : il s'appelle IA. Puis le chiffre réel des 10 h. |
 
 ### Lois d'Olrik appliquées
 
-- Ouverture et clôture : l'entrée banale d'une maison, puis la haute horloge qui passe la porte ; la fin revient au
+- Ouverture et clôture : l'entrée banale d'une maison, puis l'horloge qui roule derrière le père ; la fin revient au
   calme, dans le jardin puis à la table de la cuisine.
-- Le Temps perdu est le seul personnage continu : il traverse toutes les scènes, il gagne deux fois, perd la
-  troisième, puis change de camp. Les pertes vont vite, le paiement prend « les soirs suivants ».
-- Deux personnages par scène : le père et le Temps perdu, ou le père et sa fille ; la caméra isole toujours un couple.
-- Deux scènes-tableaux : la haute horloge debout derrière le père, la chaîne accrochée à son balancier ; le père qui
-  pousse la balançoire au rythme du balancier doré.
-- La loi de trois tient dans la structure : deux tours écrits avec la même formule, le troisième la casse, comme
-  le veut la position finale. La voix ne contient donc aucun groupe de trois phrases jumelles.
+- Le Temps perdu est le seul personnage continu : il gagne deux fois, puis le père le règle et il change de camp. Les
+  pertes vont vite, le paiement prend « les soirs suivants ».
+- Deux personnages par scène : la fillette sort du cadre avant que l'horloge agisse, et l'horloge reste hors du cadre
+  quand le père et sa fille jouent.
+- Deux scènes-tableaux : l'horloge derrière le père, la chaîne accrochée à son balancier ; le père qui pousse la
+  balançoire dans le même arc que le balancier doré.
+- La loi de trois tient dans la structure : deux tours écrits avec la même formule, le troisième la casse à la
+  position finale. La voix ne contient aucun groupe de trois phrases jumelles.
 
-### Ce qui reste hors de la référence
+### Distance avec la référence
 
-Le film reprend la structure de conte décrite par Freytag et Olrik, qui appartient à tous les contes. Rien de
-l'intrigue de référence : aucun présent offert, aucun bien cédé, aucun départ avec la figure en fin de film. Le Temps
-perdu a une forme d'horloge comtoise (cadran, balancier, longs bras sur tiges) : ni capuche, ni squelette, ni faux,
-ni sablier.
+Le film emprunte la structure générale du conte, décrite par Freytag et Olrik. Son intrigue lui appartient : le père
+règle lui-même l'horloge, et le film finit sur le père et sa fille, à la balançoire puis à la table de la cuisine. Le
+Temps perdu a la forme d'une horloge comtoise trapue sur roulettes, à cadran chiffré et balancier en lentille.
 
 ### Version mise en scène
 
 | Étape de la pyramide et lieu | Voix | À l'écran (ombres sépia, toile éclairée par derrière) |
 |---|---|---|
 | Introduction (l'entrée de la maison, le soir) | Ce dirigeant ramenait ses devis à la maison. | Une porte s'ouvre sur l'entrée d'une maison. Un homme de profil entre, une pile de devis sous le bras ; de son poignet part une fine chaîne de maillons de papier, ajourés de colonnes de chiffres. |
-|  | Derrière lui entrait le Temps perdu. | Derrière lui, une haute silhouette en forme d'horloge comtoise se baisse pour passer la porte : un cadran pour tête, un balancier qui bat dans le ventre, de longs bras articulés montés sur tiges. Le bout de la chaîne est accroché au balancier. |
+|  | Derrière lui, le Temps perdu passa la porte. | Derrière lui roule une horloge comtoise trapue et ventrue, montée sur des roulettes de bois. Son cadran à chiffres romains porte deux aiguilles bien lisibles ; son balancier est une lentille ronde entourée d'engrenages apparents. Le bout de la chaîne est accroché au balancier. Tic-tac. |
 | Montée, premier tour (le salon) | Sa fille l'attendait pour la balançoire. | Au pied de l'escalier, une fillette de cinq ans à deux couettes tend la main vers la fenêtre, où l'on voit une balançoire dans le jardin. |
-|  | Il ouvrit un dossier. Le Temps perdu garda l'heure. | Il s'assoit à la table. D'un long bras, le Temps perdu ferme les volets sur la balançoire, et la lumière baisse dans la pièce. |
-| Montée, deuxième tour (la cuisine) | Elle l'attendait pour dessiner. | La fillette pose devant lui une feuille blanche et deux crayons. |
-|  | Il ouvrit ses devis. Le Temps perdu garda la soirée. | Les devis recouvrent la feuille. D'un battement de balancier, le Temps perdu souffle la lampe de la fillette ; la nuit tombe sur la cuisine. |
-|  | À chaque heure perdue, il s'effaçait un peu plus. | Le père s'éloigne de la toile : sa silhouette devient floue et pâle. La fillette, collée à la toile, reste nette. |
-| Gag muet (2,5 s) | *(silence)* | La fillette pose la main sur l'épaule de son père, et sa main passe à travers la silhouette pâle. Elle regarde sa main. |
-| Climax (la chambre, puis la cuisine) | Alors elle retrouva leur dessin : un petit dinosaure sous un champignon. | Dans un tiroir de sa chambre, elle trouve une vieille feuille découpée : un petit dinosaure tout rond, abrité sous un champignon à pois. |
-|  | Elle le glissa sur ses devis. | Elle pose le dessin sur la pile. La lumière de la toile traverse les ajours du dinosaure, qui s'éclaire. |
-|  | Il vit enfin la chaîne. | Gros plan sur ses mains : il lève le poignet, et la chaîne s'allume maillon par maillon jusqu'au balancier du Temps perdu. Sa silhouette revient vers la toile et retrouve sa netteté. |
-| Pivot sur noir (le renversement) | Il tendit ses devis au Temps perdu. | La phrase s'inscrit au centre du noir en Fraunces crème et reste seule 1,5 s, en silence ; le sous-titre du bas s'efface. Puis la lumière revient : le Temps perdu tient la pile dans ses longs bras. |
-|  | Le Temps perdu se mit au travail à sa place. | La haute silhouette s'inverse en lumière dorée. À chaque battement du balancier, un devis fini sort du cadran et se pose en pile dorée ; la chaîne se détache du poignet et tombe en poussière d'or. |
-| Descente, paiement du premier tour (le jardin) | Les soirs suivants, il poussait la balançoire. | Dans le jardin, sous un ciel encore clair, le père pousse la balançoire. Elle monte et redescend au rythme du balancier doré, qu'on voit travailler par la fenêtre de la cuisine. |
-| Dénouement, paiement du deuxième tour (la cuisine) | Puis ils dessinaient, sur la même feuille, un second dinosaure. | Le père et sa fille penchés sur la même feuille. Un second petit dinosaure de papier lumineux sort du dessin et rejoint le premier sous le champignon. |
-| Clé, preuve, marque | Le Temps perdu a changé de nom. Il tient en deux lettres. | Par la fenêtre, le Temps perdu doré continue son travail ; sa lumière se rassemble au centre de la toile en deux lettres : IA. |
-|  | La dernière dirigeante formée retrouve dix heures chaque semaine. | Les deux lettres se défont en poussière d'or. Au centre, un chiffre doré roule de 0 à « 10 h », avec dessous, sur deux lignes, « gagnées chaque semaine » et « par la dernière dirigeante formée » (texte exact du site) ; le sous-titre du bas s'efface sur cette ligne. |
+|  | Il ouvrit un dossier. Le Temps perdu lui prit une heure. | Il s'assoit à la table, et la fillette sort du cadre. D'un bras court, l'horloge ferme les volets sur la balançoire ; la lumière baisse dans la pièce. |
+| Montée, deuxième tour (la cuisine) | Elle l'attendait pour dessiner. | La fillette pose devant lui une feuille blanche et deux crayons, puis sort du cadre. |
+|  | Il ouvrit ses devis. Le Temps perdu lui prit la soirée. | Les devis recouvrent la feuille. À chaque battement du balancier, l'aiguille des heures avance d'un cran et la lampe de la cuisine baisse ; la nuit tombe sur la feuille. |
+|  | Soir après soir, il s'effaçait. | Le père s'éloigne de la toile : son ombre grandit, floue et pâle, au-dessus de la fillette restée nette contre la toile. |
+| Gag muet (2,5 s) | *(silence)* | La fillette agite la main devant le visage de son père. Seul le balancier lui répond, de gauche à droite, au même rythme. Elle croise les bras. |
+| Climax (la chambre, puis la cuisine) | Alors elle retrouva leur petit dinosaure. | Dans un tiroir de sa chambre, elle trouve leur vieux dessin découpé : un petit dinosaure tout rond, à tête large et queue courte, abrité sous un champignon dont les pois ajourés font des points de lumière. |
+|  | Elle le glissa sur ses devis. | Elle pose le dessin sur la pile. La lumière de la toile traverse les ajours, et le petit dinosaure s'éclaire. |
+|  | Enfin, il vit la chaîne. | Gros plan sur ses mains : il lève le poignet, et la chaîne s'allume maillon par maillon jusqu'au balancier. Son ombre revient vers la toile et retrouve sa netteté. |
+| Pivot sur noir (le renversement) | Il régla le Temps perdu sur ses devis. | La phrase s'inscrit au centre du noir en Fraunces crème et reste seule 1,5 s, en silence ; le sous-titre du bas s'efface. Puis la lumière revient : le père ouvre la porte vitrée de la caisse et tourne la clé, et les aiguilles repartent à l'envers. |
+|  | L'horloge se mit au travail pour lui. | L'horloge s'inverse en lumière dorée. À chaque battement du balancier, un devis fini sort du cadran et se pose en pile dorée ; la chaîne se détache du poignet et tombe en poussière d'or. |
+| Descente, paiement du premier tour (le jardin) | Les soirs suivants, il poussait la balançoire. | Le balancier doré laisse place, dans le même arc, à la balançoire du jardin. Sous un ciel encore clair, le père pousse sa fille ; elle monte et redescend avec la régularité d'un balancier. |
+| Dénouement, paiement du deuxième tour (la cuisine) | Un soir, ils dessinèrent un second dinosaure. | Le père et sa fille penchés sur la même feuille ; le trait des crayons s'écrit en lumière à travers le papier. Un second petit dinosaure prend forme et rejoint le premier sous le champignon. |
+| Clé, preuve, marque | Le Temps perdu a changé de camp : il s'appelle IA. | Dans l'atelier, l'horloge dorée continue son travail ; sa lumière se rassemble au centre de la toile en deux lettres : IA. |
+|  | La dernière dirigeante formée gagne dix heures chaque semaine. | Les deux lettres se défont en poussière d'or. Au centre, un chiffre doré roule de 0 à « 10 h », avec dessous, sur deux lignes, « gagnées chaque semaine » et « par la dernière dirigeante formée » (texte exact du site) ; le sous-titre du bas s'efface sur cette ligne. |
 |  | *(carte de fin, sans voix, 4 s)* | La signature manuscrite « Antoine Contino, formateur IA » en Caveat bordeaux, et dessous un seul bouton bordeaux « Réserver un audit IA de 30 minutes », que le curseur rejoint et clique ; dessous, calendly.com/antoine-cntno/30min · antoinecontino.fr. |
 
 ### Version à coller dans ElevenLabs
 
 ```
 Ce dirigeant ramenait ses devis à la maison.
-Derrière lui entrait le Temps perdu.
+Derrière lui, le Temps perdu passa la porte.
 Sa fille l'attendait pour la balançoire.
-Il ouvrit un dossier. Le Temps perdu garda l'heure.
+Il ouvrit un dossier. Le Temps perdu lui prit une heure.
 Elle l'attendait pour dessiner.
-Il ouvrit ses devis. Le Temps perdu garda la soirée.
-À chaque heure perdue, il s'effaçait un peu plus.
-Alors elle retrouva leur dessin : un petit dinosaure sous un champignon.
+Il ouvrit ses devis. Le Temps perdu lui prit la soirée.
+Soir après soir, il s'effaçait.
+Alors elle retrouva leur petit dinosaure.
 Elle le glissa sur ses devis.
-Il vit enfin la chaîne.
-[softly] Il tendit ses devis au Temps perdu.
-Le Temps perdu se mit au travail à sa place.
+Enfin, il vit la chaîne.
+[softly] Il régla le Temps perdu sur ses devis.
+L'horloge se mit au travail pour lui.
 Les soirs suivants, il poussait la balançoire.
-Puis ils dessinaient, sur la même feuille, un second dinosaure.
-Le Temps perdu a changé de nom. Il tient en deux lettres.
-La dernière dirigeante formée retrouve dix heures chaque semaine.
+Un soir, ils dessinèrent un second dinosaure.
+Le Temps perdu a changé de camp : il s'appelle I.A.
+La dernière dirigeante formée gagne dix heures chaque semaine.
 ```
 
 ### Durée et contrôles
 
-- Voix : 130 mots ; avec le gag (2,5 s), le pivot (1,5 s) et la carte de fin muette (4 s), environ 57 s à
-  160 mots par minute et 54 s à 170.
+- Voix : 119 mots ; avec le gag (2,5 s), le pivot (1,5 s) et la carte de fin muette (4 s), environ 53 s à
+  160 mots par minute et 50 s à 170.
 - La cible et la douleur tombent dans la première phrase : « devis » vers 1,9 s.
-- Le balancier de l'horloge et la balançoire font le même mouvement : le temps du travail en cycle, puis le temps du
-  jeu.
+- La clé dit le changement de camp : le spectateur sans le son lit que l'IA travaille pour le père.
+- La preuve reprend le verbe du site (« gagne ») ; à l'écran, le texte exact sous le chiffre.
+- « I.A. » dans le texte à coller, pour que la voix épelle les deux lettres ; le sous-titre écrit « IA ».
 
 ## Version 3 (archive) : passage du skill storytelling (elle raconte)
 

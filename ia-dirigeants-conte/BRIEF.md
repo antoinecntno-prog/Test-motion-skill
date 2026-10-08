@@ -13,9 +13,11 @@ Rempli le 08/10/2026 d'après la demande d'Antoine. Les hypothèses sont marqué
   bout en bout. « Aucun prérequis technique : si vous savez écrire un mail, vous savez suivre la journée. »
 - Preuve publique : « 10 h gagnées chaque semaine par la dernière dirigeante formée » (dirigeante d'un cabinet de
   coaching). Dans le film seulement si Antoine la valide à l'étape 1, sans nom ni lieu, chiffre qui roule à l'écran.
-- Le récit (concept d'Antoine, 08/10/2026) : un homme et une femme se sont aimés au lycée, la vie les sépare, chacun
-  garde l'autre au fond du cœur ; elle revient et le libère de ses chaînes de papier pour qu'il vive sa vie. Double
-  sens implicite : lui est le dirigeant sous l'eau, elle est l'IA ; la clé arrive à la fin (deux lettres d'or, IA).
+- Le récit (structure d'Antoine, 08/10/2026, pyramide de Freytag et lois d'Olrik) : un dirigeant ramène ses devis à
+  la maison, le Temps perdu entre derrière lui et garde, soir après soir, le temps de jeu avec sa fille, qui le voit
+  s'effacer ; elle retrouve leur dessin (un petit dinosaure sous un champignon), il voit sa chaîne et tend ses devis
+  au Temps perdu, qui se met au travail à sa place et change de nom (IA) ; il pousse la balançoire et dessine de
+  nouveau avec elle.
 - La fin voulue : une scène décrite par la dernière phrase du conte, sans morale ; puis la signature et un seul bouton.
 
 ## 2. Design global (obligatoire)
@@ -31,9 +33,10 @@ Rempli le 08/10/2026 d'après la demande d'Antoine. Les hypothèses sont marqué
   clé des sous-titres et à la carte de fin (signature, bouton).
 - Polices : fraunces (moment typographique du pivot, titre de conte éventuel), dm-sans (sous-titres, CTA), caveat
   (signature manuscrite).
-- Personnages : marionnettes d'ombres à pivots ; lui, un dirigeant, et sa fille de sept ans ; elle, la lycéenne
-  à la longue tresse, qui revient en jeune femme à taille humaine découpée en lumière dorée, au cœur d'une lumière
-  faite de milliers de pages (aucune grande figure drapée, pour rester loin de la référence).
+- Personnages : marionnettes d'ombres à pivots ; le père, un dirigeant ; sa fille de cinq ans à deux couettes ; le
+  Temps perdu, seul personnage continu, haute silhouette en forme d'horloge comtoise (cadran, balancier, longs bras
+  sur tiges), brun noir puis inversée en lumière dorée quand il devient l'IA. Aucune capuche, aucun squelette, aucune
+  faux, aucun sablier.
 
 ## 3. Marque et appel à l'action
 

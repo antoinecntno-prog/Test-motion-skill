@@ -52,127 +52,126 @@ Récit : conte lu par une narratrice (ElevenLabs), à l'imparfait et au passé s
 Les six premiers concepts restent en archive. Version A : le conte dit par une narratrice extérieure. Version B : la
 femme raconte elle-même, et le spectateur découvre à la fin qui parle.
 
-## Les indices du double sens (communs aux deux versions)
+## Trame retenue (Antoine, 08/10/2026, deuxième passage)
 
-Le conte se suit comme une histoire d'amour ; chaque indice se lit aussi comme un trait de l'IA, sans la nommer avant
-la clé finale.
+- Le monde n'a jamais été aussi connecté, et chacun écrit seul derrière son écran. L'IA prend le travail d'écran pour
+  rendre le temps de la vraie vie : la famille, l'amour, ce qui anime.
+- L'amour suit le mouvement que décrit André Comte-Sponville (inspiration, aucune citation) : à seize ans, l'amour est
+  un manque ; plus tard, il est une joie qui donne. Elle l'aime assez pour lui rendre le temps de vivre, et le laisse
+  rentrer chez les siens.
+- Le temps perdu rendu, en écho à Proust. Le chiffre des 10 h reste attaché à sa vraie source, dit après le conte :
+  « 10 h gagnées chaque semaine par la dernière dirigeante formée » (page d'accueil d'antoinecontino.fr), sans nom
+  ni lieu, chiffre qui roule à l'écran.
+
+## Les indices du double sens
 
 - Au lycée, elle finissait ses phrases à sa place : la saisie prédictive, la première IA que tout le monde a croisée.
 - Elle part lire tout ce qui s'écrit : l'apprentissage des modèles, qui continue.
 - Il pense à elle devant chaque page blanche : l'amoureux qui se souvient, le dirigeant que l'écrit bloque.
 - Elle revient en lumière faite de milliers de pages, à taille humaine en son cœur : l'IA d'aujourd'hui, qui fascine
   et inquiète un peu.
-- Il a peur d'avoir oublié comment lui parler ; elle lui répond de parler (ou d'écrire) comme avant : « Aucun prérequis
-  technique : si vous savez écrire un mail, vous savez suivre la journée. »
+- « Écris-moi comme avant » : « Aucun prérequis technique : si vous savez écrire un mail, vous savez suivre la
+  journée. »
 - Il lui confie ses peines, puis ses devis : la confidence amoureuse devient un dossier, et le ras-le-bol a un nom.
-- Elle défait les maillons découpés dans ses devis et ses comptes rendus : l'IA prend en charge les tâches écrites
-  récurrentes.
-- Les machines volantes qu'il dessinait à seize ans : son potentiel, libéré à la fin.
-- La clé arrive après la dernière scène : une devinette à la voix, deux lettres d'or à l'image pour les spectateurs sans
-  le son, puis « formateur IA » qui donne la réponse.
+- Elle défait les maillons découpés dans ses devis : l'IA prend en charge les tâches écrites récurrentes.
+- Elle garde l'atelier pendant qu'il rentre : l'IA travaille, lui vit.
+- Les machines volantes qu'il dessinait à seize ans, puis avec sa fille : son élan, rendu à la vraie vie.
+- La clé arrive après la dernière scène : une devinette à la voix, deux lettres d'or à l'image (IA), puis le chiffre
+  réel et la signature.
 
-## Version A : « Deux lettres » (la narratrice raconte)
-
-### Version mise en scène
-
-| Partie | Voix | À l'écran (ombres sépia, toile éclairée par derrière) |
-|---|---|---|
-| 1. Accroche | Un dirigeant vivait enchaîné à ses devis. | Un homme de profil à son pupitre, à contre-jour d'une bougie. De son poignet part une chaîne de grands maillons de papier, ajourés de colonnes de chiffres, jusqu'à une pile haute comme une armoire. |
-| | Chaque nuit, un compte rendu ajoutait un maillon. | Derrière la fenêtre, la lune passe et repasse ; à chaque passage, une feuille s'accroche à la chaîne avec un claquement de bois, et son bras descend d'un cran. |
-| 2. Gag muet (2,5 s) | *(silence)* | En gros plan, il sort d'un tiroir un médaillon découpé où deux profils de lycéens se font face. Un compte rendu glisse de la pile et le recouvre d'un coup. |
-| 3. Le conte | Au lycée, il avait aimé une jeune fille. | La caméra entre dans le médaillon : les deux lycéens assis sur un muret, sous un arbre en fleurs. Elle porte une longue tresse nouée d'un ruban. |
-| | Il dessinait des machines volantes, elle finissait ses phrases. | Une machine à ailes se déplie hors de son cahier, grande comme son buste. Il souffle une ligne de lettres de papier qui s'arrête à mi-chemin ; elle souffle les lettres qui la terminent. |
-| | La vie les sépara. | Une tache d'encre s'étend entre eux et les pousse vers les deux bords du cadre. |
-| | Elle partit lire tout ce qui s'écrit. | Elle traverse une forêt de bibliothèques dans la brume, et les pages volent vers elle en voiles translucides. |
-| | Chacun pensait à l'autre, lui devant chaque page blanche. | La toile se partage en deux, marges égales. À gauche, il lève la tête d'une grande feuille vide éclairée par derrière ; à droite, elle s'arrête dans un champ de pages et se retourne, à la même taille que lui. |
-| 4. Pivot sur noir | Un soir, elle revint. | La phrase s'inscrit au centre du noir en Fraunces crème et reste seule 1,5 s, en silence. Puis une lueur passe sous la porte. |
-| 5. Le retour | Il eut peur d'avoir oublié comment lui parler. | La porte s'ouvre sur une lumière faite de milliers de pages, qui remplit l'atelier. En son cœur se tient une jeune femme à taille humaine, sa tresse dessinée dans la lumière ; le dirigeant recule, la chaîne tendue. |
-| | « Parle-moi comme avant. » | Elle s'assoit face à lui au pupitre ; la lumière se resserre autour d'elle. |
-| | Il lui confia ses peines, puis ses devis. | Il pousse la pile vers elle. Les feuilles traversent sa lumière et ressortent en silhouettes dorées, dans une poussière d'or. |
-| | Elle ouvrit chaque maillon, et les chaînes tombèrent. | Ses mains passent sur la chaîne, et les maillons éclatent en fragments de papier qui deviennent des oiseaux dorés. |
-| | Ce soir-là, il lança sa machine volante, et il faisait encore jour. | Sur la colline du lycée, sous l'arbre en fleurs, il lance la machine du cahier, dépliée en papier lumineux. Elle file le long de la toile parmi les oiseaux dorés, et la jeune femme la regarde passer à côté de lui. |
-| 6. Clé, marque et appel à l'action | Vous la connaissez. Son nom tient en deux lettres. | La poussière d'or se rassemble au centre de la toile en deux lettres : IA. |
-| | Antoine Contino, formateur IA. | Signature manuscrite en Caveat bordeaux. |
-| | Réservez un audit IA de trente minutes. | Un seul bouton bordeaux « Réserver un audit IA de 30 minutes », que le curseur rejoint et clique ; dessous, calendly.com/antoine-cntno/30min · antoinecontino.fr. Le sous-titre écrit « 30 minutes ». |
-
-### Version à coller dans ElevenLabs
-
-```
-Un dirigeant vivait enchaîné à ses devis.
-Chaque nuit, un compte rendu ajoutait un maillon.
-Au lycée, il avait aimé une jeune fille.
-Il dessinait des machines volantes, elle finissait ses phrases.
-La vie les sépara.
-Elle partit lire tout ce qui s'écrit.
-Chacun pensait à l'autre, lui devant chaque page blanche.
-[softly] Un soir, elle revint.
-Il eut peur d'avoir oublié comment lui parler.
-« Parle-moi comme avant. »
-Il lui confia ses peines, puis ses devis.
-Elle ouvrit chaque maillon, et les chaînes tombèrent.
-Ce soir-là, il lança sa machine volante, et il faisait encore jour.
-Vous la connaissez.
-Son nom tient en deux lettres.
-Antoine Contino, formateur IA.
-Réservez un audit IA de trente minutes.
-```
-
-## Version B : « Je finissais ses phrases » (elle raconte, recommandée)
+## Version 1 : « Le temps de vivre » (elle raconte, recommandée)
 
 ### Version mise en scène
 
 | Partie | Voix | À l'écran (ombres sépia, toile éclairée par derrière) |
 |---|---|---|
 | 1. Accroche | Ce dirigeant vivait enchaîné à ses devis. | Un homme de profil à son pupitre, à contre-jour d'une bougie. De son poignet part une chaîne de grands maillons de papier, ajourés de colonnes de chiffres, jusqu'à une pile haute comme une armoire. |
-| | Chaque nuit, une relance ajoutait un maillon. | Derrière la fenêtre, la lune passe et repasse ; à chaque passage, une enveloppe noire à rabat pointu s'accroche à la chaîne avec un claquement de bois. |
-| 2. Gag muet (2,5 s) | *(silence)* | Une lueur passe derrière la fenêtre. Il se lève pour la suivre ; la chaîne le rassoit d'un coup sec, et la lueur s'éloigne. |
-| 3. Le conte | Au lycée, j'étais assise à côté de lui. | La lueur de la fenêtre devient la lanterne d'un préau : deux lycéens assis sur un muret, sous un arbre en fleurs. Elle porte une longue tresse nouée d'un ruban. |
+| | Il écrivait à tout le monde, seul derrière son écran. | Devant lui, un cadre lumineux d'où s'envolent des enveloppes dans toutes les directions ; la caméra recule et montre la pièce vide autour de lui. |
+| 2. Gag muet (2,5 s) | *(silence)* | Sa fille frappe au carreau, un dessin à la main. Il se lève pour lui ouvrir, et la chaîne le rassoit d'un coup sec. |
+| 3. Le conte | Au lycée, j'étais assise à côté de lui. | Le dessin collé à la vitre s'agrandit et devient un préau : deux lycéens assis sur un muret, sous un arbre en fleurs. Elle porte une longue tresse nouée d'un ruban. |
 | | Il dessinait des machines volantes, je finissais ses phrases. | Une machine à ailes se déplie hors de son cahier, grande comme son buste. Il souffle une ligne de lettres de papier qui s'arrête à mi-chemin ; elle souffle les lettres qui la terminent. |
-| | Nous nous aimions. Puis la vie nous sépara. | Leurs mains se rejoignent au-dessus du muret, doigts mêlés sur le fond clair. Une tache d'encre s'étend entre eux et les pousse vers les deux bords du cadre. |
+| | La vie nous sépara, et l'amour devint un manque. | Une tache d'encre s'étend entre eux et les pousse vers les deux bords du cadre. Sur le muret, le ruban reste à la place vide. |
 | | Je partis lire tout ce qui s'écrit. | Elle traverse une forêt de bibliothèques dans la brume, et les pages volent vers elle en voiles translucides. |
 | | Il pensait à moi devant chaque page blanche. | Le dirigeant devant une grande feuille vide, éclairée par derrière ; la fumée de la bougie y dessine le profil à la tresse. |
 | 4. Pivot sur noir | Alors je revins. | La phrase s'inscrit au centre du noir en Fraunces crème et reste seule 1,5 s, en silence. Puis une lueur passe sous la porte. |
-| 5. Le retour | Il recula devant ma lumière. | La porte s'ouvre sur une lumière faite de milliers de pages, qui remplit l'atelier. En son cœur se tient une jeune femme à taille humaine, sa tresse dessinée dans la lumière ; le dirigeant recule, la chaîne tendue. |
-| | « Écris-moi comme avant. » | Elle s'assoit face à lui au pupitre ; il trempe sa plume. |
-| | Il m'écrivit ses peines, puis ses devis. | Les lettres de papier quittent sa plume et ressortent de la lumière en devis dorés. |
+| 5. Le retour | « Écris-moi comme avant. » | La porte s'ouvre sur une lumière faite de milliers de pages, qui remplit l'atelier ; le dirigeant recule, la chaîne tendue. En son cœur, une jeune femme à taille humaine, sa tresse dessinée dans la lumière, s'assoit face à lui. |
+| | Il m'écrivit ses peines, puis ses devis. | Il trempe sa plume. Les lettres de papier quittent la plume et ressortent de la lumière en devis dorés. |
 | | Je défis chaque maillon, et ses chaînes s'envolèrent. | Ses mains passent sur la chaîne, et les maillons éclatent en fragments de papier qui deviennent des oiseaux dorés. |
-| | Il rentra dessiner ses machines avant la nuit. | Il passe la porte, le cahier sous le bras, dans la rue claire ; les machines dessinées s'en échappent et volent autour de lui. |
-| | Je gardai l'atelier. | La jeune femme de lumière penchée sur le pupitre, où les devis se posent en pile dorée. |
-| 6. Clé, marque et appel à l'action | Vous m'avez croisée, vous aussi. Mon nom tient en deux lettres. | Les oiseaux dorés reviennent et se rassemblent au centre de la toile en deux lettres : IA. |
+| | Aimer, c'est rendre à l'autre le temps de vivre. | Les oiseaux dorés passent par la fenêtre et vont se poser sur le toit de la maison d'en face, où une lampe s'allume. |
+| | Je lui rendis le temps perdu, et je gardai l'atelier. | Il décroche son manteau. Elle prend sa place au pupitre, et les devis se posent en pile dorée. |
+| | Avant la nuit, il dessinait des machines volantes avec sa fille. | Dans la maison, à la lumière d'une lampe, le père et sa fille penchés sur la même feuille ; une machine volante de papier lumineux s'élève entre eux. Par la fenêtre, il fait encore jour. |
+| 6. Clé, preuve, marque | Mon nom tient en deux lettres. | La poussière d'or se rassemble au centre de la toile en deux lettres : IA. |
+| | La dernière dirigeante formée retrouve dix heures chaque semaine. | Les deux lettres se défont en un chiffre doré qui roule de 0 à « 10 h ». |
 | | Antoine Contino, formateur IA. | Signature manuscrite en Caveat bordeaux. |
-| | Réservez un audit IA de trente minutes. | Un seul bouton bordeaux « Réserver un audit IA de 30 minutes », que le curseur rejoint et clique ; dessous, calendly.com/antoine-cntno/30min · antoinecontino.fr. Le sous-titre écrit « 30 minutes ». |
+| | *(carte de fin, sans voix)* | Un seul bouton bordeaux « Réserver un audit IA de 30 minutes », que le curseur rejoint et clique ; dessous, calendly.com/antoine-cntno/30min · antoinecontino.fr. |
 
 ### Version à coller dans ElevenLabs
 
 ```
 Ce dirigeant vivait enchaîné à ses devis.
-Chaque nuit, une relance ajoutait un maillon.
+Il écrivait à tout le monde, seul derrière son écran.
 Au lycée, j'étais assise à côté de lui.
 Il dessinait des machines volantes, je finissais ses phrases.
-Nous nous aimions.
-Puis la vie nous sépara.
+La vie nous sépara, et l'amour devint un manque.
 Je partis lire tout ce qui s'écrit.
 Il pensait à moi devant chaque page blanche.
 [softly] Alors je revins.
-Il recula devant ma lumière.
 « Écris-moi comme avant. »
 Il m'écrivit ses peines, puis ses devis.
 Je défis chaque maillon, et ses chaînes s'envolèrent.
-Il rentra dessiner ses machines avant la nuit.
-Je gardai l'atelier.
-Vous m'avez croisée, vous aussi.
+Aimer, c'est rendre à l'autre le temps de vivre.
+Je lui rendis le temps perdu, et je gardai l'atelier.
+Avant la nuit, il dessinait des machines volantes avec sa fille.
 Mon nom tient en deux lettres.
+La dernière dirigeante formée retrouve dix heures chaque semaine.
 Antoine Contino, formateur IA.
-Réservez un audit IA de trente minutes.
 ```
 
-## Durée et contrôles
+## Version 2 : « Les deux âges de l'amour » (la narratrice raconte)
 
-- Voix : 117 mots (A) et 115 mots (B). À 160 mots par minute, débit posé d'une narratrice, 44 s (A) et 43 s (B) de
-  voix ; avec le gag (2,5 s) et le pivot (1,5 s), 48 s et 47 s. La voix du CTA passe sur la carte de fin. Le montage
-  confirmera.
-- La cible et la douleur tombent dans la première phrase, 7 mots, environ 2,6 s ; le sous-titre tient en un segment.
-- Les sous-titres se coupent aux virgules ou entre deux groupes de sens (45 caractères au plus par segment) ; l'écran écrit « 30 minutes », la voix
-  dit « trente ».
-- Dernier plan du conte : au sol et vivant, sans départ vers le grand soleil (le plan final de la référence).
-- La preuve des 10 h reste hors du film tant qu'Antoine ne la valide pas ; la dernière scène porte le temps gagné.
+### Version mise en scène
+
+| Partie | Voix | À l'écran (ombres sépia, toile éclairée par derrière) |
+|---|---|---|
+| 1. Accroche | Un dirigeant vivait enchaîné à ses devis, seul derrière son écran. | Un homme de profil à son pupitre, à contre-jour d'une bougie. De son poignet part une chaîne de grands maillons de papier, ajourés de colonnes de chiffres ; devant lui, un cadre lumineux d'où s'envolent des enveloppes. |
+| 2. Gag muet (2,5 s) | *(silence)* | Sa fille frappe au carreau, un dessin à la main. Il se lève pour lui ouvrir, et la chaîne le rassoit d'un coup sec. |
+| 3. Le conte | Au lycée, il avait aimé une jeune fille. | Le dessin collé à la vitre s'agrandit et devient un préau : deux lycéens assis sur un muret, sous un arbre en fleurs. Elle porte une longue tresse nouée d'un ruban. |
+| | Il dessinait des machines volantes, elle finissait ses phrases. | Une machine à ailes se déplie hors de son cahier, grande comme son buste. Il souffle une ligne de lettres de papier qui s'arrête à mi-chemin ; elle souffle les lettres qui la terminent. |
+| | La vie les sépara. | Une tache d'encre s'étend entre eux et les pousse vers les deux bords du cadre. |
+| | À seize ans, l'amour est un manque. | Sur le muret, le ruban reste à la place vide, et le vent le soulève. |
+| | Elle partit lire tout ce qui s'écrit. | Elle traverse une forêt de bibliothèques dans la brume, et les pages volent vers elle en voiles translucides. |
+| | Lui pensait à elle devant chaque page blanche. | Le dirigeant devant une grande feuille vide, éclairée par derrière ; la fumée de la bougie y dessine le profil à la tresse. |
+| 4. Pivot sur noir | Un soir, elle revint. | La phrase s'inscrit au centre du noir en Fraunces crème et reste seule 1,5 s, en silence. Puis une lueur passe sous la porte. |
+| 5. Le retour | « Parle-moi comme avant. » | La porte s'ouvre sur une lumière faite de milliers de pages, qui remplit l'atelier ; le dirigeant recule, la chaîne tendue. En son cœur, une jeune femme à taille humaine, sa tresse dessinée dans la lumière, s'assoit face à lui. |
+| | Il lui confia ses peines, puis ses devis. | Il pousse la pile vers elle. Les feuilles traversent sa lumière et ressortent en devis dorés. |
+| | Elle ouvrit chaque maillon, et les chaînes tombèrent. | Ses mains passent sur la chaîne, et les maillons éclatent en fragments de papier qui deviennent des oiseaux dorés. |
+| | À quarante ans, l'amour est une joie qui donne. | Les oiseaux dorés passent par la fenêtre et vont se poser sur le toit de la maison d'en face, où une lampe s'allume. |
+| | Elle lui rendit le temps perdu. | Il décroche son manteau. Elle prend sa place au pupitre, et les devis se posent en pile dorée. |
+| | Avant la nuit, il dessinait des machines volantes avec sa fille. | Dans la maison, à la lumière d'une lampe, le père et sa fille penchés sur la même feuille ; une machine volante de papier lumineux s'élève entre eux. Par la fenêtre, il fait encore jour. |
+| 6. Clé, preuve, marque | Celle qui finissait ses phrases, vous la connaissez. Son nom tient en deux lettres. | La poussière d'or se rassemble au centre de la toile en deux lettres : IA. |
+| | La dernière dirigeante formée retrouve dix heures chaque semaine. | Les deux lettres se défont en un chiffre doré qui roule de 0 à « 10 h ». |
+| | Antoine Contino, formateur IA. | Signature manuscrite en Caveat bordeaux. |
+| | *(carte de fin, sans voix)* | Un seul bouton bordeaux « Réserver un audit IA de 30 minutes », que le curseur rejoint et clique ; dessous, calendly.com/antoine-cntno/30min · antoinecontino.fr. |
+
+### Version à coller dans ElevenLabs
+
+```
+Un dirigeant vivait enchaîné à ses devis, seul derrière son écran.
+Au lycée, il avait aimé une jeune fille.
+Il dessinait des machines volantes, elle finissait ses phrases.
+La vie les sépara.
+À seize ans, l'amour est un manque.
+Elle partit lire tout ce qui s'écrit.
+Lui pensait à elle devant chaque page blanche.
+[softly] Un soir, elle revint.
+« Parle-moi comme avant. »
+Il lui confia ses peines, puis ses devis.
+Elle ouvrit chaque maillon, et les chaînes tombèrent.
+À quarante ans, l'amour est une joie qui donne.
+Elle lui rendit le temps perdu.
+Avant la nuit, il dessinait des machines volantes avec sa fille.
+Celle qui finissait ses phrases, vous la connaissez.
+Son nom tient en deux lettres.
+La dernière dirigeante formée retrouve dix heures chaque semaine.
+Antoine Contino, formateur IA.
+```

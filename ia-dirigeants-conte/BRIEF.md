@@ -58,8 +58,11 @@ Rempli le 08/10/2026 d'après la demande d'Antoine. Les hypothèses sont marqué
 
 ## 5. Son
 
-- Voix : une narratrice française au ton posé (demande d'Antoine du 08/10/2026), Eleven v4 ; deux voix féminines de la
-  bibliothèque ElevenLabs proposées à l'étape 2 ; accord d'Antoine avant tout crédit.
+- Voix : une narratrice française posée, Eleven v4, langue réglée sur le français, Stability 40 à 50 %, Similarity 80
+  à 90 %. Voix proposées à l'étape 2 (bibliothèque ElevenLabs) : Nathalie, Calm French Storyteller
+  (`rS7c1woNY04WT3UAS83Y`) ; Caroline, narrative et chaleureuse (`kwhMCf63M8O3rCfnQ3oQ`) ; Laurence, voix mature de
+  lecture littéraire (`EIdfNdxb4fnsE39tEAB1`) ; Paul K, voix des films précédents (`ecxPjiGTvAfpGEams6ec`). Accord
+  d'Antoine avant tout crédit.
 - Musique : partition de `musique-film.py`, boîte à musique sur des cordes graves, sourde avant le pivot, plus claire
   après.
 - Bruitages : papier, flamme, vent, battements d'ailes, claquement de bois des tiges.

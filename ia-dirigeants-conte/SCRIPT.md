@@ -80,7 +80,7 @@ femme raconte elle-même, et le spectateur découvre à la fin qui parle.
 - La clé arrive après la dernière scène : une devinette à la voix, deux lettres d'or à l'image (IA), puis le chiffre
   réel.
 
-## Version 5 : « Interminable Attente » (texte d'Antoine du 08/10/2026, avec le jeu de mots)
+## Version 5 : « Interminable Attente » (texte d'Antoine du 08/10/2026, avec le jeu de mots) · VALIDÉE le 08/10/2026
 
 Le texte d'Antoine, mot pour mot, avec quatre corrections de langue : « pour jouer » (le brouillon disait « pour la jouer »),
 « Lui, il ouvrit » (une virgule ne sépare pas le sujet du verbe), « eut » et « s'automatisait ». Ajouts : le jeu de

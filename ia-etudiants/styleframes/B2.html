@@ -1,0 +1,26 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>B2 · La goutte d'eau · 15 s (pivot)</title>
+<link rel="stylesheet" href="_base.css">
+<style>
+html,body,.stage{background:#17110F}
+.scene{position:absolute;left:0;top:0;width:1920px;height:1080px}
+.q{position:absolute;left:0;top:380px;width:1920px;text-align:center;font:600 84px/1.1 "Fraunces",serif;color:#F4EBDD;letter-spacing:-.01em}
+.q .stroke{position:relative;display:inline-block}
+.q .stroke::after{content:"";position:absolute;left:-2%;right:-3%;bottom:-4px;height:10px;border-radius:50%;background:var(--ocre);opacity:.95;transform:rotate(-1.2deg)}
+</style></head><body>
+<div class="stage">
+  <svg class="scene" id="s" viewBox="0 0 1920 1080"></svg>
+  <div class="q">Et si l'IA servait à <span class="stroke">apprendre</span> ?</div>
+  <div class="fibres" style="opacity:.25"></div>
+</div>
+<script src="_aquarelle.js"></script>
+<script>
+const svg = document.getElementById("s"); const { aqDefs, aqWash, aqInk, aqDrop, el } = AQ; aqDefs(svg);
+// la goutte d'eau claire qui tombe au centre, et le cercle qui s'élargit : encre claire sur le noir, en screen
+const g = el("g", { style: "mix-blend-mode:screen" }, svg);
+for (let i = 0; i < 3; i++) el("circle", { cx: 960, cy: 620, r: 120 + i * 90, fill: "none", stroke: "#F4EBDD", "stroke-width": 3 - i * 0.8, opacity: (0.7 - i * 0.2).toFixed(2), filter: "url(#ink)" }, g);
+el("ellipse", { cx: 960, cy: 620, rx: 60, ry: 14, fill: "#F4EBDD", opacity: 0.35, filter: "url(#aq-blur)" }, g);
+// la goutte encore en l'air, juste au-dessus, avec un reflet
+aqWash(svg, "M960 530 C 940 560 936 586 960 600 C 984 586 980 560 960 530 Z", "#F4EBDD", 0.9, false, g);
+el("circle", { cx: 952, cy: 570, r: 5, fill: "#17110F", opacity: 0.6 }, g);
+</script>
+</body></html>

@@ -1,0 +1,13 @@
+{
+  "total": 52.0,
+  "bpm": 96,
+  "seed": 12,
+  "sections": [
+    {"type": "tension", "start": 0.0,   "end": 18.89, "key": "A"},
+    {"type": "pivot",   "start": 18.89, "end": 22.40, "key": "C"},
+    {"type": "groove",  "start": 22.40, "end": 40.95, "key": "C"},
+    {"type": "hymne",   "start": 40.95, "end": 49.00, "key": "F"},
+    {"type": "fin",     "start": 49.00, "end": 52.0,  "key": "C"}
+  ],
+  "hits": [22.40]
+}

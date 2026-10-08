@@ -1,0 +1,43 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>C1 · La fenêtre · 3 s</title>
+<link rel="stylesheet" href="_base.css">
+<style>
+.scene{position:absolute;left:0;top:0;width:1920px;height:1080px}
+.chat{position:absolute;left:560px;top:120px;width:800px;height:560px;font-family:"DM Sans",sans-serif;color:var(--ink)}
+.chat .t{position:absolute;left:34px;top:18px;font:600 22px/1 "DM Sans";color:var(--ink-2);letter-spacing:.04em}
+.chat .m{position:absolute;left:34px;right:34px;top:92px;padding:16px 22px;background:rgba(58,42,36,.06);border-radius:14px 14px 14px 4px;font:400 24px/32px "DM Sans";color:var(--ink-2)}
+.chat .r{position:absolute;left:34px;right:34px;top:230px;padding:16px 22px;background:rgba(142,132,122,.16);border-radius:14px 14px 4px 14px;font:400 22px/30px "DM Sans";color:var(--gris-lavis-2)}
+.chat .r b{display:block;font:600 16px/1 "DM Sans";color:var(--gris-lavis-2);letter-spacing:.08em;margin-bottom:8px}
+.page{position:absolute;width:300px;height:400px;background:#EDE6DA;box-shadow:0 14px 30px rgba(58,42,36,.14)}
+.page .l{position:absolute;left:30px;right:30px;height:3px;background:#C4B9AA}
+.h{position:absolute;left:120px;top:760px;font:600 72px/1 "Fraunces",serif;color:var(--ink)}
+</style></head><body>
+<div class="stage">
+  <svg class="scene" id="s" viewBox="0 0 1920 1080"></svg>
+  <div class="chat">
+    <div class="t">NOUVELLE CONVERSATION</div>
+    <div class="m">Rédige une dissertation de trois pages sur les causes de la Première Guerre mondiale.</div>
+    <div class="r"><b>IA</b>Voici une dissertation en trois parties. Introduction : au début du vingtième siècle, les tensions entre les grandes puissances européennes…</div>
+  </div>
+  <div class="page" style="left:1180px;top:440px;transform:rotate(8deg)"><div class="l" style="top:60px"></div><div class="l" style="top:100px"></div><div class="l" style="top:140px;right:90px"></div><div class="l" style="top:200px"></div><div class="l" style="top:240px"></div></div>
+  <div class="page" style="left:1220px;top:470px;transform:rotate(14deg)"><div class="l" style="top:60px"></div><div class="l" style="top:100px"></div><div class="l" style="top:140px;right:90px"></div></div>
+  <div class="page" style="left:1270px;top:500px;transform:rotate(21deg)"><div class="l" style="top:60px"></div><div class="l" style="top:100px"></div></div>
+  <div class="h">Lundi.</div>
+  <svg class="scene" id="s2" viewBox="0 0 1920 1080"></svg>
+  <div class="paper"></div><div class="fibres"></div>
+  <div class="sub"><span class="box">Lundi</span>, il rend trois pages qu'il n'a pas lues.</div>
+</div>
+<script src="_aquarelle.js"></script>
+<script>
+const svg = document.getElementById("s"), over = document.getElementById("s2"); const { aqDefs, aqWash, aqInk, aqDrop, aqWindow, el } = AQ; aqDefs(svg); aqDefs(over);
+// le monde autour est nu : un seul lavis gris sous la fenêtre, la couleur n'existe qu'à l'intérieur (et elle est grise aussi)
+aqWash(svg, { cx: 960, cy: 400, r: 520, seed: 2, w: 0.1, n: 12, ry: 0.7 }, "#CFC6BA", 0.35, true);
+aqWindow(svg, 540, 100, 840, 600, { barH: 64, stroke: 7 });
+// les trois pages sortent de la fenêtre par le bas : la trace grise qui les relie au cadre
+aqWash(svg, "M1180 690 C 1200 640 1230 620 1260 600 L 1300 640 C 1270 660 1250 690 1230 720 Z", "#A99F95", 0.5, false, over);
+// le bureau du prof, en bas à droite : un trait d'encre, le stylo rouge posé
+const ink = el("g", { filter: "url(#ink)" }, over);
+aqInk(svg, "M1080 860 L1860 860", 6, "#3A2A24", ink);
+aqWash(svg, "M1500 812 L1800 812 L1800 830 L1500 830 Z", "#9B2F3F", 0.9, false, over);
+aqInk(svg, "M1500 812 L1800 812 L1800 830 L1500 830 Z M1800 812 L1836 821 L1800 830", 3.5, "#3A2A24", ink);
+</script>
+</body></html>

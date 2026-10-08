@@ -1,0 +1,590 @@
+{
+ "duration": 52.0,
+ "words": [
+  {
+   "w": "Lundi,",
+   "start": 0.02,
+   "end": 0.76
+  },
+  {
+   "w": "18",
+   "start": 0.86,
+   "end": 1.16
+  },
+  {
+   "w": "heures.",
+   "start": 1.16,
+   "end": 1.62
+  },
+  {
+   "w": "La",
+   "start": 1.98,
+   "end": 2.18
+  },
+  {
+   "w": "salle",
+   "start": 2.18,
+   "end": 2.42
+  },
+  {
+   "w": "des",
+   "start": 2.42,
+   "end": 2.66
+  },
+  {
+   "w": "profs",
+   "start": 2.66,
+   "end": 2.86
+  },
+  {
+   "w": "est",
+   "start": 2.86,
+   "end": 3.1
+  },
+  {
+   "w": "vide.",
+   "start": 3.1,
+   "end": 3.4
+  },
+  {
+   "w": "Les",
+   "start": 3.74,
+   "end": 3.98
+  },
+  {
+   "w": "copies",
+   "start": 3.98,
+   "end": 4.24
+  },
+  {
+   "w": "sont",
+   "start": 4.24,
+   "end": 4.48
+  },
+  {
+   "w": "encore",
+   "start": 4.48,
+   "end": 4.92
+  },
+  {
+   "w": "là.",
+   "start": 4.92,
+   "end": 5.14
+  },
+  {
+   "w": "Les",
+   "start": 5.37,
+   "end": 5.58
+  },
+  {
+   "w": "mails",
+   "start": 5.58,
+   "end": 5.8
+  },
+  {
+   "w": "aux",
+   "start": 5.8,
+   "end": 6.04
+  },
+  {
+   "w": "familles",
+   "start": 6.04,
+   "end": 6.32
+  },
+  {
+   "w": "attendent.",
+   "start": 6.32,
+   "end": 7.14
+  },
+  {
+   "w": "Les",
+   "start": 7.15,
+   "end": 7.36
+  },
+  {
+   "w": "bulletins",
+   "start": 7.36,
+   "end": 7.72
+  },
+  {
+   "w": "aussi.",
+   "start": 7.72,
+   "end": 8.16
+  },
+  {
+   "w": "Vous",
+   "start": 10.59,
+   "end": 10.74
+  },
+  {
+   "w": "avez",
+   "start": 10.74,
+   "end": 11.04
+  },
+  {
+   "w": "choisi",
+   "start": 11.04,
+   "end": 11.36
+  },
+  {
+   "w": "ce",
+   "start": 11.36,
+   "end": 11.54
+  },
+  {
+   "w": "métier",
+   "start": 11.54,
+   "end": 11.88
+  },
+  {
+   "w": "pour",
+   "start": 11.88,
+   "end": 12.2
+  },
+  {
+   "w": "transmettre.",
+   "start": 12.2,
+   "end": 12.88
+  },
+  {
+   "w": "Vous",
+   "start": 13.19,
+   "end": 13.42
+  },
+  {
+   "w": "passez",
+   "start": 13.42,
+   "end": 13.78
+  },
+  {
+   "w": "vos",
+   "start": 13.78,
+   "end": 14.02
+  },
+  {
+   "w": "soirées",
+   "start": 14.02,
+   "end": 14.44
+  },
+  {
+   "w": "à",
+   "start": 14.44,
+   "end": 14.66
+  },
+  {
+   "w": "remplir",
+   "start": 14.66,
+   "end": 15.1
+  },
+  {
+   "w": "des",
+   "start": 15.1,
+   "end": 15.4
+  },
+  {
+   "w": "tableaux.",
+   "start": 15.4,
+   "end": 15.7
+  },
+  {
+   "w": "Et",
+   "start": 15.97,
+   "end": 16.14
+  },
+  {
+   "w": "le",
+   "start": 16.14,
+   "end": 16.4
+  },
+  {
+   "w": "sens",
+   "start": 16.4,
+   "end": 16.76
+  },
+  {
+   "w": "s'use.",
+   "start": 16.76,
+   "end": 17.32
+  },
+  {
+   "w": "Une",
+   "start": 17.58,
+   "end": 17.9
+  },
+  {
+   "w": "case",
+   "start": 17.9,
+   "end": 18.12
+  },
+  {
+   "w": "à",
+   "start": 18.12,
+   "end": 18.38
+  },
+  {
+   "w": "la",
+   "start": 18.38,
+   "end": 18.52
+  },
+  {
+   "w": "fois.",
+   "start": 18.52,
+   "end": 18.68
+  },
+  {
+   "w": "Et",
+   "start": 19.18,
+   "end": 19.38
+  },
+  {
+   "w": "si",
+   "start": 19.38,
+   "end": 19.56
+  },
+  {
+   "w": "vous",
+   "start": 19.56,
+   "end": 19.86
+  },
+  {
+   "w": "repreniez",
+   "start": 19.86,
+   "end": 20.36
+  },
+  {
+   "w": "ce",
+   "start": 20.36,
+   "end": 20.62
+  },
+  {
+   "w": "temps",
+   "start": 20.62,
+   "end": 20.82
+  },
+  {
+   "w": "Je",
+   "start": 22.67,
+   "end": 22.98
+  },
+  {
+   "w": "forme",
+   "start": 22.98,
+   "end": 23.26
+  },
+  {
+   "w": "vos",
+   "start": 23.26,
+   "end": 23.54
+  },
+  {
+   "w": "équipes",
+   "start": 23.54,
+   "end": 23.82
+  },
+  {
+   "w": "pédagogiques",
+   "start": 23.82,
+   "end": 24.5
+  },
+  {
+   "w": "à",
+   "start": 24.5,
+   "end": 24.68
+  },
+  {
+   "w": "l'IA,",
+   "start": 24.68,
+   "end": 24.94
+  },
+  {
+   "w": "sur",
+   "start": 25.06,
+   "end": 25.34
+  },
+  {
+   "w": "leurs",
+   "start": 25.34,
+   "end": 25.6
+  },
+  {
+   "w": "outils",
+   "start": 25.6,
+   "end": 25.98
+  },
+  {
+   "w": "et",
+   "start": 25.98,
+   "end": 26.2
+  },
+  {
+   "w": "leurs",
+   "start": 26.2,
+   "end": 26.42
+  },
+  {
+   "w": "vrais",
+   "start": 26.42,
+   "end": 26.76
+  },
+  {
+   "w": "documents.",
+   "start": 26.76,
+   "end": 27.12
+  },
+  {
+   "w": "Un",
+   "start": 27.45,
+   "end": 27.62
+  },
+  {
+   "w": "bulletin",
+   "start": 27.62,
+   "end": 28.0
+  },
+  {
+   "w": "se",
+   "start": 28.0,
+   "end": 28.24
+  },
+  {
+   "w": "rédige",
+   "start": 28.24,
+   "end": 28.52
+  },
+  {
+   "w": "en",
+   "start": 28.52,
+   "end": 28.82
+  },
+  {
+   "w": "quelques",
+   "start": 28.82,
+   "end": 29.12
+  },
+  {
+   "w": "minutes.",
+   "start": 29.12,
+   "end": 29.52
+  },
+  {
+   "w": "Une",
+   "start": 29.83,
+   "end": 30.06
+  },
+  {
+   "w": "séquence",
+   "start": 30.06,
+   "end": 30.5
+  },
+  {
+   "w": "s'adapte",
+   "start": 30.5,
+   "end": 31.04
+  },
+  {
+   "w": "à",
+   "start": 31.04,
+   "end": 31.34
+  },
+  {
+   "w": "chaque",
+   "start": 31.34,
+   "end": 31.53
+  },
+  {
+   "w": "classe.",
+   "start": 31.53,
+   "end": 31.96
+  },
+  {
+   "w": "Un",
+   "start": 32.32,
+   "end": 32.52
+  },
+  {
+   "w": "mail",
+   "start": 32.52,
+   "end": 32.72
+  },
+  {
+   "w": "difficile",
+   "start": 32.72,
+   "end": 33.3
+  },
+  {
+   "w": "trouve",
+   "start": 33.3,
+   "end": 33.7
+  },
+  {
+   "w": "son",
+   "start": 33.7,
+   "end": 34.04
+  },
+  {
+   "w": "ton.",
+   "start": 34.04,
+   "end": 34.22
+  },
+  {
+   "w": "Une",
+   "start": 34.48,
+   "end": 34.74
+  },
+  {
+   "w": "grille",
+   "start": 34.74,
+   "end": 34.94
+  },
+  {
+   "w": "d'évaluation",
+   "start": 34.94,
+   "end": 35.66
+  },
+  {
+   "w": "se",
+   "start": 35.66,
+   "end": 36.02
+  },
+  {
+   "w": "construit",
+   "start": 36.02,
+   "end": 36.44
+  },
+  {
+   "w": "en",
+   "start": 36.48,
+   "end": 36.88
+  },
+  {
+   "w": "direct.",
+   "start": 36.88,
+   "end": 37.14
+  },
+  {
+   "w": "Aucun",
+   "start": 37.54,
+   "end": 38.0
+  },
+  {
+   "w": "prérequis",
+   "start": 38.0,
+   "end": 38.46
+  },
+  {
+   "w": "technique.",
+   "start": 38.46,
+   "end": 38.92
+  },
+  {
+   "w": "On",
+   "start": 39.2,
+   "end": 39.44
+  },
+  {
+   "w": "part",
+   "start": 39.44,
+   "end": 39.68
+  },
+  {
+   "w": "de",
+   "start": 39.68,
+   "end": 39.98
+  },
+  {
+   "w": "votre",
+   "start": 39.98,
+   "end": 40.28
+  },
+  {
+   "w": "quotidien.",
+   "start": 40.28,
+   "end": 40.82
+  },
+  {
+   "w": "Le",
+   "start": 41.15,
+   "end": 41.4
+  },
+  {
+   "w": "temps",
+   "start": 41.4,
+   "end": 41.58
+  },
+  {
+   "w": "gagné",
+   "start": 41.58,
+   "end": 42.18
+  },
+  {
+   "w": "revient",
+   "start": 42.18,
+   "end": 42.56
+  },
+  {
+   "w": "aux",
+   "start": 42.56,
+   "end": 42.76
+  },
+  {
+   "w": "élèves.",
+   "start": 42.76,
+   "end": 43.3
+  },
+  {
+   "w": "Et",
+   "start": 43.45,
+   "end": 43.62
+  },
+  {
+   "w": "le",
+   "start": 43.62,
+   "end": 43.84
+  },
+  {
+   "w": "sens",
+   "start": 43.84,
+   "end": 44.26
+  },
+  {
+   "w": "avec.",
+   "start": 44.39,
+   "end": 44.86
+  },
+  {
+   "w": "Antoine",
+   "start": 45.31,
+   "end": 45.76
+  },
+  {
+   "w": "Contino,",
+   "start": 45.76,
+   "end": 46.28
+  },
+  {
+   "w": "formateur",
+   "start": 46.74,
+   "end": 47.08
+  },
+  {
+   "w": "IA.",
+   "start": 47.08,
+   "end": 47.5
+  },
+  {
+   "w": "Réservez",
+   "start": 47.62,
+   "end": 48.2
+  },
+  {
+   "w": "un",
+   "start": 48.2,
+   "end": 48.44
+  },
+  {
+   "w": "appel.",
+   "start": 48.44,
+   "end": 48.66
+  }
+ ]
+}

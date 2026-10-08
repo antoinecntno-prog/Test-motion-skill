@@ -1,0 +1,37 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>C3 · La fenêtre · 33 s</title>
+<link rel="stylesheet" href="_base.css">
+<style>
+.scene{position:absolute;left:0;top:0;width:1920px;height:1080px}
+.chrono{position:absolute;left:810px;top:150px;width:300px;text-align:center;font:700 74px/1 "DM Sans",sans-serif;color:var(--ink);letter-spacing:-.02em}
+.chrono small{display:block;font:600 34px/1.2 "Caveat",cursive;color:var(--bordeaux)}
+.team{position:absolute;top:120px;font:600 40px/1 "Caveat",cursive;color:var(--ink-2)}
+</style></head><body>
+<div class="stage">
+  <svg class="scene" id="s" viewBox="0 0 1920 1080"></svg>
+  <div class="chrono">00:42<small>il reste</small></div>
+  <div class="team" style="left:300px">équipe ocre · 7</div>
+  <div class="team" style="left:1360px">équipe bordeaux · 9</div>
+  <svg class="scene" id="s2" viewBox="0 0 1920 1080"></svg>
+  <div class="paper"></div><div class="fibres"></div>
+  <div class="sub">En <span class="box">équipes</span>, par défis, la curiosité revient.</div>
+</div>
+<script src="_aquarelle.js"></script>
+<script>
+const svg = document.getElementById("s"), over = document.getElementById("s2"); const { aqDefs, aqWash, aqInk, aqDrop, aqFigure, aqWindow, el } = AQ; aqDefs(svg); aqDefs(over);
+// la couleur déborde du cadre : deux grands lavis qui partent de la fenêtre vers les tables, ocre à gauche, bordeaux à droite
+aqWash(svg, { cx: 520, cy: 640, r: 430, seed: 41, w: 0.18, n: 11, ry: 0.78 }, "#EFD7A6", 0.6, true);
+aqWash(svg, { cx: 1400, cy: 640, r: 430, seed: 42, w: 0.18, n: 11, ry: 0.78 }, "#C98A93", 0.5, true);
+// la fenêtre devenue baie, au centre, avec le chronomètre dedans
+aqWindow(svg, 760, 110, 400, 260, { barH: 0, bar: false, stroke: 6, fill: "rgba(251,246,236,.6)" });
+// deux équipes, de part et d'autre, en taches ; les tables devant
+const ocre = "#C98A2E", bdx = "#7A1E2E";
+aqFigure(svg, 300, 470, 200, ocre, 51, "dos"); aqFigure(svg, 470, 450, 210, ocre, 52, "penche"); aqFigure(svg, 640, 480, 190, ocre, 53, "bras-leve");
+aqFigure(svg, 1280, 470, 200, bdx, 54, "penche"); aqFigure(svg, 1450, 450, 210, bdx, 55, "bras-leve"); aqFigure(svg, 1620, 480, 190, bdx, 56, "dos");
+aqWash(svg, "M190 660 L760 660 L790 760 L160 760 Z", "#B99A74", 0.8); aqWash(svg, "M1160 660 L1730 660 L1760 760 L1130 760 Z", "#B99A74", 0.8);
+const ink = el("g", { filter: "url(#ink)" }, over);
+[[470, 690], [1450, 690]].forEach(([x, y]) => aqInk(svg, `M${x - 60} ${y - 46} L${x + 60} ${y - 46} L${x + 68} ${y} L${x - 68} ${y} Z`, 4, "#3A2A24", ink));
+// la couleur qui coule du bas de la fenêtre sur les tables
+aqWash(svg, "M820 370 C 760 440 640 520 560 600 L 600 620 C 690 540 800 460 860 380 Z", ocre, 0.7, false, over);
+aqWash(svg, "M1100 370 C 1160 440 1280 520 1360 600 L 1320 620 C 1230 540 1120 460 1060 380 Z", bdx, 0.6, false, over);
+</script>
+</body></html>

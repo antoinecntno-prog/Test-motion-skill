@@ -1,0 +1,47 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>B3 · L'établi · 47,7 s</title>
+<link rel="stylesheet" href="_base.css">
+<style>
+/* bout de l'établi : carte de fin claire, motif diagonal du catalogue */
+.box-kraft{position:absolute;left:120px;top:150px;width:760px;height:640px;border-radius:10px;
+  background:linear-gradient(135deg,#d2a874,#c39461 60%,#b5844f);box-shadow:0 40px 80px rgba(26,19,32,.28);transform:rotate(-4deg)}
+.box-kraft::before{content:"";position:absolute;inset:26px;border-radius:6px;background:linear-gradient(180deg,#a87a47,#b98b57)}
+.tissue{position:absolute;left:150px;top:180px;width:700px;height:580px;background:#fbf6f0;border-radius:8px;transform:rotate(-4deg);opacity:.95;
+  clip-path:polygon(0 8%,12% 0,90% 3%,100% 12%,96% 92%,84% 100%,8% 97%,0 86%)}
+.folded{position:absolute;left:190px;top:200px;width:620px;height:612px;background:url(../assets/img/maillot-plie-detoure.png) center/contain no-repeat;
+  transform:rotate(-4deg);filter:drop-shadow(0 18px 24px rgba(0,0,0,.3))}
+.label{position:absolute;left:600px;top:700px;background:#fff;border-radius:6px;padding:12px 18px;font:700 19px "Hanken Grotesk";color:var(--ink);
+  box-shadow:0 10px 24px rgba(26,19,32,.2);transform:rotate(6deg)}
+.label i{font-style:normal;color:var(--accent)}
+/* signature : logo, nom, bouton, curseur qui clique */
+.brand{position:absolute;left:1040px;top:200px;width:760px}
+.logo{display:flex;align-items:center;gap:26px}
+.logo img{width:150px;height:150px;border-radius:30px;box-shadow:0 14px 30px rgba(26,19,32,.18)}
+.logo div{font:900 64px/1 "Archivo";font-stretch:85%;color:var(--ink)}
+.logo small{display:block;font:600 26px "Hanken Grotesk";color:var(--text-2);margin-top:10px;letter-spacing:.01em}
+.promise{margin-top:44px;font:800 56px/1.08 "Archivo";font-stretch:85%;color:var(--ink)}
+.promise em{font-style:normal;color:var(--accent)}
+.cta{margin-top:44px;display:inline-flex;align-items:center;gap:16px;background:var(--accent);color:#fff;font:700 30px "Hanken Grotesk";
+  padding:24px 40px;border-radius:6px;position:relative;box-shadow:0 18px 40px rgba(179,18,95,.35);transform:scale(.97)}
+.url{margin-top:22px;font:600 24px "Hanken Grotesk";color:var(--text-2)}
+.wave{position:absolute;left:1408px;top:660px;width:140px;height:140px;border:4px solid rgba(179,18,95,.45);border-radius:50%}
+.cur{position:absolute;left:1452px;top:700px;width:46px;height:58px}
+/* papier de soie en avant-plan, flou, coupé par le bord bas gauche */
+.fg{position:absolute;left:-200px;top:-220px;width:700px;height:420px;background:#fffaf4;border-radius:40%;filter:blur(14px);opacity:.9;transform:rotate(-12deg)}
+</style></head><body>
+<div class="stage ground-paper">
+  <div class="box-kraft"></div>
+  <div class="tissue"></div>
+  <div class="folded"></div>
+  <div class="label">Livré · <i>moins d'un mois</i></div>
+  <div class="brand">
+    <div class="logo"><img src="../assets/img/logo-ifs.svg" alt=""><div>IFS<small>Industrie Française de Sellerie</small></div></div>
+    <div class="promise">Une qualité irréprochable,<br>livrée en <em>moins d'un mois</em>.</div>
+    <div class="cta">Voir le catalogue →</div>
+    <div class="url">catalogue-ifs.netlify.app</div>
+  </div>
+  <div class="wave"></div>
+  <svg class="cur" viewBox="0 0 46 58"><path d="M3 2 L3 46 L14 35 L22 54 L30 50 L22 32 L38 32 Z" fill="#fff" stroke="#1A1320" stroke-width="3" stroke-linejoin="round"/></svg>
+  <div class="fg"></div>
+  <div class="sub">Découvrez notre <span class="box">catalogue</span>.</div>
+</div>
+</body></html>

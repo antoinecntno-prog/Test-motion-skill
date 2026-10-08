@@ -1,0 +1,1047 @@
+{
+ "audio": "ifs-maillot-club/assets/audio/voix-montage.wav",
+ "duration": 52.0,
+ "threshold_db": -40.0,
+ "min_silence": 0.12,
+ "stats": {
+  "p10_db": -120.0,
+  "p50_db": -28.1,
+  "p95_db": -13.7
+ },
+ "phrases": [
+  {
+   "start": 0.03,
+   "end": 0.41,
+   "silence_after": 0.29,
+   "cut_point": 0.55,
+   "text": "Juin,",
+   "words": [
+    0
+   ]
+  },
+  {
+   "start": 0.7,
+   "end": 2.26,
+   "silence_after": 0.36,
+   "cut_point": 2.44,
+   "text": "vous commandez les maillots du club.",
+   "words": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ]
+  },
+  {
+   "start": 2.62,
+   "end": 3.25,
+   "silence_after": 0.27,
+   "cut_point": 3.38,
+   "text": "Septembre,",
+   "words": [
+    7
+   ]
+  },
+  {
+   "start": 3.52,
+   "end": 4.33,
+   "silence_after": 0.41,
+   "cut_point": 4.54,
+   "text": "premier match.",
+   "words": [
+    8,
+    9
+   ]
+  },
+  {
+   "start": 4.74,
+   "end": 5.0,
+   "silence_after": 0.13,
+   "cut_point": 5.06,
+   "text": "Et",
+   "words": [
+    10
+   ]
+  },
+  {
+   "start": 5.13,
+   "end": 6.24,
+   "silence_after": 2.95,
+   "cut_point": 7.71,
+   "text": "toujours pas de maillots.",
+   "words": [
+    11,
+    12,
+    13,
+    14
+   ]
+  },
+  {
+   "start": 9.19,
+   "end": 10.39,
+   "silence_after": 0.17,
+   "cut_point": 10.48,
+   "text": "Le jour où ils arrivent,",
+   "words": [
+    15,
+    16,
+    17,
+    18,
+    19
+   ]
+  },
+  {
+   "start": 10.56,
+   "end": 12.32,
+   "silence_after": 0.36,
+   "cut_point": 12.5,
+   "text": "le rouge a viré à l'orange.",
+   "words": [
+    20,
+    21,
+    22,
+    23,
+    24,
+    25
+   ]
+  },
+  {
+   "start": 12.68,
+   "end": 15.06,
+   "silence_after": 0.37,
+   "cut_point": 15.25,
+   "text": "Et le numéro se décolle au premier lavage.",
+   "words": [
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33
+   ]
+  },
+  {
+   "start": 15.43,
+   "end": 16.87,
+   "silence_after": 1.97,
+   "cut_point": 17.86,
+   "text": "On reprend depuis le début.",
+   "words": [
+    34,
+    35,
+    36,
+    37,
+    38
+   ]
+  },
+  {
+   "start": 18.84,
+   "end": 19.08,
+   "silence_after": 0.15,
+   "cut_point": 19.16,
+   "text": "Avec",
+   "words": [
+    39
+   ]
+  },
+  {
+   "start": 19.23,
+   "end": 19.98,
+   "silence_after": 0.13,
+   "cut_point": 20.05,
+   "text": "IFS,",
+   "words": [
+    40
+   ]
+  },
+  {
+   "start": 20.11,
+   "end": 21.09,
+   "silence_after": 0.37,
+   "cut_point": 21.27,
+   "text": "tout part d'un mail.",
+   "words": [
+    41,
+    42,
+    43,
+    44
+   ]
+  },
+  {
+   "start": 21.46,
+   "end": 23.71,
+   "silence_after": 0.3,
+   "cut_point": 23.86,
+   "text": "Vous envoyez votre design et votre logo.",
+   "words": [
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51
+   ]
+  },
+  {
+   "start": 24.01,
+   "end": 25.3,
+   "silence_after": 0.29,
+   "cut_point": 25.45,
+   "text": "Vous validez le BAT.",
+   "words": [
+    52,
+    53,
+    54,
+    55
+   ]
+  },
+  {
+   "start": 25.59,
+   "end": 26.48,
+   "silence_after": 0.39,
+   "cut_point": 26.68,
+   "text": "Nous faisons le reste.",
+   "words": [
+    56,
+    57,
+    58,
+    59
+   ]
+  },
+  {
+   "start": 26.87,
+   "end": 28.45,
+   "silence_after": 0.19,
+   "cut_point": 28.55,
+   "text": "Nos tailles sont standardisées.",
+   "words": [
+    60,
+    61,
+    62,
+    63
+   ]
+  },
+  {
+   "start": 28.64,
+   "end": 29.54,
+   "silence_after": 0.5,
+   "cut_point": 29.79,
+   "text": "La coupe va plus vite.",
+   "words": [
+    64,
+    65,
+    66,
+    67,
+    68
+   ]
+  },
+  {
+   "start": 30.04,
+   "end": 32.57,
+   "silence_after": 0.31,
+   "cut_point": 32.73,
+   "text": "La sublimation fixe les couleurs dans la fibre.",
+   "words": [
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76
+   ]
+  },
+  {
+   "start": 32.88,
+   "end": 35.0,
+   "silence_after": 0.33,
+   "cut_point": 35.16,
+   "text": "La confection assemble chaque maillot.",
+   "words": [
+    77,
+    78,
+    79,
+    80,
+    81
+   ]
+  },
+  {
+   "start": 35.33,
+   "end": 37.16,
+   "silence_after": 0.37,
+   "cut_point": 37.34,
+   "text": "Et vous êtes livrés en moins d'un mois.",
+   "words": [
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89
+   ]
+  },
+  {
+   "start": 37.53,
+   "end": 39.84,
+   "silence_after": 0.31,
+   "cut_point": 40.0,
+   "text": "Samedi, le numéro 15 monte au panier.",
+   "words": [
+    90,
+    91,
+    92,
+    93,
+    94,
+    95,
+    96
+   ]
+  },
+  {
+   "start": 40.15,
+   "end": 41.71,
+   "silence_after": 0.78,
+   "cut_point": 42.1,
+   "text": "Le rouge est resté rouge.",
+   "words": [
+    97,
+    98,
+    99,
+    100,
+    101
+   ]
+  },
+  {
+   "start": 42.49,
+   "end": 43.18,
+   "silence_after": 0.27,
+   "cut_point": 43.31,
+   "text": "IFS.",
+   "words": [
+    102
+   ]
+  },
+  {
+   "start": 43.45,
+   "end": 46.58,
+   "silence_after": 0.28,
+   "cut_point": 46.72,
+   "text": "Une qualité irréprochable livrée en moins d'un mois.",
+   "words": [
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110
+   ]
+  },
+  {
+   "start": 46.86,
+   "end": 48.24,
+   "silence_after": 3.76,
+   "cut_point": null,
+   "text": "Découvrez notre catalogue.",
+   "words": [
+    111,
+    112,
+    113
+   ]
+  }
+ ],
+ "words": [
+  {
+   "w": "Juin,",
+   "s": 0.03,
+   "e": 0.56,
+   "whisper_s": 0.0
+  },
+  {
+   "w": "vous",
+   "s": 0.7,
+   "e": 0.94,
+   "whisper_s": 0.74
+  },
+  {
+   "w": "commandez",
+   "s": 0.94,
+   "e": 1.36,
+   "whisper_s": 0.94
+  },
+  {
+   "w": "les",
+   "s": 1.36,
+   "e": 1.56,
+   "whisper_s": 1.36
+  },
+  {
+   "w": "maillots",
+   "s": 1.56,
+   "e": 1.74,
+   "whisper_s": 1.56
+  },
+  {
+   "w": "du",
+   "s": 1.74,
+   "e": 1.96,
+   "whisper_s": 1.74
+  },
+  {
+   "w": "club.",
+   "s": 1.96,
+   "e": 2.26,
+   "whisper_s": 1.96
+  },
+  {
+   "w": "Septembre,",
+   "s": 2.62,
+   "e": 3.36,
+   "whisper_s": 2.8
+  },
+  {
+   "w": "premier",
+   "s": 3.52,
+   "e": 3.9,
+   "whisper_s": 3.74
+  },
+  {
+   "w": "match.",
+   "s": 3.9,
+   "e": 4.3,
+   "whisper_s": 3.9
+  },
+  {
+   "w": "Et",
+   "s": 4.74,
+   "e": 5.13,
+   "whisper_s": 4.82
+  },
+  {
+   "w": "toujours",
+   "s": 5.13,
+   "e": 5.58,
+   "whisper_s": 5.18
+  },
+  {
+   "w": "pas",
+   "s": 5.58,
+   "e": 5.8,
+   "whisper_s": 5.58
+  },
+  {
+   "w": "de",
+   "s": 5.8,
+   "e": 5.94,
+   "whisper_s": 5.8
+  },
+  {
+   "w": "maillots.",
+   "s": 5.94,
+   "e": 6.4,
+   "whisper_s": 5.94
+  },
+  {
+   "w": "Le",
+   "s": 9.19,
+   "e": 9.4,
+   "whisper_s": 9.2
+  },
+  {
+   "w": "jour",
+   "s": 9.4,
+   "e": 9.58,
+   "whisper_s": 9.4
+  },
+  {
+   "w": "où",
+   "s": 9.58,
+   "e": 9.72,
+   "whisper_s": 9.58
+  },
+  {
+   "w": "ils",
+   "s": 9.72,
+   "e": 9.96,
+   "whisper_s": 9.72
+  },
+  {
+   "w": "arrivent,",
+   "s": 9.96,
+   "e": 10.46,
+   "whisper_s": 9.96
+  },
+  {
+   "w": "le",
+   "s": 10.56,
+   "e": 10.9,
+   "whisper_s": 10.64
+  },
+  {
+   "w": "rouge",
+   "s": 10.9,
+   "e": 11.16,
+   "whisper_s": 10.9
+  },
+  {
+   "w": "a",
+   "s": 11.16,
+   "e": 11.52,
+   "whisper_s": 11.16
+  },
+  {
+   "w": "viré",
+   "s": 11.52,
+   "e": 11.8,
+   "whisper_s": 11.52
+  },
+  {
+   "w": "à",
+   "s": 11.8,
+   "e": 11.94,
+   "whisper_s": 11.8
+  },
+  {
+   "w": "l'orange.",
+   "s": 11.94,
+   "e": 12.42,
+   "whisper_s": 11.94
+  },
+  {
+   "w": "Et",
+   "s": 12.68,
+   "e": 12.86,
+   "whisper_s": 12.68
+  },
+  {
+   "w": "le",
+   "s": 12.86,
+   "e": 13.1,
+   "whisper_s": 12.86
+  },
+  {
+   "w": "numéro",
+   "s": 13.1,
+   "e": 13.38,
+   "whisper_s": 13.1
+  },
+  {
+   "w": "se",
+   "s": 13.38,
+   "e": 13.74,
+   "whisper_s": 13.38
+  },
+  {
+   "w": "décolle",
+   "s": 13.74,
+   "e": 14.04,
+   "whisper_s": 13.74
+  },
+  {
+   "w": "au",
+   "s": 14.04,
+   "e": 14.32,
+   "whisper_s": 14.04
+  },
+  {
+   "w": "premier",
+   "s": 14.32,
+   "e": 14.6,
+   "whisper_s": 14.32
+  },
+  {
+   "w": "lavage.",
+   "s": 14.6,
+   "e": 15.16,
+   "whisper_s": 14.6
+  },
+  {
+   "w": "On",
+   "s": 15.43,
+   "e": 15.66,
+   "whisper_s": 15.46
+  },
+  {
+   "w": "reprend",
+   "s": 15.66,
+   "e": 16.04,
+   "whisper_s": 15.66
+  },
+  {
+   "w": "depuis",
+   "s": 16.04,
+   "e": 16.34,
+   "whisper_s": 16.04
+  },
+  {
+   "w": "le",
+   "s": 16.34,
+   "e": 16.54,
+   "whisper_s": 16.34
+  },
+  {
+   "w": "début.",
+   "s": 16.54,
+   "e": 16.8,
+   "whisper_s": 16.54
+  },
+  {
+   "w": "Avec",
+   "s": 18.84,
+   "e": 19.54,
+   "whisper_s": 18.98
+  },
+  {
+   "w": "IFS,",
+   "s": 19.54,
+   "e": 20.1,
+   "whisper_s": 19.54
+  },
+  {
+   "w": "tout",
+   "s": 20.11,
+   "e": 20.3,
+   "whisper_s": 20.14
+  },
+  {
+   "w": "part",
+   "s": 20.3,
+   "e": 20.54,
+   "whisper_s": 20.3
+  },
+  {
+   "w": "d'un",
+   "s": 20.54,
+   "e": 20.86,
+   "whisper_s": 20.54
+  },
+  {
+   "w": "mail.",
+   "s": 20.86,
+   "e": 21.08,
+   "whisper_s": 20.86
+  },
+  {
+   "w": "Vous",
+   "s": 21.46,
+   "e": 21.74,
+   "whisper_s": 21.48
+  },
+  {
+   "w": "envoyez",
+   "s": 21.74,
+   "e": 22.08,
+   "whisper_s": 21.74
+  },
+  {
+   "w": "votre",
+   "s": 22.08,
+   "e": 22.36,
+   "whisper_s": 22.08
+  },
+  {
+   "w": "design",
+   "s": 22.36,
+   "e": 22.84,
+   "whisper_s": 22.36
+  },
+  {
+   "w": "et",
+   "s": 22.84,
+   "e": 23.12,
+   "whisper_s": 22.84
+  },
+  {
+   "w": "votre",
+   "s": 23.12,
+   "e": 23.4,
+   "whisper_s": 23.12
+  },
+  {
+   "w": "logo.",
+   "s": 23.4,
+   "e": 23.72,
+   "whisper_s": 23.4
+  },
+  {
+   "w": "Vous",
+   "s": 24.01,
+   "e": 24.28,
+   "whisper_s": 24.02
+  },
+  {
+   "w": "validez",
+   "s": 24.28,
+   "e": 24.64,
+   "whisper_s": 24.28
+  },
+  {
+   "w": "le",
+   "s": 24.64,
+   "e": 24.92,
+   "whisper_s": 24.64
+  },
+  {
+   "w": "BAT.",
+   "s": 24.92,
+   "e": 25.3,
+   "whisper_s": 24.92
+  },
+  {
+   "w": "Nous",
+   "s": 25.59,
+   "e": 25.82,
+   "whisper_s": 25.62
+  },
+  {
+   "w": "faisons",
+   "s": 25.82,
+   "e": 26.1,
+   "whisper_s": 25.82
+  },
+  {
+   "w": "le",
+   "s": 26.1,
+   "e": 26.3,
+   "whisper_s": 26.1
+  },
+  {
+   "w": "reste.",
+   "s": 26.3,
+   "e": 26.6,
+   "whisper_s": 26.3
+  },
+  {
+   "w": "Nos",
+   "s": 26.87,
+   "e": 27.14,
+   "whisper_s": 26.6
+  },
+  {
+   "w": "tailles",
+   "s": 27.14,
+   "e": 27.4,
+   "whisper_s": 27.14
+  },
+  {
+   "w": "sont",
+   "s": 27.4,
+   "e": 27.68,
+   "whisper_s": 27.4
+  },
+  {
+   "w": "standardisées.",
+   "s": 27.68,
+   "e": 28.52,
+   "whisper_s": 27.68
+  },
+  {
+   "w": "La",
+   "s": 28.64,
+   "e": 28.9,
+   "whisper_s": 28.68
+  },
+  {
+   "w": "coupe",
+   "s": 28.9,
+   "e": 29.06,
+   "whisper_s": 28.9
+  },
+  {
+   "w": "va",
+   "s": 29.06,
+   "e": 29.26,
+   "whisper_s": 29.06
+  },
+  {
+   "w": "plus",
+   "s": 29.26,
+   "e": 29.5,
+   "whisper_s": 29.26
+  },
+  {
+   "w": "vite.",
+   "s": 29.5,
+   "e": 29.76,
+   "whisper_s": 29.5
+  },
+  {
+   "w": "La",
+   "s": 30.04,
+   "e": 30.32,
+   "whisper_s": 30.12
+  },
+  {
+   "w": "sublimation",
+   "s": 30.32,
+   "e": 30.94,
+   "whisper_s": 30.32
+  },
+  {
+   "w": "fixe",
+   "s": 30.94,
+   "e": 31.38,
+   "whisper_s": 30.94
+  },
+  {
+   "w": "les",
+   "s": 31.38,
+   "e": 31.62,
+   "whisper_s": 31.38
+  },
+  {
+   "w": "couleurs",
+   "s": 31.62,
+   "e": 31.9,
+   "whisper_s": 31.62
+  },
+  {
+   "w": "dans",
+   "s": 31.9,
+   "e": 32.1,
+   "whisper_s": 31.9
+  },
+  {
+   "w": "la",
+   "s": 32.1,
+   "e": 32.34,
+   "whisper_s": 32.1
+  },
+  {
+   "w": "fibre.",
+   "s": 32.34,
+   "e": 32.56,
+   "whisper_s": 32.34
+  },
+  {
+   "w": "La",
+   "s": 32.88,
+   "e": 33.18,
+   "whisper_s": 32.94
+  },
+  {
+   "w": "confection",
+   "s": 33.18,
+   "e": 33.7,
+   "whisper_s": 33.18
+  },
+  {
+   "w": "assemble",
+   "s": 33.7,
+   "e": 34.3,
+   "whisper_s": 33.7
+  },
+  {
+   "w": "chaque",
+   "s": 34.3,
+   "e": 34.68,
+   "whisper_s": 34.3
+  },
+  {
+   "w": "maillot.",
+   "s": 34.68,
+   "e": 35.14,
+   "whisper_s": 34.68
+  },
+  {
+   "w": "Et",
+   "s": 35.33,
+   "e": 35.48,
+   "whisper_s": 35.34
+  },
+  {
+   "w": "vous",
+   "s": 35.48,
+   "e": 35.62,
+   "whisper_s": 35.48
+  },
+  {
+   "w": "êtes",
+   "s": 35.62,
+   "e": 35.84,
+   "whisper_s": 35.62
+  },
+  {
+   "w": "livrés",
+   "s": 35.84,
+   "e": 36.24,
+   "whisper_s": 35.84
+  },
+  {
+   "w": "en",
+   "s": 36.24,
+   "e": 36.6,
+   "whisper_s": 36.24
+  },
+  {
+   "w": "moins",
+   "s": 36.6,
+   "e": 36.76,
+   "whisper_s": 36.6
+  },
+  {
+   "w": "d'un",
+   "s": 36.76,
+   "e": 37.06,
+   "whisper_s": 36.76
+  },
+  {
+   "w": "mois.",
+   "s": 37.06,
+   "e": 37.22,
+   "whisper_s": 37.06
+  },
+  {
+   "w": "Samedi,",
+   "s": 37.53,
+   "e": 38.14,
+   "whisper_s": 37.64
+  },
+  {
+   "w": "le",
+   "s": 38.3,
+   "e": 38.46,
+   "whisper_s": 38.3
+  },
+  {
+   "w": "numéro",
+   "s": 38.46,
+   "e": 38.76,
+   "whisper_s": 38.46
+  },
+  {
+   "w": "15",
+   "s": 38.76,
+   "e": 39.06,
+   "whisper_s": 38.76
+  },
+  {
+   "w": "monte",
+   "s": 39.06,
+   "e": 39.4,
+   "whisper_s": 39.06
+  },
+  {
+   "w": "au",
+   "s": 39.4,
+   "e": 39.58,
+   "whisper_s": 39.4
+  },
+  {
+   "w": "panier.",
+   "s": 39.58,
+   "e": 39.9,
+   "whisper_s": 39.58
+  },
+  {
+   "w": "Le",
+   "s": 40.15,
+   "e": 40.48,
+   "whisper_s": 40.24
+  },
+  {
+   "w": "rouge",
+   "s": 40.48,
+   "e": 40.76,
+   "whisper_s": 40.48
+  },
+  {
+   "w": "est",
+   "s": 40.76,
+   "e": 41.14,
+   "whisper_s": 40.76
+  },
+  {
+   "w": "resté",
+   "s": 41.14,
+   "e": 41.42,
+   "whisper_s": 41.14
+  },
+  {
+   "w": "rouge.",
+   "s": 41.42,
+   "e": 41.78,
+   "whisper_s": 41.42
+  },
+  {
+   "w": "IFS.",
+   "s": 42.49,
+   "e": 43.34,
+   "whisper_s": 42.78
+  },
+  {
+   "w": "Une",
+   "s": 43.45,
+   "e": 43.7,
+   "whisper_s": 43.56
+  },
+  {
+   "w": "qualité",
+   "s": 43.7,
+   "e": 44.16,
+   "whisper_s": 43.7
+  },
+  {
+   "w": "irréprochable",
+   "s": 44.16,
+   "e": 45.16,
+   "whisper_s": 44.16
+  },
+  {
+   "w": "livrée",
+   "s": 45.16,
+   "e": 45.68,
+   "whisper_s": 45.16
+  },
+  {
+   "w": "en",
+   "s": 45.68,
+   "e": 46.02,
+   "whisper_s": 45.68
+  },
+  {
+   "w": "moins",
+   "s": 46.02,
+   "e": 46.18,
+   "whisper_s": 46.02
+  },
+  {
+   "w": "d'un",
+   "s": 46.18,
+   "e": 46.46,
+   "whisper_s": 46.18
+  },
+  {
+   "w": "mois.",
+   "s": 46.46,
+   "e": 46.64,
+   "whisper_s": 46.46
+  },
+  {
+   "w": "Découvrez",
+   "s": 46.86,
+   "e": 47.42,
+   "whisper_s": 47.04
+  },
+  {
+   "w": "notre",
+   "s": 47.42,
+   "e": 47.72,
+   "whisper_s": 47.42
+  },
+  {
+   "w": "catalogue.",
+   "s": 47.72,
+   "e": 48.28,
+   "whisper_s": 47.72
+  }
+ ]
+}

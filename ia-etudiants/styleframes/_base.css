@@ -1,0 +1,36 @@
+/* Socle commun des images de style : aquarelle sur papier crème, bordeaux et ocre, Fraunces, DM Sans, Caveat. */
+@font-face{font-family:"Fraunces";font-weight:400;src:url(../assets/fonts/fraunces-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Fraunces";font-weight:600;src:url(../assets/fonts/fraunces-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Fraunces";font-weight:700;src:url(../assets/fonts/fraunces-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Fraunces";font-weight:900;src:url(../assets/fonts/fraunces-latin-900-normal.woff2) format("woff2")}
+@font-face{font-family:"Fraunces";font-weight:400;font-style:italic;src:url(../assets/fonts/fraunces-latin-400-italic.woff2) format("woff2")}
+@font-face{font-family:"DM Sans";font-weight:400;src:url(../assets/fonts/dm-sans-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"DM Sans";font-weight:500;src:url(../assets/fonts/dm-sans-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"DM Sans";font-weight:600;src:url(../assets/fonts/dm-sans-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"DM Sans";font-weight:700;src:url(../assets/fonts/dm-sans-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Caveat";font-weight:400;src:url(../assets/fonts/caveat-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Caveat";font-weight:600;src:url(../assets/fonts/caveat-latin-600-normal.woff2) format("woff2")}
+
+:root{
+  --paper:#F4EBDD; --paper-2:#EDE1CF; --paper-dark:#E6D8C2;
+  --ink:#3A2A24; --ink-2:#6B5A52; --ink-light:#9C8C83;
+  --bordeaux:#7A1E2E; --bordeaux-2:#9B2F3F; --bordeaux-pale:#C98A93;
+  --ocre:#C98A2E; --ocre-2:#E0A84A; --ocre-pale:#EFD7A6;
+  --gris-lavis:#A99F95; --gris-lavis-2:#8E847A;
+  --accent:#7A1E2E;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:var(--paper)}
+.stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:var(--paper);font-family:"DM Sans",sans-serif;color:var(--ink)}
+/* grain du papier : bruit fractal très clair, en multiply */
+.paper{position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;opacity:.55;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='.012 .018' numOctaves='3' seed='7'/><feColorMatrix values='0 0 0 0 .93  0 0 0 0 .88  0 0 0 0 .78  0 0 0 .55 0'/></filter><rect width='400' height='400' filter='url(%23p)'/></svg>")}
+.fibres{position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;opacity:.35;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 .4  0 0 0 0 .3  0 0 0 0 .25  0 0 0 .22 0'/></filter><rect width='300' height='300' filter='url(%23f)'/></svg>")}
+/* sous-titre : bas centre, DM Sans 62 px, boîte bordeaux pour le mot clé, trait ocre sous le pic */
+.sub{position:absolute;left:0;top:896px;width:1920px;text-align:center;font:600 62px/74px "DM Sans",sans-serif;color:var(--ink);letter-spacing:-.005em}
+.sub .box{position:relative;display:inline-block;padding:0 .18em;margin:0 .08em;color:#F8F1E6;background:var(--bordeaux);border-radius:4px;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.sub .stroke{position:relative;display:inline-block}
+.sub .stroke::after{content:"";position:absolute;left:-2%;right:-4%;bottom:-6px;height:9px;border-radius:50%;background:var(--ocre);opacity:.9;transform:rotate(-1.2deg)}
+.note{font-family:"Caveat",cursive;color:var(--bordeaux);}

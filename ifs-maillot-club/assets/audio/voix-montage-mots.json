@@ -1,0 +1,595 @@
+{
+ "duration": 52.0,
+ "words": [
+  {
+   "w": "Juin,",
+   "start": 0.0,
+   "end": 0.5
+  },
+  {
+   "w": "vous",
+   "start": 0.74,
+   "end": 0.92
+  },
+  {
+   "w": "commandez",
+   "start": 0.92,
+   "end": 1.36
+  },
+  {
+   "w": "les",
+   "start": 1.36,
+   "end": 1.56
+  },
+  {
+   "w": "maillots",
+   "start": 1.56,
+   "end": 1.74
+  },
+  {
+   "w": "du",
+   "start": 1.74,
+   "end": 1.96
+  },
+  {
+   "w": "club.",
+   "start": 1.96,
+   "end": 2.26
+  },
+  {
+   "w": "Septembre,",
+   "start": 2.8,
+   "end": 3.36
+  },
+  {
+   "w": "premier",
+   "start": 3.74,
+   "end": 3.9
+  },
+  {
+   "w": "match.",
+   "start": 3.9,
+   "end": 4.3
+  },
+  {
+   "w": "Et",
+   "start": 4.82,
+   "end": 5.18
+  },
+  {
+   "w": "toujours",
+   "start": 5.18,
+   "end": 5.58
+  },
+  {
+   "w": "pas",
+   "start": 5.58,
+   "end": 5.8
+  },
+  {
+   "w": "de",
+   "start": 5.8,
+   "end": 5.94
+  },
+  {
+   "w": "maillots.",
+   "start": 5.94,
+   "end": 6.38
+  },
+  {
+   "w": "Le",
+   "start": 9.2,
+   "end": 9.4
+  },
+  {
+   "w": "jour",
+   "start": 9.4,
+   "end": 9.58
+  },
+  {
+   "w": "où",
+   "start": 9.58,
+   "end": 9.72
+  },
+  {
+   "w": "ils",
+   "start": 9.72,
+   "end": 9.96
+  },
+  {
+   "w": "arrivent,",
+   "start": 9.96,
+   "end": 10.46
+  },
+  {
+   "w": "le",
+   "start": 10.62,
+   "end": 10.9
+  },
+  {
+   "w": "rouge",
+   "start": 10.9,
+   "end": 11.16
+  },
+  {
+   "w": "a",
+   "start": 11.16,
+   "end": 11.52
+  },
+  {
+   "w": "viré",
+   "start": 11.52,
+   "end": 11.8
+  },
+  {
+   "w": "à",
+   "start": 11.8,
+   "end": 11.94
+  },
+  {
+   "w": "l",
+   "start": 11.94,
+   "end": 12.06
+  },
+  {
+   "w": "'orange.",
+   "start": 12.06,
+   "end": 12.42
+  },
+  {
+   "w": "Et",
+   "start": 12.68,
+   "end": 12.86
+  },
+  {
+   "w": "le",
+   "start": 12.86,
+   "end": 13.1
+  },
+  {
+   "w": "numéro",
+   "start": 13.1,
+   "end": 13.38
+  },
+  {
+   "w": "se",
+   "start": 13.38,
+   "end": 13.74
+  },
+  {
+   "w": "décolle",
+   "start": 13.74,
+   "end": 14.04
+  },
+  {
+   "w": "au",
+   "start": 14.04,
+   "end": 14.32
+  },
+  {
+   "w": "premier",
+   "start": 14.32,
+   "end": 14.6
+  },
+  {
+   "w": "lavage.",
+   "start": 14.6,
+   "end": 15.16
+  },
+  {
+   "w": "On",
+   "start": 15.46,
+   "end": 15.66
+  },
+  {
+   "w": "reprend",
+   "start": 15.66,
+   "end": 16.04
+  },
+  {
+   "w": "depuis",
+   "start": 16.04,
+   "end": 16.34
+  },
+  {
+   "w": "le",
+   "start": 16.34,
+   "end": 16.54
+  },
+  {
+   "w": "début.",
+   "start": 16.54,
+   "end": 16.8
+  },
+  {
+   "w": "Avec",
+   "start": 18.96,
+   "end": 19.52
+  },
+  {
+   "w": "Continosport,",
+   "start": 19.52,
+   "end": 20.08
+  },
+  {
+   "w": "tout",
+   "start": 20.32,
+   "end": 20.54
+  },
+  {
+   "w": "part",
+   "start": 20.54,
+   "end": 20.82
+  },
+  {
+   "w": "d",
+   "start": 20.82,
+   "end": 20.94
+  },
+  {
+   "w": "'un",
+   "start": 20.94,
+   "end": 21.14
+  },
+  {
+   "w": "mail.",
+   "start": 21.14,
+   "end": 21.34
+  },
+  {
+   "w": "Vous",
+   "start": 21.5,
+   "end": 21.74
+  },
+  {
+   "w": "envoyez",
+   "start": 21.74,
+   "end": 22.08
+  },
+  {
+   "w": "votre",
+   "start": 22.08,
+   "end": 22.36
+  },
+  {
+   "w": "design",
+   "start": 22.36,
+   "end": 22.84
+  },
+  {
+   "w": "et",
+   "start": 22.84,
+   "end": 23.12
+  },
+  {
+   "w": "votre",
+   "start": 23.12,
+   "end": 23.42
+  },
+  {
+   "w": "logo.",
+   "start": 23.42,
+   "end": 23.72
+  },
+  {
+   "w": "Vous",
+   "start": 24.02,
+   "end": 24.28
+  },
+  {
+   "w": "validez",
+   "start": 24.28,
+   "end": 24.64
+  },
+  {
+   "w": "le",
+   "start": 24.64,
+   "end": 24.92
+  },
+  {
+   "w": "BAT.",
+   "start": 24.92,
+   "end": 25.3
+  },
+  {
+   "w": "Nous",
+   "start": 25.62,
+   "end": 25.82
+  },
+  {
+   "w": "faisons",
+   "start": 25.82,
+   "end": 26.1
+  },
+  {
+   "w": "le",
+   "start": 26.1,
+   "end": 26.3
+  },
+  {
+   "w": "reste.",
+   "start": 26.3,
+   "end": 26.6
+  },
+  {
+   "w": "Nos",
+   "start": 26.6,
+   "end": 27.14
+  },
+  {
+   "w": "tailles",
+   "start": 27.14,
+   "end": 27.4
+  },
+  {
+   "w": "sont",
+   "start": 27.4,
+   "end": 27.68
+  },
+  {
+   "w": "standardisées.",
+   "start": 27.68,
+   "end": 28.54
+  },
+  {
+   "w": "La",
+   "start": 28.68,
+   "end": 28.9
+  },
+  {
+   "w": "coupe",
+   "start": 28.9,
+   "end": 29.06
+  },
+  {
+   "w": "va",
+   "start": 29.06,
+   "end": 29.26
+  },
+  {
+   "w": "plus",
+   "start": 29.26,
+   "end": 29.5
+  },
+  {
+   "w": "vite.",
+   "start": 29.5,
+   "end": 29.76
+  },
+  {
+   "w": "La",
+   "start": 30.14,
+   "end": 30.32
+  },
+  {
+   "w": "sublimation",
+   "start": 30.32,
+   "end": 30.94
+  },
+  {
+   "w": "fixe",
+   "start": 30.94,
+   "end": 31.38
+  },
+  {
+   "w": "les",
+   "start": 31.38,
+   "end": 31.62
+  },
+  {
+   "w": "couleurs",
+   "start": 31.62,
+   "end": 31.9
+  },
+  {
+   "w": "dans",
+   "start": 31.9,
+   "end": 32.1
+  },
+  {
+   "w": "la",
+   "start": 32.1,
+   "end": 32.36
+  },
+  {
+   "w": "fibre.",
+   "start": 32.36,
+   "end": 32.56
+  },
+  {
+   "w": "La",
+   "start": 32.96,
+   "end": 33.18
+  },
+  {
+   "w": "confection",
+   "start": 33.18,
+   "end": 33.7
+  },
+  {
+   "w": "assemble",
+   "start": 33.7,
+   "end": 34.3
+  },
+  {
+   "w": "chaque",
+   "start": 34.3,
+   "end": 34.68
+  },
+  {
+   "w": "maillot.",
+   "start": 34.68,
+   "end": 35.14
+  },
+  {
+   "w": "Et",
+   "start": 35.34,
+   "end": 35.48
+  },
+  {
+   "w": "vous",
+   "start": 35.48,
+   "end": 35.62
+  },
+  {
+   "w": "êtes",
+   "start": 35.62,
+   "end": 35.84
+  },
+  {
+   "w": "livrés",
+   "start": 35.84,
+   "end": 36.24
+  },
+  {
+   "w": "en",
+   "start": 36.24,
+   "end": 36.6
+  },
+  {
+   "w": "moins",
+   "start": 36.6,
+   "end": 36.76
+  },
+  {
+   "w": "d",
+   "start": 36.76,
+   "end": 36.92
+  },
+  {
+   "w": "'un",
+   "start": 36.92,
+   "end": 37.06
+  },
+  {
+   "w": "mois.",
+   "start": 37.06,
+   "end": 37.22
+  },
+  {
+   "w": "Samedi,",
+   "start": 37.68,
+   "end": 38.2
+  },
+  {
+   "w": "le",
+   "start": 38.3,
+   "end": 38.46
+  },
+  {
+   "w": "numéro",
+   "start": 38.46,
+   "end": 38.76
+  },
+  {
+   "w": "15",
+   "start": 38.76,
+   "end": 39.08
+  },
+  {
+   "w": "monte",
+   "start": 39.08,
+   "end": 39.4
+  },
+  {
+   "w": "au",
+   "start": 39.4,
+   "end": 39.58
+  },
+  {
+   "w": "panier.",
+   "start": 39.58,
+   "end": 39.9
+  },
+  {
+   "w": "Le",
+   "start": 40.24,
+   "end": 40.48
+  },
+  {
+   "w": "rouge",
+   "start": 40.48,
+   "end": 40.76
+  },
+  {
+   "w": "est",
+   "start": 40.76,
+   "end": 41.14
+  },
+  {
+   "w": "resté",
+   "start": 41.14,
+   "end": 41.42
+  },
+  {
+   "w": "rouge.",
+   "start": 41.42,
+   "end": 41.84
+  },
+  {
+   "w": "Continosport.",
+   "start": 43.04,
+   "end": 43.6
+  },
+  {
+   "w": "Une",
+   "start": 43.84,
+   "end": 43.98
+  },
+  {
+   "w": "qualité",
+   "start": 43.98,
+   "end": 44.42
+  },
+  {
+   "w": "irréprochable",
+   "start": 44.42,
+   "end": 45.5
+  },
+  {
+   "w": "livrée",
+   "start": 45.5,
+   "end": 46.04
+  },
+  {
+   "w": "en",
+   "start": 46.04,
+   "end": 46.36
+  },
+  {
+   "w": "moins",
+   "start": 46.36,
+   "end": 46.54
+  },
+  {
+   "w": "d",
+   "start": 46.54,
+   "end": 46.68
+  },
+  {
+   "w": "'un",
+   "start": 46.68,
+   "end": 46.8
+  },
+  {
+   "w": "mois.",
+   "start": 46.8,
+   "end": 46.96
+  },
+  {
+   "w": "Récouvrez",
+   "start": 47.06,
+   "end": 47.42
+  },
+  {
+   "w": "notre",
+   "start": 47.42,
+   "end": 47.72
+  },
+  {
+   "w": "catalogue.",
+   "start": 47.72,
+   "end": 48.28
+  }
+ ]
+}

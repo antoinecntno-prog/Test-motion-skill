@@ -1,0 +1,38 @@
+/* Socle commun des images de style IFS : polices du catalogue, rôles de couleur, sous-titre et ses deux reliefs. */
+@font-face{font-family:"Archivo";font-weight:700 900;font-stretch:75% 100%;src:url(../assets/fonts/archivo-latin.woff2) format("woff2")}
+@font-face{font-family:"Hanken Grotesk";font-weight:400 700;src:url(../assets/fonts/hanken-grotesk-latin.woff2) format("woff2")}
+
+:root{
+  --accent:#B3125F; --accent-lit:#C2186B; --accent-glow:#FF7DBA; --accent-deep:#940E4E;
+  --spark:#FFE45C;
+  --ink:#1A1320; --ink-2:#2B232E; --paper:#FFFFFF; --paper-2:#F4F0F3; --line:#E7E0E5;
+  --club-red:#D62839; --club-black:#15151C;
+  --on-dark:#F5EFF3; --on-dark-2:#C8BCC5; --text-2:#5E5360;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden}
+body{font-family:"Hanken Grotesk",Arial,sans-serif;color:var(--ink);background:var(--paper)}
+.stage{position:absolute;inset:0;overflow:hidden}
+
+/* Sols texturés : la texture rend la dérive de caméra lisible */
+.ground-dark{background:
+  repeating-linear-gradient(115deg,rgba(255,255,255,.028) 0 2px,transparent 2px 46px),
+  radial-gradient(120% 90% at 50% 40%,#241B2B 0%,#1A1320 55%,#110C15 100%)}
+.ground-paper{background:
+  repeating-linear-gradient(115deg,rgba(179,18,95,.05) 0 2px,transparent 2px 46px),
+  linear-gradient(180deg,#FFFFFF 0%,#F7F3F6 100%)}
+
+/* Sous-titre : la phrase de la voix, en bas au centre, mot par mot (mots à venir en encre à 35 %) */
+.sub{position:absolute;left:0;right:0;top:896px;text-align:center;font-size:62px;font-weight:600;line-height:74px;
+  letter-spacing:-.015em;color:var(--ink);text-shadow:0 2px 14px rgba(255,255,255,.75)}
+.sub.dark{color:var(--on-dark);text-shadow:0 2px 16px rgba(0,0,0,.6)}
+.sub .later{opacity:.35}
+.sub .box{background:var(--accent);color:#fff;padding:0 .16em;text-shadow:none}
+.sub .stroke{position:relative;white-space:nowrap}
+.sub .stroke::after{content:"";position:absolute;left:-2%;right:-4%;bottom:-6px;height:7px;
+  background:linear-gradient(90deg,transparent,var(--accent) 12%,var(--accent) 70%,transparent);border-radius:50%;
+  transform:rotate(-1.2deg)}
+.sub.dark .stroke::after{background:linear-gradient(90deg,transparent,var(--accent-glow) 12%,var(--accent-glow) 70%,transparent)}
+
+/* Étiquette de l'image (hors film) */
+.tag{position:absolute;right:24px;top:20px;font:600 18px "Hanken Grotesk";letter-spacing:.06em;color:rgba(128,128,128,.7)}

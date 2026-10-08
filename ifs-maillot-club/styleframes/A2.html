@@ -1,0 +1,42 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>A2 · Le fil rouge · 31,6 s</title>
+<link rel="stylesheet" href="_base.css">
+<style>
+/* Macro du tissu : maille polyester blanche, vue de très près */
+.fabric{position:absolute;inset:-40px;background:
+  radial-gradient(circle at 50% 50%,rgba(26,19,32,.16) 0 3.2px,transparent 4px) 0 0/22px 22px,
+  radial-gradient(circle at 50% 50%,rgba(26,19,32,.10) 0 3.2px,transparent 4px) 11px 11px/22px 22px,
+  linear-gradient(180deg,#FFFFFF,#F1EDF0);transform:rotate(-4deg)}
+/* La couleur qui entre dans la fibre : le motif réel du maillot apparaît dans un halo qui s'étend depuis le fil */
+.print{position:absolute;left:560px;top:20px;width:1100px;height:820px;
+  background:url(../assets/img/maillot-face-rouge-noir-detoure.png) center/100% auto no-repeat;
+  -webkit-mask:radial-gradient(closest-side,#000 0 46%,rgba(0,0,0,.55) 66%,transparent 100%);
+          mask:radial-gradient(closest-side,#000 0 46%,rgba(0,0,0,.55) 66%,transparent 100%);
+  transform:rotate(-4deg) scale(1.25);transform-origin:50% 40%}
+/* la maille reste visible à travers l'encre */
+.mesh-over{position:absolute;inset:-40px;background:
+  radial-gradient(circle at 50% 50%,rgba(255,255,255,.22) 0 2.6px,transparent 3.4px) 0 0/22px 22px;
+  transform:rotate(-4deg);mix-blend-mode:screen;
+  -webkit-mask:radial-gradient(640px 560px at 1140px 430px,#000 50%,transparent 100%);
+          mask:radial-gradient(640px 560px at 1140px 430px,#000 50%,transparent 100%)}
+/* Plaque de presse chaude en avant-plan haut, floue, coupée par le bord */
+.press{position:absolute;left:-80px;right:-80px;top:-150px;height:250px;border-radius:0 0 30px 30px;
+  background:linear-gradient(180deg,#3d3940,#8a868e 60%,#c9c5cc 86%,#6d6970);filter:blur(13px);
+  box-shadow:0 40px 90px rgba(214,40,57,.35)}
+.heat{position:absolute;left:0;right:0;top:80px;height:120px;background:linear-gradient(180deg,rgba(255,180,120,.35),transparent);filter:blur(20px)}
+.thread{position:absolute;left:0;top:0;width:1920px;height:1080px}
+</style></head><body>
+<div class="stage" style="background:#fff">
+  <div class="fabric"></div>
+  <div class="print"></div>
+  <div class="mesh-over"></div>
+  <!-- le fil arrive de la gauche, plonge dans le tissu et se dissout en couleur -->
+  <svg class="thread" viewBox="0 0 1920 1080">
+    <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#D62839"/><stop offset=".78" stop-color="#D62839"/><stop offset="1" stop-color="#D62839" stop-opacity="0"/></linearGradient></defs>
+    <path d="M-20 640 C 180 600 300 700 470 610 S 700 470 860 470" fill="none" stroke="url(#g)" stroke-width="7" stroke-linecap="round"/>
+    <path d="M-20 640 C 180 600 300 700 470 610 S 700 470 860 470" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2" stroke-dasharray="2 9" stroke-linecap="round"/>
+  </svg>
+  <div class="heat"></div><div style="position:absolute;left:0;right:0;top:760px;height:320px;background:linear-gradient(180deg,rgba(255,255,255,0),#fff 55%)"></div>
+  <div class="press"></div>
+  <div class="sub"><span class="later" style="opacity:1">les </span><span class="box">couleurs</span><span class="later" style="opacity:.4"> dans la fibre.</span></div>
+</div>
+</body></html>

@@ -13,9 +13,9 @@ Rempli le 08/10/2026 d'après la demande d'Antoine. Les hypothèses sont marqué
   bout en bout. « Aucun prérequis technique : si vous savez écrire un mail, vous savez suivre la journée. »
 - Preuve publique : « 10 h gagnées chaque semaine par la dernière dirigeante formée » (dirigeante d'un cabinet de
   coaching). Dans le film seulement si Antoine la valide à l'étape 1, sans nom ni lieu, chiffre qui roule à l'écran.
-- Le déroulé à montrer : les tâches écrites devenues objets de conte (lettres noires en volée de corbeaux, tiges de
-  marionnette tenues par la pile de dossiers), la grande figure de voiles et de lumière (l'IA), le geste de reprendre
-  les tiges en main, l'outil fabriqué de ses mains.
+- Le récit (concept d'Antoine, 08/10/2026) : un homme et une femme se sont aimés au lycée, la vie les sépare, chacun
+  garde l'autre au fond du cœur ; elle revient et le libère de ses chaînes de papier pour qu'il vive sa vie. Double
+  sens implicite : lui est le dirigeant sous l'eau, elle est l'IA ; la clé arrive à la fin (deux lettres d'or, IA).
 - La fin voulue : une scène décrite par la dernière phrase du conte, sans morale ; puis la signature et un seul bouton.
 
 ## 2. Design global (obligatoire)
@@ -54,8 +54,8 @@ Rempli le 08/10/2026 d'après la demande d'Antoine. Les hypothèses sont marqué
 
 ## 5. Son
 
-- Voix : conteur grave et posé, français, vouvoiement à partir du pivot ; Paul K (`ecxPjiGTvAfpGEams6ec`, Eleven v4)
-  par défaut, deux voix de la bibliothèque ElevenLabs proposées à l'étape 2 ; accord d'Antoine avant tout crédit.
+- Voix : une narratrice française au ton posé (demande d'Antoine du 08/10/2026), Eleven v4 ; deux voix féminines de la
+  bibliothèque ElevenLabs proposées à l'étape 2 ; accord d'Antoine avant tout crédit.
 - Musique : partition de `musique-film.py`, boîte à musique sur des cordes graves, sourde avant le pivot, plus claire
   après.
 - Bruitages : papier, flamme, vent, battements d'ailes, claquement de bois des tiges.

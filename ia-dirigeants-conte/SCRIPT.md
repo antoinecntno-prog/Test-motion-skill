@@ -82,7 +82,7 @@ femme raconte elle-même, et le spectateur découvre à la fin qui parle.
 
 ## Version 5 : « Interminable Attente » (texte d'Antoine du 08/10/2026, avec le jeu de mots)
 
-Le texte d'Antoine, mot pour mot, avec quatre corrections de langue : « pour jouer » (au lieu de « pour la jouer »),
+Le texte d'Antoine, mot pour mot, avec quatre corrections de langue : « pour jouer » (le brouillon disait « pour la jouer »),
 « Lui, il ouvrit » (une virgule ne sépare pas le sujet du verbe), « eut » et « s'automatisait ». Ajouts : le jeu de
 mots sur IA, en deux temps (Interminable Attente pour la fillette, Intelligence Artificielle à la fin), et la preuve
 des 10 h validée plus tôt.

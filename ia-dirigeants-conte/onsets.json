@@ -1,0 +1,1223 @@
+{
+ "audio": "ia-dirigeants-conte/assets/audio/voix-montage.wav",
+ "duration": 57.1,
+ "threshold_db": -40.0,
+ "min_silence": 0.12,
+ "stats": {
+  "p10_db": -120.0,
+  "p50_db": -34.9,
+  "p95_db": -20.2
+ },
+ "phrases": [
+  {
+   "start": 0.06,
+   "end": 2.06,
+   "silence_after": 0.46,
+   "cut_point": 2.29,
+   "text": "Ce dirigeant ramenait le travail à la maison.",
+   "words": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ]
+  },
+  {
+   "start": 2.52,
+   "end": 3.25,
+   "silence_after": 0.16,
+   "cut_point": 3.33,
+   "text": "Derrière lui,",
+   "words": [
+    8,
+    9
+   ]
+  },
+  {
+   "start": 3.41,
+   "end": 4.75,
+   "silence_after": 0.65,
+   "cut_point": 5.08,
+   "text": "le temps perdu passa la",
+   "words": [
+    10,
+    11,
+    12,
+    13,
+    14
+   ]
+  },
+  {
+   "start": 5.4,
+   "end": 6.67,
+   "silence_after": 0.43,
+   "cut_point": 6.88,
+   "text": "porte. Sa fille l'attendait pour jouer.",
+   "words": [
+    15,
+    16,
+    17,
+    18,
+    19,
+    20
+   ]
+  },
+  {
+   "start": 7.1,
+   "end": 7.4,
+   "silence_after": 0.3,
+   "cut_point": 7.55,
+   "text": "Lui,",
+   "words": [
+    21
+   ]
+  },
+  {
+   "start": 7.7,
+   "end": 8.57,
+   "silence_after": 0.45,
+   "cut_point": 8.79,
+   "text": "il ouvrit un dossier.",
+   "words": [
+    22,
+    23,
+    24,
+    25
+   ]
+  },
+  {
+   "start": 9.02,
+   "end": 10.46,
+   "silence_after": 0.59,
+   "cut_point": 10.76,
+   "text": "Le temps perdu lui prit une heure.",
+   "words": [
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32
+   ]
+  },
+  {
+   "start": 11.05,
+   "end": 12.17,
+   "silence_after": 0.42,
+   "cut_point": 12.38,
+   "text": "Elle l'attendait pour dessiner.",
+   "words": [
+    33,
+    34,
+    35,
+    36
+   ]
+  },
+  {
+   "start": 12.59,
+   "end": 12.95,
+   "silence_after": 0.23,
+   "cut_point": 13.06,
+   "text": "Lui,",
+   "words": [
+    37
+   ]
+  },
+  {
+   "start": 13.18,
+   "end": 14.12,
+   "silence_after": 0.38,
+   "cut_point": 14.31,
+   "text": "il ouvrit ses devis.",
+   "words": [
+    38,
+    39,
+    40,
+    41
+   ]
+  },
+  {
+   "start": 14.5,
+   "end": 16.08,
+   "silence_after": 0.68,
+   "cut_point": 16.42,
+   "text": "Le temps perdu lui prit la soirée.",
+   "words": [
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48
+   ]
+  },
+  {
+   "start": 16.76,
+   "end": 17.48,
+   "silence_after": 0.19,
+   "cut_point": 17.58,
+   "text": "Pour sa fille,",
+   "words": [
+    49,
+    50,
+    51
+   ]
+  },
+  {
+   "start": 17.67,
+   "end": 18.8,
+   "silence_after": 0.19,
+   "cut_point": 18.89,
+   "text": "IA voulait dire",
+   "words": [
+    52,
+    53,
+    54
+   ]
+  },
+  {
+   "start": 18.99,
+   "end": 20.08,
+   "silence_after": 0.54,
+   "cut_point": 20.35,
+   "text": "« interminable attente",
+   "words": [
+    55,
+    56,
+    57
+   ]
+  },
+  {
+   "start": 20.62,
+   "end": 21.72,
+   "silence_after": 0.12,
+   "cut_point": 21.78,
+   "text": "». Soir après soir,",
+   "words": [
+    58,
+    59,
+    60,
+    61
+   ]
+  },
+  {
+   "start": 21.84,
+   "end": 22.57,
+   "silence_after": 2.94,
+   "cut_point": 24.04,
+   "text": "il s'effaçait.",
+   "words": [
+    62,
+    63
+   ]
+  },
+  {
+   "start": 25.51,
+   "end": 27.5,
+   "silence_after": 0.43,
+   "cut_point": 27.71,
+   "text": "Alors, elle retrouva leur petit dinosaure.",
+   "words": [
+    64,
+    65,
+    66,
+    67,
+    68,
+    69
+   ]
+  },
+  {
+   "start": 27.93,
+   "end": 29.16,
+   "silence_after": 0.46,
+   "cut_point": 29.39,
+   "text": "Elle le glissa sur ses devis.",
+   "words": [
+    70,
+    71,
+    72,
+    73,
+    74,
+    75
+   ]
+  },
+  {
+   "start": 29.62,
+   "end": 30.08,
+   "silence_after": 0.17,
+   "cut_point": 30.16,
+   "text": "Enfin,",
+   "words": [
+    76
+   ]
+  },
+  {
+   "start": 30.25,
+   "end": 30.89,
+   "silence_after": 0.95,
+   "cut_point": 31.37,
+   "text": "il vit la chaîne.",
+   "words": [
+    77,
+    78,
+    79,
+    80
+   ]
+  },
+  {
+   "start": 31.84,
+   "end": 33.4,
+   "silence_after": 1.56,
+   "cut_point": 34.18,
+   "text": "Le temps perdu eut alors une idée.",
+   "words": [
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87
+   ]
+  },
+  {
+   "start": 34.96,
+   "end": 36.66,
+   "silence_after": 0.3,
+   "cut_point": 36.81,
+   "text": "L'horloge se mit au travail pour lui.",
+   "words": [
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94
+   ]
+  },
+  {
+   "start": 36.96,
+   "end": 37.82,
+   "silence_after": 0.43,
+   "cut_point": 38.03,
+   "text": "Tout s'automatisait.",
+   "words": [
+    95,
+    96
+   ]
+  },
+  {
+   "start": 38.25,
+   "end": 40.23,
+   "silence_after": 0.43,
+   "cut_point": 40.44,
+   "text": "Le soir suivant, il poussait la balançoire.",
+   "words": [
+    97,
+    98,
+    99,
+    100,
+    101,
+    102,
+    103
+   ]
+  },
+  {
+   "start": 40.66,
+   "end": 43.19,
+   "silence_after": 0.96,
+   "cut_point": 43.67,
+   "text": "Celui d'après, il dessinait un second dinosaure.",
+   "words": [
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110
+   ]
+  },
+  {
+   "start": 44.15,
+   "end": 44.82,
+   "silence_after": 0.15,
+   "cut_point": 44.89,
+   "text": "Désormais,",
+   "words": [
+    111
+   ]
+  },
+  {
+   "start": 44.97,
+   "end": 46.07,
+   "silence_after": 0.14,
+   "cut_point": 46.14,
+   "text": "IA voulait dire",
+   "words": [
+    112,
+    113,
+    114
+   ]
+  },
+  {
+   "start": 46.21,
+   "end": 47.53,
+   "silence_after": 0.29,
+   "cut_point": 47.67,
+   "text": "« intelligence artificielle",
+   "words": [
+    115,
+    116,
+    117
+   ]
+  },
+  {
+   "start": 47.82,
+   "end": 49.11,
+   "silence_after": 0.72,
+   "cut_point": 49.47,
+   "text": "» pour vous rendre le temps perdu.",
+   "words": [
+    118,
+    119,
+    120,
+    121,
+    122,
+    123,
+    124
+   ]
+  },
+  {
+   "start": 49.83,
+   "end": 52.75,
+   "silence_after": 4.35,
+   "cut_point": null,
+   "text": "La dernière dirigeante formée gagne 10 heures chaque semaine.",
+   "words": [
+    125,
+    126,
+    127,
+    128,
+    129,
+    130,
+    131,
+    132,
+    133
+   ]
+  }
+ ],
+ "words": [
+  {
+   "w": "Ce",
+   "s": 0.06,
+   "e": 0.28,
+   "whisper_s": 0.0
+  },
+  {
+   "w": "dirigeant",
+   "s": 0.28,
+   "e": 0.78,
+   "whisper_s": 0.28
+  },
+  {
+   "w": "ramenait",
+   "s": 0.78,
+   "e": 1.12,
+   "whisper_s": 0.78
+  },
+  {
+   "w": "le",
+   "s": 1.12,
+   "e": 1.38,
+   "whisper_s": 1.12
+  },
+  {
+   "w": "travail",
+   "s": 1.38,
+   "e": 1.62,
+   "whisper_s": 1.38
+  },
+  {
+   "w": "à",
+   "s": 1.62,
+   "e": 1.76,
+   "whisper_s": 1.62
+  },
+  {
+   "w": "la",
+   "s": 1.76,
+   "e": 1.9,
+   "whisper_s": 1.76
+  },
+  {
+   "w": "maison.",
+   "s": 1.9,
+   "e": 2.28,
+   "whisper_s": 1.9
+  },
+  {
+   "w": "Derrière",
+   "s": 2.52,
+   "e": 2.94,
+   "whisper_s": 2.66
+  },
+  {
+   "w": "lui,",
+   "s": 2.94,
+   "e": 3.26,
+   "whisper_s": 2.94
+  },
+  {
+   "w": "le",
+   "s": 3.41,
+   "e": 3.66,
+   "whisper_s": 3.54
+  },
+  {
+   "w": "temps",
+   "s": 3.66,
+   "e": 3.84,
+   "whisper_s": 3.66
+  },
+  {
+   "w": "perdu",
+   "s": 3.84,
+   "e": 4.14,
+   "whisper_s": 3.84
+  },
+  {
+   "w": "passa",
+   "s": 4.14,
+   "e": 4.44,
+   "whisper_s": 4.14
+  },
+  {
+   "w": "la",
+   "s": 4.44,
+   "e": 4.74,
+   "whisper_s": 4.44
+  },
+  {
+   "w": "porte.",
+   "s": 5.4,
+   "e": 5.4,
+   "whisper_s": 4.74
+  },
+  {
+   "w": "Sa",
+   "s": 5.48,
+   "e": 5.66,
+   "whisper_s": 5.48
+  },
+  {
+   "w": "fille",
+   "s": 5.66,
+   "e": 5.82,
+   "whisper_s": 5.66
+  },
+  {
+   "w": "l'attendait",
+   "s": 5.82,
+   "e": 6.3,
+   "whisper_s": 5.82
+  },
+  {
+   "w": "pour",
+   "s": 6.3,
+   "e": 6.48,
+   "whisper_s": 6.3
+  },
+  {
+   "w": "jouer.",
+   "s": 6.48,
+   "e": 6.76,
+   "whisper_s": 6.48
+  },
+  {
+   "w": "Lui,",
+   "s": 7.1,
+   "e": 7.66,
+   "whisper_s": 7.16
+  },
+  {
+   "w": "il",
+   "s": 7.7,
+   "e": 7.92,
+   "whisper_s": 7.7
+  },
+  {
+   "w": "ouvrit",
+   "s": 7.92,
+   "e": 8.12,
+   "whisper_s": 7.92
+  },
+  {
+   "w": "un",
+   "s": 8.12,
+   "e": 8.28,
+   "whisper_s": 8.12
+  },
+  {
+   "w": "dossier.",
+   "s": 8.28,
+   "e": 8.68,
+   "whisper_s": 8.28
+  },
+  {
+   "w": "Le",
+   "s": 9.02,
+   "e": 9.2,
+   "whisper_s": 9.04
+  },
+  {
+   "w": "temps",
+   "s": 9.2,
+   "e": 9.38,
+   "whisper_s": 9.2
+  },
+  {
+   "w": "perdu",
+   "s": 9.38,
+   "e": 9.66,
+   "whisper_s": 9.38
+  },
+  {
+   "w": "lui",
+   "s": 9.66,
+   "e": 9.9,
+   "whisper_s": 9.66
+  },
+  {
+   "w": "prit",
+   "s": 9.9,
+   "e": 10.12,
+   "whisper_s": 9.9
+  },
+  {
+   "w": "une",
+   "s": 10.12,
+   "e": 10.44,
+   "whisper_s": 10.12
+  },
+  {
+   "w": "heure.",
+   "s": 10.44,
+   "e": 10.74,
+   "whisper_s": 10.44
+  },
+  {
+   "w": "Elle",
+   "s": 11.05,
+   "e": 11.2,
+   "whisper_s": 11.04
+  },
+  {
+   "w": "l'attendait",
+   "s": 11.2,
+   "e": 11.6,
+   "whisper_s": 11.2
+  },
+  {
+   "w": "pour",
+   "s": 11.6,
+   "e": 11.8,
+   "whisper_s": 11.6
+  },
+  {
+   "w": "dessiner.",
+   "s": 11.8,
+   "e": 12.26,
+   "whisper_s": 11.8
+  },
+  {
+   "w": "Lui,",
+   "s": 12.59,
+   "e": 13.14,
+   "whisper_s": 12.66
+  },
+  {
+   "w": "il",
+   "s": 13.18,
+   "e": 13.42,
+   "whisper_s": 13.28
+  },
+  {
+   "w": "ouvrit",
+   "s": 13.42,
+   "e": 13.62,
+   "whisper_s": 13.42
+  },
+  {
+   "w": "ses",
+   "s": 13.62,
+   "e": 13.82,
+   "whisper_s": 13.62
+  },
+  {
+   "w": "devis.",
+   "s": 13.82,
+   "e": 14.2,
+   "whisper_s": 13.82
+  },
+  {
+   "w": "Le",
+   "s": 14.5,
+   "e": 14.68,
+   "whisper_s": 14.5
+  },
+  {
+   "w": "temps",
+   "s": 14.68,
+   "e": 14.9,
+   "whisper_s": 14.68
+  },
+  {
+   "w": "perdu",
+   "s": 14.9,
+   "e": 15.28,
+   "whisper_s": 14.9
+  },
+  {
+   "w": "lui",
+   "s": 15.28,
+   "e": 15.56,
+   "whisper_s": 15.28
+  },
+  {
+   "w": "prit",
+   "s": 15.56,
+   "e": 15.76,
+   "whisper_s": 15.56
+  },
+  {
+   "w": "la",
+   "s": 15.76,
+   "e": 16.04,
+   "whisper_s": 15.76
+  },
+  {
+   "w": "soirée.",
+   "s": 16.04,
+   "e": 16.36,
+   "whisper_s": 16.04
+  },
+  {
+   "w": "Pour",
+   "s": 16.76,
+   "e": 16.9,
+   "whisper_s": 16.72
+  },
+  {
+   "w": "sa",
+   "s": 16.9,
+   "e": 17.2,
+   "whisper_s": 16.9
+  },
+  {
+   "w": "fille,",
+   "s": 17.2,
+   "e": 17.52,
+   "whisper_s": 17.2
+  },
+  {
+   "w": "IA",
+   "s": 17.67,
+   "e": 18.16,
+   "whisper_s": 17.8
+  },
+  {
+   "w": "voulait",
+   "s": 18.16,
+   "e": 18.48,
+   "whisper_s": 18.16
+  },
+  {
+   "w": "dire",
+   "s": 18.48,
+   "e": 18.88,
+   "whisper_s": 18.48
+  },
+  {
+   "w": "«",
+   "s": 18.99,
+   "e": 19.0,
+   "whisper_s": 18.88
+  },
+  {
+   "w": "interminable",
+   "s": 19.0,
+   "e": 19.84,
+   "whisper_s": 19.0
+  },
+  {
+   "w": "attente",
+   "s": 19.84,
+   "e": 20.28,
+   "whisper_s": 19.84
+  },
+  {
+   "w": "».",
+   "s": 20.62,
+   "e": 20.68,
+   "whisper_s": 20.28
+  },
+  {
+   "w": "Soir",
+   "s": 20.68,
+   "e": 21.12,
+   "whisper_s": 20.68
+  },
+  {
+   "w": "après",
+   "s": 21.12,
+   "e": 21.36,
+   "whisper_s": 21.12
+  },
+  {
+   "w": "soir,",
+   "s": 21.36,
+   "e": 21.76,
+   "whisper_s": 21.36
+  },
+  {
+   "w": "il",
+   "s": 21.84,
+   "e": 22.08,
+   "whisper_s": 21.9
+  },
+  {
+   "w": "s'effaçait.",
+   "s": 22.08,
+   "e": 23.04,
+   "whisper_s": 22.08
+  },
+  {
+   "w": "Alors,",
+   "s": 25.51,
+   "e": 25.88,
+   "whisper_s": 25.5
+  },
+  {
+   "w": "elle",
+   "s": 26.0,
+   "e": 26.24,
+   "whisper_s": 26.0
+  },
+  {
+   "w": "retrouva",
+   "s": 26.24,
+   "e": 26.56,
+   "whisper_s": 26.24
+  },
+  {
+   "w": "leur",
+   "s": 26.56,
+   "e": 26.76,
+   "whisper_s": 26.56
+  },
+  {
+   "w": "petit",
+   "s": 26.76,
+   "e": 27.06,
+   "whisper_s": 26.76
+  },
+  {
+   "w": "dinosaure.",
+   "s": 27.06,
+   "e": 27.66,
+   "whisper_s": 27.06
+  },
+  {
+   "w": "Elle",
+   "s": 27.93,
+   "e": 28.1,
+   "whisper_s": 27.92
+  },
+  {
+   "w": "le",
+   "s": 28.1,
+   "e": 28.32,
+   "whisper_s": 28.1
+  },
+  {
+   "w": "glissa",
+   "s": 28.32,
+   "e": 28.58,
+   "whisper_s": 28.32
+  },
+  {
+   "w": "sur",
+   "s": 28.58,
+   "e": 28.86,
+   "whisper_s": 28.58
+  },
+  {
+   "w": "ses",
+   "s": 28.86,
+   "e": 29.02,
+   "whisper_s": 28.86
+  },
+  {
+   "w": "devis.",
+   "s": 29.02,
+   "e": 29.32,
+   "whisper_s": 29.02
+  },
+  {
+   "w": "Enfin,",
+   "s": 29.62,
+   "e": 30.08,
+   "whisper_s": 29.32
+  },
+  {
+   "w": "il",
+   "s": 30.25,
+   "e": 30.5,
+   "whisper_s": 30.22
+  },
+  {
+   "w": "vit",
+   "s": 30.5,
+   "e": 30.58,
+   "whisper_s": 30.5
+  },
+  {
+   "w": "la",
+   "s": 30.58,
+   "e": 30.82,
+   "whisper_s": 30.58
+  },
+  {
+   "w": "chaîne.",
+   "s": 30.82,
+   "e": 31.06,
+   "whisper_s": 30.82
+  },
+  {
+   "w": "Le",
+   "s": 31.84,
+   "e": 32.04,
+   "whisper_s": 31.92
+  },
+  {
+   "w": "temps",
+   "s": 32.04,
+   "e": 32.2,
+   "whisper_s": 32.04
+  },
+  {
+   "w": "perdu",
+   "s": 32.2,
+   "e": 32.54,
+   "whisper_s": 32.2
+  },
+  {
+   "w": "eut",
+   "s": 32.54,
+   "e": 32.84,
+   "whisper_s": 32.54
+  },
+  {
+   "w": "alors",
+   "s": 32.84,
+   "e": 33.02,
+   "whisper_s": 32.84
+  },
+  {
+   "w": "une",
+   "s": 33.02,
+   "e": 33.3,
+   "whisper_s": 33.02
+  },
+  {
+   "w": "idée.",
+   "s": 33.3,
+   "e": 33.5,
+   "whisper_s": 33.3
+  },
+  {
+   "w": "L'horloge",
+   "s": 34.96,
+   "e": 35.5,
+   "whisper_s": 35.02
+  },
+  {
+   "w": "se",
+   "s": 35.5,
+   "e": 35.72,
+   "whisper_s": 35.5
+  },
+  {
+   "w": "mit",
+   "s": 35.72,
+   "e": 35.82,
+   "whisper_s": 35.72
+  },
+  {
+   "w": "au",
+   "s": 35.82,
+   "e": 36.0,
+   "whisper_s": 35.82
+  },
+  {
+   "w": "travail",
+   "s": 36.0,
+   "e": 36.28,
+   "whisper_s": 36.0
+  },
+  {
+   "w": "pour",
+   "s": 36.28,
+   "e": 36.54,
+   "whisper_s": 36.28
+  },
+  {
+   "w": "lui.",
+   "s": 36.54,
+   "e": 36.76,
+   "whisper_s": 36.54
+  },
+  {
+   "w": "Tout",
+   "s": 36.96,
+   "e": 37.12,
+   "whisper_s": 36.94
+  },
+  {
+   "w": "s'automatisait.",
+   "s": 37.12,
+   "e": 37.98,
+   "whisper_s": 37.12
+  },
+  {
+   "w": "Le",
+   "s": 38.25,
+   "e": 38.48,
+   "whisper_s": 38.26
+  },
+  {
+   "w": "soir",
+   "s": 38.48,
+   "e": 38.62,
+   "whisper_s": 38.48
+  },
+  {
+   "w": "suivant,",
+   "s": 38.62,
+   "e": 39.1,
+   "whisper_s": 38.62
+  },
+  {
+   "w": "il",
+   "s": 39.16,
+   "e": 39.36,
+   "whisper_s": 39.16
+  },
+  {
+   "w": "poussait",
+   "s": 39.36,
+   "e": 39.64,
+   "whisper_s": 39.36
+  },
+  {
+   "w": "la",
+   "s": 39.64,
+   "e": 39.82,
+   "whisper_s": 39.64
+  },
+  {
+   "w": "balançoire.",
+   "s": 39.82,
+   "e": 40.42,
+   "whisper_s": 39.82
+  },
+  {
+   "w": "Celui",
+   "s": 40.66,
+   "e": 40.96,
+   "whisper_s": 40.76
+  },
+  {
+   "w": "d'après,",
+   "s": 40.96,
+   "e": 41.42,
+   "whisper_s": 40.96
+  },
+  {
+   "w": "il",
+   "s": 41.58,
+   "e": 41.76,
+   "whisper_s": 41.58
+  },
+  {
+   "w": "dessinait",
+   "s": 41.76,
+   "e": 42.16,
+   "whisper_s": 41.76
+  },
+  {
+   "w": "un",
+   "s": 42.16,
+   "e": 42.44,
+   "whisper_s": 42.16
+  },
+  {
+   "w": "second",
+   "s": 42.44,
+   "e": 42.76,
+   "whisper_s": 42.44
+  },
+  {
+   "w": "dinosaure.",
+   "s": 42.76,
+   "e": 43.74,
+   "whisper_s": 42.76
+  },
+  {
+   "w": "Désormais,",
+   "s": 44.15,
+   "e": 44.9,
+   "whisper_s": 44.34
+  },
+  {
+   "w": "IA",
+   "s": 44.97,
+   "e": 45.46,
+   "whisper_s": 45.1
+  },
+  {
+   "w": "voulait",
+   "s": 45.46,
+   "e": 45.76,
+   "whisper_s": 45.46
+  },
+  {
+   "w": "dire",
+   "s": 45.76,
+   "e": 46.2,
+   "whisper_s": 45.76
+  },
+  {
+   "w": "«",
+   "s": 46.21,
+   "e": 46.22,
+   "whisper_s": 46.2
+  },
+  {
+   "w": "intelligence",
+   "s": 46.22,
+   "e": 46.8,
+   "whisper_s": 46.22
+  },
+  {
+   "w": "artificielle",
+   "s": 46.8,
+   "e": 47.58,
+   "whisper_s": 46.8
+  },
+  {
+   "w": "»",
+   "s": 47.82,
+   "e": 47.82,
+   "whisper_s": 47.58
+  },
+  {
+   "w": "pour",
+   "s": 47.82,
+   "e": 47.96,
+   "whisper_s": 47.68
+  },
+  {
+   "w": "vous",
+   "s": 47.96,
+   "e": 48.2,
+   "whisper_s": 47.96
+  },
+  {
+   "w": "rendre",
+   "s": 48.2,
+   "e": 48.42,
+   "whisper_s": 48.2
+  },
+  {
+   "w": "le",
+   "s": 48.42,
+   "e": 48.66,
+   "whisper_s": 48.42
+  },
+  {
+   "w": "temps",
+   "s": 48.66,
+   "e": 48.86,
+   "whisper_s": 48.66
+  },
+  {
+   "w": "perdu.",
+   "s": 48.86,
+   "e": 49.18,
+   "whisper_s": 48.86
+  },
+  {
+   "w": "La",
+   "s": 49.83,
+   "e": 50.12,
+   "whisper_s": 49.84
+  },
+  {
+   "w": "dernière",
+   "s": 50.12,
+   "e": 50.42,
+   "whisper_s": 50.12
+  },
+  {
+   "w": "dirigeante",
+   "s": 50.42,
+   "e": 50.86,
+   "whisper_s": 50.42
+  },
+  {
+   "w": "formée",
+   "s": 50.86,
+   "e": 51.3,
+   "whisper_s": 50.86
+  },
+  {
+   "w": "gagne",
+   "s": 51.3,
+   "e": 51.66,
+   "whisper_s": 51.3
+  },
+  {
+   "w": "10",
+   "s": 51.66,
+   "e": 51.98,
+   "whisper_s": 51.66
+  },
+  {
+   "w": "heures",
+   "s": 51.98,
+   "e": 52.26,
+   "whisper_s": 51.98
+  },
+  {
+   "w": "chaque",
+   "s": 52.26,
+   "e": 52.48,
+   "whisper_s": 52.26
+  },
+  {
+   "w": "semaine.",
+   "s": 52.48,
+   "e": 52.88,
+   "whisper_s": 52.48
+  }
+ ]
+}

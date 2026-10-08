@@ -80,6 +80,46 @@ femme raconte elle-même, et le spectateur découvre à la fin qui parle.
 - La clé arrive après la dernière scène : une devinette à la voix, deux lettres d'or à l'image (IA), puis le chiffre
   réel.
 
+## Voix retenue et montage (étape 2, 08/10/2026)
+
+- Prise d'Antoine, générée dans ElevenLabs : voix « Gaëlle, Storyteller », Eleven v4 (réglages lus dans le nom du
+  fichier : sp91, s50, sb78, sans doute vitesse 0,91, Stability 50 %, Similarity 78 %). Fichier :
+  `assets/audio/voix.mp3`, 48,20 s brutes.
+- Montage (`build-audio.sh`) : gag muet de 2,5 s après « il s'effaçait » (coupe à 22,79 s), 0,4 s avant le noir
+  (28,66 s), 1,2 s de silence après la phrase du pivot (30,68 s), 0,5 s avant « Désormais » (39,32 s), 0,3 s avant
+  la preuve (44,72 s), 4 s de fin pour la carte. Film : 57,10 s.
+- Transcription locale (Whisper medium) : le texte est lu en entier ; la phrase 19 s'entend « il dessinait un second
+  dinosaure » (le texte validé disait « ils dessinèrent »), à confirmer à l'écoute.
+
+### Minutage de la voix montée
+
+| # | Phrase | Début | Fin | Silence après |
+|---|---|---|---|---|
+| 1 | Ce dirigeant ramenait le travail à la maison. | 0.06 | 2.06 | 0.46 s |
+| 2 | Derrière lui, le temps perdu passa la porte. | 2.52 | 6.67 | 0.43 s |
+| 3 | Sa fille l'attendait pour jouer. | 5.48 | 6.67 | 0.43 s |
+| 4 | Lui, il ouvrit un dossier. | 7.10 | 8.57 | 0.45 s |
+| 5 | Le temps perdu lui prit une heure. | 9.02 | 10.46 | 0.59 s |
+| 6 | Elle l'attendait pour dessiner. | 11.05 | 12.17 | 0.42 s |
+| 7 | Lui, il ouvrit ses devis. | 12.59 | 14.12 | 0.38 s |
+| 8 | Le temps perdu lui prit la soirée. | 14.50 | 16.08 | 0.68 s |
+| 9 | Pour sa fille, IA voulait dire« | 16.76 | 18.80 | 0.19 s |
+| 10 | interminable attente». | 19.00 | 20.08 | 0.54 s |
+| 11 | Soir après soir, il s'effaçait. | 20.68 | 22.57 | 2.94 s |
+| 12 | Alors, elle retrouva leur petit dinosaure. | 25.51 | 27.50 | 0.43 s |
+| 13 | Elle le glissa sur ses devis. | 27.93 | 29.16 | 0.46 s |
+| 14 | Enfin, il vit la chaîne. | 29.62 | 30.89 | 0.95 s |
+| 15 | Le temps perdu eut alors une idée. | 31.84 | 33.40 | 1.56 s |
+| 16 | L'horloge se mit au travail pour lui. | 34.96 | 36.66 | 0.30 s |
+| 17 | Tout s'automatisait. | 36.96 | 37.82 | 0.43 s |
+| 18 | Le soir suivant, il poussait la balançoire. | 38.25 | 40.23 | 0.43 s |
+| 19 | Celui d'après, il dessinait un second dinosaure. | 40.66 | 43.19 | 0.96 s |
+| 20 | Désormais, IA voulait dire« | 44.15 | 46.07 | 0.14 s |
+| 21 | intelligence artificielle» | 46.22 | 47.53 | 0.29 s |
+| 22 | pour vous rendre le temps perdu. | 47.82 | 49.11 | 0.72 s |
+| 23 | La dernière dirigeante formée gagne 10 heures chaque semaine. | 49.83 | 52.75 | 4.35 s |
+
+
 ## Version 5 : « Interminable Attente » (texte d'Antoine du 08/10/2026, avec le jeu de mots) · VALIDÉE le 08/10/2026
 
 Le texte d'Antoine, mot pour mot, avec quatre corrections de langue : « pour jouer » (le brouillon disait « pour la jouer »),

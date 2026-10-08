@@ -1,0 +1,705 @@
+{
+ "duration": 57.1,
+ "words": [
+  {
+   "w": "Ce",
+   "start": 0.0,
+   "end": 0.28
+  },
+  {
+   "w": "dirigeant",
+   "start": 0.28,
+   "end": 0.78
+  },
+  {
+   "w": "ramenait",
+   "start": 0.78,
+   "end": 1.12
+  },
+  {
+   "w": "le",
+   "start": 1.12,
+   "end": 1.38
+  },
+  {
+   "w": "travail",
+   "start": 1.38,
+   "end": 1.62
+  },
+  {
+   "w": "à",
+   "start": 1.62,
+   "end": 1.76
+  },
+  {
+   "w": "la",
+   "start": 1.76,
+   "end": 1.9
+  },
+  {
+   "w": "maison.",
+   "start": 1.9,
+   "end": 2.28
+  },
+  {
+   "w": "Derrière",
+   "start": 2.66,
+   "end": 2.94
+  },
+  {
+   "w": "lui,",
+   "start": 2.94,
+   "end": 3.26
+  },
+  {
+   "w": "le",
+   "start": 3.54,
+   "end": 3.66
+  },
+  {
+   "w": "temps",
+   "start": 3.66,
+   "end": 3.84
+  },
+  {
+   "w": "perdu",
+   "start": 3.84,
+   "end": 4.14
+  },
+  {
+   "w": "passa",
+   "start": 4.14,
+   "end": 4.44
+  },
+  {
+   "w": "la",
+   "start": 4.44,
+   "end": 4.74
+  },
+  {
+   "w": "porte.",
+   "start": 4.74,
+   "end": 5.02
+  },
+  {
+   "w": "Sa",
+   "start": 5.48,
+   "end": 5.66
+  },
+  {
+   "w": "fille",
+   "start": 5.66,
+   "end": 5.82
+  },
+  {
+   "w": "l",
+   "start": 5.82,
+   "end": 5.98
+  },
+  {
+   "w": "'attendait",
+   "start": 5.98,
+   "end": 6.3
+  },
+  {
+   "w": "pour",
+   "start": 6.3,
+   "end": 6.48
+  },
+  {
+   "w": "jouer.",
+   "start": 6.48,
+   "end": 6.76
+  },
+  {
+   "w": "Lui,",
+   "start": 7.16,
+   "end": 7.66
+  },
+  {
+   "w": "il",
+   "start": 7.7,
+   "end": 7.92
+  },
+  {
+   "w": "ouvrit",
+   "start": 7.92,
+   "end": 8.12
+  },
+  {
+   "w": "un",
+   "start": 8.12,
+   "end": 8.28
+  },
+  {
+   "w": "dossier.",
+   "start": 8.28,
+   "end": 8.68
+  },
+  {
+   "w": "Le",
+   "start": 9.04,
+   "end": 9.2
+  },
+  {
+   "w": "temps",
+   "start": 9.2,
+   "end": 9.38
+  },
+  {
+   "w": "perdu",
+   "start": 9.38,
+   "end": 9.66
+  },
+  {
+   "w": "lui",
+   "start": 9.66,
+   "end": 9.9
+  },
+  {
+   "w": "prit",
+   "start": 9.9,
+   "end": 10.12
+  },
+  {
+   "w": "une",
+   "start": 10.12,
+   "end": 10.44
+  },
+  {
+   "w": "heure.",
+   "start": 10.44,
+   "end": 10.74
+  },
+  {
+   "w": "Elle",
+   "start": 11.04,
+   "end": 11.2
+  },
+  {
+   "w": "l",
+   "start": 11.2,
+   "end": 11.32
+  },
+  {
+   "w": "'attendait",
+   "start": 11.32,
+   "end": 11.6
+  },
+  {
+   "w": "pour",
+   "start": 11.6,
+   "end": 11.8
+  },
+  {
+   "w": "dessiner.",
+   "start": 11.8,
+   "end": 12.26
+  },
+  {
+   "w": "Lui,",
+   "start": 12.66,
+   "end": 13.14
+  },
+  {
+   "w": "il",
+   "start": 13.28,
+   "end": 13.42
+  },
+  {
+   "w": "ouvrit",
+   "start": 13.42,
+   "end": 13.62
+  },
+  {
+   "w": "ses",
+   "start": 13.62,
+   "end": 13.82
+  },
+  {
+   "w": "devis.",
+   "start": 13.82,
+   "end": 14.2
+  },
+  {
+   "w": "Le",
+   "start": 14.5,
+   "end": 14.68
+  },
+  {
+   "w": "temps",
+   "start": 14.68,
+   "end": 14.9
+  },
+  {
+   "w": "perdu",
+   "start": 14.9,
+   "end": 15.28
+  },
+  {
+   "w": "lui",
+   "start": 15.28,
+   "end": 15.56
+  },
+  {
+   "w": "prit",
+   "start": 15.56,
+   "end": 15.76
+  },
+  {
+   "w": "la",
+   "start": 15.76,
+   "end": 16.04
+  },
+  {
+   "w": "soirée.",
+   "start": 16.04,
+   "end": 16.36
+  },
+  {
+   "w": "Pour",
+   "start": 16.72,
+   "end": 16.9
+  },
+  {
+   "w": "sa",
+   "start": 16.9,
+   "end": 17.2
+  },
+  {
+   "w": "fille,",
+   "start": 17.2,
+   "end": 17.52
+  },
+  {
+   "w": "IA",
+   "start": 17.8,
+   "end": 18.16
+  },
+  {
+   "w": "voulait",
+   "start": 18.16,
+   "end": 18.48
+  },
+  {
+   "w": "dire",
+   "start": 18.48,
+   "end": 18.88
+  },
+  {
+   "w": "«",
+   "start": 18.88,
+   "end": 19.0
+  },
+  {
+   "w": "interminable",
+   "start": 19.0,
+   "end": 19.84
+  },
+  {
+   "w": "attente",
+   "start": 19.84,
+   "end": 20.28
+  },
+  {
+   "w": "».",
+   "start": 20.28,
+   "end": 20.68
+  },
+  {
+   "w": "Soir",
+   "start": 20.68,
+   "end": 21.12
+  },
+  {
+   "w": "après",
+   "start": 21.12,
+   "end": 21.36
+  },
+  {
+   "w": "soir,",
+   "start": 21.36,
+   "end": 21.76
+  },
+  {
+   "w": "il",
+   "start": 21.9,
+   "end": 22.08
+  },
+  {
+   "w": "s",
+   "start": 22.08,
+   "end": 22.24
+  },
+  {
+   "w": "'effaçait.",
+   "start": 22.24,
+   "end": 23.04
+  },
+  {
+   "w": "Alors,",
+   "start": 25.5,
+   "end": 25.88
+  },
+  {
+   "w": "elle",
+   "start": 26.0,
+   "end": 26.24
+  },
+  {
+   "w": "retrouva",
+   "start": 26.24,
+   "end": 26.56
+  },
+  {
+   "w": "leur",
+   "start": 26.56,
+   "end": 26.76
+  },
+  {
+   "w": "petit",
+   "start": 26.76,
+   "end": 27.06
+  },
+  {
+   "w": "dinosaure.",
+   "start": 27.06,
+   "end": 27.66
+  },
+  {
+   "w": "Elle",
+   "start": 27.92,
+   "end": 28.1
+  },
+  {
+   "w": "le",
+   "start": 28.1,
+   "end": 28.32
+  },
+  {
+   "w": "glissa",
+   "start": 28.32,
+   "end": 28.58
+  },
+  {
+   "w": "sur",
+   "start": 28.58,
+   "end": 28.86
+  },
+  {
+   "w": "ses",
+   "start": 28.86,
+   "end": 29.02
+  },
+  {
+   "w": "devis.",
+   "start": 29.02,
+   "end": 29.32
+  },
+  {
+   "w": "Enfin,",
+   "start": 29.32,
+   "end": 30.08
+  },
+  {
+   "w": "il",
+   "start": 30.22,
+   "end": 30.5
+  },
+  {
+   "w": "vit",
+   "start": 30.5,
+   "end": 30.58
+  },
+  {
+   "w": "la",
+   "start": 30.58,
+   "end": 30.82
+  },
+  {
+   "w": "chaîne.",
+   "start": 30.82,
+   "end": 31.06
+  },
+  {
+   "w": "Le",
+   "start": 31.92,
+   "end": 32.04
+  },
+  {
+   "w": "temps",
+   "start": 32.04,
+   "end": 32.2
+  },
+  {
+   "w": "perdu",
+   "start": 32.2,
+   "end": 32.54
+  },
+  {
+   "w": "eut",
+   "start": 32.54,
+   "end": 32.84
+  },
+  {
+   "w": "alors",
+   "start": 32.84,
+   "end": 33.02
+  },
+  {
+   "w": "une",
+   "start": 33.02,
+   "end": 33.3
+  },
+  {
+   "w": "idée.",
+   "start": 33.3,
+   "end": 33.5
+  },
+  {
+   "w": "L",
+   "start": 35.02,
+   "end": 35.2
+  },
+  {
+   "w": "'horloge",
+   "start": 35.2,
+   "end": 35.5
+  },
+  {
+   "w": "se",
+   "start": 35.5,
+   "end": 35.72
+  },
+  {
+   "w": "mit",
+   "start": 35.72,
+   "end": 35.82
+  },
+  {
+   "w": "au",
+   "start": 35.82,
+   "end": 36.0
+  },
+  {
+   "w": "travail",
+   "start": 36.0,
+   "end": 36.28
+  },
+  {
+   "w": "pour",
+   "start": 36.28,
+   "end": 36.54
+  },
+  {
+   "w": "lui.",
+   "start": 36.54,
+   "end": 36.76
+  },
+  {
+   "w": "Tout",
+   "start": 36.94,
+   "end": 37.12
+  },
+  {
+   "w": "s",
+   "start": 37.12,
+   "end": 37.28
+  },
+  {
+   "w": "'automatisait.",
+   "start": 37.28,
+   "end": 37.98
+  },
+  {
+   "w": "Le",
+   "start": 38.26,
+   "end": 38.48
+  },
+  {
+   "w": "soir",
+   "start": 38.48,
+   "end": 38.62
+  },
+  {
+   "w": "suivant,",
+   "start": 38.62,
+   "end": 39.1
+  },
+  {
+   "w": "il",
+   "start": 39.16,
+   "end": 39.36
+  },
+  {
+   "w": "poussait",
+   "start": 39.36,
+   "end": 39.64
+  },
+  {
+   "w": "la",
+   "start": 39.64,
+   "end": 39.82
+  },
+  {
+   "w": "balançoire.",
+   "start": 39.82,
+   "end": 40.42
+  },
+  {
+   "w": "Celui",
+   "start": 40.76,
+   "end": 40.96
+  },
+  {
+   "w": "d",
+   "start": 40.96,
+   "end": 41.2
+  },
+  {
+   "w": "'après,",
+   "start": 41.2,
+   "end": 41.42
+  },
+  {
+   "w": "il",
+   "start": 41.58,
+   "end": 41.76
+  },
+  {
+   "w": "dessinait",
+   "start": 41.76,
+   "end": 42.16
+  },
+  {
+   "w": "un",
+   "start": 42.16,
+   "end": 42.44
+  },
+  {
+   "w": "second",
+   "start": 42.44,
+   "end": 42.76
+  },
+  {
+   "w": "dinosaure.",
+   "start": 42.76,
+   "end": 43.74
+  },
+  {
+   "w": "Désormais,",
+   "start": 44.34,
+   "end": 44.9
+  },
+  {
+   "w": "IA",
+   "start": 45.1,
+   "end": 45.46
+  },
+  {
+   "w": "voulait",
+   "start": 45.46,
+   "end": 45.76
+  },
+  {
+   "w": "dire",
+   "start": 45.76,
+   "end": 46.2
+  },
+  {
+   "w": "«",
+   "start": 46.2,
+   "end": 46.22
+  },
+  {
+   "w": "intelligence",
+   "start": 46.22,
+   "end": 46.8
+  },
+  {
+   "w": "artificielle",
+   "start": 46.8,
+   "end": 47.58
+  },
+  {
+   "w": "»",
+   "start": 47.58,
+   "end": 47.68
+  },
+  {
+   "w": "pour",
+   "start": 47.68,
+   "end": 47.96
+  },
+  {
+   "w": "vous",
+   "start": 47.96,
+   "end": 48.2
+  },
+  {
+   "w": "rendre",
+   "start": 48.2,
+   "end": 48.42
+  },
+  {
+   "w": "le",
+   "start": 48.42,
+   "end": 48.66
+  },
+  {
+   "w": "temps",
+   "start": 48.66,
+   "end": 48.86
+  },
+  {
+   "w": "perdu.",
+   "start": 48.86,
+   "end": 49.18
+  },
+  {
+   "w": "La",
+   "start": 49.84,
+   "end": 50.12
+  },
+  {
+   "w": "dernière",
+   "start": 50.12,
+   "end": 50.42
+  },
+  {
+   "w": "dirigeante",
+   "start": 50.42,
+   "end": 50.86
+  },
+  {
+   "w": "formée",
+   "start": 50.86,
+   "end": 51.3
+  },
+  {
+   "w": "gagne",
+   "start": 51.3,
+   "end": 51.66
+  },
+  {
+   "w": "10",
+   "start": 51.66,
+   "end": 51.98
+  },
+  {
+   "w": "heures",
+   "start": 51.98,
+   "end": 52.26
+  },
+  {
+   "w": "chaque",
+   "start": 52.26,
+   "end": 52.48
+  },
+  {
+   "w": "semaine.",
+   "start": 52.48,
+   "end": 52.88
+  }
+ ]
+}

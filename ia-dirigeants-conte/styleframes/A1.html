@@ -4,61 +4,94 @@
 <div class="sub">Derrière lui, le <span class="k">Temps perdu</span> passa la porte.</div></div>
 <script src="_ombres.js"></script><script>
 /* A1, 4,2 s : « Derrière lui, le Temps perdu passa la porte. »
-   La maison du père en coupe, maison de poupée de papier posée devant la toile. La caméra glisse vers la droite
-   (travelling latéral lent) ; l'horloge roule dans l'encadrement de la porte, la chaîne tendue jusqu'au poignet. */
+   La maison du père en coupe, maison de poupée de papier posée devant la toile. La caméra est resserrée (x 1,3
+   autour de x 620) sur le rez-de-chaussée gauche : l'entrée est la seule case lumineuse. Le père entre, la pile de
+   devis sur le bras ; l'horloge roule dans l'encadrement de la porte d'entrée (chambranle, battant ouvert), la chaîne
+   tendue jusqu'à son poignet. Au mur, le dessin du petit dinosaure sous son champignon, épinglé. Salon assombri,
+   balançoire vue par la fenêtre. Avant-plan : montant de porte sombre et flou au bord gauche. */
 const O = OMBRES, C = O.C;
-let s = O.defs({ x: 700, y: 520, r: 1250 }) + O.toile();
+const f = (n) => Math.round(n * 10) / 10;
+let s = O.defs({ x: 470, y: 600, r: 1150 }) + O.toile();
+s += `<defs>
+<linearGradient id="dehors" x1="0" y1="512" x2="0" y2="900" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFF4DA"/><stop offset=".62" stop-color="#F3DDB0"/><stop offset="1" stop-color="#D9B784"/></linearGradient>
+<clipPath id="clipPorte"><rect x="336" y="512" width="158" height="388"/></clipPath>
+<clipPath id="clipVitre"><rect x="960" y="468" width="190" height="200"/></clipPath>
+<pattern id="papierPeint" width="34" height="34" patternUnits="userSpaceOnUse"><rect width="34" height="34" fill="none"/><rect x="0" width="5" height="34" fill="#5E4128"/><circle cx="19" cy="17" r="2.2" fill="#5E4128"/></pattern>
+</defs>`;
 
-// 4. fond : le jardin au crépuscule, à gauche de la maison, dans la brume (loin de la toile, donc flou)
-s += O.brume(120, 640, 360, 220, .55, C.brume, 34);
-s += `<g filter="url(#b4)" opacity=".75">${O.arbre(70, 900, 640, 9, { fill: C.brume2 })}${O.cloture(-20, 200, 900, 120, 6, C.brume2)}</g>`;
-s += `<g opacity=".8">${O.corbeau(118, 330, .9, 8, C.brume2)}</g>`;
+// tout le décor et les personnages : camera resserrée sur l'entrée (x 1,3 autour de x 620, sol fixe)
+let z = '';
+const piece = (x0, y0, x1, y1) => `M${x0},${y0} L${x1},${y0} L${x1},${y1} L${x0},${y1} Z `;
+
+// mur de l'entrée : papier peint discret et lambris, la porte reste nette et plus claire
+z += `<path fill="url(#papierPeint)" opacity=".09" fill-rule="evenodd" d="${piece(120, 438, 870, 900)} ${piece(320, 488, 518, 900)}"/>`;
+z += `<path fill="#5E4128" opacity=".16" fill-rule="evenodd" d="${piece(120, 772, 870, 900)} ${piece(320, 488, 518, 900)}"/>`;
+z += `<rect x="120" y="768" width="200" height="5" fill="${C.ombre}" opacity=".55"/><rect x="518" y="768" width="352" height="5" fill="${C.ombre}" opacity=".55"/>`;
+
+// dehors, vu par la porte ouverte : lumière du soir, brume, clôture et arbre lointains (flous)
+z += `<g clip-path="url(#clipPorte)"><rect x="336" y="512" width="158" height="388" fill="url(#dehors)"/>` +
+  `<g filter="url(#b2_5)" opacity=".42">${O.arbre(470, 880, 420, 5, { fill: C.brume2, depth: 5 })}${O.cloture(320, 520, 880, 70, 3, C.brume2)}` +
+  `<path fill="${C.brume2}" d="M330,872 C380,864 440,868 500,860 L500,900 L330,900 Z"/></g></g>`;
 
 // la maison en coupe : un cadre brun noir percé de pièces où passe la lumière de la toile
-const H = { x0: 196, x1: 2140, y0: 92, y1: 948 };
-const piece = (x0, y0, x1, y1) => `M${x0},${y0} L${x1},${y0} L${x1},${y1} L${x0},${y1} Z `;
-let d = piece(H.x0, H.y0, H.x1, H.y1);
-d += piece(258, 438, 838, 900);       // entrée
-d += piece(196, 600, 258, 900);       // porte ouverte dans le mur
-d += piece(884, 438, 1540, 900);      // salon
-d += piece(1588, 438, 2140, 900);     // cuisine (coupée par le bord du cadre)
-d += piece(258, 132, 1010, 392);      // chambre
+let d = piece(60, 92, 2140, 948);
+d += piece(120, 438, 870, 900);       // entrée
+d += piece(916, 438, 1540, 900);      // salon
+d += piece(1588, 438, 2140, 900);     // cuisine (hors cadre)
+d += piece(120, 132, 1010, 392);      // chambre
 d += piece(1058, 132, 1540, 392);     // bureau
 d += piece(1588, 132, 2140, 392);
-s += `<path fill="${C.ombre}" fill-rule="evenodd" d="${d}"/>`;
-// toit (coupé en haut du cadre) et cheminée
-s += `<path fill="${C.ombre}" d="M150,96 L1180,-260 L2200,96 L2200,104 L150,104 Z"/>`;
-// lumière des pièces : l'entrée reste claire, les autres pièces baissent
-const voileP = (x0, y0, x1, y1, a) => `<rect x="${x0}" y="${y0}" width="${x1 - x0}" height="${y1 - y0}" fill="#140B05" opacity="${a}"/>`;
-s += voileP(884, 438, 1540, 900, .2) + voileP(1588, 438, 2140, 900, .34) + voileP(258, 132, 1010, 392, .46) + voileP(1058, 132, 1540, 392, .4) + voileP(1588, 132, 2140, 392, .5);
+z += `<path fill="${C.ombre}" fill-rule="evenodd" d="${d}"/>`;
 
-// mobilier du décor (net, contre la toile)
+// lumière des pièces : l'entrée seule reste claire ; salon assombri, sauf la vitre ; étage et cuisine éteints
+const voile = (dd, a) => `<path fill="#140B05" fill-rule="evenodd" opacity="${a}" d="${dd}"/>`;
+z += voile(piece(916, 438, 1540, 900) + piece(960, 468, 1150, 668), .64) + voile(piece(960, 468, 1150, 668), .22);
+z += voile(piece(1588, 438, 2140, 900), .66) + voile(piece(120, 132, 1010, 392), .58) + voile(piece(1058, 132, 1540, 392), .62) + voile(piece(1588, 132, 2140, 392), .66);
+
+// le salon : par la fenêtre, la balançoire du jardin pend à sa branche (cordes de 4,5 px, soit 6 px à l'écran)
+z += `<g clip-path="url(#clipVitre)" fill="${C.ombre2}" opacity=".85">` +
+  `<path d="M940,500 C1000,488 1060,486 1120,474 C1140,470 1158,462 1170,452 L1172,470 C1150,482 1124,488 1100,492 C1050,500 1000,504 940,512 Z"/>` +
+  `<path d="M1040,492 C1048,476 1060,468 1078,462 L1080,468 C1066,474 1056,482 1050,494 Z"/>` +
+  `<path d="M1017,500 L1019,636 M1083,492 L1081,636" stroke="${C.ombre2}" stroke-width="4.5" stroke-linecap="round" fill="none"/>` +
+  `<rect x="1004" y="632" width="92" height="10" rx="2"/></g>`;
 const fenetre = (x, y, w, h) => `<g fill="${C.ombre}"><path fill-rule="evenodd" d="M${x},${y} h${w} v${h} h${-w} Z M${x + 10},${y + 10} h${w / 2 - 14} v${h / 2 - 14} h${-(w / 2 - 14)} Z M${x + w / 2 + 4},${y + 10} h${w / 2 - 14} v${h / 2 - 14} h${-(w / 2 - 14)} Z M${x + 10},${y + h / 2 + 4} h${w / 2 - 14} v${h / 2 - 14} h${-(w / 2 - 14)} Z M${x + w / 2 + 4},${y + h / 2 + 4} h${w / 2 - 14} v${h / 2 - 14} h${-(w / 2 - 14)} Z"/></g>`;
-s += fenetre(905, 468, 190, 200);
-s += `<g opacity=".9">${O.balancoire(1000, 478, 640, 0, C.ombre2)}</g>`;              // la balançoire du jardin, vue par la fenêtre du salon
-s += `<path fill="${C.ombre}" d="M1540,900 L1540,438 L1520,438 L1520,470 L1460,470 L1460,530 L1400,530 L1400,590 L1340,590 L1340,650 L1280,650 L1280,710 L1220,710 L1220,770 L1160,770 L1160,830 L1100,830 L1100,900 Z"/>`;  // escalier
-s += `<path fill="${C.ombre}" d="M1130,820 L1134,610 L1140,610 L1140,820 Z"/>`;  // rampe
-s += O.table(1010, 900, 170, 104) + O.lampe(990, 794, .8, true);
-s += `<g fill="${C.ombre}"><rect x="430" y="470" width="80" height="8"/><circle cx="446" cy="486" r="7"/><circle cx="476" cy="486" r="7"/><path d="M468,486 L490,486 L500,610 L458,610 Z"/></g>`;  // patère et manteau suspendu
-s += `<g fill="${C.ombre}"><path d="M400,392 L400,250 C400,236 412,232 424,232 L436,232 L436,320 L760,320 L760,300 L776,300 L776,392 L760,392 L760,350 L416,350 L416,392 Z"/><path d="M450,320 C452,300 470,292 500,294 L520,320 Z"/></g>`; // lit de la chambre
-s += O.pile(1720, 900, 26, { w: 170, seed: 9 }) + O.pile(1900, 900, 34, { w: 150, seed: 12 }); // la cuisine déjà pleine de dossiers
+z += fenetre(950, 458, 210, 220);
+z += `<path fill="${C.ombre}" d="M1540,900 L1540,438 L1520,438 L1520,470 L1460,470 L1460,530 L1400,530 L1400,590 L1340,590 L1340,650 L1280,650 L1280,710 L1220,710 L1220,770 L1160,770 L1160,830 L1100,830 L1100,900 Z"/>`;  // escalier
+z += O.table(1010, 900, 150, 104) + O.lampe(990, 794, .8, false);    // lampe éteinte : le salon attend dans le noir
+z += `<g fill="${C.ombre}"><path d="M400,392 L400,250 C400,236 412,232 424,232 L436,232 L436,320 L760,320 L760,300 L776,300 L776,392 L760,392 L760,350 L416,350 L416,392 Z"/><path d="M450,320 C452,300 470,292 500,294 L520,320 Z"/></g>`; // lit de la chambre
+z += O.pile(1720, 900, 26, { w: 170, seed: 9 }) + O.pile(1900, 900, 34, { w: 150, seed: 12 }); // la cuisine déjà pleine de dossiers
 
-// 2. personnages nets : le père entre, la pile de devis sous le bras ; l'horloge roule dans la porte
-const P = { x: 610, y: 898, s: .74, armF: [-30, -96], armB: [22, -6], legF: [-20, 12], legB: [18, 4] };
-s += O.pere(P);
+// la porte d'entrée : chambranle, corniche, seuil, et le battant ouvert vers la pièce (panneaux ajourés, poignée)
+z += `<g fill="${C.ombre}"><path fill-rule="evenodd" d="${piece(320, 496, 510, 900)} ${piece(336, 512, 494, 900)}"/>` +
+  `<rect x="310" y="484" width="210" height="12"/><rect x="316" y="893" width="198" height="9"/></g>`;
+const bat = (u, v) => [f(334 + (236 - 334) * u), f((512 + (498 - 512) * u) + ((900 - (512 + (498 - 512) * u)) * v))];
+const quad = (u0, u1, v0, v1) => { const a = bat(u0, v0), b = bat(u1, v0), c = bat(u1, v1), e = bat(u0, v1);
+  return `M${a} L${b} L${c} L${e} Z `; };
+z += `<path fill="${C.ombre}" fill-rule="evenodd" d="${quad(0, 1, 0, 1)} ${quad(.2, .8, .07, .44)} ${quad(.2, .8, .53, .9)}"/>`;
+z += `<circle cx="${bat(.86, .53)[0]}" cy="${bat(.86, .53)[1]}" r="7" fill="${C.ombre}"/><rect x="${f(bat(.86, .53)[0] - 2)}" y="${f(bat(.86, .53)[1] - 2)}" width="12" height="4" fill="${C.ombre}"/>`;
+
+// au mur de l'entrée, à la place de la patère : le dessin du petit dinosaure sous son champignon, épinglé
+const dx = 566, dy = 520;
+z += `<g transform="rotate(-4,${dx},${dy})"><rect x="${dx - 54}" y="${dy - 48}" width="108" height="98" fill="#F8EDD3" stroke="${C.ombre}" stroke-width="4.5"/>` +
+  O.dino(dx + 14, dy + 36, .3, C.ombre) + `<path d="M${dx - 46},${dy + 37} L${dx + 46},${dy + 37}" stroke="${C.ombre}" stroke-width="3" stroke-linecap="round"/>` +
+  `<circle cx="${dx - 45}" cy="${dy - 39}" r="5" fill="${C.ombre}"/><circle cx="${dx + 45}" cy="${dy - 39}" r="5" fill="${C.ombre}"/></g>`;
+
+// 2. personnages nets : le père entre, la pile de devis sur le bras ; l'horloge roule dans la porte, derrière lui
+const P = { x: 660, y: 898, s: .74, armF: [-30, -96], armB: [22, -6], legF: [-20, 12], legB: [18, 4] };
+z += O.pere(P);
 const [hx, hy] = O.mainPere(P, 'F');
-s += O.pile(hx + 28, hy + 10, 14, { w: 118, h: 7, gap: 1.6, seed: 5 });
-const Hc = { x: 330, y: 898, s: .72, balancier: 14, heure: -40, minute: 130, armL: [40, -40], armR: [-60, 20] };
-// mouvement suggéré : deux échos pâles de l'horloge qui roule
-s += `<g opacity=".14" filter="url(#b4)">${O.horloge(Object.assign({}, Hc, { x: 250 }))}</g><g opacity=".22" filter="url(#b2_5)">${O.horloge(Object.assign({}, Hc, { x: 292 }))}</g>`;
-s += `<g transform="rotate(-3,330,898)">${O.horloge(Hc)}</g>`;
+z += O.pile(hx + 28, hy + 10, 14, { w: 118, h: 7, gap: 1.6, seed: 5 });
+const Hc = { x: 415, y: 898, s: .7, balancier: 14, heure: -40, minute: 130, armL: [40, -40], armR: [-60, 20] };
+z += `<g transform="rotate(-3,415,898)">${O.horloge(Hc)}</g>`;
 const [bx, by] = O.mainPere(P, 'B');
-const [lx, ly] = O.lentille(Hc);
-s += O.chaine([[bx, by], [bx - 70, by + 80], [lx + 90, ly + 30], [lx + 6, ly]], { rx: 9, ry: 14, pas: 19 });
+const [lx0, ly0] = O.lentille(Hc);
+const ra = -3 * Math.PI / 180, lx = 415 + (lx0 - 415) * Math.cos(ra) - (ly0 - 898) * Math.sin(ra), ly = 898 + (lx0 - 415) * Math.sin(ra) + (ly0 - 898) * Math.cos(ra);
+z += O.chaine([[bx, by], [f((bx + lx) / 2), f((by + ly) / 2 + 22)], [lx + 4, ly]], { rx: 9, ry: 14, pas: 19 });
 
-// 1. avant-plan : montant de porte et plante, flous, coupés par le bord du cadre
-s += `<g filter="url(#b14)" fill="#0E0805"><rect x="-40" y="-20" width="120" height="1120"/>` +
-  `<path d="M60,1080 C80,940 140,860 230,820 C170,880 150,960 160,1080 Z M120,1080 C150,930 230,880 320,870 C250,920 220,990 230,1080 Z"/></g>`;
+s += `<g transform="translate(620,900) scale(1.3) translate(-620,-900)">${z}</g>`;
+
+// 1. avant-plan : montant de porte sombre et flou au bord gauche (x 0 à 110), une ombre floue à droite
+s += `<g filter="url(#b14)"><rect x="-60" y="-40" width="152" height="1160" fill="#0E0805"/><rect x="88" y="-40" width="22" height="1160" fill="#22160C"/></g>`;
 s += `<g filter="url(#b22)" fill="#0E0805"><path d="M1820,-40 L1920,-40 L1920,1120 L1860,1120 C1830,700 1800,300 1820,-40 Z"/></g>`;
 // sol au premier plan (bande des sous-titres)
 s += `<rect x="0" y="940" width="1920" height="140" fill="#0F0905"/>`;

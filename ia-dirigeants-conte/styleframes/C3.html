@@ -1,14 +1,16 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><title>C3 · La forêt de dossiers · 39,5 s</title>
 <link rel="stylesheet" href="_base.css"></head>
 <body><div class="stage"><svg class="scene" id="s" viewBox="0 0 1920 1080"></svg>
-<div class="sub">Le soir suivant, il poussait la <span class="k">balançoire</span>.</div></div>
+<div class="sub">Le soir suivant, il poussait la <span class="k">balançoire</span></div></div>
 <script src="_ombres.js"></script><script>
 /* C3, 39,5 s : « Le soir suivant, il poussait la balançoire. »
    Le monde doré : toile assombrie, ciel encore clair au ras de l'horizon. La forêt a disparu : il reste un seul arbre
    de lumière, dont le tronc est la dernière pile de dossiers devenue dorée et la couronne des feuilles de papier
-   dorées. À sa grande branche pend la balançoire : le père vient de pousser sa fille (silhouettes inversées dorées,
-   échos pâles de l'arc). Au pied de l'arbre, l'horloge dorée, au repos, lâche une dernière feuille ; des feuilles
-   dorées montent en étincelles. */
+   dorées. À sa grande branche pend la balançoire (cordes de 6 px) : le père pousse sa fille, ses deux mains à plat
+   sur son dos, vides (silhouettes inversées dorées ; deux échos dorés à 12 à 15 % montrent l'arc à venir). Au pied
+   de l'arbre, au même plan, l'horloge dorée nette, roues sur la ligne d'herbe : d'une main elle attrape une feuille
+   qui tombe, de l'autre elle en pose une sur une petite pile de devis dorés. À droite, la brume du soir, une clôture
+   lointaine et les herbes hautes. */
 const O = OMBRES, C = O.C;
 const f = (n) => Math.round(n * 10) / 10, rad = (d) => d * Math.PI / 180;
 const SOL = 904;
@@ -94,25 +96,36 @@ s += `<defs>
   <stop offset=".55" stop-color="#D9A35A" stop-opacity=".18"/><stop offset=".85" stop-color="#E8B86C" stop-opacity=".55"/><stop offset="1" stop-color="#F6D69A" stop-opacity=".82"/></linearGradient>
 <filter id="glowT" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur in="SourceAlpha" stdDeviation="6" result="b"/>
   <feFlood flood-color="#F2C46A" flood-opacity=".45"/><feComposite in2="b" operator="in" result="h"/><feMerge><feMergeNode in="h"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-<filter id="monte" x="-40%" y="-60%" width="180%" height="220%"><feGaussianBlur stdDeviation="1.5 4"/></filter>
+<linearGradient id="orPile" gradientUnits="userSpaceOnUse" x1="0" y1="800" x2="0" y2="${SOL}"><stop offset="0" stop-color="#FFE7B0"/><stop offset="1" stop-color="#D99A40"/></linearGradient>
 </defs>`;
 
 // 4. le ciel encore clair au ras de l'horizon, collines lointaines : la forêt n'y est plus
 s += `<rect x="0" y="420" width="1920" height="${SOL - 420}" fill="url(#crepuscule)"/>`;
 s += `<ellipse cx="1080" cy="${SOL - 20}" rx="720" ry="80" fill="#F6DCA4" opacity=".32" filter="url(#b34)"/>`;
+// tiers droit : brume dorée du soir, clôture lointaine sur la colline
+s += `<ellipse cx="1700" cy="${SOL - 70}" rx="420" ry="120" fill="#E8B86C" opacity=".22" filter="url(#b34)"/>`;
 s += `<g filter="url(#b4)" fill="#3E2714" opacity=".9"><path d="M-20,${SOL - 22} C260,${SOL - 50} 520,${SOL - 34} 820,${SOL - 46} C1120,${SOL - 58} 1460,${SOL - 30} 1940,${SOL - 52} L1940,${SOL + 30} L-20,${SOL + 30} Z"/></g>`;
+s += `<ellipse cx="1660" cy="${SOL - 150}" rx="400" ry="150" fill="#E8B86C" opacity=".16" filter="url(#b34)"/>`;
+// (lisses épaissies à 5 px : sans elles, les piquets se liraient comme des tiges isolées)
+const yc = SOL - 34, hc = 66;
+s += `<g filter="url(#b2_5)">${O.cloture(1420, 1940, yc, hc, 6, '#2E1D0E')}` +
+  `<path d="M1420,${yc - hc * .62} Q1680,${yc - hc * .5} 1940,${yc - hc * .64} M1420,${yc - hc * .32} Q1680,${yc - hc * .22} 1940,${yc - hc * .34}" stroke="#2E1D0E" stroke-width="5" fill="none"/></g>`;
+s += `<ellipse cx="1660" cy="${SOL - 30}" rx="340" ry="46" fill="#D9A35A" opacity=".2" filter="url(#b22)"/>`;
+
+// sol et herbes de la colline, derrière l'arbre et les personnages (qui s'y posent)
+s += `<rect x="-20" y="${SOL}" width="1960" height="60" fill="${C.ombre}"/>`;
+s += O.herbes(-10, 1930, SOL + 8, 40, 9, C.ombre, 1.3);
+s += O.herbes(1380, 1930, SOL + 8, 74, 14, C.ombre, 1.1);   // herbes plus hautes à droite
 
 // 2. l'arbre de lumière : tronc de dossiers dorés, couronne de branches et de feuilles de papier dorées
 const XT = 560;
 const T = tronc(XT, SOL, 300, { w: 158, wT: .72, seed: 5, lean: 26, wob: 8, h: 14, gap: 3.6, fill: 'url(#orTronc)', onglets: .3, branches: 0 });
 const xh = T.axe(300);
-// branches maîtresses (bois de lumière), la grande branche de la balançoire vers la droite
 let br = '';
 br += bande(xh - 30, 318, xh - 160, 220, xh - 330, 120, 40, 12);
 br += bande(xh - 6, 304, xh - 10, 160, xh + 40, -40, 42, 14);
 br += bande(xh + 30, 316, xh + 170, 210, xh + 330, 70, 40, 12);
 const GB = [xh + 40, 340, xh + 420, 236, 1560, 312];          // la grande branche de la balançoire
-// rameaux courts le long de la grande branche (hors de l'aplomb de la balançoire), fourche au bout
 function rameaux() {
   const q = O.R(57); let g = '';
   const pt = (t) => { const [x0, y0, cx, cy, x1, y1] = GB, u = 1 - t; return [u * u * x0 + 2 * u * t * cx + t * t * x1, u * u * y0 + 2 * u * t * cy + t * t * y1]; };
@@ -130,7 +143,6 @@ s += `<g fill="url(#orCime)" filter="url(#glowT)" opacity=".92">${br}` +
   O.arbre(xh + 330, 78, 300, 83, { fill: 'url(#orCime)', lean: 34, depth: 4, w: 12 }) +
   rameaux() + `</g>`;
 s += `<g filter="url(#glowT)">${T.svg}</g>`;
-// feuilles de papier dorées dans la couronne
 const rf = O.R(19); let fe = '';
 for (let i = 0; i < 70; i++) {
   const a = rf() * Math.PI * 2, rr = Math.sqrt(rf());
@@ -140,50 +152,76 @@ for (let i = 0; i < 70; i++) {
 }
 s += `<g fill="url(#orGrad)" filter="url(#glowS)">${fe}</g>`;
 
-// au pied de l'arbre, l'horloge dorée au repos : d'un bras court, elle lâche une dernière feuille, qui monte
-const Hc = { x: 372, y: SOL, s: .56, balancier: -8, heure: 120, minute: -60, armL: [26, -16], armR: [-150, 20], or: true };
-s += `<g opacity=".9">${O.horloge(Hc)}</g>`;
-// feuilles dorées qui montent en étincelles, de la main de l'horloge vers la couronne (échos en dessous : elles montent)
-const monte = (x, y, w, rot, k) => `<g fill="url(#orGrad)"><g opacity="${f(.16 * k)}" filter="url(#monte)">${feuille(x + 10, y + 46, w, w * 1.3, rot + 30)}</g>` +
-  `<g opacity="${f(.32 * k)}" filter="url(#monte)">${feuille(x + 4, y + 22, w, w * 1.3, rot + 14)}</g><g opacity="${k}" filter="url(#glowS)">${feuille(x, y, w, w * 1.3, rot)}</g></g>`;
-s += monte(468, 640, 24, -20, 1) + monte(420, 520, 20, 16, .85) + monte(476, 430, 16, -8, .7) + monte(392, 360, 12, 30, .55);
-let tr = ''; const rt = O.R(23);
-for (let i = 0; i < 40; i++) { const t = rt(), x = 440 + Math.sin(t * 9) * 50 + (rt() - .5) * 60, y = 700 - t * 520;
-  tr += `<circle cx="${f(x)}" cy="${f(y)}" r="${f(.8 + Math.pow(rt(), 3) * 3)}" fill="${rt() < .5 ? C.orClair : '#FFE7B0'}" opacity="${f(.3 + rt() * .6)}"/>`; }
-s += `<g filter="url(#glowS)">${tr}</g>`;
+/* Bras en deux segments (convention du kit : angle 0 = vers le bas, négatif = vers la droite) qui amène le bout de la
+   main exactement sur une cible : rend [épaule, coude] en degrés, coude vers le bas. */
+const deg = (r) => r * 180 / Math.PI;
+function ik(sx, sy, tx, ty, l1, l2) {
+  const dx = tx - sx, dy = ty - sy, d = Math.min(Math.hypot(dx, dy), (l1 + l2) * .999);
+  const th = deg(Math.atan2(-dx, dy)), al = deg(Math.acos((l1 * l1 + d * d - l2 * l2) / (2 * l1 * d)));
+  const a1 = th + (th < 0 ? al : -al), ex = sx - l1 * Math.sin(rad(a1)), ey = sy + l1 * Math.cos(rad(a1));
+  const a2 = deg(Math.atan2(-(tx - ex), ty - ey));
+  return [f(a1), f(a2 - a1)];
+}
+const rot = (x, y, cx, cy, a) => [cx + (x - cx) * Math.cos(rad(a)) - (y - cy) * Math.sin(rad(a)), cy + (x - cx) * Math.sin(rad(a)) + (y - cy) * Math.cos(rad(a))];
 
-// la balançoire pend à la grande branche ; la fillette vient de partir des mains du père (échos de l'arc)
+// au pied de l'arbre, au même plan : l'horloge dorée, nette, roues sur la ligne d'herbe. Main droite levée : elle
+// attrape une feuille qui tombe de la couronne ; main gauche basse : elle pose une feuille sur la pile de devis dorés.
+const HX = 830, HS = .66;
+const pileX = 712;
+s += O.pile(pileX, SOL, 7, { w: 96, h: 9, gap: 2.4, seed: 31, fill: 'url(#orPile)' });
+const pileTop = SOL - 7 * 11.4;
+const sxL = HX - 88 * HS, syL = SOL - 190 * HS, sxR = HX + 88 * HS, syR = SOL - 190 * HS;
+const posee = [pileX + 6, pileTop - 14], prise = [sxR + 30, syR - 63];   // à portée de ses bras courts
+const armL = ik(sxL, syL, posee[0], posee[1], 52 * HS, 58 * HS), armR = ik(sxR, syR, prise[0], prise[1], 52 * HS, 58 * HS);
+s += `<g filter="url(#glowT)">${O.horloge({ x: HX, y: SOL, s: HS, balancier: -8, heure: 120, minute: -60, armL, armR, or: true })}</g>`;
+// la feuille posée sur la pile (dans la main basse) et la feuille attrapée (dans la main haute)
+s += `<g fill="url(#orGrad)" filter="url(#glowS)">${feuille(posee[0] - 4, posee[1] + 4, 40, 30, -6)}${feuille(prise[0] + 6, prise[1] - 16, 30, 38, 16)}</g>`;
+// sa chute depuis la couronne : deux échos dorés à 13 et 15 % au-dessus de la main, le long de la descente
+s += `<g fill="#F6D08A" filter="url(#b2_5)"><g opacity=".13">${feuille(prise[0] + 58, prise[1] - 196, 30, 38, -30)}</g>` +
+  `<g opacity=".15">${feuille(prise[0] + 30, prise[1] - 104, 30, 38, -8)}</g></g>`;
+
+// la balançoire pend à la grande branche ; le père la pousse, ses deux mains à plat sur le dos de sa fille
 const surBr = (x) => { const [x0, y0, cx, cy, x1, y1] = GB; let best = [1e9, y0];
   for (let i = 0; i <= 80; i++) { const t = i / 80, u = 1 - t, xx = u * u * x0 + 2 * u * t * cx + t * t * x1, yy = u * u * y0 + 2 * u * t * cy + t * t * y1;
     if (Math.abs(xx - x) < best[0]) best = [Math.abs(xx - x), yy]; } return best[1]; };
-const piv = [1326, surBr(1326) + 6], L = 404, sF = .72;
-const balEtFille = (ang) => O.balancoire(piv[0], piv[1], piv[1] + L, ang, 'url(#orGrad)') +
-  `<g transform="rotate(${ang},${piv[0]},${piv[1]})">` +
-  O.fille({ x: piv[0] - 6, y: piv[1] + L - 4 + 112 * sF, s: sF, seated: true, fill: 'url(#orFille)', armF: [-110, -60], armB: [140, 30], head: -10 }) + `</g>`;
-s += `<g opacity=".13" filter="url(#b4)">${balEtFille(8)}</g><g opacity=".27" filter="url(#b2_5)">${balEtFille(-6)}</g>`;
-s += `<g filter="url(#glow)">${balEtFille(-21)}</g>`;
-// le père, doré, les bras encore tendus vers l'avant
-s += `<g filter="url(#glow)">${O.pere({ x: 1110, y: SOL + 4, s: .74, fill: 'url(#orPere)', armF: [-60, -12], armB: [-68, -6], legF: [-22, 8], legB: [26, 4], head: -4 })}</g>`;
+const piv = [1336, surBr(1336) + 6], L = 404, sF = .72, ANG = -7;
+// balançoire locale : mêmes proportions que le kit, cordes de 6 px pour rester lisibles sur un téléphone
+const bal = (ang, fill) => `<g transform="translate(${piv[0]},${piv[1]}) rotate(${ang})"><path d="M-46,0 L-44,${L} M46,0 L44,${L}" stroke="${fill}" stroke-width="6" stroke-linecap="round" fill="none"/>` +
+  `<rect x="-58" y="${L - 5}" width="116" height="14" rx="3" fill="${fill}"/></g>`;
+// la fillette assise vers l'avant de la planche, les deux mains sur la corde avant
+const fx = piv[0] + 6, fy = piv[1] + L - 5 + 112 * sF;
+const mainsF = [[(44 - 6) / sF, -292], [(44 - 6) / sF, -262]];
+const armFf = ik(6, -226, mainsF[0][0], mainsF[0][1], 56, 50), armBf = ik(-2, -226, mainsF[1][0], mainsF[1][1], 56, 50);
+const fille = (fill) => O.fille({ x: fx, y: fy, s: sF, seated: true, fill, armF: armFf, armB: armBf, head: -6 });
+const balEtFille = (ang, fill, fillF) => bal(ang, fill) + `<g transform="rotate(${ang},${piv[0]},${piv[1]})">${fille(fillF)}</g>`;
+// la traînée d'étincelles dit le mouvement (aucun écho de la fillette)
+s += `<g filter="url(#glow)">${balEtFille(ANG, 'url(#orGrad)', 'url(#orFille)')}</g>`;
+// le dos de la fillette (bord arrière de la robe), dans le repère de la scène
+const dos = (t, inset) => { const lx = -24 - 24 * t + inset, ly = -214 + 96 * t;
+  return rot(fx + lx * sF, fy + ly * sF, piv[0], piv[1], ANG); };
+const D1 = dos(.24, 8), D2 = dos(.6, 8);   // le bout des mains entre un peu dans la robe : aucun jour
+// le père, doré, derrière elle : chaque bout de main se pose sur le dos (calcul inverse des bras)
+const PS = .74, PY = SOL + 4, l1 = 116 * PS, l2 = 128 * PS;
+const PX = D1[0] - 150;
+const armFp = ik(PX + 6 * PS, PY - 478 * PS, D1[0], D1[1], l1, l2), armBp = ik(PX - 2 * PS, PY - 478 * PS, D2[0], D2[1], l1, l2);
+s += `<g filter="url(#glow)">${O.pere({ x: PX, y: PY, s: PS, fill: 'url(#orPere)', armF: armFp, armB: armBp, legF: [-24, 10], legB: [24, 4], head: 0 })}</g>`;
 
-// traînée d'étincelles le long de l'arc, poussière dans l'air du soir
+// étincelles le long de l'arc à venir, poussière dans l'air du soir
 const r = O.R(77); let arc = '';
-for (let i = 0; i < 44; i++) {
-  const a = 10 - r() * 33, rr = L - 50 - r() * 170;
+for (let i = 0; i < 40; i++) {
+  const a = ANG - 4 - r() * 30, rr = L - 40 - r() * 160;
   const x = piv[0] - rr * Math.sin(rad(a)) + (r() - .5) * 26, y = piv[1] + rr * Math.cos(rad(a)) + (r() - .5) * 26;
   arc += `<circle cx="${f(x)}" cy="${f(y)}" r="${f(.8 + Math.pow(r(), 3) * 3.4)}" fill="${r() < .5 ? C.orClair : '#FFE7B0'}" opacity="${f(.3 + r() * .6)}"/>`;
 }
 s += `<g filter="url(#glowS)">${arc}</g>`;
 s += O.etincelles(120, 40, 1880, 820, 80, 12);
 
-// sol, herbes de la colline
-s += `<rect x="-20" y="${SOL}" width="1960" height="60" fill="${C.ombre}"/>`;
-s += O.herbes(-10, 1930, SOL + 8, 40, 9, C.ombre, 1.3);
 // 1. avant-plan : grandes herbes et une branche sombres, floues, coupées par les bords du cadre
 const touffe = (x0, x1, y, h, seed) => { const q = O.R(seed); let dd = '';
   for (let x = x0; x < x1; x += 26 + q() * 30) { const hh = h * (.45 + q() * .6), lean = (q() - .5) * hh * .7, w = 16 + q() * 20;
     dd += `M${f(x)},${y} Q${f(x + lean * .25)},${f(y - hh * .6)} ${f(x + lean)},${f(y - hh)} Q${f(x + lean * .3 + w)},${f(y - hh * .5)} ${f(x + w)},${y} Z `; }
   return `<path d="${dd}"/>`; };
-s += `<g filter="url(#b14)" fill="#0B0603">${touffe(1620, 1990, 1040, 420, 21)}${touffe(-60, 250, 1040, 360, 25)}</g>`;
+s += `<g filter="url(#b14)" fill="#0B0603">${touffe(1620, 1990, 1040, 420, 21)}${touffe(-60, 250, 1040, 200, 25)}</g>`;
 s += `<g filter="url(#b14)" fill="#0B0603" opacity=".92">${bande(-60, 250, 140, 120, 330, -60, 70, 30)}${feuille(150, 170, 70, 90, 30)}${feuille(250, 40, 64, 80, -24)}</g>`;
 const bk = O.R(91); let bo = '';
 for (const [x, y, rr] of [[1840, 300, 30], [1620, 150, 16], [90, 120, 26], [860, 560, 14], [1880, 640, 22], [260, 420, 18]]) bo += `<circle cx="${x}" cy="${y}" r="${rr}" fill="#F2C46A" opacity="${f(.16 + bk() * .16)}"/>`;

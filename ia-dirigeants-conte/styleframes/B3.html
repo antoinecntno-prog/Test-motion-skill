@@ -1,13 +1,14 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><title>B3 · Le montreur · 39,5 s</title>
 <link rel="stylesheet" href="_base.css"></head>
 <body><div class="stage"><svg class="scene" id="s" viewBox="0 0 1920 1080"></svg>
-<div class="sub">Le soir suivant, il poussait la <span class="k">balançoire</span>.</div></div>
+<div class="sub">Le soir suivant, il poussait la <span class="k">balançoire</span></div></div>
 <script src="_ombres.js"></script><script>
-/* B3, 39,5 s : « Le soir suivant, il poussait la balançoire. »
-   Le monde doré : toile assombrie, silhouettes inversées en or, poussière d'étincelles. Dans les cintres, le train
-   d'engrenages du Temps perdu (sa roue maîtresse porte son cadran) travaille seul : ses tiges font marcher une file de
-   devis, sur leurs petites jambes, jusqu'à la pile dorée. Les tiges du père pendent, coupées (deux bouts sous la roue,
-   deux tronçons à ses poignets) ; il pousse lui-même la balançoire de sa fille, qui pend aux fils de la roue du père. */
+/* B3, 39,5 s : « Le soir suivant, il poussait la balançoire »
+   Le monde doré : toile assombrie, silhouettes inversées en or, poussière d'étincelles. Deux groupes nettement séparés.
+   À gauche, le père pousse la balançoire de ses propres mains, les deux mains posées sur le dos de sa fille ; de ses
+   tiges, il ne reste que deux bouts coupés qui pendent du lambrequin, sous sa roue immobile ; la balançoire pend à
+   cette même roue. À droite, l'horloge entière, dorée, roule sur sa tringle au-dessus de la file de devis : ses deux
+   bras tiennent les fils qui font marcher les devis, sur leurs petites jambes, jusqu'à la pile dorée. */
 const O = OMBRES, C = O.C;
 const f = (n) => Math.round(n * 10) / 10, rad = (d) => d * Math.PI / 180;
 const YT = 176, YB = 222, SOL = 905;
@@ -66,117 +67,140 @@ function rideau(cote) {
 
 /* ---------- formes locales du monde doré ---------- */
 const OR = 'url(#orGrad)';
+const RAIL = 672, HS = .8;                      // dessus de la tringle de l'horloge, échelle de l'horloge
 // dégradés d'or à l'échelle de la scène (un seul dégradé par personnage, pas un par membre)
 const orDefs = () => `<defs><linearGradient id="orP" x1="0" y1="380" x2="0" y2="${SOL}" gradientUnits="userSpaceOnUse">
   <stop offset="0" stop-color="#F2C772"/><stop offset=".45" stop-color="#E0A84A"/><stop offset="1" stop-color="#C98A2E"/></linearGradient>
+  <linearGradient id="orC" x1="0" y1="${RAIL - 494 * HS}" x2="0" y2="${RAIL}" gradientUnits="userSpaceOnUse">
+  <stop offset="0" stop-color="#F6CF7E"/><stop offset=".5" stop-color="#E0A84A"/><stop offset="1" stop-color="#C98A2E"/></linearGradient>
   <linearGradient id="orH" x1="0" y1="0" x2="0" y2="${YT}" gradientUnits="userSpaceOnUse">
   <stop offset="0" stop-color="#C98A2E"/><stop offset="1" stop-color="#FFE7B0"/></linearGradient></defs>`;
-// balançoire vue de profil (les deux cordes presque confondues, la planche vue par la tranche)
+// balançoire vue de profil : deux cordes de 5,5 px presque confondues, la planche vue par la tranche
 function balProfil(xT, yT, L, ang, fill) {
   return `<g transform="translate(${f(xT)},${f(yT)}) rotate(${ang})" fill="${fill}">` +
-    `<path d="M-1.6,0 L-2.2,${L} L1.6,${L} L1.6,0 Z"/><path d="M5,0 L5.4,${L} L8.4,${L} L8,0 Z" opacity=".75"/>` +
+    `<path d="M5,0 L5.4,${L} L10,${L} L9.6,0 Z" opacity=".7"/><path d="M-2.75,0 L-2.75,${L} L2.75,${L} L2.75,0 Z"/>` +
     `<rect x="-34" y="${L}" width="74" height="13" rx="3"/></g>`;
 }
 const siege = (xT, yT, L, ang) => [xT - L * Math.sin(rad(ang)) + 3, yT + L * Math.cos(rad(ang))];
 // tige coupée : tronçon d'or qui pend, bout taillé en biseau
-function tigeCoupee(x0, y0, x1, y1, w = 3.4) {
+function tigeCoupee(x0, y0, x1, y1, w = 6) {
   const a = Math.atan2(y1 - y0, x1 - x0), nx = -Math.sin(a) * w / 2, ny = Math.cos(a) * w / 2;
-  const bx = x1 + Math.cos(a) * 9, by = y1 + Math.sin(a) * 9;
+  const bx = x1 + Math.cos(a) * 10, by = y1 + Math.sin(a) * 10;
   return `<path fill="${OR}" d="M${f(x0 + nx)},${f(y0 + ny)} L${f(x1 + nx)},${f(y1 + ny)} L${f(bx - nx)},${f(by - ny)} L${f(x0 - nx)},${f(y0 - ny)} Z"/>`;
-}
-// cadran du Temps perdu au moyeu de la roue maîtresse
-function cadran(cx, cy, r) {
-  let g = `<circle cx="${cx}" cy="${cy}" r="${f(r)}" fill="#E0A84A"/><circle cx="${cx}" cy="${cy}" r="${f(r * .8)}" fill="#24160A"/>`;
-  for (let i = 0; i < 12; i++) { const a = rad(i * 30), r0 = r * (i % 3 === 0 ? .56 : .64), r1 = r * .76;
-    g += `<path d="M${f(cx + Math.sin(a) * r0)},${f(cy - Math.cos(a) * r0)} L${f(cx + Math.sin(a) * r1)},${f(cy - Math.cos(a) * r1)}" stroke="#FFE7B0" stroke-width="2.4"/>`; }
-  g += `<path d="M${cx},${cy} L${f(cx + Math.sin(rad(-120)) * r * .42)},${f(cy - Math.cos(rad(-120)) * r * .42)}" stroke="#FFE7B0" stroke-width="5" stroke-linecap="round"/>`;
-  g += `<path d="M${cx},${cy} L${f(cx + Math.sin(rad(40)) * r * .66)},${f(cy - Math.cos(rad(40)) * r * .66)}" stroke="#FFE7B0" stroke-width="3" stroke-linecap="round"/>`;
-  return g + `<circle cx="${cx}" cy="${cy}" r="${f(r * .1)}" fill="#FFE7B0"/>`;
 }
 // devis qui marche : feuille de face, deux petites jambes en pleine enjambée
 function devisMarche(x, y, w, h, pas, rot) {
   const jy = y, jx = x + w / 2, L = 30;
   const jambe = (dx, ang) => { const ex = jx + dx - L * Math.sin(rad(ang)), ey = jy + L * Math.cos(rad(ang));
-    return `<path d="M${f(jx + dx)},${f(jy)} L${f(ex)},${f(ey)}" stroke="#E0A84A" stroke-width="4" stroke-linecap="round"/>` +
-      `<path d="M${f(ex - 3)},${f(ey - 2)} L${f(ex + 10)},${f(ey - 1)} L${f(ex + 10)},${f(ey + 3)} L${f(ex - 3)},${f(ey + 3)} Z" fill="#E0A84A"/>`; };
-  return `<g>${jambe(-12, pas)}${jambe(12, -pas)}${O.devis(x, y - h, w, h, rot, OR)}</g>`;
+    return `<path d="M${f(jx + dx)},${f(jy)} L${f(ex)},${f(ey)}" stroke="#E0A84A" stroke-width="5" stroke-linecap="round"/>` +
+      `<path d="M${f(ex - 3)},${f(ey - 2)} L${f(ex + 11)},${f(ey - 1)} L${f(ex + 11)},${f(ey + 4)} L${f(ex - 3)},${f(ey + 4)} Z" fill="#E0A84A"/>`; };
+  return `<g>${jambe(-13, pas)}${jambe(13, -pas)}${O.devis(x, y - h, w, h, rot, OR)}</g>`;
 }
+// bras à deux segments (repère du kit : 0 = pendant, négatif = vers l'avant) qui amène le poignet en T
+function ik(S, T, a, b) {
+  const dx = T[0] - S[0], dy = T[1] - S[1], d = Math.min(Math.hypot(dx, dy), a + b - 1);
+  const th = Math.atan2(-dx, dy) * 180 / Math.PI, be = Math.acos((a * a + d * d - b * b) / (2 * a * d)) * 180 / Math.PI;
+  const sh = th + be, E = [S[0] - a * Math.sin(rad(sh)), S[1] + a * Math.cos(rad(sh))];
+  const fa = Math.atan2(-(T[0] - E[0]), T[1] - E[1]) * 180 / Math.PI;
+  return [f(sh), f(fa - sh)];
+}
+const tourne = (p, c, deg) => { const cs = Math.cos(rad(deg)), sn = Math.sin(rad(deg)), x = p[0] - c[0], y = p[1] - c[1];
+  return [c[0] + x * cs - y * sn, c[1] + x * sn + y * cs]; };
 
 /* ---------- la scène ---------- */
 let s = O.defs({ nuit: true, x: 860, y: 540, r: 1250 }) + orDefs() + O.toile();
 
 // 3. décor de brume : le jardin au loin, en or très éteint (inversé comme tout le monde doré), flou
-s += O.brume(820, 560, 640, 340, .35, '#8A5E2A', 34);
-s += `<g filter="url(#b6)" opacity=".26">${O.arbre(250, SOL, 760, 11, { fill: '#C98A2E', lean: 4 })}${O.cloture(-20, 420, SOL, 120, 6, '#C98A2E')}</g>`;
+s += O.brume(700, 560, 620, 340, .35, '#8A5E2A', 34) + O.brume(1450, 600, 520, 300, .22, '#8A5E2A', 34);
+s += `<g filter="url(#b6)" opacity=".24">${O.arbre(200, SOL, 760, 11, { fill: '#C98A2E', lean: 4 })}${O.cloture(-20, 360, SOL, 120, 6, '#C98A2E')}</g>`;
 
 // cintres : la nuit au-dessus de la toile, avec la lueur dorée des rouages
 s += `<defs><clipPath id="cintClip"><rect width="1920" height="${YT}"/></clipPath></defs>`;
-s += `<rect width="1920" height="${YT}" fill="#0C0703"/>` + O.brume(1200, 150, 820, 110, .55, '#6B4520', 34);
-for (const x of [330, 420, 1010]) s += `<path d="M${x},0 L${x},${YT}" stroke="#3A2614" stroke-width="2"/>`;
+s += `<rect width="1920" height="${YT}" fill="#0C0703"/>` + O.brume(1100, 150, 820, 110, .5, '#6B4520', 34);
+for (const x of [300, 380]) s += `<path d="M${x},0 L${x},${YT}" stroke="#3A2614" stroke-width="2"/>`;
 const rOr = (g) => roue(g.x, g.y, g.r, g.d, g.rot, { fill: 'url(#orH)', arete: '#FFE7B0' });
-// roue du père (immobile) : elle tient la balançoire et les deux bouts de tiges coupées
-const Fg = { x: 690, y: 96, r: 88, d: 16, rot: 8 };
-// train du Temps perdu : il tourne (flou de rotation), la roue maîtresse porte le cadran
+// roue du père, immobile : la balançoire y pend, et les deux bouts de ses tiges coupées
+const Fg = { x: 560, y: 96, r: 88, d: 16, rot: 8 };
+// à droite, quelques rouages du Temps perdu tournent seuls (flou de rotation)
 const G = [
-  { x: 1126, y: 130, r: 50, d: 10, rot: 4 },
-  { x: 1242, y: 98, r: 72, d: 14, rot: 12 },
-  { x: 1362, y: 132, r: 52, d: 10, rot: 0 },
-  { x: 1488, y: 96, r: 86, d: 16, rot: 6 },     // roue maîtresse
-  { x: 1622, y: 130, r: 56, d: 11, rot: 9 },
-  { x: 1752, y: 96, r: 82, d: 15, rot: 2 },
+  { x: 1250, y: 100, r: 70, d: 13, rot: 12 },
+  { x: 1372, y: 132, r: 52, d: 10, rot: 0 },
+  { x: 1496, y: 96, r: 80, d: 15, rot: 6 },
+  { x: 1632, y: 130, r: 56, d: 11, rot: 9 },
 ];
-s += `<g opacity=".4" filter="url(#b4)">${G.map((g) => roue(g.x, g.y, g.r, g.d, g.rot + 8, { fill: '#E0A84A', arete: '#FFE7B0' })).join('')}</g>`;
+s += `<g opacity=".38" filter="url(#b4)">${G.map((g) => roue(g.x, g.y, g.r, g.d, g.rot + 8, { fill: '#E0A84A', arete: '#FFE7B0' })).join('')}</g>`;
 s += `<g filter="url(#glow)">${rOr(Fg)}${G.map(rOr).join('')}</g>`;
-s += cadran(G[3].x, G[3].y, G[3].r * .52);
 for (const g of [Fg, ...G]) s += `<path d="M${g.x - 6},${g.y} L${g.x + 6},${g.y} L${g.x + 14},${YT} L${g.x - 14},${YT} Z" fill="#0B0603"/>`;
 
-// 2c. la file de devis : les tiges du Temps perdu les font marcher jusqu'à la pile dorée
+// 2c. à droite : la tringle, l'horloge entière qui y roule, ses fils, la file de devis, la pile dorée
+const DW = 74, DH = 98, DY = SOL - 30;
 const D = [
-  { x: 1112, pas: 22, rot: -4, pin: [1146, 168] },
-  { x: 1246, pas: -18, rot: 3, pin: [1262, 156] },
-  { x: 1380, pas: 20, rot: -3, pin: [1378, 170] },
-  { x: 1512, pas: -16, rot: 4, pin: [1506, 166] },
+  { x: 1128, pas: 22, rot: -4 },
+  { x: 1262, pas: -18, rot: 3 },
+  { x: 1396, pas: 20, rot: -3 },
+  { x: 1530, pas: -16, rot: 4 },
 ];
-const DW = 66, DH = 88, DY = SOL - 30;
-let file = '';
-for (const d of D) {
-  file += O.tige(d.pin[0], d.pin[1], d.x + DW / 2, DY - DH + 2, 1.8, '#E0A84A') + `<circle cx="${d.pin[0]}" cy="${d.pin[1]}" r="5" fill="#FFE7B0"/>`;
-  file += devisMarche(d.x, DY, DW, DH, d.pas, d.rot);
-}
-// écho : le premier devis un pas plus tôt
-file = `<g opacity=".2" filter="url(#b2_5)">${devisMarche(D[0].x - 60, DY, DW, DH, -10, 2)}</g>` + file;
-s += `<g filter="url(#glow)" opacity=".86">${file}</g>`;
-// la pile dorée, et le devis qui s'y pose
-s += `<g filter="url(#glow)">${O.pile(1712, SOL, 30, { w: 150, h: 8, gap: 2.4, seed: 17, fill: OR })}</g>`;
-
-// 2b. la balançoire, pendue aux fils de la roue du père ; échos pâles de son arc
-const sw = { x: 742, y: 150, L: 520 };
-const fillePose = (ang) => {
-  const [sx, sy] = siege(sw.x, sw.y, sw.L, ang);
-  return `<g transform="rotate(${f(ang * .55)},${f(sx)},${f(sy)})">` +
-    O.fille({ x: sx - 4, y: sy + 112, s: 1.0, flip: 1, legF: [-80, 26], legB: [-74, 32], armF: [-168, 6], armB: [-160, 12], head: -4, fill: 'url(#orP)' }) + `</g>`;
+// la pile dorée, sous la tringle
+s += `<g filter="url(#glow)">${O.pile(1730, SOL, 18, { w: 150, h: 8, gap: 2.4, seed: 17, fill: OR })}</g>`;
+// la tringle : barre dorée venue des coulisses de droite, butée ronde au bout
+s += `<g filter="url(#glow)"><rect x="1092" y="${RAIL}" width="860" height="12" rx="3" fill="url(#orH)"/>` +
+  `<circle cx="1094" cy="${RAIL + 6}" r="11" fill="#E0A84A"/></g>`;
+for (let x = 1160; x < 1900; x += 120) s += `<circle cx="${x}" cy="${RAIL + 6}" r="2.6" fill="#7A5634"/>`;
+// l'horloge, bras écartés, mains tenant les fils
+const HX = 1362;
+const H = { x: HX, y: RAIL, s: HS, heure: 60, minute: 180, balancier: -10, armL: [62, -28], armR: [-62, 28], fill: 'url(#orC)', rivets: true };
+s += `<g filter="url(#glow)">${O.horloge(H)}</g>`;
+// bout des mains (repère du kit : épaule, bras, avant-bras, puis la main arrondie)
+const mainH = (sx, [sh, el]) => {
+  const ex = sx - 52 * Math.sin(rad(sh)), ey = -190 + 52 * Math.cos(rad(sh));
+  const wx = ex - 46 * Math.sin(rad(sh + el)), wy = ey + 46 * Math.cos(rad(sh + el));
+  const tx = wx - 16 * Math.sin(rad(sh + el)), ty = wy + 16 * Math.cos(rad(sh + el));
+  return [HX + tx * HS, RAIL + ty * HS];
 };
-s += `<g opacity=".1" filter="url(#b6)">${balProfil(sw.x, sw.y, sw.L, -10, '#E0A84A')}${fillePose(-10)}</g>`;
-s += `<g opacity=".2" filter="url(#b2_5)">${balProfil(sw.x, sw.y, sw.L, -18, '#E0A84A')}${fillePose(-18)}</g>`;
-const ANG = -26;
-s += `<g filter="url(#glow)">${balProfil(sw.x, sw.y, sw.L, ANG, 'url(#orP)')}${fillePose(ANG)}</g>`;
+const hL = mainH(-88, H.armL), hR = mainH(88, H.armR);
+// les fils : deux par main, jusqu'au haut de chaque devis
+let fils = '';
+D.forEach((d, i) => { const h = i < 2 ? hL : hR, cx = d.x + DW / 2, cy = DY - DH + 4;
+  fils += `<path d="M${f(h[0])},${f(h[1])} L${f(cx)},${f(cy)}" stroke="#E0A84A" stroke-width="5" stroke-linecap="round"/>` +
+    `<circle cx="${f(cx)}" cy="${f(cy)}" r="5.5" fill="#FFE7B0"/>`; });
+s += `<g filter="url(#glowS)">${fils}</g>`;
+s += `<circle cx="${f(hL[0])}" cy="${f(hL[1])}" r="7" fill="#FFE7B0"/><circle cx="${f(hR[0])}" cy="${f(hR[1])}" r="7" fill="#FFE7B0"/>`;
+let file = '';
+for (const d of D) file += devisMarche(d.x, DY, DW, DH, d.pas, d.rot);
+s += `<g filter="url(#glow)" opacity=".9">${file}</g>`;
+
+// 2b. à gauche : la balançoire, pendue à la roue du père
+const sw = { x: Fg.x + 50, y: 150, L: 520 }, ANG = -8;
+const [sx, sy] = siege(sw.x, sw.y, sw.L, ANG), RG = ANG * .55;
+const F = { x: sx - 4, y: sy + 112, s: 1.0, flip: 1, legF: [-80, 26], legB: [-74, 32], armF: [-168, 6], armB: [-160, 12], head: -4, fill: 'url(#orP)' };
+// trace de l'élan : une traînée d'étincelles le long de l'arc, devant elle (aucun double de la fillette)
+const rr = O.R(53); let arc = '';
+for (let k = 0; k < 34; k++) { const a = ANG - 4 - k * 0.75, [ax, ay] = siege(sw.x, sw.y, sw.L, a);
+  arc += `<circle cx="${f(ax + 30 + (rr() - .5) * 14)}" cy="${f(ay + 6 + (rr() - .5) * 10)}" r="${f(.8 + rr() * 2.2)}" fill="${rr() < .5 ? '#E0A84A' : '#FFE7B0'}" opacity="${f(.25 + .6 * (1 - k / 34))}"/>`; }
+s += `<g filter="url(#glowS)">${arc}</g>`;
+s += `<g filter="url(#glow)">${balProfil(sw.x, sw.y, sw.L, ANG, 'url(#orP)')}<g transform="rotate(${f(RG)},${f(sx)},${f(sy)})">${O.fille(F)}</g></g>`;
 s += `<circle cx="${sw.x}" cy="${sw.y}" r="6" fill="#FFE7B0"/>`;
 
-// 2a. le père pousse, de ses propres mains ; ses tiges coupées pendent à ses poignets
-const [gsx, gsy] = siege(sw.x, sw.y, sw.L, -12);   // ses mains sont restées là où il l'a poussée
-const P = { x: 0, y: SOL, s: .82, flip: 1, armF: [-62, -22], armB: [-54, -30], legF: [-26, 14], legB: [24, 6], head: -2, fill: 'url(#orP)' };
-P.x = gsx - 34 - 209 * P.s;
-const [fx, fy] = O.mainPere(P, 'F'), [bx, by] = O.mainPere(P, 'B');
-s += `<g filter="url(#glow)">${O.pere(P)}${tigeCoupee(fx, fy, fx - 6, fy + 118, 4)}${tigeCoupee(bx, by, bx - 18, by + 96, 4)}</g>`;
-// en haut, les deux autres bouts des tiges coupées, sous la roue du père, encore balancés
+// 2a. le père pousse de ses propres mains : les deux mains posées à plat sur le dos de sa fille
+// points du dos de la robe (repère de la fillette), tournés avec elle autour du siège
+const dos = (lx, ly) => tourne([F.x + lx, F.y + ly], [sx, sy], RG);
+const cHaut = dos(-30, -186), cBas = dos(-41, -150);
+const P = { x: 0, y: SOL, s: .82, flip: 1, legF: [-26, 14], legB: [26, 6], head: -2, fill: 'url(#orP)' };
+P.x = cHaut[0] - 168;
+const Sf = [P.x + 6 * P.s, P.y - 478 * P.s], Sb = [P.x - 2 * P.s, P.y - 478 * P.s];
+// le poignet s'arrête un peu avant le dos : la main (26 px du kit) vient s'y poser, sans espace
+const avant = (S, T, k) => { const dx = T[0] - S[0], dy = T[1] - S[1], d = Math.hypot(dx, dy); return [T[0] - dx / d * k, T[1] - dy / d * k]; };
+P.armF = ik(Sf, avant(Sf, cHaut, 13), 116 * P.s, 104 * P.s);
+P.armB = ik(Sb, avant(Sb, cBas, 13), 116 * P.s, 104 * P.s);
+s += `<g filter="url(#glow)">${O.pere(P)}</g>`;
+// en haut, les deux bouts des tiges coupées, sous la roue du père, qui pendent du lambrequin
 const c1 = [Fg.x - 58, Fg.y + 40], c2 = [Fg.x - 14, Fg.y + 70];
-s += `<g opacity=".25" filter="url(#b2_5)">${tigeCoupee(c1[0], c1[1], c1[0] + 26, 318)}${tigeCoupee(c2[0], c2[1], c2[0] + 22, 300)}</g>`;
-s += `<g filter="url(#glow)">${tigeCoupee(c1[0], c1[1], c1[0] + 8, 318, 4.2)}${tigeCoupee(c2[0], c2[1], c2[0] - 6, 300, 4.2)}</g>`;
+s += `<g filter="url(#glow)">${tigeCoupee(c1[0], c1[1], c1[0] + 26, 318)}${tigeCoupee(c2[0], c2[1], c2[0] - 24, 302)}</g>`;
 s += maneton(c1[0], c1[1], '#E0A84A') + maneton(c2[0], c2[1], '#E0A84A');
 
 // poussière d'étincelles : aux bouts coupés, au-dessus de la scène, autour de la pile
-s += O.etincelles(560, 280, 720, 360, 26, 41) + O.etincelles(fx - 40, fy + 90, fx + 30, fy + 150, 14, 43) +
-  O.etincelles(260, 240, 1700, 620, 120, 47) + O.etincelles(1580, 440, 1800, 600, 30, 49);
+s += O.etincelles(c1[0] - 30, 300, c2[0] + 40, 360, 22, 41) +
+  O.etincelles(200, 260, 1760, 620, 110, 47) + O.etincelles(1640, 600, 1820, 720, 26, 49);
 
 // traverse, sol, rebord de scène, rideaux
 s += traverse();

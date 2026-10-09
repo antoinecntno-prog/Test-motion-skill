@@ -6,8 +6,9 @@
 /* C1, 4,2 s : « Derrière lui, le Temps perdu passa la porte. »
    L'entrée de la maison, dont les murs se perdent entre des troncs de dossiers : à gauche le chambranle et la porte
    entrouverte, à droite un pan de mur crevé par un tronc, en haut la poutre du plafond cassée et soulevée. Le père
-   entre, la pile sous le bras. Derrière lui, l'horloge se glisse entre deux troncs (échos pâles : elle vient de la
-   porte) ; la chaîne grimpe autour du tronc comme une liane, puis retombe en guirlande jusqu'à son poignet. */
+   entre, la pile sous le bras. Derrière lui, l'horloge sort du chambranle de la porte, roue avant sur le seuil ; la
+   chaîne traîne au sol, grimpe autour du tronc comme une liane, puis retombe en guirlande jusqu'à son poignet.
+   Troncs allégés : feuillets deux fois moins nombreux et deux fois plus épais ; le tronc de gauche passe dans la brume. */
 const O = OMBRES, C = O.C;
 const f = (n) => Math.round(n * 10) / 10, rad = (d) => d * Math.PI / 180;
 const SOL = 902;
@@ -70,10 +71,11 @@ function tronc(x, yB, yT, o = {}) {
     const len = b.len * sc, a = rad(b.ang);
     const x1 = x0 + b.side * len * Math.cos(a), y1 = yy - len * Math.sin(a);
     const cx = x0 + b.side * len * .55 * Math.cos(a), cy = yy - len * .2 * Math.sin(a) + (b.sag || 10) * sc;
-    g += bande(x0, yy, cx, cy, x1, y1, 11 * sc, 3.5 * sc);
+    g += bande(x0, yy, cx, cy, x1, y1, 13 * sc, 5 * sc);
     if (b.fourche !== false && r() < .8) {   // une seconde feuille plus courte, en fourche
-      const a2 = a + rad(18 + r() * 20), l2 = len * (.35 + r() * .2), xm = x0 + b.side * len * .55 * Math.cos(a), ym = yy - len * .5 * Math.sin(a);
-      g += bande(xm, ym + 4, xm + b.side * l2 * .5 * Math.cos(a2), ym - l2 * .4 * Math.sin(a2), xm + b.side * l2 * Math.cos(a2), ym - l2 * Math.sin(a2), 6 * sc, 2.4 * sc);
+      const a2 = a + rad(18 + r() * 20), l2 = len * (.35 + r() * .2), tq = .55, uq = 1 - tq;
+      const xm = uq * uq * x0 + 2 * uq * tq * cx + tq * tq * x1, ym = uq * uq * yy + 2 * uq * tq * cy + tq * tq * y1;   // pied de la fourche sur la branche même
+      g += bande(xm, ym + 1, xm + b.side * l2 * .5 * Math.cos(a2), ym - l2 * .4 * Math.sin(a2), xm + b.side * l2 * Math.cos(a2), ym - l2 * Math.sin(a2), Math.max(9 * sc, 8), Math.max(4.5 * sc, 5));   // fourche épaissie : jamais une tige fine isolée
     }
     if (b.feuille !== false && r() < p.feuilles) g += feuille(x1 + b.side * 6 * sc, y1 + 10 * sc, 26 * sc, 34 * sc, b.side * (20 + r() * 50));
     tips.push([x1, y1]);
@@ -86,7 +88,7 @@ let s = O.defs({ x: 980, y: 470, r: 1260 }) + O.toile();
 
 // 4. fond : la forêt continue, loin de la toile (troncs pâles et flous dans la brume)
 s += O.brume(980, 560, 520, 300, .3, C.brume, 34) + O.brume(300, 520, 260, 300, .22, C.brume, 34);
-const loin = (x, w, seed, lean, op, blur, fill) => `<g filter="url(#${blur})" opacity="${op}">${tronc(x, SOL, -60, { w, wT: .85, seed, lean, h: 16, gap: 4, fill, branches: 4, bLen: w * 1.1, roots: false, feuilles: .3 }).svg}</g>`;
+const loin = (x, w, seed, lean, op, blur, fill) => `<g filter="url(#${blur})" opacity="${op}">${tronc(x, SOL, -60, { w, wT: .85, seed, lean, h: 30, gap: 7, fill, branches: 4, bLen: w * 1.1, roots: false, feuilles: .3 }).svg}</g>`;
 s += loin(300, 104, 41, 12, .42, 'b9', C.brume) + loin(1290, 120, 42, -18, .42, 'b9', C.brume) + loin(1760, 110, 43, 10, .38, 'b9', C.brume);
 s += loin(990, 90, 44, 6, .2, 'b14', C.brume);
 // 3. un tronc à mi-distance, plus sombre et moins flou
@@ -105,7 +107,7 @@ const r0 = O.R(7); let bord = 'M1960,240 L1700,232 ';
 for (let yy = 250; yy <= SOL; yy += 38) bord += `L${f(1588 + (r0() - .5) * 26)},${yy} `;
 s += `<path fill="${C.ombre}" fill-rule="evenodd" d="${bord} L1588,${SOL} L1960,${SOL} Z M1650,360 L1850,360 L1850,640 L1650,640 Z"/>`;
 s += `<g fill="${C.ombre}"><rect x="1744" y="360" width="12" height="280"/><rect x="1650" y="494" width="200" height="12"/><rect x="1636" y="640" width="228" height="16"/></g>`;
-s += `<g opacity=".8" filter="url(#b2_5)">${tronc(1800, SOL, -60, { w: 96, seed: 46, lean: -6, h: 12, gap: 4, fill: C.brume2, branches: 3, bLen: 90, roots: false, feuilles: .2 }).svg}</g>`;  // la forêt, vue par la fenêtre
+s += `<g opacity=".8" filter="url(#b2_5)">${tronc(1800, SOL, -60, { w: 96, seed: 46, lean: -6, h: 22, gap: 7, fill: C.brume2, branches: 3, bLen: 90, roots: false, feuilles: .2 }).svg}</g>`;  // la forêt, vue par la fenêtre
 s += `<path fill="${C.ombre}" d="M1588,240 L1700,232 L1960,240 L1960,250 L1588,250 Z"/>`;
 
 // la porte d'entrée : chambranle, linteau, battant ouvert vers nous, la nuit dehors
@@ -114,28 +116,30 @@ s += `<g fill="${C.ombre}" transform="translate(-34,0)"><path d="M128,268 L436,2
   `<path fill-rule="evenodd" d="M174,318 L246,300 L246,${SOL + 14} L174,${SOL} Z M188,360 L232,350 L232,520 L188,526 Z M188,580 L232,576 L232,780 L188,782 Z"/>` +
   `<circle cx="238" cy="610" r="7"/></g>`;
 
-// 2. les troncs nets, contre la toile : T1 près de la porte, T2 où grimpe la chaîne, T3 qui crève le mur
-const T1 = tronc(446, SOL, -60, { w: 108, seed: 3, lean: -18, wob: 8, branches: 5, bLen: 120, feuilles: .7 });
+// 2. les troncs nets, contre la toile : T2 où grimpe la chaîne, T3 qui crève le mur ; T1, à gauche, recule dans la brume
+const ep = { h: 24, gap: 5, jit: 8 };   // feuillets épais, deux fois moins nombreux
+const T1 = tronc(600, SOL, -60, Object.assign({ w: 108, seed: 3, lean: -18, wob: 8, branches: 4, bLen: 120, feuilles: .6 }, ep));
 const pinchT2 = [[786, .26], [726, .26], [666, .26]];
-const T2 = tronc(872, SOL, -60, { w: 132, seed: 8, lean: 18, wob: 9, branches: 6, bLen: 140, pinch: pinchT2, bY0: .5 });
-const T3 = tronc(1556, SOL, -60, { w: 150, seed: 15, lean: -20, wob: 12, branches: 6, bLen: 150, bY0: .3 });
-s += T1.svg + T3.svg;
+const T2 = tronc(880, SOL, -60, Object.assign({ w: 132, seed: 8, lean: 18, wob: 9, branches: 5, bLen: 140, pinch: pinchT2, bY0: .5 }, ep));
+const T3 = tronc(1556, SOL, -60, Object.assign({ w: 150, seed: 15, lean: -20, wob: 12, branches: 5, bLen: 150, bY0: .3 }, ep));
+s += `<g filter="url(#b6)" opacity=".5">${T1.svg}</g>` + T3.svg;
 
-// l'horloge se glisse entre T1 et T2 : deux échos pâles vers la porte, d'où elle vient
-const Hc = { x: 676, y: SOL, s: .72, balancier: 14, heure: -40, minute: 130, armL: [40, -40], armR: [-62, 22] };
-s += `<g opacity=".15" filter="url(#b4)">${O.horloge(Object.assign({}, Hc, { x: Hc.x - 96 }))}</g>`;
-s += `<g opacity=".27" filter="url(#b2_5)">${O.horloge(Object.assign({}, Hc, { x: Hc.x - 46 }))}</g>`;
-s += `<g transform="rotate(-3,${Hc.x},${SOL})">${O.horloge(Hc)}</g>`;
+// la lumière du dehors dans l'encadrement de la porte, derrière l'horloge qui la passe
+s += `<rect x="146" y="322" width="204" height="${SOL - 322}" fill="#FFF3D6" opacity=".34" filter="url(#b9)"/>`;
+// l'horloge sort du chambranle : son dos frôle le montant, sa main arrière encore dans l'encadrement, penchée en avant
+const Hc = { x: 452, y: SOL, s: .72, balancier: 14, heure: -40, minute: 130, armL: [62, -30], armR: [-62, 22] };
+s += `<g transform="rotate(-4,${Hc.x},${SOL})">${O.horloge(Hc)}</g>`;
 s += T2.svg;
 
 // le père entre, la pile sous le bras, la tête un peu basse
 const P = { x: 1176, y: SOL, s: .74, armF: [-26, -98], armB: [22, -6], legF: [-22, 12], legB: [18, 4], head: 6 };
 s += O.pere(P);
 const [hx, hy] = O.mainPere(P, 'F');
-s += O.pile(hx + 28, hy + 10, 14, { w: 118, h: 7, gap: 1.6, seed: 5 });
+s += O.pile(hx + 28, hy + 10, 7, { w: 118, h: 13, gap: 2.4, seed: 5 });
 
-// la chaîne : du balancier, elle s'enroule autour de T2 comme une liane, puis retombe en guirlande jusqu'au poignet
-const [lx, ly] = O.lentille(Object.assign({}, Hc, { x: Hc.x + 2 }));
+// la chaîne : du balancier, elle traîne au sol, s'enroule autour de T2 comme une liane, puis retombe jusqu'au poignet
+const rl = rad(-4), [lx0, ly0] = O.lentille(Hc);
+const lx = Hc.x + (lx0 - Hc.x) * Math.cos(rl) - (ly0 - SOL) * Math.sin(rl), ly = SOL + (lx0 - Hc.x) * Math.sin(rl) + (ly0 - SOL) * Math.cos(rl);
 const [bx, by] = O.mainPere(P, 'B');
 const ax = (yy) => T2.axe(yy), demi = 52;
 const avant1 = [[ax(800) - demi - 6, 800], [ax(758) + demi + 6, 758]];
@@ -143,7 +147,7 @@ const avant2 = [[ax(740) - demi - 6, 740], [ax(698) + demi + 6, 698]];
 const avant3 = [[ax(680) - demi - 6, 680], [ax(638) + demi + 6, 638]];
 const ch = { rx: 9, ry: 14, pas: 19 };
 const jour = (pts) => `<g stroke="#D9B784" stroke-width="5" stroke-linejoin="round" opacity=".55">${O.chaine(pts, ch)}</g>` + O.chaine(pts, ch);
-s += O.chaine([[lx, ly], [lx + 40, ly + 10], avant1[0]], ch);
+s += O.chaine([[lx, ly], [lx + 60, ly + 44], [lx + 190, 878], [ax(820) - 150, 872], [ax(812) - demi - 40, 836], avant1[0]], ch);
 s += jour(avant1) + jour(avant2) + jour(avant3);
 // les boucles qui passent derrière le tronc dépassent un peu sur les bords
 s += O.chaine([avant1[1], [ax(750) + demi + 14, 748], avant2[0]].slice(0, 2), ch) + O.chaine([[ax(744) - demi - 14, 744], avant2[0]], ch);
@@ -152,7 +156,7 @@ s += O.chaine([avant3[1], [ax(626) + 88, 650], [ax(626) + 150, 700], [bx - 50, b
 
 // feuilles de dossier qui tombent des branches (échos de chute)
 const chute = (x, y, rot, sc, op, blur) => `<g opacity="${op}"${blur ? ` filter="url(#${blur})"` : ''} fill="${C.ombre}">${feuille(x, y, 34 * sc, 44 * sc, rot)}</g>`;
-s += chute(1046, 258, 24, 1, .13, 'b4') + chute(1038, 290, 8, 1, .26, 'b2_5') + chute(1030, 326, -14, 1, 1, '');
+s += chute(1046, 258, 24, 1, .1, 'b4') + chute(1038, 290, 8, 1, .14, 'b2_5') + chute(1030, 326, -14, 1, 1, '');
 
 // sol au premier plan (bande des sous-titres)
 s += `<rect x="0" y="${SOL}" width="1920" height="${1080 - SOL}" fill="#140B06"/>`;

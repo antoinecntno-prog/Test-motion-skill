@@ -1,14 +1,14 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><title>C2 · La forêt de dossiers · 19,6 s</title>
 <link rel="stylesheet" href="_base.css"></head>
 <body><div class="stage"><svg class="scene" id="s" viewBox="0 0 1920 1080"></svg>
-<div class="sub">IA voulait dire <span class="k">Interminable Attente</span>.</div></div>
+<div class="sub">IA voulait dire <span class="k">Interminable Attente</span></div></div>
 <script src="_ombres.js"></script><script>
 /* C2, 19,6 s : « Pour sa fille, IA voulait dire Interminable Attente. »
    La forêt de dossiers vue d'en bas (contre-plongée : les troncs immenses se resserrent vers le haut du cadre). La
-   fillette, toute petite, assise au pied d'un tronc sur trois chemises, le menton dans les mains, lève les yeux. Aux
-   branches pendent les lettres de papier I et A, en train de se déplier en « Interminable Attente » (les dernières
-   lettres encore pliées, avec leur écho). Loin entre les troncs, le père penché sur ses devis : loin de la toile,
-   donc plus grand, flou et pâle. Des feuilles de papier tombent comme des feuilles mortes. */
+   fillette, petite au pied d'un tronc, assise sur une pile de chemises, le menton dans les mains. Aux branches pendent
+   les lettres de papier, I et A sur le même axe, dépliées en entier : « Interminable », et dessous « Attente ». Dans
+   la clairière, loin de la toile, l'ombre du père à son bureau : plus grande, pâle, un peu floue (2,5 px), mais de profil, tête
+   droite, nez et col lisibles. Des feuilles de papier tombent comme des feuilles mortes. */
 const O = OMBRES, C = O.C;
 const f = (n) => Math.round(n * 10) / 10, rad = (d) => d * Math.PI / 180;
 const SOL = 900;
@@ -71,11 +71,12 @@ function tronc(x, yB, yT, o = {}) {
     const len = b.len * sc, a = rad(b.ang);
     const x1 = x0 + b.side * len * Math.cos(a), y1 = yy - len * Math.sin(a);
     const cx = x0 + b.side * len * .55 * Math.cos(a), cy = yy - len * .2 * Math.sin(a) + (b.sag || 10) * sc;
-    g += bande(x0, yy, cx, cy, x1, y1, (b.w0 || 11) * sc, (b.w1 || 3.5) * sc);
+    g += bande(x0, yy, cx, cy, x1, y1, (b.w0 || 13) * sc, (b.w1 || 5) * sc);
     courbes.push([x0, yy, cx, cy, x1, y1]);
     if (b.fourche !== false && r() < .8) {   // une seconde feuille plus courte, en fourche
-      const a2 = a + rad(18 + r() * 20), l2 = len * (.35 + r() * .2), xm = x0 + b.side * len * .55 * Math.cos(a), ym = yy - len * .5 * Math.sin(a);
-      g += bande(xm, ym + 4, xm + b.side * l2 * .5 * Math.cos(a2), ym - l2 * .4 * Math.sin(a2), xm + b.side * l2 * Math.cos(a2), ym - l2 * Math.sin(a2), 6 * sc, 2.4 * sc);
+      const a2 = a + rad(18 + r() * 20), l2 = len * (.35 + r() * .2), tq = .55, uq = 1 - tq;
+      const xm = uq * uq * x0 + 2 * uq * tq * cx + tq * tq * x1, ym = uq * uq * yy + 2 * uq * tq * cy + tq * tq * y1;   // pied de la fourche sur la branche même
+      g += bande(xm, ym + 1, xm + b.side * l2 * .5 * Math.cos(a2), ym - l2 * .4 * Math.sin(a2), xm + b.side * l2 * Math.cos(a2), ym - l2 * Math.sin(a2), Math.max(9 * sc, 8), Math.max(4.5 * sc, 5));   // fourche épaissie : jamais une tige fine isolée
     }
     if (b.feuille !== false && r() < p.feuilles) g += feuille(x1 + b.side * 6 * sc, y1 + 10 * sc, 26 * sc, 34 * sc, b.side * (20 + r() * 50));
     tips.push([x1, y1]);
@@ -84,34 +85,22 @@ function tronc(x, yB, yT, o = {}) {
 }
 
 
-/* Mot de papier qui se déplie en accordéon depuis sa grande capitale (O.lettres) ; plis[i] : ouverture du panneau i
-   (1 = à plat, < 1 = encore plié : le panneau s'incline en zigzag et file, avec un écho pâle à sa gauche). */
+/* Mot de papier entier et droit : grande capitale centrée sur x (O.lettres), le reste du mot à sa suite, le tout posé
+   sur une bande de papier continue. Rend aussi le bout du mot (fin) et le centre de sa dernière lettre (der). */
 const ctx = document.createElement('canvas').getContext('2d');
 const largeur = (t, size) => { ctx.font = `700 ${size}px Fraunces`; return ctx.measureText(t).width; };
-function mot(cap, reste, x, y, capSize, size, plis) {
-  const wc = largeur(cap, capSize);
+function mot(cap, reste, x, y, capSize, size) {
+  const wc = largeur(cap, capSize), x0 = x + wc / 2 + 6, wr = largeur(reste, size), wl = largeur(reste.slice(-1), size);
   let g = O.lettres(cap, x, y, capSize, { anchor: 'middle', fils: false });
-  g += `<rect x="${f(x - wc / 2 - 8)}" y="${y + 8}" width="${f(wc + 16)}" height="7" fill="${C.ombre}"/>`;
-  let cx = x + wc / 2 + 6, cy = y;
-  const pans = [];
-  for (let i = 0; i < reste.length; i++) {
-    const ch = reste[i], w = largeur(ch, size) + 3, k = plis[i] === undefined ? 1 : plis[i];
-    const sk = k < 1 ? (1 - k) * 36 * (i % 2 ? 1 : -1) : 0;
-    pans.push({ k, tr: `translate(${f(cx)},${f(cy)}) skewY(${f(sk)}) scale(${f(k * 100) / 100},1)`,
-      svg: `<text x="1" y="0" font-family="Fraunces" font-weight="700" font-size="${size}">${ch}</text><rect x="0" y="8" width="${f(w)}" height="7"/>` });
-    cx += w * k; cy += w * k * Math.tan(sk * Math.PI / 180);
-  }
-  let echo = '';
-  for (const p of pans) if (p.k < 1) echo += `<g transform="translate(-38,-5)"><g transform="${p.tr}">${p.svg}</g></g>`;
-  g += `<g fill="${C.ombre}" opacity=".16" filter="url(#mbx)">${echo}</g>`;
-  for (const p of pans) g += `<g fill="${C.ombre}" transform="${p.tr}"${p.k < .8 ? ' filter="url(#mbx2)"' : ''}>${p.svg}</g>`;
-  return { svg: g, fin: [cx, cy], wc };
+  g += `<text x="${f(x0)}" y="${y}" font-family="Fraunces" font-weight="700" font-size="${size}" fill="${C.ombre}">${reste}</text>`;
+  g += `<rect x="${f(x - wc / 2 - 8)}" y="${y + 8}" width="${f(x0 + wr + 8 - (x - wc / 2 - 8))}" height="8" fill="${C.ombre}"/>`;
+  return { svg: g, fin: [x0 + wr, y], der: x0 + wr - wl / 2, wc };
 }
 // ordonnée d'une branche (courbe quadratique) à l'abscisse x : pour accrocher un fil exactement sur la branche
 const surBranche = ([x0, y0, cx, cy, x1, y1], x) => { let best = [1e9, y0];
   for (let i = 0; i <= 60; i++) { const t = i / 60, u = 1 - t, xx = u * u * x0 + 2 * u * t * cx + t * t * x1, yy = u * u * y0 + 2 * u * t * cy + t * t * y1;
     if (Math.abs(xx - x) < best[0]) best = [Math.abs(xx - x), yy]; } return best[1]; };
-const fil = (x0, y0, x1, y1) => `<path d="M${f(x0)},${f(y0)} L${f(x1)},${f(y1)}" stroke="${C.ombre}" stroke-width="1.7" fill="none"/>`;
+const fil = (x0, y0, x1, y1) => `<path d="M${f(x0)},${f(y0)} L${f(x1)},${f(y1)}" stroke="${C.ombre}" stroke-width="5" stroke-linecap="round" fill="none"/>`;
 
 function build() {
   let s = O.defs({ x: 860, y: 380, r: 1320 }) + O.toile();
@@ -128,18 +117,23 @@ function build() {
   s += loin(820, 110, 51, .16, 'b14', C.brume, 60) + loin(1040, 100, 52, .2, 'b9', C.brume, -20) + loin(1620, 150, 53, .36, 'b9', C.brume, -170);
   s += loin(560, 120, 54, .3, 'b9', C.brume, 150);
 
-  // 3 bis. le père, loin entre les troncs : plus grand, flou et pâle, penché sur ses devis (la table se perd derrière le tronc)
-  const sP = 1.1, X = 1300, hipY = SOL - 128 * sP, lean = 16;
-  const P = { x: X, y: hipY + 222 * sP, s: sP, armF: [-26, -42], armB: [-18, -56], legF: [-104, 90], legB: [-98, 86], head: 26 };
-  s += `<g opacity=".5" filter="url(#b6)">` + O.chaise(X - 4, SOL, sP, 1) +
-    `<g transform="rotate(${lean},${X},${hipY})">${O.pere(P)}</g>` + O.table(X + 262, SOL, 300, 196) +
-    O.pile(X + 226, SOL - 196, 10, { w: 120, h: 9, gap: 2, seed: 21 }) + `</g>`;
+  // 3 bis. le père dans la clairière, loin de la toile : plus grand, pâle et un peu flou (2,5 px), assis à son bureau.
+  // Le buste penche vers les devis, la tête reste droite (contre-rotation) : nez, cheveux et col lisibles.
+  const sP = 1, X = 1000, hipY = SOL - 128 * sP, lean = 8;
+  // col du manteau rendu lisible en silhouette : pointe de revers devant, col relevé derrière la nuque (cou dégagé)
+  const col = `<path d="M26,-490 L46,-474 L33,-466 Z"/><path d="M-22,-494 L-36,-506 L-34,-486 L-28,-478 Z"/>`;
+  const P = { x: X, y: hipY + 222 * sP, s: sP, armF: [-23, -46], armB: [-17, -54], legF: [-100, 92], legB: [-94, 86], head: -lean, extra: col };
+  const TX = X + 160, TW = 200, TH = 212;
+  s += `<g opacity=".62" filter="url(#b2_5)">` + O.chaise(X - 4, SOL, sP, 1) +
+    `<g transform="rotate(${lean},${X},${hipY})">${O.pere(P)}</g>` + O.table(TX, SOL, TW, TH) +
+    O.pile(TX + 62, SOL - TH, 7, { w: 74, h: 10, gap: 2, seed: 21 }) +
+    `<rect x="${X + 128}" y="${SOL - TH - 6}" width="70" height="6" fill="${C.ombre}"/>` + `</g>`;
 
   // 2. les troncs immenses, nets contre la toile, qui se resserrent vers le haut ; leurs grandes branches passent au-dessus
-  const TL = tronc(206, SOL, -80, { w: 300, wT: .42, persp: .45, seed: 21, lean: 310, wob: 12, h: 15, gap: 3.4, onglets: .35, feuilles: .75,
+  const TL = tronc(206, SOL, -80, { w: 300, wT: .42, persp: .45, seed: 21, lean: 310, wob: 12, h: 22, gap: 4.6, onglets: .35, feuilles: .75,
     br: [{ t: .8, side: 1, ang: 4, len: 760, sag: 40, fourche: false, feuille: false, w0: 30, w1: 9 }, { t: .62, side: 1, ang: 30, len: 120 },
       { t: .72, side: -1, ang: 26, len: 240 }, { t: .45, side: -1, ang: 34, len: 180 }, { t: .28, side: -1, ang: 40, len: 140 }, { t: .93, side: 1, ang: 22, len: 300 }] });
-  const TR = tronc(1748, SOL, -80, { w: 330, wT: .42, persp: .45, seed: 22, lean: -330, wob: 12, h: 15, gap: 3.4, onglets: .35, feuilles: .75,
+  const TR = tronc(1748, SOL, -80, { w: 330, wT: .42, persp: .45, seed: 22, lean: -330, wob: 12, h: 22, gap: 4.6, onglets: .35, feuilles: .75,
     br: [{ t: .84, side: -1, ang: 6, len: 640, sag: 34, fourche: false, feuille: false, w0: 30, w1: 9 }, { t: .64, side: -1, ang: 36, len: 150 },
       { t: .72, side: 1, ang: 24, len: 220 }, { t: .4, side: 1, ang: 30, len: 170 }, { t: .95, side: -1, ang: 18, len: 320 }] });
   s += TL.svg + TR.svg;
@@ -148,43 +142,41 @@ function build() {
   const rq = O.R(33); let ram = '';
   for (const [cb, sd] of [[TL.courbes[0], 1], [TR.courbes[0], -1]]) for (const tt of [.26, .48, .7]) {
     const [px, py] = pointSur(cb, tt), up = rq() < .5, l = 34 + rq() * 40, a = rad(30 + rq() * 40);
-    ram += bande(px, py, px + sd * l * .5 * Math.cos(a), py + (up ? -1 : 1) * l * .4 * Math.sin(a), px + sd * l * Math.cos(a), py + (up ? -1 : 1) * l * Math.sin(a), 6, 2.4);
+    ram += bande(px, py, px + sd * l * .5 * Math.cos(a), py + (up ? -1 : 1) * l * .4 * Math.sin(a), px + sd * l * Math.cos(a), py + (up ? -1 : 1) * l * Math.sin(a), 9, 4.5);
     if (!up) ram += feuille(px + sd * l * Math.cos(a) + sd * 4, py + l * Math.sin(a) + 12, 20, 26, sd * (10 + rq() * 40));
   }
   s += `<g fill="${C.ombre}">${ram}</g>`;
 
-  // les lettres de papier : I pend à la grande branche de gauche, A pend sous le I ; la queue de « Interminable » pend à
-  // la grande branche de droite ; les dernières lettres sont encore pliées
-  const XI = 606;
-  const L1 = mot('I', 'nterminable', XI, 340, 200, 100, [1, 1, 1, 1, 1, 1, 1, 1, .82, .62, .46]);
-  const L2 = mot('A', 'ttente', XI, 528, 200, 100, [1, 1, 1, 1, .72, .5]);
-  const xq = L1.fin[0] - 30;
-  s += fil(XI, 198, XI, surBranche(TL.courbes[0], XI) - 2) + fil(XI, 356, XI, 386);
-  s += fil(xq, L1.fin[1] - 66, xq - 8, surBranche(TR.courbes[0], xq - 8) - 2);
-  s += fil(L2.fin[0] - 10, L2.fin[1] - 66, L2.fin[0] - 28, 355);
+  // les lettres de papier, entières et droites : « Interminable » pend aux deux grandes branches ; « Attente » pend
+  // sous lui, sa capitale A sur le même axe vertical que le I. Fils de 5 px.
+  const XI = 606, yI = 312, yA = 500;
+  const L1 = mot('I', 'nterminable', XI, yI, 200, 100);
+  const L2 = mot('A', 'ttente', XI, yA, 200, 100);
+  const xq = L1.der, xa = L2.der;
+  s += fil(XI, yI - 138, XI, surBranche(TL.courbes[0], XI) - 2) + fil(XI, yI + 14, XI, yA - 134);
+  s += fil(xq, yI - 44, xq, surBranche(TR.courbes[0], xq) - 2) + `<circle cx="${f(xq)}" cy="${f(yI - 46)}" r="6" fill="none" stroke="${C.ombre}" stroke-width="3.5"/>`;
+  s += fil(xa, yA - 44, xa, yI + 14) + `<circle cx="${f(xa)}" cy="${f(yA - 46)}" r="6" fill="none" stroke="${C.ombre}" stroke-width="3.5"/>`;
   s += L1.svg + L2.svg;
 
   // feuilles qui tombent (feuilles mortes) : nettes près de la toile, avec leur traînée verticale
-  const tombe = (x, y, w, h, rot, k = 1) => `<g fill="${C.ombre}"><g opacity="${.13 * k}" filter="url(#chute)">${feuille(x - 34, y - 74, w, h, rot - 34)}</g>` +
-    `<g opacity="${.26 * k}" filter="url(#chute)">${feuille(x - 16, y - 38, w, h, rot - 16)}</g>${feuille(x, y, w, h, rot)}</g>`;
-  s += tombe(1076, 646, 34, 44, 28) + tombe(880, 770, 28, 36, -22) + tombe(1150, 480, 24, 32, 12) + tombe(760, 640, 26, 34, 40);
-  s += `<g opacity=".4" filter="url(#b4)" fill="${C.brume2}">${feuille(980, 140, 30, 40, 18)}${feuille(1210, 210, 26, 34, -30)}</g>`;
+  const tombe = (x, y, w, h, rot, k = 1) => `<g fill="${C.ombre}"><g opacity="${.1 * k}" filter="url(#chute)">${feuille(x - 34, y - 74, w, h, rot - 34)}</g>` +
+    `<g opacity="${.14 * k}" filter="url(#chute)">${feuille(x - 16, y - 38, w, h, rot - 16)}</g>${feuille(x, y, w, h, rot)}</g>`;
+  s += tombe(850, 650, 34, 44, 28) + tombe(930, 790, 28, 36, -22) + tombe(1410, 520, 26, 34, 12) + tombe(760, 740, 24, 32, 40);
 
-  // 2 bis. la fillette, toute petite, assise au pied du tronc sur trois chemises, le menton dans les mains, lève les yeux
-  const XF = 548;
-  s += O.pile(XF, SOL, 3, { w: 104, h: 12, gap: 2.4, seed: 7 });
-  const seat = SOL - 3 * 14.4, sF = .64;
-  s += `<g transform="rotate(4,${XF},${seat})">${O.fille({ x: XF, y: seat + 112 * sF, s: sF, seated: true, armF: [-60, -141], armB: [-50, -143], head: -9 })}</g>`;
-  // feuilles tombées au sol autour d'elle
-  s += `<g fill="${C.ombre}">${feuille(660, SOL - 3, 40, 8, 4)}${feuille(760, SOL - 2, 30, 6, -3)}${feuille(1010, SOL - 2, 36, 7, 2)}</g>`;
+  // 2 bis. la fillette, petite au pied du tronc, assise haut sur une pile de chemises, le menton dans les mains
+  // (assise au bord avant de la pile : ses jambes pendent devant le papier clair, pas sur les chemises)
+  const XF = 584, nF = 6, sF = .88;
+  s += O.pile(XF, SOL, nF, { w: 134, h: 17, gap: 3, seed: 7 });
+  const seat = SOL - nF * 20 + 2;
+  s += O.fille({ x: XF + 36, y: seat + 112 * sF, s: sF, seated: true, menton: true, head: 8 });
+  // feuilles tombées au sol
+  s += `<g fill="${C.ombre}">${feuille(730, SOL - 3, 40, 8, 4)}${feuille(830, SOL - 2, 30, 6, -3)}${feuille(1350, SOL - 2, 36, 7, 2)}</g>`;
 
-  // 1. avant-plan : troncs énormes et flous coupés par les bords, une feuille qui tombe tout près de l'objectif
+  // 1. avant-plan : troncs énormes et flous coupés par les bords
   s += `<rect x="0" y="${SOL}" width="1920" height="${1080 - SOL}" fill="#140B06"/>`;
   s += `<rect x="0" y="940" width="1920" height="140" fill="#0F0905"/>`;
   s += `<g filter="url(#b22)">${tronc(-70, 1140, -80, { w: 300, wT: .6, seed: 63, lean: 90, h: 36, gap: 11, fill: '#0E0805', branches: 1, bLen: 240, bY0: .7, roots: false, feuilles: 0 }).svg}</g>`;
   s += `<g filter="url(#b22)">${tronc(2000, 1140, -80, { w: 320, wT: .6, seed: 64, lean: -100, h: 36, gap: 11, fill: '#0E0805', branches: 1, bLen: 240, bY0: .7, roots: false, feuilles: 0 }).svg}</g>`;
-  // la feuille qui tombe tout près de l'objectif : grande, floue, un coin corné
-  s += `<g filter="url(#b6)" fill="#1A1009" opacity=".88">${feuille(1150, -6, 170, 216, 32)}</g>`;
   s += O.voile();
   document.getElementById('s').innerHTML = s;
 }

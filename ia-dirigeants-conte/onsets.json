@@ -39,26 +39,26 @@
   },
   {
    "start": 3.41,
-   "end": 4.75,
-   "silence_after": 0.65,
-   "cut_point": 5.08,
-   "text": "le temps perdu passa la",
+   "end": 5.02,
+   "silence_after": 0.36,
+   "cut_point": 5.2,
+   "text": "le temps perdu passa la porte.",
    "words": [
     10,
     11,
     12,
     13,
-    14
+    14,
+    15
    ]
   },
   {
-   "start": 5.4,
+   "start": 5.38,
    "end": 6.67,
    "silence_after": 0.43,
    "cut_point": 6.88,
-   "text": "porte. Sa fille l'attendait pour jouer.",
+   "text": "Sa fille l'attendait pour jouer.",
    "words": [
-    15,
     16,
     17,
     18,
@@ -507,13 +507,13 @@
   },
   {
    "w": "porte.",
-   "s": 5.4,
-   "e": 5.4,
+   "s": 4.64,
+   "e": 5.02,
    "whisper_s": 4.74
   },
   {
    "w": "Sa",
-   "s": 5.48,
+   "s": 5.38,
    "e": 5.66,
    "whisper_s": 5.48
   },

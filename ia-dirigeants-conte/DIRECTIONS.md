@@ -104,4 +104,14 @@ dossiers qui monte (deux fois), le dernier tronc qui devient l'arbre de la balan
 
 ## Choix
 
-Direction retenue : à choisir par Antoine.
+Direction retenue par Antoine le 9 octobre 2026 : **A « La maison en coupe »**, avec l'arbre doré de C3 pour la fin
+(le tronc fait de la dernière pile de devis, la balançoire à sa branche).
+
+Ajustements faits en écrivant le storyboard (STORYBOARD.md, frame.md) :
+- le dessin du petit dinosaure quitte l'entrée de A1 : il est épinglé au mur de la cuisine, dans le dos du père,
+  recouvert de devis soir après soir, puis retrouvé par la fille ;
+- la fille attend sur la deuxième marche de l'escalier de la cuisine (A2 la montrait à l'étage) : la caméra reste au
+  rez-de-chaussée jusqu'au pivot et avance de gauche à droite ;
+- l'escalier passe du salon à la cuisine, et les cloisons ont une baie où passent les personnages ;
+- au monde doré, les devis finis volent par la fenêtre et s'empilent autour du tronc de l'arbre du jardin, qui devient
+  l'arbre doré de C3 ; l'horloge suit la famille au jardin.

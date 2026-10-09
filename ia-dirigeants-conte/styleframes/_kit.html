@@ -1,0 +1,26 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Kit</title><link rel="stylesheet" href="_base.css"></head>
+<body><div class="stage"><svg class="scene" id="s" viewBox="0 0 1920 1080"></svg></div>
+<script src="_ombres.js"></script><script>
+const O=OMBRES;
+let s=O.defs({x:960,y:420,r:1200})+O.toile();
+s+=O.brume(1500,700,500,180,.5);
+s+=O.arbre(1700,980,620,4,{fill:'#6E4E32'});
+s+=O.cloture(1350,1900,980,130,4,'#5E4128');
+s+=O.herbes(0,1920,1000,70,2);
+s+=O.pere({x:260,y:960,s:1,armF:[-60,-30]});
+s+=O.fille({x:520,y:960,s:1,armF:[-120,10]});
+s+=O.fille({x:700,y:840,s:1,seated:true,armF:[-150,-20],head:10});
+s+=O.horloge({x:950,y:960,s:1});
+s+=O.horloge({x:1200,y:960,s:.9,or:true,balancier:-10})+O.lettres("A",520,240,180,{gold:true});
+s+=O.chaine([[300,560],[420,700],[560,620]]);
+s+=O.pile(1450,960,22);
+s+=O.devis(1380,300,120,160,-6);
+s+=O.dino(1650,960,1);
+s+=O.corbeau(1200,200,1.2,10)+O.corbeau(1300,240,1,-6);
+s+=O.lampe(820,640,1.2);
+s+=O.balancoire(1560,300,640,4);
+s+=O.lettres('I',300,220,180,{})+O.lettres('A',420,240,180,{gold:true,rot:6});
+s+=O.etincelles(1000,100,1500,400,80);
+s+=O.voile();
+document.getElementById('s').innerHTML=s;
+</script></body></html>

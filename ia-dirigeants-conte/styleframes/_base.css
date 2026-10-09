@@ -1,0 +1,31 @@
+/* Base commune des styleframes du conte d'ombres (1920 x 1080). */
+@font-face { font-family: "Fraunces"; font-weight: 400; src: url("../assets/fonts/fraunces-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Fraunces"; font-weight: 600; src: url("../assets/fonts/fraunces-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Fraunces"; font-weight: 700; src: url("../assets/fonts/fraunces-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "DM Sans"; font-weight: 500; src: url("../assets/fonts/dm-sans-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "DM Sans"; font-weight: 700; src: url("../assets/fonts/dm-sans-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Caveat"; font-weight: 700; src: url("../assets/fonts/caveat-latin-700-normal.woff2") format("woff2"); }
+
+:root {
+  --toile: #EFDDB8;        /* toile sépia claire, au plus près de la lampe */
+  --toile-2: #C9A46E;      /* toile loin de la lampe */
+  --brume: #8A6440;        /* brumes en bruns intermédiaires */
+  --brume-2: #5E4128;
+  --ombre: #1B120B;        /* silhouettes brun noir */
+  --creme: #FFF4DC;        /* lumière crème */
+  --or: #C98A2E;           /* accent unique du conte : la lumière de la solution */
+  --or-clair: #E0A84A;
+  --bordeaux: #7A1E2E;     /* mot clé des sous-titres, carte de fin */
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: #000; }
+.stage { position: absolute; inset: 0; overflow: hidden; }
+.stage > svg.scene { position: absolute; inset: 0; width: 1920px; height: 1080px; }
+
+/* Sous-titre : bas centre, bande y 890 à 980, 60 px, 45 caractères au plus par segment. */
+.sub { position: absolute; left: 0; right: 0; top: 890px; height: 90px; display: flex; align-items: center;
+  justify-content: center; font: 500 60px/1 "DM Sans", sans-serif; color: var(--creme); letter-spacing: -0.005em;
+  text-shadow: 0 2px 18px rgba(20, 12, 6, .85), 0 0 4px rgba(20, 12, 6, .6); white-space: nowrap; }
+.sub .k { background: var(--bordeaux); color: var(--creme); padding: 4px 14px 8px; border-radius: 6px; margin: 0 4px;
+  text-shadow: none; }
+.sub .faint { opacity: .35; }

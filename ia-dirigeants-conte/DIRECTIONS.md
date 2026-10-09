@@ -1,71 +1,107 @@
-# {{TITRE_DU_FILM}} : trois directions de storyboard (à choisir avant d'écrire le storyboard complet)
+# Le Temps perdu : trois directions de storyboard (à choisir avant d'écrire le storyboard complet)
 
-<!--
-Modèle de l'étape 4 de la méthode (premier prompt : « Propose-moi 3 directions de storyboard vraiment différentes pour
-ce script, avec 3 images de style chacune »). Copie-le en <projet>/DIRECTIONS.md, remplace chaque {{...}}
-(grep -n "{{" DIRECTIONS.md ne doit rien afficher), puis supprime ce commentaire.
+Même voix, même musique, mêmes bruitages pour les trois directions : seule la mise en scène change. Les trois gardent
+la grammaire d'ombres du brief : silhouettes brun noir découpées devant une toile de papier sépia éclairée par
+derrière, marionnettes à pivots (rivets visibles aux articulations), quatre plans de profondeur (avant-plan sombre et
+flou, personnages nets, décor de brume, toile lumineuse), grain de papier, vignettage chaud. Le monde de la solution
+passe en silhouettes inversées dorées sur une toile assombrie, avec une poussière d'étincelles. Les personnages et
+l'horloge sont communs aux trois directions (`styleframes/_ombres.js`) : le père, sa fille de cinq ans à deux
+couettes, le Temps perdu en horloge comtoise trapue sur roulettes, la chaîne de maillons de papier, le petit
+dinosaure sous son champignon.
 
-- Lis d'abord patterns/STORYBOARD-CRAFT.md (les 10 lois) et patterns/PATTERNS.md (quoi montrer).
-- Trois directions VRAIMENT différentes : trois lieux, trois façons de faire le pont entre les idées, pas trois
-  habillages du même film. Même script, même voix, même minutage pour les trois (chaque musique ira avec chaque image).
-- Une image de style = une image figée du futur film, en qualité finale (vraies interfaces, vraie typographie, vraie
-  lumière), avec le mouvement suggéré dans l'image elle-même (flou de mouvement, flou de profondeur, élément qui arrive
-  trop grand et flou). Une page HTML autonome de 1920 × 1080 par image, dans <projet>/styleframes/<A1 à C3>.html, rendue
-  en PNG par : python3 .claude/skills/motion-design/scripts/render-styleframes.py <projet>
-- Choisis les trois moments de chaque direction là où elle se joue : l'accroche, le cœur de la douleur, le retournement
-  ou la preuve. Donne leur temps exact dans la voix.
-- Montre les 9 images côte à côte, direction par direction, et attends le choix. Corriger une image coûte dix fois
-  moins cher que corriger une vidéo.
-Exemple rempli : examples/C-le-devis-v7a/DIRECTIONS.md.
--->
+## Minutage global de la voix (secondes du film, voix montée de 57,10 s)
 
-Même voix, même musique, mêmes bruitages pour les trois directions : l'horloge ne bouge pas, seule la mise en scène
-change. Grammaire visée : `patterns/STORYBOARD-CRAFT.md` (un monde, une caméra qui s'y déplace, un objet-pont à chaque
-transition, deux vitesses, un événement toutes les 0,5 à 1 s, rien d'immobile). Vraies interfaces, épurées et
-actuelles : {{INTERFACES_ET_CAPTURES_DE_REFERENCE}}.
+| # | Phrase | Début | Fin | Silence après |
+|---|---|---|---|---|
+| 1 | Ce dirigeant ramenait le travail à la maison. | 0.06 | 2.06 | 0.46 s |
+| 2 | Derrière lui, le Temps perdu passa la porte. | 2.52 | 5.02 | 0.43 s |
+| 3 | Sa fille l'attendait pour jouer. | 5.48 | 6.67 | 0.43 s |
+| 4 | Lui, il ouvrit un dossier. | 7.10 | 8.57 | 0.45 s |
+| 5 | Le Temps perdu lui prit une heure. | 9.02 | 10.46 | 0.59 s |
+| 6 | Elle l'attendait pour dessiner. | 11.05 | 12.17 | 0.42 s |
+| 7 | Lui, il ouvrit ses devis. | 12.59 | 14.12 | 0.38 s |
+| 8 | Le Temps perdu lui prit la soirée. | 14.50 | 16.08 | 0.68 s |
+| 9 | Pour sa fille, IA voulait dire Interminable Attente. | 16.76 | 20.08 | 0.54 s |
+| 10 | Soir après soir, il s'effaçait. | 20.68 | 22.57 | 2.94 s (gag muet) |
+| 11 | Alors elle retrouva leur petit dinosaure. | 25.51 | 27.50 | 0.43 s |
+| 12 | Elle le glissa sur ses devis. | 27.93 | 29.16 | 0.46 s |
+| 13 | Enfin, il vit la chaîne. | 29.62 | 30.89 | 0.95 s |
+| 14 | Le Temps perdu eut alors une idée. (pivot sur noir) | 31.84 | 33.40 | 1.56 s |
+| 15 | L'horloge se mit au travail pour lui. | 34.96 | 36.66 | 0.30 s |
+| 16 | Tout s'automatisait. | 36.96 | 37.82 | 0.43 s |
+| 17 | Le soir suivant, il poussait la balançoire. | 38.25 | 40.23 | 0.43 s |
+| 18 | Celui d'après, ils dessinèrent un second dinosaure. | 40.66 | 43.19 | 0.96 s |
+| 19 | Désormais, IA voulait dire Intelligence Artificielle, | 44.15 | 47.53 | 0.29 s |
+| 20 | pour vous rendre le temps perdu. | 47.82 | 49.11 | 0.72 s |
+| 21 | La dernière dirigeante formée gagne dix heures chaque semaine. | 49.83 | 52.75 | carte de fin |
 
-## Minutage global de la voix (secondes du film)
+Repères mot à mot : `onsets.json`. Les trois directions sont montrées aux mêmes trois moments pour se comparer :
+l'entrée du Temps perdu (4,2 s), le premier sens d'IA (19,6 s), la balançoire dorée (39,5 s).
 
-{{MOT TEMPS · MOT TEMPS · … (depuis onsets.json ; marque le pivot, par exemple [Stop. 14.02, musique coupée])}}
+## A. « La maison en coupe » (recommandée)
 
-## A. « {{NOM_A}} » {{(recommandée)}}
+**Concept.** La maison du père, découpée en coupe comme une maison de poupée de papier, debout devant la toile. La
+caméra la parcourt en un seul long travelling latéral, de l'entrée au salon, puis à l'étage et jusqu'au jardin :
+chaque pièce est une case de lumière où vit une scène à deux personnages. À chaque heure prise par le Temps perdu, une
+case s'éteint ; dans le monde doré, les cases se rallument l'une après l'autre et la caméra sort au jardin.
 
-**Concept.** {{En deux ou trois phrases : le lieu du film (le décor que la caméra parcourt), ce qu'il dit du message,
-pourquoi il sert cette voix. Ce qui change entre le monde de la douleur et celui de la solution.}}
+**Fil des objets-ponts.** L'horloge roule de pièce en pièce avec la caméra : seul personnage continu, elle guide le
+travelling. La chaîne relie le poignet du père au balancier à travers les murs. La balançoire, vue d'abord par la
+fenêtre du salon, attend dehors pendant toute la douleur. Le dessin de la fillette, collé à la vitre, ouvre la
+chambre. Au pivot, le balancier doré se change en balançoire dans le même arc. Signatures : la case qui s'éteint
+(deux fois, puis rallumée), le balancier qui devient balançoire (rime de la fin).
 
-**Fil des objets-ponts.** {{Le parcours de la caméra et, à chaque idée de la voix, l'objet qui survit et change de rôle :
-« mot ou temps : objet → nouveau rôle ». Par exemple : le prix arrive trop grand et se pose dans sa case ; la case
-grandit et devient le téléphone ; le devis rétrécit en notification. Nomme les 1 ou 2 mécanismes signature qui
-reviendront 4 à 8 fois, et la rime (le geste de la fin qui rejoue le début).}}
+**Images de style.**
+- A1 (4,2 s) : plan large de la maison en coupe. Le père entre, la pile de devis sous le bras ; l'horloge roule dans
+  l'encadrement de la porte, la chaîne tendue jusqu'à son poignet. Salon assombri, balançoire vue par la fenêtre,
+  cuisine déjà pleine de dossiers. Avant-plan flou : montant de porte et plante, coupés par le bord du cadre.
+- A2 (19,6 s) : la caméra est montée à l'étage. Sur la dernière marche, la fillette assise, le menton dans les
+  mains ; au-dessus d'elle, deux grandes lettres de papier, I et A, dépliées en « Interminable Attente ». Dans la case
+  voisine, le père penché sur ses devis s'éloigne de la toile : son ombre grandit, floue et pâle. L'horloge bat au
+  fond du couloir.
+- A3 (39,5 s) : le monde doré. Toile assombrie, maison en lumière, cases rallumées. Au jardin, le père pousse la
+  balançoire de sa fille, en silhouettes dorées ; par la fenêtre de la cuisine, l'horloge dorée sort les devis
+  finis. Poussière d'étincelles.
 
-**Images de style à dessiner.**
-- A1 ({{t}} s) : {{cadrage, sujet net, avant-plan flou, fond, lumière, ce qui est en mouvement, texte à l'écran}}
-- A2 ({{t}} s) : {{…}}
-- A3 ({{t}} s) : {{…}}
+## B. « Le montreur »
 
-## B. « {{NOM_B}} »
+**Concept.** Le film montre le théâtre d'ombres lui-même : la toile, et au-dessus de son bord, les tiges et les
+rouages. L'horloge est le montreur : ses engrenages tirent les tiges du père, qui refait chaque soir les mêmes
+gestes. La fillette n'a aucune tige : elle bouge librement. Au renversement, l'horloge raccroche ses tiges aux devis,
+qui marchent seuls jusqu'à la pile dorée, et les tiges du père tombent : il pousse la balançoire de ses propres
+mains.
 
-**Concept.** {{…}}
+**Fil des objets-ponts.** Les tiges passent du père aux devis. L'engrenage qui tourne dit le temps du travail en
+cycle. Les lettres I et A pendent à des fils, comme un mobile au-dessus de la scène. La balançoire pend aux mêmes
+fils que tenaient les tiges. Signatures : la tige qui tire le bras du père (deux fois), le fil coupé (rime de la fin).
 
-**Fil des objets-ponts.** {{…}}
+**Images de style.**
+- B1 (4,2 s) : la scène du théâtre d'ombres, vue de la salle, avec le bord haut de la toile dans le cadre.
+  L'horloge entre côté cour ; au-dessus de la toile, son train d'engrenages relié par des tiges aux bras du père.
+- B2 (19,6 s) : le père tiré loin de la toile par ses tiges, ombre immense et floue ; la fillette nette contre la
+  toile, sans tige. Les lettres I et A suspendues à des fils, dépliées en « Interminable Attente ».
+- B3 (39,5 s) : monde doré. Les tiges de l'horloge font marcher une file de devis vers la pile dorée ; les tiges du
+  père pendent, coupées ; il pousse la balançoire, suspendue aux fils.
 
-**Images de style à dessiner.**
-- B1 ({{t}} s) : {{…}}
-- B2 ({{t}} s) : {{…}}
-- B3 ({{t}} s) : {{…}}
+## C. « La forêt de dossiers »
 
-## C. « {{NOM_C}} »
+**Concept.** Les dossiers que le père rapporte poussent dans la maison comme des troncs. Soir après soir, la forêt de
+papier se referme entre le père et sa fille, et l'horloge y circule comme une bête de la forêt. La fillette la
+traverse pour retrouver le dessin. Au renversement, l'horloge avale les troncs l'un après l'autre et les rend en
+devis dorés : il reste un seul arbre, vivant, où pend la balançoire.
 
-**Concept.** {{…}}
+**Fil des objets-ponts.** La pile sous le bras devient tronc, puis feuille dorée. La chaîne pousse comme une liane.
+Les feuilles de papier tombent comme des feuilles mortes, puis remontent en étincelles d'or. Signatures : le tronc de
+dossiers qui monte (deux fois), le dernier tronc qui devient l'arbre de la balançoire (rime de la fin).
 
-**Fil des objets-ponts.** {{…}}
-
-**Images de style à dessiner.**
-- C1 ({{t}} s) : {{…}}
-- C2 ({{t}} s) : {{…}}
-- C3 ({{t}} s) : {{…}}
+**Images de style.**
+- C1 (4,2 s) : l'entrée de la maison, dont les murs se perdent déjà entre des troncs de dossiers. Le père entre,
+  la pile sous le bras ; l'horloge se glisse entre deux troncs derrière lui, la chaîne enroulée comme une liane.
+- C2 (19,6 s) : la fillette, toute petite, au pied de troncs de dossiers immenses ; les lettres I et A pendent aux
+  branches, dépliées en « Interminable Attente » ; le père, loin entre les troncs, flou et pâle.
+- C3 (39,5 s) : monde doré. Un seul arbre de lumière à la place de la forêt, la balançoire à sa branche ; le père
+  pousse sa fille ; l'horloge dorée au pied de l'arbre rend les dernières feuilles en devis.
 
 ## Choix
 
-Direction retenue : {{lettre}}, {{avec ses emprunts éventuels aux deux autres, par exemple un objet-pont de B}}.
-Images de style de référence pour la charte et le storyboard : {{styleframes/A1.png, A2.png, A3.png}}.
+Direction retenue : à choisir par Antoine.

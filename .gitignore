@@ -21,3 +21,5 @@ _references/
 !examples/*/*.mp4
 !examples/*/*/*.mp4
 __pycache__/
+# Captures de contrôle des pilotes (lourdes, refaites à la demande)
+*/pilote/snap-*/

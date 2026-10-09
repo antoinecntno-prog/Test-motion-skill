@@ -1,0 +1,904 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>Le Temps perdu · test canvas 2D · séquence 1 (0 à 5 s)</title>
+<style>
+@font-face { font-family: "DM Sans"; font-weight: 500; font-style: normal; font-display: block;
+  src: url("../assets/fonts/dm-sans-latin-500-normal.woff2") format("woff2"); }
+html, body { margin: 0; padding: 0; width: 1920px; height: 1080px; overflow: hidden; background: #0F0905; }
+#root { position: relative; width: 100%; height: 100%; overflow: hidden; }
+.clip { position: absolute; inset: 0; }
+#ecran { display: block; width: 1920px; height: 1080px; }
+#sous-titres { pointer-events: none; }
+/* sous-titre : bande y 890 à 980, haut du texte à y 896, DM Sans 500 60 px creme, ombre 0 2px 12px ombre-sol 90 % */
+.phrase { position: absolute; left: 0; right: 0; top: 896px; height: 72px; text-align: center; white-space: nowrap;
+  font: 500 60px/72px "DM Sans", sans-serif; color: #FFF4DC; letter-spacing: -0.005em;
+  text-shadow: 0 2px 12px rgba(15, 9, 5, .9); }
+.mot { display: inline-block; position: relative; opacity: 0; }
+.boite { display: inline-block; position: relative; padding: 4px 14px 8px; margin: 0 4px; line-height: 60px; }
+.boite > .fond { position: absolute; inset: 0; background: #7A1E2E; border-radius: 6px; transform-origin: 0 50%;
+  transform: scaleX(0); }
+.boite > .mot { text-shadow: none; }
+.trait { position: absolute; left: -3px; top: 61px; width: calc(100% + 6px); height: 8px; overflow: visible; }
+</style>
+<script src="../assets/vendor/gsap-3.14.2.min.js"></script>
+<script src="../styleframes/_ombres.js"></script>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="5" data-width="1920" data-height="1080">
+  <canvas id="ecran" class="clip" width="1920" height="1080" data-start="0" data-duration="5" data-track-index="1"></canvas>
+  <div id="sous-titres" class="clip" data-start="0" data-duration="5" data-track-index="2"></div>
+</div>
+<script>
+/* =====================================================================================================
+   MOTEUR · canvas 2D du conte d'ombres (réutilisable pour tout le film)
+   - hasard à graine, bruit de valeur, pistes de clés (eases GSAP), matrices 2D
+   - kit de dessin : convertisseur SVG (sous-ensemble du kit _ombres.js) → liste d'ops canvas (Path2D), mise en cache
+   - textures générées une fois : tuiles de grain par plan, toile (dégradé, taches, fibres), vignettage, flous pré-rendus
+   - caméra cam(x, y, s) et plans de profondeur à parallaxe ; lumière (flamme 1 ± 0,03) ; sous-titres mot à mot
+   - horloge maîtresse : un proxy {t} tweené linéairement par la timeline GSAP, qui appelle dessiner(t)
+   Rien ici ne dépend de l'horloge du navigateur ni de Math.random : tout état est une fonction pure de t.
+   ===================================================================================================== */
+const MOTEUR = (() => {
+  const L = 1920, H = 1080, IPS = 30, IPS_POSE = 12;
+
+  /* ---------- hasard à graine ---------- */
+  function h32(a) {
+    a |= 0; a = Math.imul(a ^ (a >>> 16), 0x21f0aaad); a = Math.imul(a ^ (a >>> 15), 0x735a2d97);
+    return (a ^ (a >>> 15)) >>> 0;
+  }
+  const h01 = (a) => h32(a) / 4294967296;
+  const h2 = (x, y, s) => h01(Math.imul(x | 0, 0x27d4eb2d) ^ Math.imul(y | 0, 0x165667b1) ^ Math.imul((s | 0) + 1, 0x9e3779b9));
+  /* bruit de valeur 2D, périodique si px/py > 0 (tuiles sans couture) */
+  function bruit(x, y, s, px = 0, py = 0) {
+    const xi = Math.floor(x), yi = Math.floor(y), fx = x - xi, fy = y - yi;
+    const ux = fx * fx * (3 - 2 * fx), uy = fy * fy * (3 - 2 * fy);
+    const w = (i, j) => h2(px ? ((i % px) + px) % px : i, py ? ((j % py) + py) % py : j, s);
+    const a = w(xi, yi), b = w(xi + 1, yi), c = w(xi, yi + 1), d = w(xi + 1, yi + 1);
+    return a + (b - a) * ux + (c - a) * uy + (a - b - c + d) * ux * uy;
+  }
+  function fbm(x, y, s, oct, px = 0, py = 0) {
+    let v = 0, a = 1, n = 0, f = 1;
+    for (let i = 0; i < oct; i++) { v += a * bruit(x * f, y * f, s + i * 101, px * f, py * f); n += a; a *= 0.5; f *= 2; }
+    return v / n;
+  }
+  const borne = (v, a = 0, b = 1) => (v < a ? a : v > b ? b : v);
+
+  /* ---------- courbes et pistes ---------- */
+  const courbes = { none: (u) => u, linear: (u) => u };
+  const courbe = (nom) => courbes[nom] || (courbes[nom] = gsap.parseEase(nom));
+  /* piste([[t, valeur, courbe d'arrivée], ...]) → f(t) ; valeur nombre ou tableau ; tenue avant la 1re et après la dernière clé */
+  function piste(cles) {
+    const n = cles.length;
+    return function (t) {
+      if (t <= cles[0][0]) return cles[0][1];
+      for (let i = 1; i < n; i++) {
+        const c1 = cles[i];
+        if (t < c1[0]) {
+          const c0 = cles[i - 1], u = courbe(c1[2] || 'none')((t - c0[0]) / (c1[0] - c0[0]));
+          const v0 = c0[1], v1 = c1[1];
+          if (typeof v0 === 'number') return v0 + (v1 - v0) * u;
+          const r = new Array(v0.length);
+          for (let j = 0; j < v0.length; j++) r[j] = v0[j] + (v1[j] - v0[j]) * u;
+          return r;
+        }
+      }
+      return cles[n - 1][1];
+    };
+  }
+  /* oscillation amortie finie, déclenchée à des instants donnés : [[t0, amplitude], ...] */
+  const amortie = (coups, periode, tau) => (t) => {
+    let v = 0;
+    for (const [t0, a] of coups) if (t >= t0) { const d = t - t0; v += a * Math.exp(-d / tau) * Math.cos(2 * Math.PI * d / periode); }
+    return v;
+  };
+
+  /* ---------- matrices 2D [a, b, c, d, e, f] ---------- */
+  const Mx = {
+    id: () => [1, 0, 0, 1, 0, 0],
+    mul: (m, n) => [m[0] * n[0] + m[2] * n[1], m[1] * n[0] + m[3] * n[1], m[0] * n[2] + m[2] * n[3], m[1] * n[2] + m[3] * n[3],
+      m[0] * n[4] + m[2] * n[5] + m[4], m[1] * n[4] + m[3] * n[5] + m[5]],
+    tr: (x, y) => [1, 0, 0, 1, x, y],
+    ech: (sx, sy = sx) => [sx, 0, 0, sy, 0, 0],
+    rot: (deg, cx = 0, cy = 0) => {
+      const a = deg * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
+      return [c, s, -s, c, cx - c * cx + s * cy, cy - s * cx - c * cy];
+    },
+    app: (m, x, y) => [m[0] * x + m[2] * y + m[4], m[1] * x + m[3] * y + m[5]],
+  };
+  const chaineM = (...ms) => ms.reduce((a, b) => Mx.mul(a, b));
+  function lireTransform(str) {
+    let m = Mx.id(); const re = /([a-zA-Z]+)\s*\(([^)]*)\)/g; let k;
+    while ((k = re.exec(str))) {
+      const a = k[2].split(/[\s,]+/).filter(Boolean).map(Number); let n;
+      switch (k[1]) {
+        case 'translate': n = Mx.tr(a[0], a[1] || 0); break;
+        case 'scale': n = Mx.ech(a[0], a.length > 1 ? a[1] : a[0]); break;
+        case 'rotate': n = Mx.rot(a[0], a[1] || 0, a[2] || 0); break;
+        case 'matrix': n = a.slice(0, 6); break;
+        case 'skewX': n = [1, 0, Math.tan(a[0] * Math.PI / 180), 1, 0, 0]; break;
+        case 'skewY': n = [1, Math.tan(a[0] * Math.PI / 180), 0, 1, 0, 0]; break;
+        default: continue;
+      }
+      m = Mx.mul(m, n);
+    }
+    return m;
+  }
+
+  /* ---------- kit de dessin : SVG (sous-ensemble du kit) → liste d'ops canvas ---------- */
+  const outil = document.createElement('canvas').getContext('2d');
+  /* peintures nommées (url(#id)) : dégradés du kit et motifs de la scène ; reçoivent la boîte englobante de la forme */
+  const PEINTURES = {};
+  function radialBB(bb, stops) {
+    const cx = (bb[0] + bb[2]) / 2, cy = (bb[1] + bb[3]) / 2, r = Math.max(1e-3, ((bb[2] - bb[0]) + (bb[3] - bb[1])) / 4);
+    const g = outil.createRadialGradient(cx, cy, 0, cx, cy, r);
+    for (const [o, c] of stops) g.addColorStop(o, c);
+    return g;
+  }
+  function lineaireBB(bb, x1, y1, x2, y2, stops) {
+    const w = bb[2] - bb[0], h = bb[3] - bb[1];
+    const g = outil.createLinearGradient(bb[0] + x1 * w, bb[1] + y1 * h, bb[0] + x2 * w, bb[1] + y2 * h);
+    for (const [o, c] of stops) g.addColorStop(o, c);
+    return g;
+  }
+  PEINTURES.flamme = (bb) => radialBB(bb, [[0, 'rgba(255,246,221,.95)'], [0.35, 'rgba(246,217,160,.55)'], [1, 'rgba(233,198,138,0)']]);
+  PEINTURES.halo = (bb) => radialBB(bb, [[0, 'rgba(255,233,184,.9)'], [0.4, 'rgba(224,168,74,.35)'], [1, 'rgba(201,138,46,0)']]);
+  PEINTURES.orGrad = (bb) => lineaireBB(bb, 0, 0, 0, 1, [[0, '#FFE7B0'], [0.45, '#E0A84A'], [1, '#C98A2E']]);
+  const LUMIERES = new Set(['flamme', 'halo']);
+  const CLASSES = { rivet: { fill: '#5A4028' } };
+  const SAUTER = new Set(['defs', 'clipPath', 'pattern', 'linearGradient', 'radialGradient', 'filter', 'style', 'text',
+    'mask', 'title', 'desc', 'symbol', 'marker']);
+  const RE_BALISE = /<(\/?)([a-zA-Z][\w:-]*)((?:\s+[\w:-]+\s*=\s*"[^"]*")*)\s*(\/?)>/g;
+  const RE_ATTR = /([\w:-]+)\s*=\s*"([^"]*)"/g;
+
+  /* boîte englobante approchée d'un chemin SVG (pour les dégradés en objectBoundingBox) */
+  function bboxChemin(d) {
+    const tk = d.match(/[a-zA-Z]|-?(?:\d*\.\d+|\d+\.?)(?:[eE][-+]?\d+)?/g) || [];
+    let i = 0, cmd = 'M', x = 0, y = 0, x0 = 0, y0 = 0, a = Infinity, b = Infinity, c = -Infinity, e = -Infinity;
+    const pt = (px, py) => { if (px < a) a = px; if (py < b) b = py; if (px > c) c = px; if (py > e) e = py; };
+    const nb = () => parseFloat(tk[i++]);
+    while (i < tk.length) {
+      if (/[a-zA-Z]/.test(tk[i])) cmd = tk[i++];
+      const rel = cmd >= 'a', C = cmd.toUpperCase(), ox = rel ? x : 0, oy = rel ? y : 0;
+      if (C === 'Z') { x = x0; y = y0; continue; }
+      if (i >= tk.length) break;
+      switch (C) {
+        case 'M': x = ox + nb(); y = oy + nb(); x0 = x; y0 = y; pt(x, y); cmd = rel ? 'l' : 'L'; break;
+        case 'L': case 'T': x = ox + nb(); y = oy + nb(); pt(x, y); break;
+        case 'H': x = ox + nb(); pt(x, y); break;
+        case 'V': y = oy + nb(); pt(x, y); break;
+        case 'C': pt(ox + nb(), oy + nb()); pt(ox + nb(), oy + nb()); x = ox + nb(); y = oy + nb(); pt(x, y); break;
+        case 'S': case 'Q': pt(ox + nb(), oy + nb()); x = ox + nb(); y = oy + nb(); pt(x, y); break;
+        case 'A': { const rx = nb(), ry = nb(); nb(); nb(); nb(); const nx = ox + nb(), ny = oy + nb();
+          pt(nx - rx, ny - ry); pt(nx + rx, ny + ry); x = nx; y = ny; break; }
+        default: i++;
+      }
+    }
+    return [a, b, c, e];
+  }
+  function lireStyle(s, st) {
+    for (const decl of s.split(';')) {
+      const k = decl.indexOf(':'); if (k < 0) continue;
+      const p = decl.slice(0, k).trim(), v = decl.slice(k + 1).trim();
+      if (p === 'mix-blend-mode') st.mode = v === 'normal' ? null : v;
+      else if (p === 'opacity') st.a *= parseFloat(v);
+      else if (p === 'fill') st.fill = v === 'none' ? null : v;
+      else if (p === 'stroke') st.stroke = v === 'none' ? null : v;
+    }
+  }
+  function heriter(p, at) {
+    const st = Object.assign({}, p);
+    if (at.transform) st.m = Mx.mul(p.m, lireTransform(at.transform));
+    if (at.fill !== undefined) st.fill = at.fill === 'none' ? null : at.fill;
+    if (at['fill-rule']) st.rule = at['fill-rule'];
+    if (at.opacity !== undefined) st.a = p.a * parseFloat(at.opacity);
+    if (at['fill-opacity'] !== undefined) st.fa = parseFloat(at['fill-opacity']);
+    if (at['stroke-opacity'] !== undefined) st.sa = parseFloat(at['stroke-opacity']);
+    if (at.stroke !== undefined) st.stroke = at.stroke === 'none' ? null : at.stroke;
+    if (at['stroke-width'] !== undefined) st.w = parseFloat(at['stroke-width']);
+    if (at['stroke-linecap']) st.cap = at['stroke-linecap'];
+    if (at['stroke-linejoin']) st.join = at['stroke-linejoin'];
+    if (at.filter) st.flt = at.filter;
+    if (at.class) for (const c of at.class.split(/\s+/)) if (CLASSES[c]) Object.assign(st, CLASSES[c]);
+    if (at.style) lireStyle(at.style, st);
+    return st;
+  }
+  function forme(nom, at) {
+    const n = (v, d = 0) => (v === undefined ? d : parseFloat(v));
+    if (nom === 'path') return at.d ? { p: new Path2D(at.d), bb: () => bboxChemin(at.d) } : null;
+    const p = new Path2D();
+    if (nom === 'circle') { const cx = n(at.cx), cy = n(at.cy), r = n(at.r); p.arc(cx, cy, r, 0, 2 * Math.PI); return { p, bb: () => [cx - r, cy - r, cx + r, cy + r] }; }
+    if (nom === 'ellipse') { const cx = n(at.cx), cy = n(at.cy), rx = n(at.rx), ry = n(at.ry); p.ellipse(cx, cy, rx, ry, 0, 0, 2 * Math.PI); return { p, bb: () => [cx - rx, cy - ry, cx + rx, cy + ry] }; }
+    if (nom === 'rect') {
+      const x = n(at.x), y = n(at.y), w = n(at.width), h = n(at.height), rx = Math.min(n(at.rx, n(at.ry, 0)), w / 2, h / 2);
+      if (rx > 0) p.roundRect(x, y, w, h, rx); else p.rect(x, y, w, h);
+      return { p, bb: () => [x, y, x + w, y + h] };
+    }
+    if (nom === 'line') { const x1 = n(at.x1), y1 = n(at.y1), x2 = n(at.x2), y2 = n(at.y2); p.moveTo(x1, y1); p.lineTo(x2, y2); return { p, bb: () => [Math.min(x1, x2), Math.min(y1, y2), Math.max(x1, x2), Math.max(y1, y2)] }; }
+    if (nom === 'polygon' || nom === 'polyline') {
+      const v = (at.points || '').split(/[\s,]+/).filter(Boolean).map(Number); if (v.length < 4) return null;
+      let a = Infinity, b = Infinity, c = -Infinity, e = -Infinity;
+      for (let i = 0; i < v.length; i += 2) { (i ? p.lineTo : p.moveTo).call(p, v[i], v[i + 1]); a = Math.min(a, v[i]); c = Math.max(c, v[i]); b = Math.min(b, v[i + 1]); e = Math.max(e, v[i + 1]); }
+      if (nom === 'polygon') p.closePath();
+      return { p, bb: () => [a, b, c, e] };
+    }
+    return null;
+  }
+  function peinture(val, bb) {
+    if (!val) return null;
+    const k = /^url\(#([\w-]+)\)$/.exec(val);
+    if (k) { const fab = PEINTURES[k[1]]; return fab ? fab(bb()) : null; }
+    return val;
+  }
+  /* compiler(svg) : analyse une fois une chaîne SVG du kit et rend la liste d'ops (transformations aplaties) */
+  function compiler(svg) {
+    const ops = [];
+    const pile = [{ m: Mx.id(), fill: '#000', rule: 'nonzero', a: 1, fa: 1, sa: 1, stroke: null, w: 1, cap: 'butt', join: 'miter', mode: null, flt: null }];
+    let saut = 0, k; RE_BALISE.lastIndex = 0;
+    while ((k = RE_BALISE.exec(svg))) {
+      const ferme = k[1] === '/', nom = k[2], auto = k[4] === '/';
+      if (saut) { if (SAUTER.has(nom)) { if (ferme) saut--; else if (!auto) saut++; } continue; }
+      if (ferme) { if (nom === 'g' || nom === 'svg' || nom === 'a') pile.pop(); continue; }
+      if (SAUTER.has(nom)) { if (!auto) saut = 1; continue; }
+      const at = {}; let q; RE_ATTR.lastIndex = 0; while ((q = RE_ATTR.exec(k[3]))) at[q[1]] = q[2];
+      const st = heriter(pile[pile.length - 1], at);
+      if (nom === 'g' || nom === 'svg' || nom === 'a') { if (!auto) pile.push(st); continue; }
+      const fo = forme(nom, at); if (!fo) continue;
+      const lum = !!(st.fill && /^url\(#(\w+)\)$/.test(st.fill) && LUMIERES.has(st.fill.slice(5, -1)));
+      ops.push({ p: fo.p, m: st.m, f: peinture(st.fill, fo.bb), r: st.rule, a: st.a * st.fa, s: peinture(st.stroke, fo.bb),
+        sa: st.a * st.sa, w: st.w, cap: st.cap, join: st.join, mode: st.mode, lum, flt: st.flt });
+    }
+    return ops;
+  }
+  /* dessinerListe(ctx, ops, M, {alpha, lum, debut, fin}) : rejoue les ops sous la matrice M (lum : multiplicateur des halos) */
+  function dessinerListe(ctx, ops, M, o) {
+    const alpha = o && o.alpha !== undefined ? o.alpha : 1, lum = o && o.lum !== undefined ? o.lum : 1;
+    const debut = o && o.debut || 0, fin = o && o.fin !== undefined ? Math.min(o.fin, ops.length) : ops.length;
+    for (let i = debut; i < fin; i++) {
+      const op = ops[i], m = op.m;
+      ctx.setTransform(M[0] * m[0] + M[2] * m[1], M[1] * m[0] + M[3] * m[1], M[0] * m[2] + M[2] * m[3], M[1] * m[2] + M[3] * m[3],
+        M[0] * m[4] + M[2] * m[5] + M[4], M[1] * m[4] + M[3] * m[5] + M[5]);
+      const k = alpha * (op.lum ? lum : 1);
+      if (op.mode) ctx.globalCompositeOperation = op.mode;
+      if (op.f) { ctx.globalAlpha = borne(op.a * k); ctx.fillStyle = op.f; ctx.fill(op.p, op.r); }
+      if (op.s) { ctx.globalAlpha = borne(op.sa * k); ctx.strokeStyle = op.s; ctx.lineWidth = op.w; ctx.lineCap = op.cap; ctx.lineJoin = op.join; ctx.stroke(op.p); }
+      if (op.mode) ctx.globalCompositeOperation = 'source-over';
+    }
+    ctx.globalAlpha = 1;
+  }
+  /* dessin flou d'une liste (objet qui arrive flou) : rendu net dans un petit calque hors écran à la taille de sa boîte
+     (bb en unités locales), puis UN seul posé filtré ; jamais de filtre op par op. */
+  let calqueFlou = null;
+  function dessinerFlou(ctx, ops, M, bb, flouPx) {
+    const p = [Mx.app(M, bb[0], bb[1]), Mx.app(M, bb[2], bb[1]), Mx.app(M, bb[0], bb[3]), Mx.app(M, bb[2], bb[3])];
+    const marge = Math.ceil(flouPx * 3) + 2;
+    const x0 = Math.floor(Math.min(...p.map((q) => q[0]))) - marge, y0 = Math.floor(Math.min(...p.map((q) => q[1]))) - marge;
+    const w = Math.ceil(Math.max(...p.map((q) => q[0]))) + marge - x0, h = Math.ceil(Math.max(...p.map((q) => q[1]))) + marge - y0;
+    if (!calqueFlou || calqueFlou.width < w || calqueFlou.height < h) calqueFlou = toileHE(Math.max(w, calqueFlou ? calqueFlou.width : 0), Math.max(h, calqueFlou ? calqueFlou.height : 0));
+    const c = calqueFlou.getContext('2d');
+    c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, calqueFlou.width, calqueFlou.height);
+    dessinerListe(c, ops, Mx.mul(Mx.tr(-x0, -y0), M));
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.filter = `blur(${flouPx.toFixed(2)}px)`;
+    ctx.drawImage(calqueFlou, 0, 0, w, h, x0, y0, w, h); ctx.filter = 'none';
+  }
+  /* cache de listes compilées : la marionnette n'est ré-analysée que quand sa pose change */
+  function cache(fabrique) {
+    const m = new Map();
+    return (cle, ...args) => { let v = m.get(cle); if (v === undefined) { v = fabrique(cle, ...args); m.set(cle, v); } return v; };
+  }
+
+  /* ---------- toiles hors écran ---------- */
+  function toileHE(w, h) { const c = document.createElement('canvas'); c.width = Math.max(1, Math.ceil(w)); c.height = Math.max(1, Math.ceil(h)); return c; }
+  /* image de bruit calculée pixel par pixel : fn(x, y) → [r, g, b, a] (0..255) */
+  function imageBruit(w, h, fn) {
+    const c = toileHE(w, h), x = c.getContext('2d'), im = x.createImageData(w, h), d = im.data;
+    for (let j = 0, k = 0; j < h; j++) for (let i = 0; i < w; i++, k += 4) { const p = fn(i, j); d[k] = p[0]; d[k + 1] = p[1]; d[k + 2] = p[2]; d[k + 3] = p[3]; }
+    x.putImageData(im, 0, 0); return c;
+  }
+  /* tuile de grain sans couture (256 px) : mouchetures brunes (couleur du kit .16 .10 .05) dont l'alpha porte
+     l'assombrissement (moyenne, écart). Posée en source-over, elle équivaut au multiply du kit
+     (fond × (1 - a) + brun × a) sans le coût d'un mode de fusion séparable. */
+  function tuileGrain(graine, moyenne, ecart, T = 256) {
+    return imageBruit(T, T, (x, y) => {
+      const g = 0.62 * (h2(x, y, graine) * 2 - 1) + 0.38 * (bruit(x / 2, y / 2, graine + 7, T / 2, T / 2) * 2 - 1);
+      return [41, 26, 13, 255 * borne(moyenne + ecart * g * 1.6)];
+    });
+  }
+  /* flou pré-rendu d'un dessin (une fois) : dessin(ctx) en unités du plan, boîte [x0,y0,x1,y1], densité px/u, flou px */
+  function preRendu(dessin, bb, dens, flouPx, variantes) {
+    const marge = Math.ceil(flouPx * 2.6) + 2;
+    const w = Math.ceil((bb[2] - bb[0]) * dens) + 2 * marge, h = Math.ceil((bb[3] - bb[1]) * dens) + 2 * marge;
+    const net = toileHE(w, h), cn = net.getContext('2d');
+    cn.setTransform(dens, 0, 0, dens, marge - bb[0] * dens, marge - bb[1] * dens);
+    dessin(cn);
+    const flou = toileHE(w, h), cf = flou.getContext('2d');
+    cf.filter = flouPx > 0 ? `blur(${flouPx}px)` : 'none'; cf.drawImage(net, 0, 0); cf.filter = 'none';
+    const sp = { ox: bb[0] - marge / dens, oy: bb[1] - marge / dens, d: dens, w, h, images: [flou] };
+    if (variantes) {   // grain cuit : une variante par décalage, choisie toutes les 2 images
+      sp.images = variantes.decalages.map(([dx, dy]) => {
+        const c = toileHE(w, h), cc = c.getContext('2d');
+        cc.drawImage(flou, 0, 0);
+        const pat = cc.createPattern(variantes.tuile, 'repeat');
+        pat.setTransform(new DOMMatrix([1, 0, 0, 1, dx, dy]));
+        cc.globalCompositeOperation = 'source-atop'; cc.fillStyle = pat; cc.fillRect(0, 0, w, h);
+        return c;
+      });
+    }
+    return sp;
+  }
+  /* toile sépia lumineuse : dégradé radial (+3 % de réserve pour la flamme), taches, fibres ; en px d'écran de référence */
+  function cuireToile(o) {
+    const c = toileHE(o.w, o.h), x = c.getContext('2d', { alpha: false });
+    const up = (hex) => { const v = parseInt(hex.slice(1), 16); const f = (n) => Math.min(255, Math.round(n * 1.03));
+      return `rgb(${f(v >> 16)},${f((v >> 8) & 255)},${f(v & 255)})`; };
+    const g = x.createRadialGradient(o.cx, o.cy, 0, o.cx, o.cy, o.r);
+    o.stops.forEach(([p, col]) => g.addColorStop(p, up(col)));
+    x.fillStyle = g; x.fillRect(0, 0, o.w, o.h);
+    // taches (feTurbulence .006, 4 octaves, couleur .32 .20 .10, alpha 1.2 - 2.2 n, 55 % multiply) à 1/6 de résolution
+    const ft = 6, tw = Math.ceil(o.w / ft), th = Math.ceil(o.h / ft);
+    const taches = imageBruit(tw, th, (i, j) => {
+      const n = fbm(i * ft * 0.006, j * ft * 0.006, 5, 4);
+      const a = borne(1.2 - 2.2 * n) * 0.55;
+      return [255 * (1 - a * 0.68), 255 * (1 - a * 0.80), 255 * (1 - a * 0.90), 255];
+    });
+    x.imageSmoothingQuality = 'high';
+    x.globalCompositeOperation = 'multiply'; x.drawImage(taches, 0, 0, o.w, o.h);
+    // fibres (.0015 en x, .035 en y, 2 octaves, couleur .25 .16 .08, alpha 1.05 - 1.6 n, 16 % multiply)
+    const fx = 12, fy = 2, fw = Math.ceil(o.w / fx), fh = Math.ceil(o.h / fy);
+    const fibres = imageBruit(fw, fh, (i, j) => {
+      const n = fbm(i * fx * 0.0015, j * fy * 0.035, 11, 2);
+      const a = borne(1.05 - 1.6 * n) * 0.16;
+      return [255 * (1 - a * 0.75), 255 * (1 - a * 0.84), 255 * (1 - a * 0.92), 255];
+    });
+    x.drawImage(fibres, 0, 0, o.w, o.h);
+    x.globalCompositeOperation = 'source-over';
+    return c;
+  }
+  /* vignettage chaud (kit defs vignette), pleine résolution, posé 1:1. Brun-noir en source-over : équivaut au multiply
+     du kit (fond × (1 - a) + brun × a) sans mode de fusion séparable. */
+  function cuireVignette() {
+    const c = toileHE(L, H), x = c.getContext('2d');
+    const g = x.createRadialGradient(L / 2, H / 2, 0, L / 2, H / 2, 1150);
+    g.addColorStop(0, 'rgba(20,11,5,0)'); g.addColorStop(0.45, 'rgba(20,11,5,0)');
+    g.addColorStop(0.8, 'rgba(20,11,5,.45)'); g.addColorStop(1, 'rgba(12,6,3,.92)');
+    x.fillStyle = g; x.fillRect(0, 0, L, H); return c;
+  }
+  /* flamme + vignettage : la toile est cuite 3 % plus claire ; un voile uniforme 1 - m / 1,03 ramène sa luminosité à
+     m ∈ [0,97 ; 1,03] (les silhouettes, presque noires, n'en changent pas), puis le vignettage fixé à l'objectif. */
+  function poserVignette(ctx, vig, m) {
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+    const d = borne(1 - m / 1.03, 0, 0.2);
+    if (d > 0.001) { ctx.fillStyle = `rgba(0,0,0,${d.toFixed(4)})`; ctx.fillRect(0, 0, L, H); }
+    ctx.drawImage(vig, 0, 0);
+  }
+  /* pose d'une image sous la matrice M (lissage coupé sur les contextes : les images posées sont nettes à 1:1 ou floues) */
+  function poserImage(ctx, img, M) { ctx.setTransform(M[0], M[1], M[2], M[3], M[4], M[5]); ctx.drawImage(img, 0, 0); }
+  /* flou de caméra du whip : n tirages décalés horizontalement sur [-px, +px], moyenne exacte (alpha 1 / (i + 1)) ;
+     le premier tirage, centré et opaque, couvre tout le cadre (aucun pixel de l'image précédente ne survit) */
+  function flouTirages(ctx, source, px, n) {
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1; ctx.drawImage(source, 0, 0);
+    for (let i = 1; i < n; i++) {
+      ctx.globalAlpha = 1 / (i + 1);
+      ctx.drawImage(source, Math.round(-px + 2 * px * (n === 2 ? 0.5 : (i - 1) / (n - 2))), 0);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  /* ---------- caméra et plans de profondeur ----------
+     cam(x, y, s) amène le point (x, y) du monde au centre du cadre (960, 540) à l'échelle s.
+     Un plan de facteur k glisse k fois plus vite que le monde et zoome en (s / s_ref)^k ; sigma = px par unité du plan
+     à la caméra de référence, (ax, ay) = point du plan au centre du cadre à la caméra de référence. */
+  function Plan(k, sigma, ax, ay) {
+    return {
+      k, sigma,
+      matrice(cam, ref) {
+        const z = Math.pow(cam.s / ref.s, k), sc = z * sigma;
+        return [sc, 0, 0, sc, L / 2 - sc * ax - k * cam.s * (cam.x - ref.x), H / 2 - sc * ay - k * cam.s * (cam.y - ref.y)];
+      },
+      /* glissement seul (zoom du plan ignoré), au pixel entier : pour poser une image d'écran à 1:1 sans rééchantillonnage */
+      glissement(cam, ref) { return [Math.round(-k * cam.s * (cam.x - ref.x)), Math.round(-k * cam.s * (cam.y - ref.y))]; },
+    };
+  }
+  /* grain d'un plan : sa tuile (256 px, générée une fois) est recopiée en mosaïque dans une grande image (cadre + 256 px)
+     au chargement ; à chaque image on en pose des sous-rectangles 1:1, au pixel entier (chemin le plus rapide du canvas). */
+  function grainPlan(graine, moyenne, ecart) {
+    const tuile = tuileGrain(graine, moyenne, ecart), T = tuile.width;
+    const img = toileHE(L + T, H + T), x = img.getContext('2d');
+    for (let j = 0; j < H + T; j += T) for (let i = 0; i < L + T; i += T) x.drawImage(tuile, i, j);
+    return { tuile, img, T, graine };
+  }
+  /* pose du grain d'un plan : accroché à la translation du plan (taille fixe à l'écran), décalage tiré d'un hash de
+     l'indice d'image toutes les 2 images ; rects [x, y, w, h] (null = tout l'écran) exprimés sous la matrice Mr
+     (par défaut celle du plan ; ex. les ouvertures du plan 2 pour le grain du plan 3 vu à travers elles) */
+  function poserGrain(ctx, gr, Mp, ii, rects, Mr = Mp) {
+    const g = Math.floor(ii / 2), T = gr.T;
+    const ox = Math.round(Mp[4]) + Math.floor(h01(g * 7919 + gr.graine) * T), oy = Math.round(Mp[5]) + Math.floor(h01(g * 104729 + gr.graine * 31) * T);
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+    const poser = (x0, y0, x1, y1) => {
+      x0 = Math.max(0, x0); y0 = Math.max(0, y0); x1 = Math.min(L, x1); y1 = Math.min(H, y1);
+      if (x1 <= x0 || y1 <= y0) return;
+      const u = (((x0 - ox) % T) + T) % T, v = (((y0 - oy) % T) + T) % T;
+      ctx.drawImage(gr.img, u, v, x1 - x0, y1 - y0, x0, y0, x1 - x0, y1 - y0);
+    };
+    if (!rects) return poser(0, 0, L, H);
+    for (const r of rects) poser(Math.round(Mr[0] * r[0] + Mr[4]), Math.round(Mr[3] * r[1] + Mr[5]),
+      Math.round(Mr[0] * (r[0] + r[2]) + Mr[4]), Math.round(Mr[3] * (r[1] + r[3]) + Mr[5]));
+  }
+  /* sprite pré-rendu posé dans son plan ; variante de grain choisie toutes les 2 images */
+  function poserSprite(ctx, sp, Mp, ii, graine) {
+    const m = chaineM(Mp, Mx.tr(sp.ox, sp.oy), Mx.ech(1 / sp.d));
+    const x0 = m[4], x1 = m[4] + m[0] * sp.w, y0 = m[5], y1 = m[5] + m[3] * sp.h;
+    if (x1 < 0 || x0 > L || y1 < 0 || y0 > H) return;   // hors cadre : rien à poser
+    const v = sp.images.length > 1 ? Math.floor(h01(Math.floor(ii / 2) * 31 + graine) * sp.images.length) : 0;
+    ctx.setTransform(m[0], m[1], m[2], m[3], m[4], m[5]); ctx.drawImage(sp.images[v], 0, 0);
+  }
+
+  /* ---------- lumière : la flamme ----------
+     multiplicateur 1 ± 0,03, une clé tirée d'un hash tous les 4 images (≈ 7,5 Hz), raccord doux entre les clés */
+  function flamme(t, graine = 3) {
+    const u = t * IPS / 4, i = Math.floor(u + 1e-6), w = u - i, e = w * w * (3 - 2 * w);
+    const a = h01(i * 2246822519 + graine) * 2 - 1, b = h01((i + 1) * 2246822519 + graine) * 2 - 1;
+    return 1 + 0.03 * (a + (b - a) * e);
+  }
+
+  /* ---------- sous-titres HTML mot par mot ----------
+     phrases : [{ sortie: [t0, t1], mots: [{ m, t, boite: id?, trait: bool? }] }]
+     mot : opacité 0 → 0,35 → 1, y +6 → 0, échelle 1,04 → 1, flou 4 → 0 px en 0,12 s ; boîte bordeaux tracée depuis la gauche
+     (scaleX 0 → 1, 0,16 s power3.out) 0,04 s avant son premier mot ; trait d'or tracé depuis la gauche en 0,4 s power2.out. */
+  function SousTitres(hote, phrases) {
+    const p3 = courbe('power3.out'), p2 = courbe('power2.out'), p1i = courbe('power1.in');
+    const elts = [];
+    for (const ph of phrases) {
+      const div = document.createElement('div'); div.className = 'phrase'; hote.appendChild(div);
+      const rec = { ph, div, mots: [], boites: [], traits: [], etat: '' };
+      let groupe = null, idGroupe = null;
+      ph.mots.forEach((mo, i) => {
+        let parent = div;
+        if (mo.boite) {
+          if (idGroupe !== mo.boite) {
+            groupe = document.createElement('span'); groupe.className = 'boite';
+            const fond = document.createElement('i'); fond.className = 'fond'; groupe.appendChild(fond);
+            if (i > 0) div.appendChild(document.createTextNode(' '));
+            div.appendChild(groupe); idGroupe = mo.boite;
+            rec.boites.push({ el: fond, t: mo.t - 0.04, etat: '' });
+          } else groupe.appendChild(document.createTextNode(' '));
+          parent = groupe;
+        } else {
+          idGroupe = null;
+          if (i > 0) div.appendChild(document.createTextNode(' '));
+        }
+        const sp = document.createElement('span'); sp.className = 'mot'; sp.textContent = mo.m; parent.appendChild(sp);
+        rec.mots.push({ el: sp, t: mo.t, etat: '' });
+        if (mo.trait) {
+          const ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg');
+          svg.setAttribute('class', 'trait'); svg.setAttribute('viewBox', '0 0 100 8'); svg.setAttribute('preserveAspectRatio', 'none');
+          const pa = document.createElementNS(ns, 'path');
+          pa.setAttribute('d', 'M0,3.5 Q50,-1.5 100,3.5 L100,4.5 Q50,9.5 0,4.5 Z'); pa.setAttribute('fill', '#C98A2E');
+          svg.appendChild(pa); sp.appendChild(svg);
+          rec.traits.push({ el: svg, t: mo.t, etat: '' });
+        }
+      });
+      elts.push(rec);
+    }
+    const ecrire = (o, prop, val) => { if (o.etat !== val) { o.etat = val; o.el.style.cssText = val; } };
+    return {
+      maj(t) {
+        for (const rec of elts) {
+          const [s0, s1] = rec.ph.sortie;
+          const sortie = t <= s0 ? 1 : t >= s1 ? 0 : 1 - p1i((t - s0) / (s1 - s0));
+          const etat = sortie >= 1 ? '' : sortie <= 0 ? 'visibility:hidden' : `opacity:${sortie.toFixed(3)}`;
+          if (rec.etat !== etat) { rec.etat = etat; rec.div.style.cssText = etat; }
+          if (sortie <= 0) continue;
+          for (const mo of rec.mots) {
+            const u = (t - mo.t) / 0.12;
+            let v;
+            if (u <= 0) v = 'opacity:0';
+            else if (u >= 1) v = 'opacity:1';
+            else {
+              const e = p2(u), op = u < 0.3 ? 0.35 * (u / 0.3) : 0.35 + 0.65 * p2((u - 0.3) / 0.7);
+              v = `opacity:${op.toFixed(3)};transform:translateY(${(6 * (1 - e)).toFixed(2)}px) scale(${(1.04 - 0.04 * e).toFixed(4)});filter:blur(${(4 * (1 - e)).toFixed(2)}px)`;
+            }
+            ecrire(mo, 'style', v);
+          }
+          for (const b of rec.boites) {
+            const u = borne((t - b.t) / 0.16);
+            ecrire(b, 'style', u >= 1 ? 'transform:none' : `transform:scaleX(${p3(u).toFixed(4)})`);
+          }
+          for (const tr of rec.traits) {
+            const u = borne((t - tr.t) / 0.4);
+            ecrire(tr, 'style', u <= 0 ? 'visibility:hidden' : u >= 1 ? '' : `clip-path:inset(0 ${(100 * (1 - p2(u))).toFixed(2)}% 0 0)`);
+          }
+        }
+      },
+    };
+  }
+
+  /* ---------- horloge maîtresse ----------
+     Un proxy {t} tweené linéairement de 0 à la durée. Son setter et l'onUpdate du tween appellent dessiner(t) ;
+     dessiner est dédoublonné au 1/240 s, donc un seek (même avec suppressEvents) déclenche exactement un dessin. */
+  function brancher(duree, dessiner) {
+    const proxy = { _t: 0 };
+    Object.defineProperty(proxy, 't', { get() { return this._t; }, set(v) { this._t = v; dessiner(v); }, enumerable: true });
+    const tl = gsap.timeline({ paused: true });
+    tl.to(proxy, { t: duree, duration: duree, ease: 'none', onUpdate: () => dessiner(proxy._t) }, 0);
+    return tl;
+  }
+
+  return { L, H, IPS, IPS_POSE, h01, h2, bruit, fbm, borne, courbe, piste, amortie, Mx, chaineM, compiler, dessinerListe, dessinerFlou, cache,
+    PEINTURES, toileHE, imageBruit, tuileGrain, grainPlan, preRendu, cuireToile, cuireVignette, poserVignette, poserImage, flouTirages, Plan, poserGrain,
+    poserSprite, flamme, SousTitres, brancher };
+})();
+
+/* =====================================================================================================
+   SCÈNE · séquence 1, « Le dirigeant passe la porte », temps 0 à 5,00 s (coordonnées du monde de frame.md)
+   ===================================================================================================== */
+(() => {
+  const { L, H, IPS, IPS_POSE, piste, amortie, Mx, chaineM, compiler, dessinerListe, cache, borne } = MOTEUR;
+  const O = OMBRES, C = O.C;
+  const f = (n) => Math.round(n * 10) / 10;
+  const rad = (d) => d * Math.PI / 180;
+  const rct = (x0, y0, x1, y1) => `M${x0},${y0} L${x1},${y0} L${x1},${y1} L${x0},${y1} Z `;
+  const DUREE = 5;
+
+  /* ---------------- caméra (un seul objet proxy, écrit par camera(t)) ---------------- */
+  const REF = { x: 560, y: 690, s: 1.5 };
+  const CAMERA = { x: 500, y: 690, s: 1.45, flou: 0 };
+  const pisteCam = piste([
+    [0.00, [500, 690, 1.45, 0]],
+    [2.30, [564, 690, 1.50, 0], 'none'],          // dérive x +28 u/s, échelle +1,5 %/s
+    [2.55, [564, 692, 1.58, 0], 'expo.inOut'],    // cran court d'échelle sur la porte
+    [4.70, [607, 694, 1.614, 0], 'none'],         // dérive x +20 u/s, échelle +1 %/s
+    [5.00, [800, 695, 1.55, 10], 'power2.in'],    // départ du whip vers le salon, flou 0 → 10 px
+  ]);
+  function camera(t) { const v = pisteCam(t); CAMERA.x = v[0]; CAMERA.y = v[1]; CAMERA.s = v[2]; CAMERA.flou = v[3]; return CAMERA; }
+
+  /* quatre plans : 1 avant-plan ×1,8 (unités propres), 2 maison ×1, 3 dehors ×0,5 (unités du monde à la réf.), 4 toile ×0,2 (px) */
+  const P1 = MOTEUR.Plan(1.8, 1.8 * REF.s, REF.x, REF.y);
+  const P2 = MOTEUR.Plan(1.0, REF.s, REF.x, REF.y);
+  const P3 = MOTEUR.Plan(0.5, REF.s, REF.x, REF.y);
+  const P4 = MOTEUR.Plan(0.2, 1, L / 2, H / 2);
+
+  /* ---------------- lumière de la porte et flamme ---------------- */
+  const lumPorte = piste([[0, 0.35], [0.06, 0.35], [0.22, 1, 'expo.out'], [2.10, 1], [2.30, 0.78, 'power2.out'],
+    [2.52, 0.78], [2.58, 0.22, 'expo.out'], [4.14, 0.22], [4.44, 0.5, 'power1.inOut'], [4.64, 0.5], [4.78, 0, 'expo.out']]);
+  const soir = piste([[0, 0], [2.10, 0], [2.30, 0.12, 'power2.out'], [4.64, 0.12], [4.78, 0.3, 'expo.out']]);
+  const vacille = (t) => 1 - 0.05 * Math.exp(-Math.pow((t - 1.02) / 0.07, 2));   // 1.00 la flamme de la toile vacille
+
+  /* ---------------- marionnettes (fonctions du temps de pose, 12 i/s) ---------------- */
+  const xPere = piste([[0, 415], [0.28, 415], [1.90, 700], [3.20, 700], [3.50, 748, 'power1.inOut'], [4.44, 748], [5.25, 843]]);
+  const leveePile = piste([[0, 0], [1.38, 0], [1.46, 1, 'expo.out']]);
+  const echPere = piste([[0, 0.64], [0.28, 0.64], [0.62, 0.74, 'power1.inOut']]);   // dans l'encadrement, plus loin ; il entre
+  const balPile = piste([[0, 0], [0.50, 0], [0.501, 3], [0.70, 0, 'sine.out']]);
+  const xHorloge = piste([[0, 400], [2.94, 400], [3.14, 418, 'power2.inOut'], [4.14, 418], [4.44, 470, 'power1.inOut'],
+    [4.54, 486, 'expo.out'], [4.64, 486], [5.25, 600]]);
+  const penche = amortie([[4.44, -3]], 0.5, 0.22);
+  const balancier = (t) => {             // premier battement à 2.80 (0,4 s), puis battements de 0,8 s
+    if (t < 2.80) return -14;
+    if (t < 3.20) return -14 * Math.cos(Math.PI * (t - 2.80) / 0.4);
+    return 14 * Math.cos(Math.PI * (t - 3.20) / 0.8);
+  };
+  const angleManteau = amortie([[1.12, 5], [4.85, 3]], 0.62, 0.38);
+  const ouverture = piste([[0, 39], [0.06, 39], [0.22, 130, 'expo.out'], [4.64, 130], [4.78, 0, 'expo.out']]);
+
+  /* la marche : pose tirée de la distance parcourue (foulée 190 u), changée à 12 i/s */
+  function posePere(tp) {
+    const x = xPere(tp), phi = (x - 415) / 190, s = Math.sin(2 * Math.PI * phi), c = Math.cos(2 * Math.PI * phi);
+    const lv = leveePile(tp);
+    return {
+      x, y: 898 - 3 * Math.abs(s), s: echPere(tp),
+      legF: [-21 * s, 6 + 14 * Math.max(0, -c)], legB: [21 * s, 6 + 14 * Math.max(0, c)],
+      armF: [-30 - 4 * lv, -96 - 3 * lv], armB: [10 - 12 * s, -12], head: 0,
+    };
+  }
+  /* roue de bois ajourée (rayons visibles, pour voir tourner les roulettes par crans) */
+  const roue = (cx, cy, a) => {
+    let d = `${O.disque(cx, cy, 21)} ${O.disque(cx, cy, 4)} `;
+    for (let i = 0; i < 3; i++) { const b = rad(a + i * 120); d += O.disque(cx + 12.5 * Math.cos(b), cy + 12.5 * Math.sin(b), 5) + ' '; }
+    return `<path fill-rule="evenodd" d="${d}"/>`;
+  };
+  /* le battant de la porte : pivote sur le montant gauche (x 336), s'ouvre vers la pièce (θ 0 fermé, 130 grand ouvert) */
+  function svgBattant(theta) {
+    const c = Math.cos(rad(theta)), sn = Math.sin(rad(theta)), xe = 336 + 158 * c, yt = 512 - 18 * sn;
+    const bat = (u, v) => { const yh = 512 + (yt - 512) * u; return [f(336 + (xe - 336) * u), f(yh + (900 - yh) * v)]; };
+    const quad = (u0, u1, v0, v1) => { const a = bat(u0, v0), b = bat(u1, v0), cc = bat(u1, v1), e = bat(u0, v1); return `M${a} L${b} L${cc} L${e} Z `; };
+    const [px, py] = bat(0.86, 0.53);
+    return `<g fill="${C.ombre}"><path fill-rule="evenodd" d="${quad(0, 1, 0, 1)} ${quad(0.2, 0.8, 0.07, 0.44)} ${quad(0.2, 0.8, 0.53, 0.9)}"/>` +
+      `<circle cx="${px}" cy="${py}" r="${f(3 + 4 * Math.abs(c))}"/></g>`;
+  }
+  /* le petit manteau de la fille et son écharpe, pendus à la patère (repère : crochet en (0, 0)) */
+  const SVG_MANTEAU = `<g fill="${C.ombre}"><path fill-rule="evenodd" d="M-2,-3 L2,-3 L2,6 L-2,6 Z M-9,5 C-4,1 4,1 9,5 L23,13 C29,16 31,21 31,27 L34,72 C34,75 31,77 28,77 L24,77 L23,38 L25,104 C11,108 -11,108 -25,104 L-23,38 L-24,77 L-28,77 C-31,77 -34,75 -34,72 L-31,27 C-31,21 -29,16 -23,13 Z ` +
+    `M-5,7 L0,17 L5,7 Z ${O.disque(0, 42, 2.6)} ${O.disque(0, 58, 2.6)} ${O.disque(0, 74, 2.6)} M-19,84 L-9,84 L-9,90 L-19,90 Z"/>` +
+    `<path d="M-4,2 C-18,14 -34,40 -38,80 C-39,94 -37,108 -35,116 L-28,116 C-31,104 -31,90 -30,80 C-27,46 -14,22 2,6 Z"/>` +
+    `<path d="M-37,116 L-36,124 L-33,124 L-34,116 Z M-31,116 L-30,124 L-27,124 L-28,116 Z"/></g>`;
+
+  /* acteurs d'un indice de pose : compilés une fois, puis rejoués (cache par indice de pose) */
+  const acteurs = cache((idx) => {
+    const tp = idx / IPS_POSE;
+    const P = posePere(tp);
+    // le père, sa pile de devis sous le bras, ses deux tiges vers le bas du cadre
+    let sp = O.pere(P);
+    const [hx, hy] = O.mainPere(P, 'F');
+    const px = hx + 28, py = hy + 10, rotPile = balPile(tp), feuilleSurPile = tp < 1.62;
+    const kp = P.s / 0.74;
+    sp += `<g transform="translate(${f(px)},${f(py)}) rotate(${f(rotPile)}) scale(${f(kp * 1000) / 1000}) translate(${f(-px)},${f(-py)})">${O.pile(px, py, 13, { w: 118, h: 7, gap: 1.6, seed: 5 })}`;
+    if (feuilleSurPile) {   // la feuille du dessus (14e), qui glisse à 1.38
+      const g = borne((tp - 1.38) / 0.24), yTop = py - 13 * 8.6;
+      sp += `<rect x="${f(px - 57 + 22 * g)}" y="${f(yTop - 7)}" width="116" height="7" fill="${C.ombre}" transform="rotate(${f(7 * g)},${f(px + 59)},${f(yTop)})"/>`;
+    }
+    sp += `</g>`;
+    const dos = [P.x - 16 * P.s, P.y - 400 * P.s];
+    sp += O.tige(dos[0], dos[1], dos[0] - 96, 946) + O.tige(hx, hy, hx + 64, 946);
+    // la feuille qui tombe en tournant (1.62 → 1.90), puis posée au sol
+    let sf = '';
+    if (tp >= 1.62 && tp < 1.90) {
+      const u = (tp - 1.62) / 0.28, x0 = px + 40, y0 = py - 13 * 8.6 - 10;
+      const x = x0 + (572 - x0) * MOTEUR.courbe('sine.inOut')(u) + 30 * Math.sin(Math.PI * u), y = y0 + (884 - y0) * Math.pow(u, 1.25);
+      const sx = Math.cos(Math.PI * 1.6 * u);
+      sf = `<g transform="translate(${f(x)},${f(y)}) rotate(${f(-25 + 140 * u)}) scale(${f(sx * 0.6 * 100) / 100 || 0.06},0.6)">${O.devis(-55, -75, 110, 150, 0)}</g>`;
+    } else if (tp >= 1.90) {
+      sf = `<rect x="526" y="893.5" width="94" height="4" fill="${C.ombre}" transform="rotate(1.2,573,895)"/>`;
+    }
+    // l'horloge (le Temps perdu), dessinée en (0, 0) : roulettes à crans, balancier, aiguilles
+    let horloge = null, lent = null;
+    if ((idx + 1) / IPS_POSE > 2.52) {   // la pose qui contient 2.52 est déjà prête : l'horloge paraît à l'image exacte
+      const xh = xHorloge(tp), ba = balancier(tp);
+      const svg = O.horloge({ x: 0, y: 0, s: 0.7, balancier: ba, heure: -40, minute: tp >= 3.84 ? 160 : 130, armL: [40, -40], armR: [-60, 20] })
+        .replace(/<path fill-rule="evenodd" d="M(-27|69),-21 [^"]*"\/>/g, (m, a) => roue(a === '-27' ? -48 : 48, -21, (xh - 400) / 14.7 * 180 / Math.PI));
+      horloge = compiler(svg);
+      lent = O.lentille({ x: 0, y: 0, s: 0.7, balancier: ba });
+    }
+    // le battant de la porte
+    const battant = compiler(svgBattant(ouverture(tp)));
+    return { pere: compiler(sp), feuille: sf ? compiler(sf) : null, horloge, lent, battant, P, poignetB: O.mainPere(P, 'B') };
+  });
+  /* la chaîne de papier, du balancier au poignet arrière, compilée par indice de pose */
+  const chaineDe = cache((idx, a, b) => {
+    const d = Math.hypot(b[0] - a[0], b[1] - a[1]), Lc = 352, sag = d < Lc ? Math.min(70, Math.sqrt((Lc / 2) ** 2 - (d / 2) ** 2)) : 4;
+    const mid = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2 + Math.max(10, sag * 0.55)];
+    return compiler(O.chaine([[a[0] + 3, a[1]], mid, b], { rx: 9, ry: 14, pas: 19 }));
+  });
+  const bouchonChaine = cache((idx, b) => compiler(O.chaine([b, [b[0] - 4, b[1] + 46]], { rx: 9, ry: 14, pas: 19 })));
+
+  /* papier peint en vecteurs (un seul chemin par motif, cases de 34 u) : E rayures et pois, S losanges et filets ;
+     les cases qui touchent un trou (porte, fenêtre) sont sautées */
+  function papierPeint(x0, y0, x1, y1, trous, motif) {
+    let d = '';
+    const libre = (a, b, c, e) => !trous.some((t) => a < t[2] && c > t[0] && b < t[3] && e > t[1]);
+    for (let x = x0; x < x1; x += 34) for (let y = y0; y < y1; y += 34) {
+      const h = Math.min(34, y1 - y);
+      if (motif === 'E') {
+        if (libre(x, y, x + 5, y + h)) d += rct(x, y, x + 5, y + h);
+        if (h > 20 && libre(x + 16, y + 14, x + 22, y + 20)) d += O.disque(x + 19, y + 17, 2.2) + ' ';
+      } else {
+        if (libre(x, y, x + 1.5, y + h)) d += rct(x, y, x + 1.5, y + h);
+        if (h > 26 && libre(x + 12, y + 9, x + 22, y + 25)) d += `M${x + 17},${y + 9} L${x + 22},${y + 17} L${x + 17},${y + 25} L${x + 12},${y + 17} Z `;
+      }
+    }
+    return d;
+  }
+  /* ---------------- décor de la maison (plan 2), analysé une fois, rejoué en vecteurs ---------------- */
+  function svgDecor() {
+    let z = '';
+    z += `<rect x="-2000" y="900" width="10000" height="900" fill="#0F0905"/>`;   // le sol, ombre-sol (il porte les sous-titres)
+    // papier peint discret (brume-2 à 9 %) et lambris (brume-2 à 16 %), la porte et la fenêtre restent nettes
+    z += `<path fill="${C.brume2}" opacity=".09" d="${papierPeint(120, 438, 916, 900, [[318, 482, 522, 900]], 'E')}"/>`;
+    z += `<path fill="${C.brume2}" opacity=".09" d="${papierPeint(916, 438, 1720, 900, [[950, 448, 1180, 688]], 'S')}"/>`;
+    z += `<path fill="#5E4128" opacity=".16" fill-rule="evenodd" d="${rct(120, 772, 1720, 900)} ${rct(318, 772, 522, 900)}"/>`;
+    z += `<g fill="${C.ombre}" opacity=".55"><rect x="120" y="768" width="198" height="5"/><rect x="522" y="768" width="1198" height="5"/></g>`;
+    // le cadre de la maison en coupe, percé de ses cases (rez-de-chaussée, baies, étage, grenier)
+    let d = rct(60, 100, 3470, 948) + `M20,100 L1765,-120 L3510,100 Z `;
+    d += rct(120, 438, 870, 900) + rct(870, 560, 916, 900) + rct(916, 438, 1720, 900) + rct(1720, 560, 1768, 900) + rct(1768, 438, 3420, 900);
+    d += rct(120, 132, 870, 392) + rct(916, 132, 1720, 392) + rct(1768, 132, 3420, 392) + `M330,84 L1765,-62 L3200,84 Z `;
+    // le lit des parents (étage, au-dessus de l'entrée)
+    z += `<g fill="${C.ombre}"><path d="M412,392 L412,250 C412,236 424,232 436,232 L448,232 L448,320 L772,320 L772,300 L788,300 L788,392 L772,392 L772,350 L428,350 L428,392 Z"/><path d="M462,320 C464,300 482,292 512,294 L532,320 Z"/></g>`;
+    z += `<path fill="${C.ombre}" fill-rule="evenodd" d="${d}"/>`;
+    // les cases éteintes de l'étage et de la cuisine (voile #140B05)
+    z += `<path fill="#140B05" opacity=".6" fill-rule="evenodd" d="${rct(120, 132, 870, 392)} ${rct(916, 132, 1720, 392)} ${rct(1768, 132, 3420, 392)}"/>`;
+    z += `<path fill="#140B05" opacity=".64" d="${rct(1768, 438, 3420, 900)} M330,84 L1765,-62 L3200,84 Z"/>`;
+    // la porte d'entrée : chambranle, corniche, seuil
+    z += `<g fill="${C.ombre}"><path fill-rule="evenodd" d="${rct(320, 496, 510, 900)} ${rct(336, 512, 494, 900)}"/>` +
+      `<rect x="310" y="484" width="210" height="12"/><rect x="316" y="893" width="198" height="9"/></g>`;
+    // la patère (le manteau est animé à part)
+    z += `<g fill="${C.ombre}"><rect x="604" y="545" width="72" height="11" rx="2"/><circle cx="616" cy="550" r="2.4" fill="#5A4028"/><circle cx="664" cy="550" r="2.4" fill="#5A4028"/>` +
+      `<path d="M637,555 L643,555 L643,566 C643,571 650,571 652,565 L656,566 C653,577 637,577 637,566 Z"/></g>`;
+    // le salon : fenêtre F1 à quatre carreaux et son appui
+    const fx = 960, fy = 458, fw = 210, fh = 220;
+    z += `<path fill="${C.ombre}" fill-rule="evenodd" d="M${fx},${fy} h${fw} v${fh} h${-fw} Z M${fx + 10},${fy + 10} h${fw / 2 - 14} v${fh / 2 - 14} h${-(fw / 2 - 14)} Z M${fx + fw / 2 + 4},${fy + 10} h${fw / 2 - 14} v${fh / 2 - 14} h${-(fw / 2 - 14)} Z M${fx + 10},${fy + fh / 2 + 4} h${fw / 2 - 14} v${fh / 2 - 14} h${-(fw / 2 - 14)} Z M${fx + fw / 2 + 4},${fy + fh / 2 + 4} h${fw / 2 - 14} v${fh / 2 - 14} h${-(fw / 2 - 14)} Z"/>`;
+    z += `<rect x="948" y="676" width="234" height="9" fill="${C.ombre}"/>`;
+    // la balle de la fille (r 26) et le secrétaire (plateau y 770), sa chaise vide
+    z += `<path fill="${C.ombre}" fill-rule="evenodd" d="${O.disque(1150, 874, 26)} M1131,866 C1142,855 1158,855 1169,866 C1158,861 1142,861 1131,866 Z"/>`;
+    z += `<path fill="${C.ombre}" fill-rule="evenodd" d="M1300,770 L1460,770 L1460,782 L1300,782 Z M1306,782 L1454,782 L1454,872 L1306,872 Z M1316,792 L1444,792 L1444,824 L1316,824 Z M1316,834 L1444,834 L1444,864 L1316,864 Z ` +
+      `M1308,872 L1318,872 L1318,900 L1308,900 Z M1442,872 L1452,872 L1452,900 L1442,900 Z ` +
+      `M1352,640 L1452,640 L1452,770 L1352,770 Z M1362,652 L1398,652 L1398,700 L1362,700 Z M1406,652 L1442,652 L1442,700 L1406,700 Z M1362,710 L1442,710 L1442,760 L1362,760 Z"/>`;
+    z += `<g fill="${C.ombre}"><circle cx="1380" cy="808" r="4"/><circle cx="1380" cy="849" r="4"/><rect x="1346" y="632" width="112" height="9"/></g>`;
+    z += O.chaise(1500, 900, 0.9, -1);
+    return z;
+  }
+  /* le dehors par la porte (plan 3) : lumière du soir, arbre et clôture lointains en brume ; la balançoire dans F1 */
+  function svgDehorsPorte() {
+    let z = `<rect x="150" y="440" width="470" height="500" fill="url(#dehors)"/>`;
+    z += `<g opacity=".42">${O.arbre(470, 880, 420, 5, { fill: C.brume2, depth: 5 })}${O.cloture(150, 620, 880, 70, 3, C.brume2)}` +
+      `<path fill="${C.brume2}" d="M150,874 C220,866 300,872 380,866 C440,862 520,868 620,860 L620,940 L150,940 Z"/></g>`;
+    z += `<path fill="${C.brume}" opacity=".22" d="M150,846 C230,820 330,834 420,816 C500,802 570,826 620,812 L620,880 L150,880 Z"/>`;
+    return z;
+  }
+  function svgDehorsFenetre() {
+    return `<g fill="${C.ombre2}" opacity=".85">` +
+      `<path d="M900,500 C980,488 1060,486 1120,474 C1150,468 1180,458 1200,446 L1204,464 C1180,480 1150,488 1100,492 C1050,500 980,506 900,514 Z"/>` +
+      `<path d="M1040,492 C1048,476 1060,468 1078,462 L1080,468 C1066,474 1056,482 1050,494 Z"/>` +
+      `<path d="M1017,500 L1019,636 M1083,492 L1081,636" stroke="${C.ombre2}" stroke-width="4.5" stroke-linecap="round" fill="none"/>` +
+      `<rect x="1004" y="632" width="92" height="10" rx="2"/></g>`;
+  }
+  /* avant-plan (plan 1, unités du plan) : le montant d'une porte intérieure (x 90), le portemanteau sur pied (x 860) */
+  const SVG_MONTANT = `<rect x="10" y="430" width="158" height="520" fill="#0E0805"/><rect x="166" y="430" width="20" height="520" fill="#22160C"/>`;
+  const SVG_PORTEMANTEAU = `<g fill="#0E0805"><rect x="853" y="468" width="15" height="440"/><circle cx="860.5" cy="466" r="12"/>` +
+    `<path d="M853,880 L796,936 L808,940 L860,898 L912,940 L924,936 L868,880 Z"/>` +
+    `<path d="M853,492 C836,494 826,486 820,474 L812,477 C818,494 832,504 853,503 Z M868,492 C885,494 895,486 901,474 L909,477 C903,494 889,504 868,503 Z"/>` +
+    `<path d="M818,478 C806,482 798,490 794,504 L788,556 L784,668 L806,672 L806,566 L810,590 L812,724 C830,730 850,730 864,724 L862,590 L866,556 L856,504 C848,490 836,480 818,478 Z"/>` +
+    `<path d="M892,472 C892,458 922,458 922,472 L932,475 C932,481 882,481 882,475 Z"/></g>`;
+
+  /* ---------------- construction (textures, flous pré-rendus) ---------------- */
+  let ctxE, ctxM, cMonde, T = {};
+  const SPILL = { x0: 280, y0: 470, x1: 1000, y1: 940, d: 1.5 };   // densités proches de l'échelle de la caméra :
+  const DEH = { x0: 150, y0: 440, x1: 1250, y1: 940, d: 1.5 };     // les images floues se posent sans lissage
+  const OUVERTURES = [[336, 512, 158, 388], [960, 458, 210, 220]];   // porte d'entrée, fenêtre F1 (plan 2)
+  const CLIP3 = new Path2D(); for (const o of OUVERTURES) CLIP3.rect(o[0], o[1], o[2], o[3]);
+  const GRAIN2 = [[120, 438, 216, 462], [494, 438, 1226, 462], [336, 438, 158, 74]];   // papier des cases allumées E et S, hors ouverture de la porte
+
+  function construire() {
+    const ecran = document.getElementById('ecran');
+    ctxE = ecran.getContext('2d', { alpha: false });
+    cMonde = MOTEUR.toileHE(L, H); ctxM = cMonde.getContext('2d', { alpha: false });
+    ctxE.imageSmoothingEnabled = false; ctxM.imageSmoothingEnabled = false;
+    MOTEUR.PEINTURES.dehors = () => { const g = MOTEUR.toileHE(1, 1).getContext('2d').createLinearGradient(0, 512, 0, 900);
+      g.addColorStop(0, '#FFF4DA'); g.addColorStop(0.62, '#F3DDB0'); g.addColorStop(1, '#D9B784'); return g; };
+
+    // plan 4 : la toile (cœur lumineux derrière la porte et le père), en px d'écran de la caméra de référence, marges de glissement
+    T.toile = MOTEUR.cuireToile({ w: L + 240, h: H + 100, cx: 700 + 120, cy: 560 + 50, r: 1150,
+      stops: [[0, '#FFF3D6'], [0.18, '#F3DFB6'], [0.45, '#D9B784'], [0.75, '#A27646'], [1, '#5B3A20']] });
+    T.toileM = [120, 50];
+    T.vignette = MOTEUR.cuireVignette();
+    // une tuile de grain par plan (graine fixe), mise en mosaïque une fois
+    T.g4 = MOTEUR.grainPlan(41, 0.075, 0.045); T.g3 = MOTEUR.grainPlan(43, 0.11, 0.06); T.g2 = MOTEUR.grainPlan(47, 0.045, 0.032);
+    // plan 3 : le dehors, flou de brume pré-rendu (porte 2,6 px, fenêtre 1,1 px)
+    const Md = [DEH.d, 0, 0, DEH.d, -DEH.x0 * DEH.d, -DEH.y0 * DEH.d];
+    const dw = (DEH.x1 - DEH.x0) * DEH.d, dh = (DEH.y1 - DEH.y0) * DEH.d;
+    const net = MOTEUR.toileHE(dw, dh), net2 = MOTEUR.toileHE(dw, dh);
+    dessinerListe(net.getContext('2d'), compiler(svgDehorsPorte()), Md);
+    dessinerListe(net2.getContext('2d'), compiler(svgDehorsFenetre()), Md);
+    T.dehors = MOTEUR.toileHE(dw, dh); const cd = T.dehors.getContext('2d');
+    cd.filter = 'blur(2.6px)'; cd.drawImage(net, 0, 0); cd.filter = 'blur(1.1px)'; cd.drawImage(net2, 0, 0); cd.filter = 'none';
+    // plan 2 : le décor de la maison, analysé une fois (rejoué en vecteurs à chaque image : nets à toute échelle)
+    T.decor = compiler(svgDecor());
+    // la lumière du soir qui entre : trapèze au sol et lueur autour de la porte, flou pré-rendu
+    T.spill = MOTEUR.toileHE((SPILL.x1 - SPILL.x0) * SPILL.d, (SPILL.y1 - SPILL.y0) * SPILL.d);
+    { const x = T.spill.getContext('2d'), net3 = MOTEUR.toileHE(T.spill.width, T.spill.height), c3 = net3.getContext('2d');
+      c3.setTransform(SPILL.d, 0, 0, SPILL.d, -SPILL.x0 * SPILL.d, -SPILL.y0 * SPILL.d);
+      const g = c3.createRadialGradient(415, 760, 20, 415, 760, 330); g.addColorStop(0, 'rgba(255,244,218,.55)'); g.addColorStop(1, 'rgba(255,244,218,0)');
+      c3.fillStyle = g; c3.fillRect(SPILL.x0, SPILL.y0, SPILL.x1 - SPILL.x0, SPILL.y1 - SPILL.y0);
+      c3.fillStyle = 'rgba(255,244,218,1)'; c3.beginPath(); c3.moveTo(494, 900); c3.lineTo(494, 600); c3.lineTo(560, 640); c3.lineTo(900, 900); c3.closePath(); c3.globalAlpha = 0.55; c3.fill();
+      c3.globalAlpha = 1; c3.beginPath(); c3.moveTo(336, 900); c3.lineTo(494, 900); c3.lineTo(760, 900); c3.lineTo(560, 860); c3.lineTo(380, 870); c3.closePath(); c3.fill();
+      x.filter = `blur(${(14 * SPILL.d / 0.75).toFixed(1)}px)`; x.drawImage(net3, 0, 0); x.filter = 'none'; }
+    // plan 1 : l'avant-plan sombre, flou pré-rendu à la densité du plan, grain cuit en 4 variantes
+    const mouch = MOTEUR.tuileGrain(53, 0.12, 0.06);
+    const dec = [[0, 0], [97, 41], [173, 129], [61, 211]];
+    const dens1 = 1.8 * REF.s;
+    T.montant = MOTEUR.preRendu((cx) => dessinerListe(cx, compiler(SVG_MONTANT), matriceDe(cx)), [10, 430, 186, 950], dens1, 14, { tuile: mouch, decalages: dec });
+    T.portemanteau = MOTEUR.preRendu((cx) => dessinerListe(cx, compiler(SVG_PORTEMANTEAU), matriceDe(cx)), [760, 440, 950, 945], dens1, 18, { tuile: mouch, decalages: dec });
+    // marionnettes fixes de la séquence : la fille assise par terre (une tige du dos), la lampe L1 allumée, le manteau
+    const fille = { x: 1060, y: 900 + 124 * 0.86 - 4, s: 0.86, flip: 1, legF: [-128, 86], legB: [-120, 80], armF: [-58, -46], armB: [-40, -52] };
+    const dosF = [fille.x - 16 * 0.86, fille.y - 200 * 0.86];
+    const tigeF = O.tige(dosF[0], dosF[1], dosF[0] - 50, 946);
+    T.fille = [compiler(O.fille(fille) + tigeF), compiler(O.fille(Object.assign({}, fille, { head: 6 })) + tigeF)];
+    T.lampe = compiler(O.lampe(1320, 770, 0.8, true));
+    T.manteau = compiler(SVG_MANTEAU);
+  }
+  const matriceDe = (cx) => { const m = cx.getTransform(); return [m.a, m.b, m.c, m.d, m.e, m.f]; };
+
+  /* ---------------- rendu : fonction pure de t ---------------- */
+  const SOUS = [
+    { sortie: [2.30, 2.44], mots: [{ m: 'Ce', t: 0.06 }, { m: 'dirigeant', t: 0.28, boite: 'b1' }, { m: 'ramenait', t: 0.78 },
+      { m: 'le', t: 1.12 }, { m: 'travail', t: 1.38, trait: true }, { m: 'à', t: 1.62 }, { m: 'la', t: 1.76 }, { m: 'maison.', t: 1.90 }] },
+    { sortie: [5.05, 5.19], mots: [{ m: 'Derrière', t: 2.52 }, { m: 'lui,', t: 2.94 }, { m: 'le', t: 3.41 }, { m: 'Temps', t: 3.66, boite: 'b2' },
+      { m: 'perdu', t: 3.84, boite: 'b2' }, { m: 'passa', t: 4.14 }, { m: 'la', t: 4.44 }, { m: 'porte.', t: 4.64 }] },
+  ];
+  let sousTitres = null, PRET = false, derniere = NaN;
+  const EASE_APP = MOTEUR.courbe('power2.out');
+
+  function peindreMonde(ctx, t, ii, idx, lum) {
+    const cam = CAMERA;
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+    // --- plan 4 : la toile sépia lumineuse (opaque, elle couvre tout le cadre ; la flamme est posée avec le vignettage), son grain
+    const g4 = P4.glissement(cam, REF);
+    MOTEUR.poserImage(ctx, T.toile, [1, 0, 0, 1, g4[0] - T.toileM[0], g4[1] - T.toileM[1]]);
+    MOTEUR.poserGrain(ctx, T.g4, P4.matrice(cam, REF), ii, null);
+    // --- plan 3 : le dehors par la porte et par la fenêtre F1 (découpé par les ouvertures du plan 2), son grain
+    const M2 = P2.matrice(cam, REF), M3 = P3.matrice(cam, REF);
+    ctx.save();
+    ctx.setTransform(M2[0], M2[1], M2[2], M2[3], M2[4], M2[5]); ctx.clip(CLIP3);
+    MOTEUR.poserImage(ctx, T.dehors, chaineM(M3, Mx.tr(DEH.x0, DEH.y0), Mx.ech(1 / DEH.d)));
+    const s3 = soir(t);
+    if (s3 > 0) { ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = `rgba(20,11,5,${s3.toFixed(3)})`; ctx.fillRect(0, 0, L, H); }
+    MOTEUR.poserGrain(ctx, T.g3, M3, ii, OUVERTURES, M2);   // accroché au plan 3, posé dans les ouvertures du plan 2
+    ctx.restore();
+    // --- plan 2 : la maison (vecteurs), la lumière du soir, les marionnettes, son grain
+    dessinerListe(ctx, T.decor, M2);
+    const lp = lumPorte(t) * lum;
+    if (lp > 0.01) {
+      ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = borne(0.3 * lp);
+      MOTEUR.poserImage(ctx, T.spill, chaineM(M2, Mx.tr(SPILL.x0, SPILL.y0), Mx.ech(1 / SPILL.d)));
+      ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    }
+    const A = acteurs(idx), tp = idx / IPS_POSE;
+    dessinerListe(ctx, A.battant, M2);
+    dessinerListe(ctx, T.manteau, chaineM(M2, Mx.tr(640, 562), Mx.rot(angleManteau(tp))));
+    dessinerListe(ctx, T.fille[Math.floor(tp / 1.5) % 2], M2);
+    dessinerListe(ctx, T.lampe, M2, { lum });
+    if (A.feuille) dessinerListe(ctx, A.feuille, M2);
+    let lentMonde = null;
+    if (A.horloge && t >= 2.52) {
+      const xh = xHorloge(tp), u = borne((t - 2.52) / 0.12), e = EASE_APP(u), sc = 1.1 - 0.1 * e, fl = 4 * (1 - e);
+      const Mh = chaineM(Mx.tr(xh, 898), Mx.rot(penche(tp)), Mx.ech(sc));
+      if (fl > 0.05) MOTEUR.dessinerFlou(ctx, A.horloge, Mx.mul(M2, Mh), [-132, -352, 132, 6], fl);   // paraît ×1,1 et floue 4 px → nette (0,12 s)
+      else dessinerListe(ctx, A.horloge, Mx.mul(M2, Mh));
+      // 3.66 « Temps » : le cadran accroche la lumière (liseré creme)
+      const rim = t < 3.66 ? 0 : t < 3.72 ? (t - 3.66) / 0.06 : Math.max(0.35, 1 - (t - 3.72) / 0.6);
+      if (rim > 0) {
+        const mm = chaineM(M2, Mh, Mx.ech(0.7));
+        ctx.setTransform(mm[0], mm[1], mm[2], mm[3], mm[4], mm[5]); ctx.globalAlpha = borne(rim * lum * 0.9);
+        ctx.strokeStyle = '#FFF4DC'; ctx.lineWidth = 3.4; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.arc(0, -386, 81, rad(196), rad(300)); ctx.stroke(); ctx.globalAlpha = 1;
+      }
+      lentMonde = Mx.app(Mh, A.lent[0], A.lent[1]);
+    }
+    dessinerListe(ctx, A.pere, M2);
+    // la chaîne : un bout pend au poignet arrière ; à 3.41 elle se tend maillon par maillon depuis le balancier
+    const pb = A.poignetB;
+    if (lentMonde && t >= 3.41) {
+      const ch = chaineDe(idx, lentMonde, pb), n = Math.min(ch.length, 1 + Math.floor((t - 3.41) / 0.015 + 1e-6));
+      dessinerListe(ctx, ch, M2, { fin: n });
+      if (n < ch.length) dessinerListe(ctx, bouchonChaine(idx, pb), M2);
+    } else dessinerListe(ctx, bouchonChaine(idx, pb), M2);
+    MOTEUR.poserGrain(ctx, T.g2, M2, ii, GRAIN2);
+    // --- plan 1 : l'avant-plan sombre et flou, coupé par les bords du cadre (grain cuit, variante toutes les 2 images)
+    const M1 = P1.matrice(cam, REF);
+    MOTEUR.poserSprite(ctx, T.montant, M1, ii, 1);
+    MOTEUR.poserSprite(ctx, T.portemanteau, M1, ii, 2);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+  }
+
+  function dessiner(tBrut) {
+    if (!PRET) return;
+    const cle = Math.round(tBrut * 240);
+    if (cle === derniere) return;
+    derniere = cle;
+    const t = Math.min(DUREE, Math.max(0, cle / 240));
+    const ii = Math.floor(t * IPS + 1e-4), idx = Math.floor(t * IPS_POSE + 1e-6);
+    const cam = camera(t), lum = MOTEUR.flamme(t) * vacille(t);
+    if (cam.flou > 0.25) {
+      // whip : le monde est peint hors écran puis posé en tirages décalés (flou de caméra, seulement sous l'échelle 3)
+      peindreMonde(ctxM, t, ii, idx, lum);
+      MOTEUR.flouTirages(ctxE, cMonde, cam.flou, Math.min(12, 2 + Math.ceil(2 * cam.flou / 1.5)));
+    } else peindreMonde(ctxE, t, ii, idx, lum);
+    // flamme et vignettage chaud, fixé à l'objectif
+    MOTEUR.poserVignette(ctxE, T.vignette, lum);
+    sousTitres.maj(t);
+  }
+
+  /* ---------------- démarrage : polices chargées, textures prêtes, puis UNE timeline enregistrée ---------------- */
+  document.fonts.load('500 60px "DM Sans"').then(() => document.fonts.ready).then(() => {
+    construire();
+    sousTitres = MOTEUR.SousTitres(document.getElementById('sous-titres'), SOUS);
+    PRET = true;
+    const tl = MOTEUR.brancher(DUREE, dessiner);
+    dessiner(0);
+    window.__timelines = window.__timelines || {};
+    window.__timelines['main'] = tl;
+  }).catch((e) => console.error('construction du film impossible :', e && e.stack || e));
+})();
+</script>
+</body>
+</html>

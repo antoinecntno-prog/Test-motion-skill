@@ -1,0 +1,153 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>B2 · Le montreur · 19,6 s</title>
+<link rel="stylesheet" href="_base.css"></head>
+<body><div class="stage"><svg class="scene" id="s" viewBox="0 0 1920 1080"></svg>
+<div class="sub">IA voulait dire <span class="k">Interminable Attente</span>.</div></div>
+<script src="_ombres.js"></script><script>
+/* B2, 19,6 s : « IA voulait dire Interminable Attente. »
+   Le même théâtre vu de la salle. Les tiges du Temps perdu ont tiré le père loin de la toile : son ombre est immense,
+   floue et pâle, tournée vers ses devis. Devant elle, la fillette, nette, collée à la toile, sans aucune tige, attend
+   assise sur la dernière marche, le menton dans les mains. Au-dessus, comme un mobile, les lettres I et A pendent à
+   leurs fils et se déplient en « Interminable Attente » (les dernières lettres sont encore pliées en accordéon). */
+const O = OMBRES, C = O.C;
+const f = (n) => Math.round(n * 10) / 10, rad = (d) => d * Math.PI / 180;
+const YT = 176, YB = 222, SOL = 905;
+
+/* ---------- formes locales du théâtre (communes à B1, B2, B3) ---------- */
+const cintres = () => `<defs><linearGradient id="cintGrad" x1="0" y1="0" x2="0" y2="${YT}" gradientUnits="userSpaceOnUse">
+  <stop offset="0" stop-color="#0A0603"/><stop offset=".55" stop-color="#1E130A"/><stop offset="1" stop-color="#43291A"/></linearGradient>
+  <clipPath id="cintClip"><rect width="1920" height="${YT}"/></clipPath><clipPath id="toileClip"><rect y="${YB}" width="1920" height="${1080 - YB}"/></clipPath></defs>
+  <rect width="1920" height="${YT}" fill="url(#cintGrad)"/>` + O.brume(1050, 150, 760, 90, .5, '#7A5232', 34);
+function traverse() {
+  const r = O.R(21); let s = `<rect x="-10" y="${YT}" width="1940" height="${YB - YT}" fill="#120A05"/>`;
+  for (let i = 0; i < 8; i++) { const y = YT + 6 + r() * (YB - YT - 12);
+    s += `<path d="M-10,${f(y)} C620,${f(y + (r() - .5) * 7)} 1300,${f(y + (r() - .5) * 7)} 1930,${f(y + (r() - .5) * 5)}" stroke="#2C1B0F" stroke-width="${f(1 + r() * 1.6)}" fill="none"/>`; }
+  s += `<rect x="-10" y="${YT}" width="1940" height="3" fill="#7A5634" opacity=".75"/>`;
+  for (let x = 70; x < 1920; x += 240) s += `<circle cx="${x}" cy="${(YT + YB) / 2}" r="5.5" fill="#3E2A18"/>`;
+  let d = `M-20,${YB - 2} `; const w = 96, h = 30;
+  for (let x = -20; x < 1940; x += w) d += `L${x},${YB} Q${x + w / 2},${YB + h * 2} ${x + w},${YB} `;
+  d += `L1940,${YB - 2} Z`;
+  s += `<path d="${d}" fill="#140B05"/>`;
+  for (let x = -20; x < 1940; x += w) s += `<path d="M${x - 3},${YB} L${x + 3},${YB} L${x + 2},${YB + 22} C${x + 6},${YB + 26} ${x + 5},${YB + 34} ${x},${YB + 36} C${x - 5},${YB + 34} ${x - 6},${YB + 26} ${x - 2},${YB + 22} Z" fill="#140B05"/>`;
+  return s;
+}
+function roue(cx, cy, r, dents, rot, o = {}) {
+  const p = Object.assign({ fill: '#0B0603', arete: '#7A5634', rayons: 5, op: 1 }, o);
+  let d = '';
+  const n = dents * 2;
+  for (let i = 0; i < n; i++) {
+    const a0 = rad(rot + (i / n) * 360), a1 = rad(rot + ((i + 1) / n) * 360), rr = i % 2 === 0 ? r : r * 0.84;
+    d += (i === 0 ? 'M' : 'L') + f(cx + rr * Math.cos(a0)) + ',' + f(cy + rr * Math.sin(a0)) + ' L' + f(cx + rr * Math.cos(a1)) + ',' + f(cy + rr * Math.sin(a1)) + ' ';
+  }
+  d += 'Z ';
+  const ro = r * 0.68, ri = r * 0.26, k = p.rayons;
+  for (let i = 0; i < k; i++) {
+    const a0 = rot + i * 360 / k + 9, a1 = rot + (i + 1) * 360 / k - 9, b0 = a0 + 12, b1 = a1 - 12;
+    const P = (rr, a) => `${f(cx + rr * Math.cos(rad(a)))},${f(cy + rr * Math.sin(rad(a)))}`;
+    d += `M${P(ro, a0)} A${f(ro)},${f(ro)} 0 0 1 ${P(ro, a1)} L${P(ri, b1)} A${f(ri)},${f(ri)} 0 0 0 ${P(ri, b0)} Z `;
+  }
+  d += O.disque(cx, cy, r * 0.07);
+  return `<g opacity="${p.op}"><path fill-rule="evenodd" d="${d}" fill="${p.arete}" opacity=".6" transform="translate(0,2.6)"/>` +
+    `<path fill-rule="evenodd" d="${d}" fill="${p.fill}"/></g>`;
+}
+const maneton = (x, y, fill = '#0B0603') => `<circle cx="${f(x)}" cy="${f(y)}" r="8" fill="${fill}"/><circle cx="${f(x)}" cy="${f(y)}" r="3" fill="#7A5634"/>`;
+const tigeM = (x0, y0, x1, y1, w = 3.2) => O.tige(x0, y0, x1, y1, w, '#120A05') +
+  `<g clip-path="url(#cintClip)">${O.tige(x0 + 1.6, y0, x1 + 1.6, y1, 1.1, '#8A6440')}</g>`;
+function rideau(cote) {
+  const r = O.R(cote === 'L' ? 31 : 37); let d = '';
+  const x0 = cote === 'L' ? -60 : 1980, dir = cote === 'L' ? 1 : -1, larg = cote === 'L' ? 190 : 170;
+  d = `M${x0},-40 L${x0 + dir * larg},-40 `;
+  for (let y = -40; y <= 1120; y += 90) d += `Q${f(x0 + dir * (larg - 22 + r() * 40))},${y + 45} ${f(x0 + dir * (larg - 8 + r() * 26))},${y + 90} `;
+  d += `L${x0},1120 Z`;
+  let plis = '';
+  for (let i = 0; i < 3; i++) { const xx = x0 + dir * (50 + i * 45);
+    plis += `<path d="M${xx},-40 C${xx + dir * 14},300 ${xx - dir * 10},700 ${xx + dir * 8},1120" stroke="#3B2616" stroke-width="14" fill="none" opacity=".85"/>`; }
+  return `<g filter="url(#b14)"><path d="${d}" fill="#0C0704"/>${plis}</g>`;
+}
+
+/* ---------- lettres de papier qui se déplient en accordéon (mesurées en Fraunces) ---------- */
+// mot : initiale pleine, puis lettres de plus en plus pliées vers la fin (sx de 1 à presque 0, skew alterné)
+function motDeplie(mot, x, y, tailleI, taille, plis, o = {}) {
+  const p = Object.assign({ fill: C.ombre, rot: 0, fil: null }, o);
+  const cv = document.createElement('canvas').getContext('2d');
+  const w = (ch, t) => { cv.font = `700 ${t}px Fraunces`; return cv.measureText(ch).width; };
+  let g = '', xx = 0, echo = '';
+  const n = mot.length;
+  for (let i = 0; i < n; i++) {
+    const ch = mot[i], t = i === 0 ? tailleI : taille, adv = w(ch, t);
+    const k = i - (n - plis.length);            // index dans la zone pliée
+    const sx = k >= 0 ? plis[k] : 1, sk = k >= 0 ? (k % 2 === 0 ? -1 : 1) * (8 + k * 3) : 0;
+    const dy = k >= 0 ? -k * 3 : 0;
+    const tr = `translate(${f(xx)},${f(dy)}) skewY(${sk}) scale(${sx},1)`;
+    g += `<text transform="${tr}" x="0" y="0" font-family="Fraunces" font-weight="700" font-size="${t}" fill="${p.fill}">${ch}</text>`;
+    // écho pâle : la lettre un instant plus tôt, plus pliée encore (le dépli est en cours)
+    if (k >= 0) echo += `<text transform="translate(${f(xx - adv * sx * 0.35)},${f(dy)}) skewY(${-sk}) scale(${f(sx * 0.45)},1)" x="0" y="0" font-family="Fraunces" font-weight="700" font-size="${t}" fill="${p.fill}">${ch}</text>`;
+    xx += adv * sx + (i === 0 ? 6 : 1.5) * sx;
+  }
+  const capI = tailleI * 0.7;
+  const fil = `<path d="M${f(w(mot[0], tailleI) / 2)},${-capI} L${f(w(mot[0], tailleI) / 2)},${f(-capI - (p.fil || 200))}" stroke="${C.ombre}" stroke-width="1.8"/>`;
+  return `<g transform="translate(${f(x)},${f(y)}) rotate(${p.rot})">${fil}<g opacity=".22" filter="url(#b2_5)">${echo}</g>${g}</g>`;
+}
+
+/* ---------- la scène ---------- */
+function scene() {
+  let s = O.defs({ x: 960, y: 540, r: 1280 }) + O.toile();
+
+  // 3. décor de brume : piles de dossiers lointaines du côté du père, brume chaude
+  s += O.brume(760, 600, 520, 300, .3, C.brume, 34) + O.brume(1500, 520, 420, 360, .28, C.brume, 34);
+  // au loin, du côté du père, la lampe de son bureau, dans la brume
+  s += `<g filter="url(#b6)" opacity=".4">${O.table(1640, SOL, 300, 170, C.brume2)}${O.lampe(1590, SOL - 170, 1.1, false, C.brume2)}</g>`;
+
+  // cintres et rouages
+  s += cintres();
+  s += `<g filter="url(#b4)">${roue(250, 70, 110, 16, 20, { fill: '#160D06', arete: '#4A3019', op: .9 })}${roue(1100, 40, 120, 18, 9, { fill: '#160D06', arete: '#4A3019', op: .9 })}</g>`;
+  for (const x of [430, 560, 1180, 1250]) s += `<path d="M${x},0 L${x},${YT}" stroke="#2E1E12" stroke-width="2"/>`;
+  const G = [
+    { x: 1340, y: 132, r: 54, d: 10, rot: 6 },
+    { x: 1462, y: 98, r: 80, d: 15, rot: 14 },
+    { x: 1600, y: 128, r: 62, d: 12, rot: 3 },
+    { x: 1730, y: 92, r: 92, d: 17, rot: 11 },    // roue du père
+    { x: 1228, y: 96, r: 70, d: 13, rot: 0 },
+  ];
+  s += `<g opacity=".45" filter="url(#b2_5)">${roue(G[3].x, G[3].y, G[3].r, G[3].d, G[3].rot + 7)}</g>`;
+  for (const g of G) s += roue(g.x, g.y, g.r, g.d, g.rot);
+  for (const g of G) s += `<path d="M${g.x - 6},${g.y} L${g.x + 6},${g.y} L${g.x + 14},${YT} L${g.x - 14},${YT} Z" fill="#0B0603"/>`;
+
+  // 2c. le père, loin de la toile : ombre immense, floue, pâle, tournée vers ses devis ; ses tiges le tirent
+  const P = { x: 1330, y: 1190, s: 1.5, flip: 1, armF: [-96, -22], armB: [-62, -48], legF: [-4, 2], legB: [6, 2], head: 16, rivets: false };
+  const [fx, fy] = O.mainPere(P, 'F'), [bx, by] = O.mainPere(P, 'B');
+  const m1 = [G[3].x - 62, G[3].y + 34], m2 = [G[3].x - 10, G[3].y + 66];
+  s += `<g clip-path="url(#toileClip)"><g filter="url(#b9)" opacity=".62">${O.pere(Object.assign({}, P, { fill: '#3E2A18' }))}` +
+    O.devis(fx - 40, fy - 180, 140, 190, 10, '#3E2A18') + `</g>` +
+    `<g filter="url(#b4)" opacity=".78">${O.tige(m1[0], m1[1], fx, fy, 7, '#3E2A18')}${O.tige(m2[0], m2[1], bx, by, 7, '#3E2A18')}</g></g>`;
+  // dans les cintres, les tiges restent nettes, tendues
+  s += `<g clip-path="url(#cintClip)">${tigeM(m1[0], m1[1], fx, fy)}${tigeM(m2[0], m2[1], bx, by)}</g>`;
+  s += maneton(m1[0], m1[1]) + maneton(m2[0], m2[1]);
+
+  // 2b. la dernière marche (découpe nette) et la fillette, collée à la toile, sans tige
+  s += `<g fill="${C.ombre}"><path d="M742,${SOL} L742,792 L560,792 L560,700 L380,700 L380,608 L200,608 L200,516 L-20,516 L-20,${SOL} Z"/>` +
+    `<rect x="584" y="640" width="12" height="152"/><circle cx="590" cy="634" r="11"/><rect x="404" y="548" width="10" height="152"/><rect x="224" y="456" width="10" height="152"/>` +
+    `<path d="M590,640 L229,456 L229,466 L590,650 Z"/></g>`;
+  const F = { x: 700, y: 908, s: 1.0, flip: 1, seated: true, armF: [-58, 206], armB: [-50, 200], head: 9 };
+  s += O.fille(F);
+
+  // 1b. le mobile : un fil depuis la traverse, une baguette, et les deux mots suspendus
+  const cv = document.createElement('canvas').getContext('2d'); cv.font = '700 184px Fraunces';
+  const wI = cv.measureText('I').width, wA = cv.measureText('A').width, cap = 184 * 0.7;
+  const L1 = { x: 186, y: 420 }, L2 = { x: 900, y: 590 };
+  const bar = [[L1.x + wI / 2, 284], [L2.x + wA / 2, 294]], pivot = [(bar[0][0] * 0.58 + bar[1][0] * 0.42), 289];
+  s += `<path d="M${f(pivot[0])},${YB + 10} L${f(pivot[0])},${pivot[1]}" stroke="${C.ombre}" stroke-width="1.8"/>` +
+    `<path d="M${f(bar[0][0])},${bar[0][1]} L${f(bar[1][0])},${bar[1][1]}" stroke="${C.ombre}" stroke-width="5" stroke-linecap="round"/>` +
+    `<circle cx="${f(pivot[0])}" cy="${pivot[1]}" r="5" fill="${C.ombre}"/>`;
+  s += motDeplie('Interminable', L1.x, L1.y, 184, 118, [.82, .6, .38, .2], { fil: L1.y - cap - bar[0][1] });
+  s += motDeplie('Attente', L2.x, L2.y, 184, 118, [.7, .42, .2], { fil: L2.y - cap - bar[1][1] });
+
+  // sol de la toile, rebord de scène au premier plan, rideaux
+  s += traverse();
+  s += `<rect x="0" y="${SOL}" width="1920" height="${1080 - SOL}" fill="#140B06"/>`;
+  s += `<g filter="url(#b9)"><rect x="-20" y="938" width="1960" height="160" fill="#0B0603"/><rect x="-20" y="936" width="1960" height="5" fill="#3A2716" opacity=".7"/></g>`;
+  s += rideau('L') + rideau('R');
+  s += O.voile();
+  document.getElementById('s').innerHTML = s;
+}
+document.fonts.load('700 138px Fraunces').then(scene, scene);
+</script></body></html>

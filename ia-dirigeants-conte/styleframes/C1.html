@@ -1,0 +1,167 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>C1 · La forêt de dossiers · 4,2 s</title>
+<link rel="stylesheet" href="_base.css"></head>
+<body><div class="stage"><svg class="scene" id="s" viewBox="0 0 1920 1080"></svg>
+<div class="sub">Derrière lui, le <span class="k">Temps perdu</span> passa la porte.</div></div>
+<script src="_ombres.js"></script><script>
+/* C1, 4,2 s : « Derrière lui, le Temps perdu passa la porte. »
+   L'entrée de la maison, dont les murs se perdent entre des troncs de dossiers : à gauche le chambranle et la porte
+   entrouverte, à droite un pan de mur crevé par un tronc, en haut la poutre du plafond cassée et soulevée. Le père
+   entre, la pile sous le bras. Derrière lui, l'horloge se glisse entre deux troncs (échos pâles : elle vient de la
+   porte) ; la chaîne grimpe autour du tronc comme une liane, puis retombe en guirlande jusqu'à son poignet. */
+const O = OMBRES, C = O.C;
+const f = (n) => Math.round(n * 10) / 10, rad = (d) => d * Math.PI / 180;
+const SOL = 902;
+
+/* ---------- formes locales de la forêt de dossiers ---------- */
+// bande effilée le long d'une courbe quadratique (feuille de papier vue par la tranche, qui dépasse comme une branche)
+function bande(x0, y0, cx, cy, x1, y1, w0, w1) {
+  const P = [], N = 8;
+  for (let i = 0; i <= N; i++) { const t = i / N, u = 1 - t;
+    P.push([u * u * x0 + 2 * u * t * cx + t * t * x1, u * u * y0 + 2 * u * t * cy + t * t * y1, w0 + (w1 - w0) * t]); }
+  const L = [], Rr = [];
+  for (let i = 0; i <= N; i++) {
+    const a = P[Math.max(0, i - 1)], b = P[Math.min(N, i + 1)];
+    let nx = -(b[1] - a[1]), ny = b[0] - a[0]; const n = Math.hypot(nx, ny) || 1; nx /= n; ny /= n;
+    L.push([P[i][0] + nx * P[i][2] / 2, P[i][1] + ny * P[i][2] / 2]); Rr.push([P[i][0] - nx * P[i][2] / 2, P[i][1] - ny * P[i][2] / 2]);
+  }
+  return `<path d="M${L.map((q) => f(q[0]) + ',' + f(q[1])).join(' L')} L${Rr.reverse().map((q) => f(q[0]) + ',' + f(q[1])).join(' L')} Z"/>`;
+}
+// petite feuille de devis (lignes de chiffres ajourées), pour le bout des branches et les feuilles qui tombent
+function feuille(x, y, w, h, rot) {
+  let d = `M${f(-w / 2)},${f(-h / 2)} L${f(w / 2)},${f(-h / 2)} L${f(w / 2)},${f(h / 2)} L${f(-w / 2)},${f(h / 2)} Z `;
+  if (w > 20) for (let k = 0; k < 3; k++) { const yy = -h / 2 + h * (.22 + k * .22);
+    d += `M${f(-w / 2 + w * .16)},${f(yy)} L${f(w / 2 - w * .16)},${f(yy)} L${f(w / 2 - w * .16)},${f(yy + Math.max(2, h * .07))} L${f(-w / 2 + w * .16)},${f(yy + Math.max(2, h * .07))} Z `; }
+  return `<path fill-rule="evenodd" transform="translate(${f(x)},${f(y)}) rotate(${f(rot)})" d="${d}"/>`;
+}
+/* Tronc de dossiers : pile très haute et irrégulière de chemises (onglets), feuilles qui dépassent comme des branches,
+   pied étalé en racines. pinch : [[y, force]] où la chaîne serre la pile. Rend { svg, tips } (bouts des branches). */
+function tronc(x, yB, yT, o = {}) {
+  const p = Object.assign({ w: 130, wT: .8, seed: 1, lean: 0, wob: 10, jit: 7, h: 12, gap: 3, fill: C.ombre, onglets: .3,
+    branches: 6, bLen: 130, bY0: .22, persp: 0, roots: true, tilt: 1.4, feuilles: .6, pinch: [], br: null }, o);
+  const r = O.R(p.seed), H = yB - yT, ph = r() * 6;
+  const axe = (t) => x + p.lean * t + Math.sin(t * 4.2 + ph) * p.wob;
+  const larg = (t) => p.w * (1 + (p.wT - 1) * t);
+  let g = '', y = yB;
+  if (p.roots) {   // racines : dossiers étalés et feuilles couchées au pied
+    for (let i = 0; i < 3; i++) { const w = p.w * (1.5 - i * .18) * (.9 + r() * .2), th = p.h * (1 + r() * .4), cx = x + (r() - .5) * 18;
+      g += `<rect x="${f(cx - w / 2)}" y="${f(y - th)}" width="${f(w)}" height="${f(th)}" transform="rotate(${f((r() - .5) * 2)},${f(cx)},${f(y)})"/>`;
+      y -= th + p.gap * .6; }
+    for (const sd of [-1, 1]) { const L = p.w * (.55 + r() * .3);
+      g += `<path d="M${f(x + sd * p.w * .5)},${f(yB)} L${f(x + sd * (p.w * .5 + L))},${f(yB)} L${f(x + sd * (p.w * .5 + L * .9))},${f(yB - 6)} L${f(x + sd * p.w * .45)},${f(yB - 12)} Z"/>`; }
+  }
+  while (y > yT - 30) {
+    const t = Math.min(1, (yB - y) / H), sc = 1 - p.persp * t;
+    const th = p.h * sc * (.7 + r() * .7);
+    let w = larg(t) * (.84 + r() * .26);
+    for (const [py, pw] of p.pinch) { const dd = Math.abs(y - py); if (dd < 34) w *= 1 - pw * (1 - dd / 34); }
+    const cx = axe(t) + (r() - .5) * p.jit, rot = (r() - .5) * p.tilt * 2;
+    const tr = `transform="rotate(${f(rot)},${f(cx)},${f(y)})"`;
+    g += `<rect x="${f(cx - w / 2)}" y="${f(y - th)}" width="${f(w)}" height="${f(th)}" ${tr}/>`;
+    if (r() < p.onglets) { const tx = cx - w / 2 + w * (r() < .5 ? .08 : .64);
+      g += `<rect x="${f(tx)}" y="${f(y - th - 4 * sc)}" width="${f(w * .24)}" height="${f(6 * sc)}" rx="2" ${tr}/>`; }
+    y -= th + p.gap * sc * (.5 + r());
+  }
+  // branches : feuilles et chemises qui dépassent de la pile, en biais vers le haut, avec quelques feuilles au bout
+  const tips = [];
+  const list = p.br || Array.from({ length: p.branches }, (_, i) => ({ t: p.bY0 + (1 - p.bY0) * (i + r() * .8) / p.branches,
+    side: i % 2 ? 1 : -1, ang: 14 + r() * 34, len: p.bLen * (.6 + r() * .7) }));
+  for (const b of list) {
+    const t = b.t, yy = yB - t * H, sc = 1 - p.persp * t, x0 = axe(t) + b.side * larg(t) * .4;
+    const len = b.len * sc, a = rad(b.ang);
+    const x1 = x0 + b.side * len * Math.cos(a), y1 = yy - len * Math.sin(a);
+    const cx = x0 + b.side * len * .55 * Math.cos(a), cy = yy - len * .2 * Math.sin(a) + (b.sag || 10) * sc;
+    g += bande(x0, yy, cx, cy, x1, y1, 11 * sc, 3.5 * sc);
+    if (b.fourche !== false && r() < .8) {   // une seconde feuille plus courte, en fourche
+      const a2 = a + rad(18 + r() * 20), l2 = len * (.35 + r() * .2), xm = x0 + b.side * len * .55 * Math.cos(a), ym = yy - len * .5 * Math.sin(a);
+      g += bande(xm, ym + 4, xm + b.side * l2 * .5 * Math.cos(a2), ym - l2 * .4 * Math.sin(a2), xm + b.side * l2 * Math.cos(a2), ym - l2 * Math.sin(a2), 6 * sc, 2.4 * sc);
+    }
+    if (b.feuille !== false && r() < p.feuilles) g += feuille(x1 + b.side * 6 * sc, y1 + 10 * sc, 26 * sc, 34 * sc, b.side * (20 + r() * 50));
+    tips.push([x1, y1]);
+  }
+  return { svg: `<g fill="${p.fill}">${g}</g>`, tips, axe: (yy) => axe(Math.min(1, Math.max(0, (yB - yy) / H))) };
+}
+
+/* ---------- la scène ---------- */
+let s = O.defs({ x: 980, y: 470, r: 1260 }) + O.toile();
+
+// 4. fond : la forêt continue, loin de la toile (troncs pâles et flous dans la brume)
+s += O.brume(980, 560, 520, 300, .3, C.brume, 34) + O.brume(300, 520, 260, 300, .22, C.brume, 34);
+const loin = (x, w, seed, lean, op, blur, fill) => `<g filter="url(#${blur})" opacity="${op}">${tronc(x, SOL, -60, { w, wT: .85, seed, lean, h: 16, gap: 4, fill, branches: 4, bLen: w * 1.1, roots: false, feuilles: .3 }).svg}</g>`;
+s += loin(300, 104, 41, 12, .42, 'b9', C.brume) + loin(1290, 120, 42, -18, .42, 'b9', C.brume) + loin(1760, 110, 43, 10, .38, 'b9', C.brume);
+s += loin(990, 90, 44, 6, .2, 'b14', C.brume);
+// 3. un tronc à mi-distance, plus sombre et moins flou
+s += loin(1330, 150, 45, -24, .7, 'b4', C.brume2);
+
+// la maison qui se perd : poutre du plafond cassée et soulevée par les troncs
+s += `<g fill="${C.ombre}"><rect x="-20" y="52" width="452" height="40"/>` +
+  `<path d="M512,64 L770,30 L774,70 L516,104 Z"/>` +
+  `<path d="M884,46 L1500,74 L1498,112 L882,86 Z"/>` +
+  `<path d="M1640,60 L1940,52 L1940,92 L1642,100 Z"/></g>`;
+// éclats de plâtre qui tombent de la cassure (petits, nets)
+s += `<g fill="${C.ombre}">${feuille(805, 150, 10, 8, 30)}${feuille(830, 210, 7, 6, -20)}${feuille(498, 140, 8, 6, 12)}</g>`;
+
+// le pan de mur de droite, crevé par un tronc : bord déchiré, fenêtre à croisillons
+const r0 = O.R(7); let bord = 'M1960,240 L1700,232 ';
+for (let yy = 250; yy <= SOL; yy += 38) bord += `L${f(1588 + (r0() - .5) * 26)},${yy} `;
+s += `<path fill="${C.ombre}" fill-rule="evenodd" d="${bord} L1588,${SOL} L1960,${SOL} Z M1650,360 L1850,360 L1850,640 L1650,640 Z"/>`;
+s += `<g fill="${C.ombre}"><rect x="1744" y="360" width="12" height="280"/><rect x="1650" y="494" width="200" height="12"/><rect x="1636" y="640" width="228" height="16"/></g>`;
+s += `<g opacity=".8" filter="url(#b2_5)">${tronc(1800, SOL, -60, { w: 96, seed: 46, lean: -6, h: 12, gap: 4, fill: C.brume2, branches: 3, bLen: 90, roots: false, feuilles: .2 }).svg}</g>`;  // la forêt, vue par la fenêtre
+s += `<path fill="${C.ombre}" d="M1588,240 L1700,232 L1960,240 L1960,250 L1588,250 Z"/>`;
+
+// la porte d'entrée : chambranle, linteau, battant ouvert vers nous, la nuit dehors
+s += `<g fill="${C.ombre}" transform="translate(-34,0)"><path d="M128,268 L436,268 L444,292 L120,292 Z"/><rect x="136" y="292" width="292" height="24"/>` +
+  `<rect x="148" y="316" width="26" height="${SOL - 316}"/><rect x="390" y="316" width="26" height="${SOL - 316}"/>` +
+  `<path fill-rule="evenodd" d="M174,318 L246,300 L246,${SOL + 14} L174,${SOL} Z M188,360 L232,350 L232,520 L188,526 Z M188,580 L232,576 L232,780 L188,782 Z"/>` +
+  `<circle cx="238" cy="610" r="7"/></g>`;
+
+// 2. les troncs nets, contre la toile : T1 près de la porte, T2 où grimpe la chaîne, T3 qui crève le mur
+const T1 = tronc(446, SOL, -60, { w: 108, seed: 3, lean: -18, wob: 8, branches: 5, bLen: 120, feuilles: .7 });
+const pinchT2 = [[786, .26], [726, .26], [666, .26]];
+const T2 = tronc(872, SOL, -60, { w: 132, seed: 8, lean: 18, wob: 9, branches: 6, bLen: 140, pinch: pinchT2, bY0: .5 });
+const T3 = tronc(1556, SOL, -60, { w: 150, seed: 15, lean: -20, wob: 12, branches: 6, bLen: 150, bY0: .3 });
+s += T1.svg + T3.svg;
+
+// l'horloge se glisse entre T1 et T2 : deux échos pâles vers la porte, d'où elle vient
+const Hc = { x: 676, y: SOL, s: .72, balancier: 14, heure: -40, minute: 130, armL: [40, -40], armR: [-62, 22] };
+s += `<g opacity=".15" filter="url(#b4)">${O.horloge(Object.assign({}, Hc, { x: Hc.x - 96 }))}</g>`;
+s += `<g opacity=".27" filter="url(#b2_5)">${O.horloge(Object.assign({}, Hc, { x: Hc.x - 46 }))}</g>`;
+s += `<g transform="rotate(-3,${Hc.x},${SOL})">${O.horloge(Hc)}</g>`;
+s += T2.svg;
+
+// le père entre, la pile sous le bras, la tête un peu basse
+const P = { x: 1176, y: SOL, s: .74, armF: [-26, -98], armB: [22, -6], legF: [-22, 12], legB: [18, 4], head: 6 };
+s += O.pere(P);
+const [hx, hy] = O.mainPere(P, 'F');
+s += O.pile(hx + 28, hy + 10, 14, { w: 118, h: 7, gap: 1.6, seed: 5 });
+
+// la chaîne : du balancier, elle s'enroule autour de T2 comme une liane, puis retombe en guirlande jusqu'au poignet
+const [lx, ly] = O.lentille(Object.assign({}, Hc, { x: Hc.x + 2 }));
+const [bx, by] = O.mainPere(P, 'B');
+const ax = (yy) => T2.axe(yy), demi = 52;
+const avant1 = [[ax(800) - demi - 6, 800], [ax(758) + demi + 6, 758]];
+const avant2 = [[ax(740) - demi - 6, 740], [ax(698) + demi + 6, 698]];
+const avant3 = [[ax(680) - demi - 6, 680], [ax(638) + demi + 6, 638]];
+const ch = { rx: 9, ry: 14, pas: 19 };
+const jour = (pts) => `<g stroke="#D9B784" stroke-width="5" stroke-linejoin="round" opacity=".55">${O.chaine(pts, ch)}</g>` + O.chaine(pts, ch);
+s += O.chaine([[lx, ly], [lx + 40, ly + 10], avant1[0]], ch);
+s += jour(avant1) + jour(avant2) + jour(avant3);
+// les boucles qui passent derrière le tronc dépassent un peu sur les bords
+s += O.chaine([avant1[1], [ax(750) + demi + 14, 748], avant2[0]].slice(0, 2), ch) + O.chaine([[ax(744) - demi - 14, 744], avant2[0]], ch);
+s += O.chaine([avant2[1], [ax(690) + demi + 14, 688]], ch) + O.chaine([[ax(684) - demi - 14, 684], avant3[0]], ch);
+s += O.chaine([avant3[1], [ax(626) + 88, 650], [ax(626) + 150, 700], [bx - 50, by + 22], [bx, by]], ch);
+
+// feuilles de dossier qui tombent des branches (échos de chute)
+const chute = (x, y, rot, sc, op, blur) => `<g opacity="${op}"${blur ? ` filter="url(#${blur})"` : ''} fill="${C.ombre}">${feuille(x, y, 34 * sc, 44 * sc, rot)}</g>`;
+s += chute(1046, 258, 24, 1, .13, 'b4') + chute(1038, 290, 8, 1, .26, 'b2_5') + chute(1030, 326, -14, 1, 1, '');
+
+// sol au premier plan (bande des sous-titres)
+s += `<rect x="0" y="${SOL}" width="1920" height="${1080 - SOL}" fill="#140B06"/>`;
+s += `<rect x="0" y="940" width="1920" height="140" fill="#0F0905"/>`;
+// 1. avant-plan : un tronc de dossiers énorme et flou à droite, des dossiers tombés à gauche, coupés par le cadre
+s += `<g filter="url(#b22)">${tronc(1900, 1120, -80, { w: 300, seed: 61, lean: -30, h: 30, gap: 8, fill: '#0E0805', branches: 2, bLen: 260, roots: false, feuilles: 0 }).svg}</g>`;
+s += `<g filter="url(#b14)">${tronc(-34, 1120, -80, { w: 200, seed: 62, lean: 10, h: 34, gap: 11, fill: '#0E0805', branches: 1, bLen: 200, bY0: .6, roots: false, feuilles: 0 }).svg}</g>`;
+s += `<g filter="url(#b14)" fill="#0E0805">` +
+  `<path d="M60,1080 L90,960 L330,930 L360,1080 Z"/><path d="M180,950 L440,905 L452,935 L196,985 Z"/></g>`;
+s += O.voile();
+document.getElementById('s').innerHTML = s;
+</script></body></html>

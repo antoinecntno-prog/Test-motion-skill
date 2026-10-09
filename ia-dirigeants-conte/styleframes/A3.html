@@ -1,0 +1,101 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>A3 · La maison en coupe · 39,5 s</title>
+<link rel="stylesheet" href="_base.css"></head>
+<body><div class="stage"><svg class="scene" id="s" viewBox="0 0 1920 1080"></svg>
+<div class="sub">Le soir suivant, il poussait la <span class="k">balançoire</span>.</div></div>
+<script src="_ombres.js"></script><script>
+/* A3, 39,5 s : « Le soir suivant, il poussait la balançoire. »
+   Le monde doré : toile assombrie, ciel encore clair au-dessus de l'horizon. La caméra est sortie à droite de la
+   maison en coupe, dont les cases sont rallumées en lumière chaude. Au jardin, le père vient de pousser la balançoire
+   de sa fille : silhouettes inversées dorées, échos pâles de l'arc (le balancier devenu balançoire). Par la fenêtre
+   de la cuisine, l'horloge dorée sort les devis finis sur une pile dorée. Poussière d'étincelles. */
+const O = OMBRES, C = O.C;
+const f = (n) => Math.round(n * 10) / 10;
+const rad = (d) => d * Math.PI / 180;
+
+let s = O.defs({ x: 1260, y: 700, r: 1500, nuit: true }) + O.toile();
+s += `<defs>
+<linearGradient id="orPere" gradientUnits="userSpaceOnUse" x1="0" y1="-610" x2="0" y2="0"><stop offset="0" stop-color="#FFE7B0"/><stop offset=".5" stop-color="#E0A84A"/><stop offset="1" stop-color="#C98A2E"/></linearGradient>
+<linearGradient id="orFille" gradientUnits="userSpaceOnUse" x1="0" y1="-360" x2="0" y2="0"><stop offset="0" stop-color="#FFE7B0"/><stop offset=".55" stop-color="#E0A84A"/><stop offset="1" stop-color="#C98A2E"/></linearGradient>
+<radialGradient id="caseChaude" cx=".5" cy=".62" r=".75"><stop offset="0" stop-color="#B8813E"/><stop offset=".7" stop-color="#8A5A26"/><stop offset="1" stop-color="#5E3C1A"/></radialGradient>
+<radialGradient id="cuisine" cx=".45" cy=".55" r=".8"><stop offset="0" stop-color="#94622A"/><stop offset=".75" stop-color="#6A4420"/><stop offset="1" stop-color="#4A2E14"/></radialGradient>
+</defs>`;
+
+// 4. le ciel encore clair au-dessus de l'horizon
+s += `<defs><linearGradient id="crepuscule" x1="0" y1="430" x2="0" y2="900" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#D9A35A" stop-opacity="0"/>` +
+  `<stop offset=".55" stop-color="#D9A35A" stop-opacity=".2"/><stop offset=".84" stop-color="#E8B86C" stop-opacity=".58"/><stop offset="1" stop-color="#F6D69A" stop-opacity=".85"/></linearGradient></defs>`;
+s += `<rect x="600" y="430" width="1360" height="480" fill="url(#crepuscule)"/>`;
+s += `<ellipse cx="1240" cy="880" rx="560" ry="70" fill="#F6DCA4" opacity=".35" filter="url(#b34)"/>`;
+// 3. décor de brume : collines, bosquets et clôture lointains
+s += `<g filter="url(#b4)" fill="#3E2714" opacity=".95"><path d="M700,876 C880,842 1060,858 1260,838 C1460,818 1680,852 1960,826 L1960,930 L700,930 Z"/>` +
+  `${O.arbre(930, 870, 300, 31, { fill: '#3E2714', depth: 5 })}${O.arbre(1010, 872, 220, 32, { fill: '#3E2714', depth: 5 })}</g>`;
+s += `<g filter="url(#b1_2)" opacity=".9">${O.cloture(760, 1640, 906, 96, 8, '#2A1A0C')}</g>`;
+
+// la maison en coupe, à gauche, cases rallumées
+const piece = (x0, y0, x1, y1) => `M${x0},${y0} L${x1},${y0} L${x1},${y1} L${x0},${y1} Z `;
+const cases = [[-40, 132, 282, 392], [330, 132, 680, 392], [-40, 438, 212, 900]];
+for (const [x0, y0, x1, y1] of cases) s += `<rect x="${x0}" y="${y0}" width="${x1 - x0}" height="${y1 - y0}" fill="url(#caseChaude)" opacity=".92"/>`;
+s += `<rect x="260" y="438" width="420" height="462" fill="url(#cuisine)" opacity=".95"/>`;
+let d = piece(-40, 96, 736, 948);
+for (const [x0, y0, x1, y1] of cases) d += piece(x0, y0, x1, y1);
+d += piece(260, 438, 680, 900);
+s += `<path fill="${C.ombre}" fill-rule="evenodd" d="${d}"/>`;
+s += `<path fill="${C.ombre}" d="M-40,-190 L796,88 L796,104 L-40,104 Z"/>`;
+// mobilier : le bureau vide (chaise vide, lampe), le salon (lampe)
+s += O.table(120, 392, 210, 92) + O.chaise(236, 392, .62, -1) + O.lampe(70, 300, .55, false);
+s += O.lampe(110, 798, .7, false) + O.table(120, 900, 150, 102);
+// la chambre de la fillette, à l'étage : le lit vide (elle est au jardin)
+s += `<g fill="${C.ombre}"><path d="M420,392 L420,262 C420,248 432,244 444,244 L456,244 L456,330 L640,330 L640,312 L654,312 L654,392 L640,392 L640,360 L436,360 L436,392 Z"/><path d="M470,330 C472,312 488,304 514,306 L532,330 Z"/></g>`;
+// la cuisine : l'horloge dorée sort les devis finis, la pile dorée monte
+const Hc = { x: 392, y: 898, s: .72, balancier: 12, heure: 120, minute: -60, armL: [30, -20], armR: [-118, 34], or: true };
+s += O.horloge(Hc);
+s += `<g filter="url(#glow)">${O.pile(598, 898, 21, { w: 132, h: 9, gap: 2.2, seed: 5, fill: 'url(#orGrad)' })}</g>`;
+// un devis fini en vol du cadran vers la pile, avec ses échos
+const vol = (x, y, rot, sc, op, blur) => `<g opacity="${op}"${blur ? ` filter="url(#${blur})"` : ''}><g transform="translate(${x},${y}) scale(${sc})">${O.devis(-60, -80, 120, 160, rot, 'url(#orGrad)')}</g></g>`;
+s += vol(436, 604, -24, .42, .18, 'b4') + vol(482, 566, -12, .44, .32, 'b2_5') + `<g filter="url(#glow)">${vol(540, 556, 8, .46, 1, '')}</g>`;
+// la fenêtre de la cuisine : châssis et croisillons
+s += `<g fill="${C.ombre}"><path fill-rule="evenodd" d="M260,438 h420 v462 h-420 Z M274,452 h392 v434 h-392 Z"/><rect x="497" y="452" width="9" height="434"/><rect x="274" y="514" width="392" height="9"/></g>`;
+
+// 2. le jardin : l'arbre et sa grosse branche, la balançoire
+s += O.arbre(1712, 912, 980, 14, { fill: C.ombre, lean: 3, depth: 6, w: 74 });
+s += `<path fill="${C.ombre}" d="M1690,612 C1600,470 1470,352 1300,322 C1230,310 1170,312 1126,318 L1124,330 C1180,328 1236,330 1300,342 C1460,374 1588,488 1676,646 Z"/>`;
+s += `<path fill="${C.ombre}" d="M1200,318 C1180,280 1150,262 1110,256 L1112,262 C1150,272 1170,290 1186,322 Z M1420,352 C1410,300 1420,262 1452,232 L1456,238 C1430,266 1424,302 1432,352 Z"/>`;
+const piv = [1330, 337], L = 430, sF = .74;
+const balEtFille = (ang) => O.balancoire(piv[0], piv[1], piv[1] + L, ang, 'url(#orGrad)') +
+  `<g transform="rotate(${ang},${piv[0]},${piv[1]})">` +
+  O.fille({ x: piv[0] - 6, y: piv[1] + L - 4 + 112 * sF, s: sF, seated: true, fill: 'url(#orFille)', armF: [-110, -60], armB: [140, 30], head: -8 }) + `</g>`;
+// échos de l'arc : la balançoire vient de partir des mains du père
+s += `<g opacity=".14" filter="url(#b4)">${balEtFille(7)}</g><g opacity=".28" filter="url(#b2_5)">${balEtFille(-7)}</g>`;
+s += `<g filter="url(#glow)">${balEtFille(-22)}</g>`;
+// le père, doré, les bras encore tendus vers l'avant
+s += `<g filter="url(#glow)">${O.pere({ x: 1112, y: 908, s: .74, fill: 'url(#orPere)', armF: [-58, -14], armB: [-66, -6], legF: [-18, 8], legB: [24, 4], head: -4 })}</g>`;
+
+// étincelles : traînée le long de l'arc, poussière dans l'air du soir
+const r = O.R(77); let tr = '';
+for (let i = 0; i < 46; i++) {
+  const a = 9 - r() * 32, rr = L - 60 - r() * 170;
+  const x = piv[0] - rr * Math.sin(rad(a)) + (r() - .5) * 26, y = piv[1] + rr * Math.cos(rad(a)) + (r() - .5) * 26;
+  tr += `<circle cx="${f(x)}" cy="${f(y)}" r="${f(.8 + Math.pow(r(), 3) * 3.4)}" fill="${r() < .5 ? C.orClair : '#FFE7B0'}" opacity="${f(.3 + r() * .6)}"/>`;
+}
+s += `<g filter="url(#glowS)">${tr}</g>`;
+s += O.etincelles(760, 140, 1880, 860, 70, 12) + O.etincelles(300, 460, 700, 860, 26, 5);
+
+// sol, herbes du jardin
+s += `<rect x="736" y="904" width="1200" height="60" fill="${C.ombre}"/>`;
+s += O.herbes(730, 1930, 912, 46, 9, C.ombre, 1.3);
+// 1. avant-plan : grandes herbes floues coupées par les bords du cadre
+// touffe : brins larges (une herbe fine disparaît dans le flou)
+const touffe = (x0, x1, y, h, seed) => { const q = O.R(seed); let dd = '';
+  for (let x = x0; x < x1; x += 12 + q() * 16) { const hh = h * (.45 + q() * .6), lean = (q() - .5) * hh * .7, w = 26 + q() * 26;
+    dd += `M${f(x)},${y} Q${f(x + lean * .25)},${f(y - hh * .6)} ${f(x + lean)},${f(y - hh)} Q${f(x + lean * .3 + w)},${f(y - hh * .5)} ${f(x + w)},${y} Z `; }
+  return `<path d="${dd}"/>`; };
+s += `<g filter="url(#b14)" fill="#0B0603">${touffe(1590, 1990, 1040, 460, 21)}</g>`;
+s += `<g filter="url(#b9)" fill="#0B0603">${touffe(728, 960, 1030, 330, 23)}</g>`;
+// étincelles au premier plan, hors de la mise au point
+const bk = O.R(91); let bo = '';
+for (const [x, y, rr] of [[1840, 120, 34], [1600, 70, 18], [70, 60, 26], [880, 160, 14], [1880, 560, 22], [790, 470, 16]]) bo += `<circle cx="${x}" cy="${y}" r="${rr}" fill="#F2C46A" opacity="${f(.16 + bk() * .16)}"/>`;
+s += `<g filter="url(#b9)">${bo}</g>`;
+// sol au premier plan (bande des sous-titres)
+s += `<rect x="0" y="940" width="1920" height="140" fill="#0B0603"/>`;
+s += O.voile();
+document.getElementById('s').innerHTML = s;
+</script></body></html>

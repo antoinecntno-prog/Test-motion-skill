@@ -104,7 +104,14 @@
       // couette côté lointain, qui dépasse au-dessus
       `<path d="M-14,-322 C-20,-342 -36,-354 -54,-350 C-46,-344 -40,-336 -38,-328 C-30,-326 -22,-324 -14,-322 Z"/>` +
       `<circle cx="-16" cy="-324" r="6"/></g>`;
-    g += arm(6, -226, p.armF);
+    if (p.menton) {
+      // coudes posés sur les genoux, avant-bras qui remontent en V devant la robe, mains sous le menton
+      g += `<path d="M2,-232 L12,-222 L70,-122 L60,-118 Z"/>`;
+      g += `<path d="M58,-124 L68,-128 L52,-248 L44,-246 Z"/><path d="M66,-120 L76,-122 L58,-244 L50,-244 Z"/>`;
+      g += `<circle cx="48" cy="-250" r="7.5"/><circle cx="55" cy="-247" r="7"/>` + (p.rivets ? rivet(64, -122, 2.2) : '');
+    } else {
+      g += arm(6, -226, p.armF);
+    }
     if (p.seated) {
       g += leg(-4, -118, [-88, 86]) + leg(8, -118, [-84, 80]);
     }
@@ -160,7 +167,7 @@
     const arm = (sx, sy, [sh, el]) => {
       const [u, ex, ey] = seg(sx, sy, 52, 9, 8, sh);
       const [fa, wx, wy] = seg(ex, ey, 46, 8, 7, sh + el);
-      return u + fa + `<g transform="translate(${f(wx)},${f(wy)}) rotate(${f(sh + el)})"><path d="M-6,0 C-8,10 -4,18 0,20 C4,18 8,10 6,0 Z"/></g>` + (p.rivets ? rivet(ex, ey, 2.4) : '');
+      return u + fa + `<g transform="translate(${f(wx)},${f(wy)}) rotate(${f(sh + el)})"><path d="M-7,0 L-7,13 A7,7 0 0 0 7,13 L7,0 Z"/></g>` + (p.rivets ? rivet(ex, ey, 2.4) : '');
     };
     g += arm(-88, -190, p.armL) + arm(88, -190, p.armR);
     if (p.rivets) g += rivet(-88, -190, 3) + rivet(88, -190, 3);

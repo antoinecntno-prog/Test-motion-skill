@@ -23,3 +23,5 @@ _references/
 __pycache__/
 # Captures de contrôle des pilotes (lourdes, refaites à la demande)
 */pilote/snap-*/
+# Copies de travail des agents (profilage du monde de référence)
+*/reference/_*.html

@@ -71,7 +71,7 @@ Verdicts : **tenu**, **tenu après correction**, **non tenu**. Temps locaux à l
     fois, s'effaçait, retrouva, glissa, vit, se mit au travail, s'automatisait, poussait, dessinèrent, rendre).
 12. **Au moins la moitié des plans sur 3 niveaux, une parallaxe par acte** : tenu (28 plans sur 28 en quatre plans,
     sauf le noir du pivot en trois ; parallaxe ×1,8 / ×1 / ×0,5 / ×0,2 pendant chaque dérive, dans les deux actes).
-13. **Couches animées : régime ≥ 2, pic 3 à 4, un seul élément actif à la fois** : tenu.
+13. **Couches animées : régime ≥ 2, pic 3 à 4, un seul élément actif par instant** : tenu.
 14. **Rime** : tenu (la pile de l'accroche devient le tronc d'or ; l'arc du balancier devient celui de la balançoire ;
     les lettres I et A d'ombre reviennent en or ; le second dinosaure répond au premier ; les cases éteintes se
     rallument).

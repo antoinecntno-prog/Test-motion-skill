@@ -1,0 +1,2647 @@
+<template>
+  <style>
+  /* ===================== KIT OMBRES : début du bloc CSS à copier ===================== */
+  @font-face { font-family: "Fraunces"; font-weight: 600; font-style: normal; font-display: block; src: url("assets/fonts/fraunces-latin-600-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Fraunces"; font-weight: 700; font-style: normal; font-display: block; src: url("assets/fonts/fraunces-latin-700-normal.woff2") format("woff2"); }
+  @font-face { font-family: "DM Sans"; font-weight: 500; font-style: normal; font-display: block; src: url("assets/fonts/dm-sans-latin-500-normal.woff2") format("woff2"); }
+  @font-face { font-family: "DM Sans"; font-weight: 700; font-style: normal; font-display: block; src: url("assets/fonts/dm-sans-latin-700-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Caveat"; font-weight: 700; font-style: normal; font-display: block; src: url("assets/fonts/caveat-latin-700-normal.woff2") format("woff2"); }
+  :root {
+    --om-toile: #EFDDB8; --om-toile-centre: #FFF3D6; --om-toile-2: #C9A46E; --om-brume: #8A6440; --om-brume-2: #5E4128;
+    --om-ombre: #1B120B; --om-ombre-2: #2A1C11; --om-ombre-sol: #0F0905; --om-creme: #FFF4DC; --om-or: #C98A2E;
+    --om-or-clair: #E0A84A; --om-nuit: #3E2812; --om-bordeaux: #7A1E2E; --om-bordeaux-clair: #9B2F3F;
+  }
+  /* calques : le canvas du monde (plans 1 à 4), puis les aides HTML au-dessus */
+  .om-calque { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; pointer-events: none; }
+  .om-ecran { display: block; background: var(--om-ombre-sol); }
+  /* sous-titre : la phrase de la voix en bas au centre, bande y 890 à 980 (haut du texte à y 896), DM Sans 500 60 px crème */
+  .om-phrase { position: absolute; left: 0; right: 0; top: 896px; height: 72px; text-align: center; white-space: nowrap;
+    font: 500 60px/72px "DM Sans", sans-serif; color: var(--om-creme); letter-spacing: -0.005em;
+    text-shadow: 0 2px 12px rgba(15, 9, 5, .9); }
+  .om-mot { display: inline-block; position: relative; }
+  .om-phrase .om-mot { opacity: 0; }
+  /* boîte bordeaux du mot clé : marge 4 14 8 px, coins 6 px (frame.md, key-box), AUCUNE marge ajoutée à l'espace normal
+     entre les mots ; tracée depuis la gauche (scaleX 0 → 1) */
+  .om-boite { display: inline-block; position: relative; padding: 4px 14px 8px; margin: 0; line-height: 60px; }
+  .om-fond { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background: var(--om-bordeaux); border-radius: 6px;
+    transform-origin: 0 50%; transform: scaleX(0); }
+  .om-boite > .om-mot { text-shadow: none; }
+  /* trait d'or des pics : coup de pinceau effilé (6 px au centre, 1 px aux bouts) sous le mot */
+  .om-trait { position: absolute; left: -3px; top: 61px; width: calc(100% + 6px); height: 8px; overflow: visible; visibility: hidden; }
+  /* bloc de preuve : « 10 h » Fraunces 700 150 px or-clair centré à (960, 230), deux lignes DM Sans 500 40 px crème, le
+     tout dans le ciel, au-dessus du faîte du toit au recul final (faîte à l'écran vers y 448) */
+  .om-preuve { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; text-align: center; }
+  .om-chiffre { position: absolute; left: 0; right: 0; top: 140px; height: 180px; font: 700 150px/180px "Fraunces", serif;
+    color: var(--om-or-clair); font-variant-numeric: tabular-nums; transform-origin: 50% 50%;
+    text-shadow: 0 0 26px rgba(224, 168, 74, .5), 0 2px 10px rgba(15, 9, 5, .55); }
+  .om-ligne { position: absolute; left: 0; right: 0; font: 500 40px/52px "DM Sans", sans-serif; color: var(--om-creme);
+    text-shadow: 0 2px 12px rgba(15, 9, 5, .95), 0 0 30px rgba(15, 9, 5, .9), 0 0 54px rgba(15, 9, 5, .75); }
+  .om-ligne .om-mot { opacity: 0; }
+  .om-ligne-1 { top: 328px; }
+  .om-ligne-2 { top: 384px; }
+  /* carte de fin : signature Caveat 700 120 px bordeaux (centrée à (960, 360), masque de gauche à droite), « formateur IA »,
+     le bouton bordeaux 640 × 96 coins 10, la ligne d'adresses, le curseur de papier et l'onde du clic */
+  .om-fin { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+  .om-signature { position: absolute; left: 50%; top: 282px; transform: translateX(-50%); white-space: nowrap;
+    font: 700 120px/156px "Caveat", cursive; color: var(--om-bordeaux); padding: 0 24px; }
+  .om-formateur { position: absolute; left: 0; right: 0; top: 428px; text-align: center; font: 500 34px/44px "DM Sans", sans-serif;
+    color: var(--om-brume-2); }
+  .om-bouton { position: absolute; left: 640px; top: 592px; width: 640px; height: 96px; border-radius: 10px;
+    background: var(--om-bordeaux); display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 18px rgba(27, 18, 11, .25); }
+  .om-bouton-texte { font: 700 32px/1 "DM Sans", sans-serif; color: var(--om-creme); white-space: nowrap; }
+  .om-adresses { position: absolute; left: 0; right: 0; top: 724px; text-align: center; font: 500 24px/32px "DM Sans", sans-serif;
+    color: var(--om-brume-2); }
+  .om-curseur { position: absolute; left: 0; top: 0; width: 38px; height: 48px; filter: drop-shadow(0 4px 5px rgba(27, 18, 11, .35)); }
+  /* onde du clic : un anneau arrondi qui s'écarte du bouton (outline-offset) et s'efface, sans toucher les textes voisins */
+  .om-onde { position: absolute; left: 640px; top: 592px; width: 640px; height: 96px; border-radius: 10px; box-sizing: border-box;
+    outline: 4px solid var(--om-bordeaux); outline-offset: 2px; visibility: hidden; }
+  /* le noir final : piloté par l'opacité seule (avec options.clip, HyperFrames écrit lui-même la visibilité de ce calque) */
+  .om-noir { background: #000; opacity: 0; }
+  /* ===================== KIT OMBRES : fin du bloc CSS à copier ===================== */
+
+  /* séquence 4 : la racine (stylée par son id) ; les couches de la preuve et de la carte de fin ne servent pas ici */
+  #p04-root { position: relative; width: 1920px; height: 1080px; overflow: hidden; }
+  #p04-preuve, #p04-fin { opacity: 0; }
+  </style>
+  <!-- séquence 4 « Interminable Attente » : le kit crée dans la racine le canvas du monde (#p04-ecran) et les couches HTML
+       (#p04-sous, #p04-preuve, #p04-fin, #p04-noir), toutes class="clip" de 0 à 3,96 s, pistes 1 à 5 -->
+  <div id="p04-root" data-composition-id="04-attente" data-width="1920" data-height="1080" data-duration="3.96"></div>
+  <script>
+(function () {
+/* ===================== KIT OMBRES : début du kit JS à copier ===================== */
+/* Kit du conte d'ombres « Le Temps perdu » (charte : frame.md). À coller MOT POUR MOT à l'intérieur de la fonction
+   immédiate de la séquence : « const OM » reste local, rien n'est déclaré au niveau global. Les textures, les listes
+   du décor, les calques et les sprites dorés sont partagés par toutes les séquences de la page dans window.__OMBRES_om5
+   (même graine, même texture ; indexé sur la version du kit).
+   Usage :
+     const om = OM.creer(racine, 'p01', { phrases: [...] });      // rend la main tout de suite
+     OM.brancher(om, 'p01', D, etatDe, (tl, proxy) => { ... });   // timeline enregistrée APRÈS la préparation
+   dessiner(etat) est une fonction pure de l'état (voir l'en-tête de la page de référence pour le schéma de l'état).
+   Aucun Math.random, aucune horloge du navigateur, aucune animation CSS. */
+const OM = (() => {
+  /* ================================================================ 0. constantes, hasard, courbes, pistes, matrices */
+  const L = 1920, H = 1080, IPS = 30, IPS_POSE = 12, SOL = 900, S0 = 1.5;
+  /* version du kit : l'espace partagé de la page (textures, listes du décor, calques, sprites) est indexé dessus ; deux
+     copies différentes du kit dans la même page le signalent par console.error au lieu de se mélanger en silence */
+  const VERSION = 'om5';
+  const G = (() => {
+    const vs = (window.__OMBRES_VERSIONS = window.__OMBRES_VERSIONS || []);
+    if (!vs.includes(VERSION)) vs.push(VERSION);
+    if (vs.length > 1) console.error(`kit ombres : plusieurs versions du kit dans la page (${vs.join(', ')}) : recopier le même kit dans chaque séquence`);
+    const nom = '__OMBRES_' + VERSION;
+    return (window[nom] = window[nom] || { tex: {}, ops: new Map(), calques: {}, sprites: new Map(), octetsSprites: 0, nListes: 0, avis: new Set() });   // sprites : ≤ 64 Mo
+  })();
+  const avis = (cle, msg) => { if (!G.avis.has(cle)) { G.avis.add(cle); console.warn('kit ombres : ' + msg); } };
+  const C = {
+    toile: '#EFDDB8', toileCentre: '#FFF3D6', toile2: '#C9A46E', brume: '#8A6440', brume2: '#5E4128',
+    ombre: '#1B120B', ombre2: '#2A1C11', ombreSol: '#0F0905', creme: '#FFF4DC', or: '#C98A2E', orClair: '#E0A84A',
+    nuit: '#3E2812', bordeaux: '#7A1E2E', bordeauxClair: '#9B2F3F', voile: '#140B05', carte: '#F8EDD3', rivet: '#5A4028',
+    avant: '#0E0805', papier: '#EAD6AC',
+  };
+  const f = (n) => Math.round(n * 10) / 10;
+  const rad = (d) => d * Math.PI / 180;
+  const deg = (r) => r * 180 / Math.PI;
+  const borne = (v, a = 0, b = 1) => (v < a ? a : v > b ? b : v);
+  const lerp = (a, b, u) => a + (b - a) * u;
+  /* hasard à graine du kit (mulberry32) et hachages du moteur */
+  const R = (seed) => { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
+  function h32(a) {
+    a |= 0; a = Math.imul(a ^ (a >>> 16), 0x21f0aaad); a = Math.imul(a ^ (a >>> 15), 0x735a2d97);
+    return (a ^ (a >>> 15)) >>> 0;
+  }
+  const h01 = (a) => h32(a) / 4294967296;
+  const h2 = (x, y, s) => h01(Math.imul(x | 0, 0x27d4eb2d) ^ Math.imul(y | 0, 0x165667b1) ^ Math.imul((s | 0) + 1, 0x9e3779b9));
+  /* bruit de valeur 2D, périodique si px/py > 0 (tuiles sans couture) */
+  function bruit(x, y, s, px = 0, py = 0) {
+    const xi = Math.floor(x), yi = Math.floor(y), fx = x - xi, fy = y - yi;
+    const ux = fx * fx * (3 - 2 * fx), uy = fy * fy * (3 - 2 * fy);
+    const w = (i, j) => h2(px ? ((i % px) + px) % px : i, py ? ((j % py) + py) % py : j, s);
+    const a = w(xi, yi), b = w(xi + 1, yi), c = w(xi, yi + 1), d = w(xi + 1, yi + 1);
+    return a + (b - a) * ux + (c - a) * uy + (a - b - c + d) * ux * uy;
+  }
+  function fbm(x, y, s, oct, px = 0, py = 0) {
+    let v = 0, a = 1, n = 0, k = 1;
+    for (let i = 0; i < oct; i++) { v += a * bruit(x * k, y * k, s + i * 101, px * k, py * k); n += a; a *= 0.5; k *= 2; }
+    return v / n;
+  }
+
+  /* courbes au nom GSAP, sans dépendance (power1 à power4, expo, sine, circ ; in, out, inOut) */
+  const COURBES = {};
+  function courbe(nom) {
+    if (typeof nom === 'function') return nom;
+    const cle = nom || 'none';
+    if (COURBES[cle]) return COURBES[cle];
+    const [fam, typ = 'out'] = cle.split('.');
+    const PUISS = { power1: 2, power2: 3, power3: 4, power4: 5, quad: 2, cubic: 3, quart: 4, quint: 5, strong: 5 };
+    let ent = null;
+    if (PUISS[fam]) { const n = PUISS[fam]; ent = (u) => Math.pow(u, n); }
+    else if (fam === 'expo') ent = (u) => (u <= 0 ? 0 : Math.pow(2, 10 * (u - 1)));
+    else if (fam === 'sine') ent = (u) => 1 - Math.cos(u * Math.PI / 2);
+    else if (fam === 'circ') ent = (u) => 1 - Math.sqrt(Math.max(0, 1 - u * u));
+    let g;
+    if (fam === 'none' || fam === 'linear') g = (u) => u;
+    else if (!ent) g = (typeof window !== 'undefined' && window.gsap) ? window.gsap.parseEase(cle) : (u) => u;
+    else if (typ === 'in') g = ent;
+    else if (typ === 'inOut') g = (u) => (u < 0.5 ? ent(2 * u) / 2 : 1 - ent(2 - 2 * u) / 2);
+    else g = (u) => 1 - ent(1 - u);
+    const fn = (u) => g(u <= 0 ? 0 : u >= 1 ? 1 : u);
+    COURBES[cle] = fn;
+    return fn;
+  }
+  /* piste([[t, valeur, courbe d'arrivée], ...]) → f(t) ; valeur nombre ou tableau ; tenue avant la 1re et après la dernière clé */
+  function piste(cles) {
+    const n = cles.length;
+    return function (t) {
+      if (t <= cles[0][0]) return cles[0][1];
+      for (let i = 1; i < n; i++) {
+        const c1 = cles[i];
+        if (t < c1[0]) {
+          const c0 = cles[i - 1], u = courbe(c1[2] || 'none')((t - c0[0]) / (c1[0] - c0[0]));
+          const v0 = c0[1], v1 = c1[1];
+          if (typeof v0 === 'number') return v0 + (v1 - v0) * u;
+          const r = new Array(v0.length);
+          for (let j = 0; j < v0.length; j++) r[j] = v0[j] + (v1[j] - v0[j]) * u;
+          return r;
+        }
+      }
+      return cles[n - 1][1];
+    };
+  }
+  /* oscillation amortie finie, déclenchée à des instants donnés : [[t0, amplitude], ...] */
+  const amortie = (coups, periode, tau) => (t) => {
+    let v = 0;
+    for (const [t0, a] of coups) if (t >= t0) { const d = t - t0; v += a * Math.exp(-d / tau) * Math.cos(2 * Math.PI * d / periode); }
+    return v;
+  };
+  /* temps de pose : les marionnettes changent de pose à 12 i/s */
+  const tPose = (t) => Math.floor(t * IPS_POSE + 1e-6) / IPS_POSE;
+
+  /* matrices 2D [a, b, c, d, e, f] */
+  const Mx = {
+    id: () => [1, 0, 0, 1, 0, 0],
+    mul: (m, n) => [m[0] * n[0] + m[2] * n[1], m[1] * n[0] + m[3] * n[1], m[0] * n[2] + m[2] * n[3], m[1] * n[2] + m[3] * n[3],
+      m[0] * n[4] + m[2] * n[5] + m[4], m[1] * n[4] + m[3] * n[5] + m[5]],
+    tr: (x, y) => [1, 0, 0, 1, x, y],
+    ech: (sx, sy = sx) => [sx, 0, 0, sy, 0, 0],
+    rot: (dg, cx = 0, cy = 0) => {
+      const a = dg * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
+      return [c, s, -s, c, cx - c * cx + s * cy, cy - s * cx - c * cy];
+    },
+    app: (m, x, y) => [m[0] * x + m[2] * y + m[4], m[1] * x + m[3] * y + m[5]],
+    inv: (m) => { const d = m[0] * m[3] - m[1] * m[2];
+      return [m[3] / d, -m[1] / d, -m[2] / d, m[0] / d, (m[2] * m[5] - m[3] * m[4]) / d, (m[1] * m[4] - m[0] * m[5]) / d]; },
+  };
+  const chaineM = (...ms) => ms.reduce((a, b) => Mx.mul(a, b));
+  function lireTransform(str) {
+    let m = Mx.id(); const re = /([a-zA-Z]+)\s*\(([^)]*)\)/g; let k;
+    while ((k = re.exec(str))) {
+      const a = k[2].split(/[\s,]+/).filter(Boolean).map(Number); let n;
+      switch (k[1]) {
+        case 'translate': n = Mx.tr(a[0], a[1] || 0); break;
+        case 'scale': n = Mx.ech(a[0], a.length > 1 ? a[1] : a[0]); break;
+        case 'rotate': n = Mx.rot(a[0], a[1] || 0, a[2] || 0); break;
+        case 'matrix': n = a.slice(0, 6); break;
+        case 'skewX': n = [1, 0, Math.tan(a[0] * Math.PI / 180), 1, 0, 0]; break;
+        case 'skewY': n = [1, Math.tan(a[0] * Math.PI / 180), 0, 1, 0, 0]; break;
+        default: continue;
+      }
+      m = Mx.mul(m, n);
+    }
+    return m;
+  }
+  /* cinématique inverse d'un bras à deux segments (convention du kit : 0 = pendant, négatif = vers l'avant) :
+     [épaule, coude] en degrés pour que la main atteigne T (repère local), coude vers le bas */
+  function ik(S, T, l1, l2) {
+    const dx = T[0] - S[0], dy = T[1] - S[1], d = Math.max(1e-3, Math.min(Math.hypot(dx, dy), (l1 + l2) * 0.995));
+    const base = Math.atan2(-dx, dy), off = Math.acos(borne((l1 * l1 + d * d - l2 * l2) / (2 * l1 * d), -1, 1));
+    let best = null;
+    for (const sg of [1, -1]) {
+      const sh = base + sg * off, ex = S[0] - l1 * Math.sin(sh), ey = S[1] + l1 * Math.cos(sh);
+      const fa = Math.atan2(-(T[0] - ex), T[1] - ey);
+      if (!best || ey > best.ey) best = { sh, fa, ey };
+    }
+    const el = ((((best.fa - best.sh) * 180 / Math.PI) + 540) % 360) - 180;
+    return [f(best.sh * 180 / Math.PI), f(el)];
+  }
+
+  /* ================================================================ 1. kit de silhouettes (chaînes SVG, copie corrigée de _ombres.js)
+     Repère : y vers le bas. Marionnettes : pieds à (0, 0), profil tourné vers la droite (flip -1 : vers la gauche).
+     Angles des membres en degrés : 0 = membre pendant, négatif = vers l'avant (la droite du profil).
+     Corrections du film : échelles pere 0,66, fille 0,76, horloge 0,70 ; roulettes à trois ajours ; bras arrière écarté
+     du manteau dans les poses debout et de marche ; tiges arrêtées au sol (y 900). */
+  function seg(px, py, len, w0, w1, a) {
+    const d = `M${f(-w0 / 2)},0 L${f(-w1 / 2)},${f(len)} A${f(w1 / 2)},${f(w1 / 2)} 0 0 0 ${f(w1 / 2)},${f(len)} ` +
+      `L${f(w0 / 2)},0 A${f(w0 / 2)},${f(w0 / 2)} 0 0 0 ${f(-w0 / 2)},0 Z`;
+    const ex = px - len * Math.sin(rad(a)), ey = py + len * Math.cos(rad(a));
+    return [`<path d="${d}" transform="translate(${f(px)},${f(py)}) rotate(${f(a)})"/>`, ex, ey];
+  }
+  const rivet = (x, y, r = 2.6) => `<circle class="rivet" cx="${f(x)}" cy="${f(y)}" r="${r}"/>`;
+  const disque = (cx, cy, r) => `M${f(cx + r)},${f(cy)} A${f(r)},${f(r)} 0 1 0 ${f(cx - r)},${f(cy)} A${f(r)},${f(r)} 0 1 0 ${f(cx + r)},${f(cy)} Z`;
+  const rct = (x0, y0, x1, y1) => `M${f(x0)},${f(y0)} L${f(x1)},${f(y0)} L${f(x1)},${f(y1)} L${f(x0)},${f(y1)} Z `;
+
+  /* ---------- le père (échelle du film 0,66 : 396 u de haut) */
+  const PERE = { epaF: [6, -478], epaB: [-2, -478], hanche: -222, bras: [116, 104], jambe: [112, 112], dos: [-16, -400] };
+  function pere(o = {}) {
+    const p = Object.assign({ x: 0, y: 0, s: 0.66, flip: 1, armF: [-14, -26], armB: [28, 10], legF: [-4, 4], legB: [6, 2],
+      head: 0, hand: null, extra: '', fill: C.ombre, rivets: true, manteau: -210 }, o);
+    let g = '';
+    const leg = (hx, hy, [hip, knee]) => {
+      const [t, kx, ky] = seg(hx, hy, 112, 17, 12, hip);
+      const [s2, ax, ay] = seg(kx, ky, 112, 12, 9, hip + knee);
+      const shoe = `<path d="M${f(ax - 7)},${f(ay - 6)} L${f(ax + 28)},${f(ay + 1)} C${f(ax + 36)},${f(ay + 3)} ${f(ax + 36)},${f(ay + 10)} ${f(ax + 28)},${f(ay + 10)} L${f(ax - 9)},${f(ay + 10)} Z"/>`;
+      return t + s2 + shoe + (p.rivets ? rivet(kx, ky) : '');
+    };
+    const arm = (sx, sy, [sh, el], hand) => {
+      const [u, ex, ey] = seg(sx, sy, 116, 13, 10, sh);
+      const [fa, wx, wy] = seg(ex, ey, 104, 10, 8, sh + el);
+      const ha = sh + el;
+      const mitt = `<g transform="translate(${f(wx)},${f(wy)}) rotate(${f(ha)})"><path d="M-6,-2 C-8,10 -6,22 0,26 C6,24 8,12 6,-2 Z"/>` +
+        `<path d="M4,2 C10,4 13,10 11,14 C8,12 6,9 3,8 Z"/></g>`;
+      return u + fa + (hand === 'none' ? '' : mitt) + (p.rivets ? rivet(ex, ey) : '');
+    };
+    /* partie 'brasB' : le bras arrière seul, de l'épaule à la main (point d'attache net de la chaîne quand il s'efface) */
+    if (p.partie === 'brasB') return `<g transform="translate(${f(p.x)},${f(p.y)}) scale(${f(p.s * p.flip * 1000) / 1000},${p.s})" fill="${p.fill}">${arm(-2, -478, p.armB)}</g>`;
+    g += leg(-8, -222, p.legB);
+    g += arm(-2, -478, p.armB);
+    g += leg(8, -222, p.legF);
+    // manteau raide, col ; ourlet au genou (y -210), plus haut à genou (les cuisses sortent du manteau)
+    const ou = p.manteau, kx = (ou + 340) / 130, xd = 38 + 14 * kx, xg = -32 - 14 * kx;
+    g += `<path d="M-24,-496 L18,-496 C30,-492 34,-480 34,-466 L38,-340 L${f(xd)},${ou} L${f(xg)},${ou} L-32,-340 L-30,-466 C-30,-484 -28,-492 -24,-496 Z"/>`;
+    g += `<path d="M8,-497 L24,-480 L14,-468 Z"/>`;
+    // tête de profil, sans expression
+    g += `<g transform="rotate(${f(p.head)},4,-500)"><path d="M-8,-506 C-26,-520 -30,-552 -20,-574 C-10,-594 18,-600 30,-588 C38,-580 41,-570 39,-561 L53,-545 L40,-541 C42,-535 40,-529 36,-526 L40,-517 C32,-511 20,-509 12,-507 L10,-494 L-6,-494 Z"/>` +
+      `<path d="M-24,-560 C-30,-580 -14,-602 8,-603 C24,-604 34,-596 38,-586 C26,-592 10,-594 -2,-588 C-14,-582 -20,-572 -24,-560 Z"/></g>`;
+    g += arm(6, -478, p.armF, p.hand);
+    if (p.rivets) g += rivet(6, -478, 3) + rivet(8, -222, 3);
+    g += p.extra;
+    return `<g transform="translate(${f(p.x)},${f(p.y)}) scale(${f(p.s * p.flip * 1000) / 1000},${p.s})" fill="${p.fill}">${g}</g>`;
+  }
+  /* point de la main (bras 'F' avant, 'B' arrière) d'un père, dans le repère de la scène */
+  function mainPere(o, bras = 'F') {
+    const p = Object.assign({ x: 0, y: 0, s: 0.66, flip: 1, armF: [-14, -26], armB: [28, 10] }, o);
+    const [sx, sy] = bras === 'B' ? PERE.epaB : PERE.epaF;
+    const [sh, el] = bras === 'B' ? p.armB : p.armF;
+    const ex = sx - 116 * Math.sin(rad(sh)), ey = sy + 116 * Math.cos(rad(sh));
+    const wx = ex - 104 * Math.sin(rad(sh + el)), wy = ey + 104 * Math.cos(rad(sh + el));
+    return [p.x + wx * p.s * p.flip, p.y + wy * p.s];
+  }
+
+  /* ---------- la fillette (cinq ans, deux couettes ; échelle du film 0,76 : 251 u debout) */
+  const FILLE = { epaF: [6, -226], epaB: [-2, -226], hanche: -124, hancheAssise: -118, bras: [56, 50], jambe: [62, 58], dos: [-14, -196] };
+  function fille(o = {}) {
+    const p = Object.assign({ x: 0, y: 0, s: 0.76, flip: 1, armF: [-30, -30], armB: [14, -10], legF: [-6, 4], legB: [8, 2],
+      legsAssis: [[-88, 86], [-84, 80]], head: 0, seated: false, menton: false, fill: C.ombre, rivets: true, extra: '' }, o);
+    let g = '';
+    const leg = (hx, hy, [hip, knee]) => {
+      const [t, kx, ky] = seg(hx, hy, 62, 11, 9, hip);
+      const [s2, ax, ay] = seg(kx, ky, 58, 9, 7, hip + knee);
+      return t + s2 + `<path d="M${f(ax - 6)},${f(ay - 4)} L${f(ax + 14)},${f(ay - 3)} C${f(ax + 23)},${f(ay - 2)} ${f(ax + 24)},${f(ay + 8)} ${f(ax + 15)},${f(ay + 8)} L${f(ax - 8)},${f(ay + 8)} Z"/>` + (p.rivets ? rivet(kx, ky, 2) : '');
+    };
+    const arm = (sx, sy, [sh, el]) => {
+      const [u, ex, ey] = seg(sx, sy, 56, 9, 8, sh);
+      const [fa, wx, wy] = seg(ex, ey, 50, 8, 7, sh + el);
+      return u + fa + `<circle cx="${f(wx)}" cy="${f(wy)}" r="7"/>` + (p.rivets ? rivet(ex, ey, 2) : '');
+    };
+    if (!p.seated) g += leg(-8, -124, p.legB);
+    g += arm(-2, -226, p.armB);
+    if (!p.seated) g += leg(6, -124, p.legF);
+    // robe trapèze
+    g += `<path d="M-15,-238 L11,-238 C21,-234 24,-226 24,-214 L50,-118 C28,-110 -28,-110 -48,-118 L-24,-214 C-24,-228 -22,-235 -15,-238 Z"/>`;
+    // tête ronde de profil, frange, couettes
+    g += `<g transform="rotate(${f(p.head)},0,-240)">` +
+      `<path d="M-26,-262 C-41,-280 -37,-312 -14,-322 C4,-330 30,-324 40,-304 C44,-296 45,-290 44,-284 L51,-277 L43,-272 C42,-264 38,-256 30,-252 C20,-246 6,-246 -4,-248 L-2,-236 L-14,-236 L-16,-250 C-22,-254 -24,-258 -26,-262 Z"/>` +
+      `<path d="M-30,-300 C-26,-326 8,-336 30,-318 C40,-310 44,-300 44,-292 C36,-304 22,-312 6,-312 C-8,-312 -22,-306 -30,-300 Z"/>` +
+      `<path d="M-30,-298 C-48,-306 -66,-296 -72,-276 C-70,-264 -64,-256 -58,-252 C-60,-264 -58,-276 -50,-282 C-46,-284 -40,-286 -34,-288 Z"/>` +
+      `<circle cx="-34" cy="-294" r="7"/>` +
+      `<path d="M-14,-322 C-20,-342 -36,-354 -54,-350 C-46,-344 -40,-336 -38,-328 C-30,-326 -22,-324 -14,-322 Z"/>` +
+      `<circle cx="-16" cy="-324" r="6"/></g>`;
+    if (p.menton) {
+      // coudes posés sur les genoux, avant-bras en V devant la robe, mains sous le menton
+      g += `<path d="M2,-232 L12,-222 L70,-122 L60,-118 Z"/>`;
+      g += `<path d="M58,-124 L68,-128 L52,-248 L44,-246 Z"/><path d="M66,-120 L76,-122 L58,-244 L50,-244 Z"/>`;
+      g += `<circle cx="48" cy="-250" r="7.5"/><circle cx="55" cy="-247" r="7"/>` + (p.rivets ? rivet(64, -122, 2.2) : '');
+    } else {
+      g += arm(6, -226, p.armF);
+    }
+    if (p.seated) g += leg(-4, -118, p.legsAssis[0]) + leg(8, -118, p.legsAssis[1]);
+    g += p.extra;
+    return `<g transform="translate(${f(p.x)},${f(p.y)}) scale(${f(p.s * p.flip * 1000) / 1000},${p.s})" fill="${p.fill}">${g}</g>`;
+  }
+
+  /* ---------- engrenage, roue de bois à trois ajours (sa rotation se voit), le Temps perdu */
+  function engrenage(cx, cy, r, dents = 10, rot = 0, trou = 0.32) {
+    let d = '';
+    const n = dents * 2;
+    for (let i = 0; i < n; i++) {
+      const a0 = rad(rot + (i / n) * 360), a1 = rad(rot + ((i + 1) / n) * 360);
+      const rr = i % 2 === 0 ? r : r * 0.8;
+      d += (i === 0 ? 'M' : 'L') + f(cx + rr * Math.cos(a0)) + ',' + f(cy + rr * Math.sin(a0)) + ' L' + f(cx + rr * Math.cos(a1)) + ',' + f(cy + rr * Math.sin(a1)) + ' ';
+    }
+    d += 'Z ';
+    const h = r * trou;
+    d += `M${f(cx + h)},${f(cy)} A${f(h)},${f(h)} 0 1 0 ${f(cx - h)},${f(cy)} A${f(h)},${f(h)} 0 1 0 ${f(cx + h)},${f(cy)} Z`;
+    return `<path fill-rule="evenodd" d="${d}"/>`;
+  }
+  function roue(cx, cy, a, r = 21) {
+    let d = `${disque(cx, cy, r)} ${disque(cx, cy, r * 0.17)} `;
+    for (let i = 0; i < 3; i++) { const b = rad(a + i * 120); d += disque(cx + r * 0.6 * Math.cos(b), cy + r * 0.6 * Math.sin(b), r * 0.24) + ' '; }
+    return `<path fill-rule="evenodd" d="${d}"/>`;
+  }
+  /* le Temps perdu : horloge comtoise trapue sur deux roulettes (échelle du film 0,70 ; cadran r 80 à 270 u du sol) */
+  const HORLOGE = { cadran: -386, epaL: [-88, -190], epaR: [88, -190], bras: [52, 46], pivot: -262, lentille: 132 };
+  /* partie : 'corps' (tout ce qui ne tourne pas), ou une pièce mobile tracée à l'angle 0 ('roueG', 'roueD', 'balancier',
+     'engr1', 'engr2', 'heure', 'minute') que placerHorloge fait tourner par la matrice (PIECES_HORLOGE) : le corps garde la
+     même liste, son sprite et son halo, quand l'horloge roule et que son balancier bat */
+  function horloge(o = {}) {
+    const p = Object.assign({ x: 0, y: 0, s: 0.70, heure: -60, minute: 140, balancier: 8, armL: [24, -30], armR: [-24, 30],
+      roue: 0, engr: 0, fill: C.ombre, rivets: true, papier: C.papier, partie: null }, o);
+    const pt = p.partie, tout = !pt, corps = tout || pt === 'corps';
+    const ba = pt ? 0 : p.balancier, ro = pt ? 0 : p.roue, en = pt ? 0 : p.engr;
+    let g = '';
+    if (tout || pt === 'roueG') g += roue(-48, -21, ro);
+    if (tout || pt === 'roueD') g += roue(48, -21, ro + 40);
+    if (corps) {
+      g += `<path d="M-80,-36 L80,-36 L72,-66 L-72,-66 Z"/>`;
+      // ventre bombé et sa fenêtre en lentille (ajourée)
+      g += `<path fill-rule="evenodd" d="M-70,-64 C-106,-112 -106,-204 -66,-252 C-60,-264 -60,-280 -54,-292 L54,-292 C60,-280 60,-264 66,-252 C106,-204 106,-112 70,-64 Z ` +
+        `M0,-272 C42,-238 42,-118 0,-88 C-42,-118 -42,-238 0,-272 Z"/>`;
+    }
+    // balancier : tige, lentille ajourée, engrenages
+    if (tout || pt === 'balancier') {
+      const lx = -132 * Math.sin(rad(ba)), ly = -262 + 132 * Math.cos(rad(ba));
+      g += `<path d="M-2,-262 L2,-262 L${f(lx + 2)},${f(ly)} L${f(lx - 2)},${f(ly)} Z"/>`;
+      g += `<path fill-rule="evenodd" d="${disque(lx, ly, 22)} ${disque(lx, ly, 9)}"/>`;
+    }
+    if (tout || pt === 'engr1') g += engrenage(-14, -232, 17, 9, 12 + en);
+    if (tout || pt === 'engr2') g += engrenage(14, -214, 12, 7, 30 - en * 9 / 7);
+    const aig = (ang, len, w) => `<path d="M${-w / 2},4 L${f(-w / 3)},${-len} L0,${-len - 8} L${f(w / 3)},${-len} L${w / 2},4 Z" transform="translate(0,-386) rotate(${f(ang)})"/>`;
+    if (pt === 'heure') g += aig(0, 30, 8);
+    if (pt === 'minute') g += aig(0, 46, 5);
+    if (corps) {
+      g += `<path d="M-56,-290 L56,-290 L60,-312 L-60,-312 Z"/>`;
+      // cadran : disque, fenêtre ronde, graduations et aiguilles dans la fenêtre
+      g += `<path fill-rule="evenodd" d="${disque(0, -386, 80)} ${disque(0, -386, 58)}"/>`;
+      if (p.papier) g += `<circle cx="0" cy="-386" r="58.5" fill="${p.papier}"/>`;   // cadran de papier, sous la lumière de sa case
+      for (let i = 0; i < 12; i++) {
+        const a = rad(i * 30), r0 = 48, r1 = i % 3 === 0 ? 58 : 54;
+        g += `<path d="M${f(Math.sin(a) * r0 - 2)},${f(-386 - Math.cos(a) * r0)} L${f(Math.sin(a) * r1 - 2)},${f(-386 - Math.cos(a) * r1)} L${f(Math.sin(a) * r1 + 2)},${f(-386 - Math.cos(a) * r1)} L${f(Math.sin(a) * r0 + 2)},${f(-386 - Math.cos(a) * r0)} Z"/>`;
+      }
+      if (tout) g += aig(p.heure, 30, 8) + aig(p.minute, 46, 5);
+      g += `<circle cx="0" cy="-386" r="7"/>`;
+      // couronne à pommeaux
+      g += `<path d="M-74,-430 C-52,-486 52,-486 74,-430 C60,-446 30,-458 0,-458 C-30,-458 -60,-446 -74,-430 Z"/>`;
+      g += `<circle cx="-70" cy="-440" r="9"/><circle cx="70" cy="-440" r="9"/><circle cx="0" cy="-482" r="11"/>`;
+      // bras courts sur tiges, mains rondes
+      const arm = (sx, sy, [sh, el]) => {
+        const [u, ex, ey] = seg(sx, sy, 52, 9, 8, sh);
+        const [fa, wx, wy] = seg(ex, ey, 46, 8, 7, sh + el);
+        return u + fa + `<g transform="translate(${f(wx)},${f(wy)}) rotate(${f(sh + el)})"><path d="M-7,0 L-7,13 A7,7 0 0 0 7,13 L7,0 Z"/></g>` + (p.rivets ? rivet(ex, ey, 2.4) : '');
+      };
+      g += arm(-88, -190, p.armL) + arm(88, -190, p.armR);
+      if (p.rivets) g += rivet(-88, -190, 3) + rivet(88, -190, 3);
+    }
+    return `<g transform="translate(${f(p.x)},${f(p.y)}) scale(${p.s})" fill="${p.fill}">${g}</g>`;
+  }
+  /* pièces mobiles de l'horloge : [partie, paramètre et signe de son angle, pivot (repère de l'horloge, avant l'échelle)] */
+  const PIECES_HORLOGE = [['roueG', 'roue', 1, -48, -21], ['roueD', 'roue', 1, 48, -21], ['balancier', 'balancier', 1, 0, -262],
+    ['engr1', 'engr', 1, -14, -232], ['engr2', 'engr', -9 / 7, 14, -214], ['heure', 'heure', 1, 0, -386], ['minute', 'minute', 1, 0, -386]];
+  /* centre de la lentille du balancier, dans le repère de la scène (avant la rotation « penche ») */
+  function lentille(o) {
+    const p = Object.assign({ x: 0, y: 0, s: 0.70, balancier: 8 }, o);
+    return [p.x - 132 * Math.sin(rad(p.balancier)) * p.s, p.y + (-262 + 132 * Math.cos(rad(p.balancier))) * p.s];
+  }
+  /* main d'un bras de l'horloge ('L' gauche, 'R' droite), repère de la scène */
+  function mainHorloge(o, bras = 'R') {
+    const p = Object.assign({ x: 0, y: 0, s: 0.70, armL: [24, -30], armR: [-24, 30] }, o);
+    const [sx, sy] = bras === 'L' ? HORLOGE.epaL : HORLOGE.epaR, [sh, el] = bras === 'L' ? p.armL : p.armR;
+    const ex = sx - 52 * Math.sin(rad(sh)), ey = sy + 52 * Math.cos(rad(sh));
+    return [p.x + (ex - 46 * Math.sin(rad(sh + el))) * p.s, p.y + (ey + 46 * Math.cos(rad(sh + el)) + 10) * p.s];
+  }
+
+  /* ---------- chaîne de papier (maillons ajourés rx 9, ry 14, pas 19), posés à pas constant le long d'une polyligne */
+  function chaine(pts, o = {}) {
+    const p = Object.assign({ pas: 19, rx: 9, ry: 14, fill: C.ombre }, o);
+    let g = '', k = 0, reste = 0;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const [x0, y0] = pts[i], [x1, y1] = pts[i + 1];
+      const Ls = Math.hypot(x1 - x0, y1 - y0);
+      if (Ls < 1e-6) continue;
+      const ang = Math.atan2(y1 - y0, x1 - x0) * 180 / Math.PI;
+      let d = reste;
+      while (d <= Ls) {
+        const t = d / Ls, x = x0 + (x1 - x0) * t, y = y0 + (y1 - y0) * t;
+        const plat = k % 2 === 1, rx = plat ? p.rx * 0.35 : p.rx, ry = p.ry;
+        g += `<path fill-rule="evenodd" transform="translate(${f(x)},${f(y)}) rotate(${f(ang - 90)})" d="M0,${-ry} C${f(rx * 1.3)},${-ry} ${f(rx * 1.3)},${ry} 0,${ry} C${f(-rx * 1.3)},${ry} ${f(-rx * 1.3)},${-ry} 0,${-ry} Z ` +
+          (plat ? '' : `M0,${-ry + 5} C${f((rx - 5) * 1.3)},${-ry + 5} ${f((rx - 5) * 1.3)},${ry - 5} 0,${ry - 5} C${f(-(rx - 5) * 1.3)},${ry - 5} ${f(-(rx - 5) * 1.3)},${-ry + 5} 0,${-ry + 5} Z`) + `"/>`;
+        k++; d += p.pas;
+      }
+      reste = d - Ls;
+    }
+    return `<g fill="${p.fill}">${g}</g>`;
+  }
+  /* points d'une chaîne pendue entre a et b (chaînette approchée) : longueur libre, tension 0 (mou) à 1 (droite) */
+  function courbeChaine(a, b, longueur = 360, tension = 0) {
+    const d = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    const fl = d < longueur ? Math.sqrt((longueur / 2) ** 2 - (d / 2) ** 2) * 0.55 : 0;
+    const sag = Math.max(3, fl * (1 - borne(tension)));
+    const m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2 + 2 * sag], pts = [];
+    for (let i = 0; i <= 12; i++) { const t = i / 12, u = 1 - t; pts.push([u * u * a[0] + 2 * u * t * m[0] + t * t * b[0], u * u * a[1] + 2 * u * t * m[1] + t * t * b[1]]); }
+    return pts;
+  }
+
+  /* ---------- devis : pile vue de profil (lames de 7 u, léger désordre tiré d'une graine), feuille de face ajourée de colonnes */
+  function pile(x, y, n, o = {}) {
+    const p = Object.assign({ w: 118, h: 7, gap: 1.6, seed: 3, fill: C.ombre }, o);
+    const r = R(p.seed); let g = '', yy = y;
+    for (let i = 0; i < n; i++) {
+      const dx = (r() - 0.5) * 14, w = p.w * (0.92 + r() * 0.12), rot = (r() - 0.5) * 2.4;
+      g += `<rect x="${f(x - w / 2 + dx)}" y="${f(yy - p.h)}" width="${f(w)}" height="${p.h}" transform="rotate(${f(rot)},${f(x)},${f(yy)})"/>`;
+      yy -= p.h + p.gap;
+    }
+    return `<g fill="${p.fill}">${g}</g>`;
+  }
+  function devis(x, y, w = 120, h = 160, rot = 0, fill = C.ombre) {
+    let d = `M0,0 L${w},0 L${w},${h} L0,${h} Z `;
+    const lignes = Math.max(3, Math.floor((h - 30) / 18));
+    for (let r = 0; r < lignes; r++) {
+      const yy = 22 * h / 160 + r * 18 * h / 160, e = Math.max(3, 6 * h / 160);
+      d += `M${f(w * 0.1)},${f(yy)} L${f(w * 0.5)},${f(yy)} L${f(w * 0.5)},${f(yy + e)} L${f(w * 0.1)},${f(yy + e)} Z M${f(w * 0.68)},${f(yy)} L${f(w * 0.9)},${f(yy)} L${f(w * 0.9)},${f(yy + e)} L${f(w * 0.68)},${f(yy + e)} Z `;
+    }
+    return `<path fill="${fill}" fill-rule="evenodd" transform="translate(${f(x)},${f(y)}) rotate(${f(rot)})" d="${d}"/>`;
+  }
+  /* feuille simple qui tourne (pas le devis ajouré) : rectangle centré, coin corné ; flip = largeur apparente (−1 à 1) */
+  function feuilleSimple(x, y, w, h, rot = 0, flip = 1, fill = C.ombre) {
+    const k = Math.abs(flip) < 0.06 ? 0.06 * Math.sign(flip || 1) : flip;
+    return `<g transform="translate(${f(x)},${f(y)}) rotate(${f(rot)}) scale(${f(k * 100) / 100},1)" fill="${fill}">` +
+      `<path d="M${f(-w / 2)},${f(-h / 2)} L${f(w / 2 - 9)},${f(-h / 2)} L${f(w / 2)},${f(-h / 2 + 9)} L${f(w / 2)},${f(h / 2)} L${f(-w / 2)},${f(h / 2)} Z"/></g>`;
+  }
+
+  /* feuille posée au sol, vue de profil : 3 u d'épaisseur à plat, le bout qui se relève et se corne (lisible sur la lumière
+     du sol) ; flip -1 : le bout relevé à gauche */
+  function feuilleSol(w = 66, flip = 1) {
+    return `<g transform="scale(${flip < 0 ? -1 : 1},1)" fill="${C.ombre}"><path d="M${f(-w / 2)},-1 L${f(w / 2 - 16)},-1 C${f(w / 2 - 6)},-1 ${f(w / 2 - 1)},-5 ${f(w / 2 + 2)},-14 ` +
+      `L${f(w / 2 - 1)},-15 C${f(w / 2 - 4)},-8 ${f(w / 2 - 9)},-4.5 ${f(w / 2 - 17)},-4.5 L${f(-w / 2)},-4.5 Z"/></g>`;
+  }
+
+  /* ---------- le petit dinosaure sous son champignon (papier découpé, œil et pois ajourés) */
+  function dino(x, y, s = 1, fill = C.ombre, o = {}) {
+    let g = '';
+    if (o.champignon !== false) {
+      g += `<path d="M-92,-176 C-96,-120 -100,-56 -108,0 L-52,0 C-58,-56 -62,-120 -62,-176 Z"/>`;
+      g += `<path fill-rule="evenodd" d="M-196,-170 C-188,-268 54,-268 62,-170 C10,-160 -144,-160 -196,-170 Z ${disque(-140, -196, 12)} ${disque(-86, -228, 15)} ${disque(-26, -206, 11)} ${disque(24, -184, 8)} ${disque(-176, -178, 7)}"/>`;
+    }
+    g += `<path fill-rule="evenodd" d="M-104,-12 C-84,-16 -66,-22 -56,-30 C-60,-60 -30,-80 6,-78 C28,-77 40,-74 48,-86 C56,-104 60,-124 74,-138 C84,-146 100,-144 104,-132 C106,-124 100,-118 90,-118 C80,-118 74,-112 72,-100 C70,-80 64,-56 56,-40 C52,-22 40,-12 24,-10 L-40,-10 C-60,-10 -84,-8 -104,-12 Z ${disque(92, -133, 3.6)}"/>`;
+    g += `<path d="M-44,-66 L-38,-82 L-30,-70 L-22,-86 L-14,-74 L-6,-88 L2,-77 Z"/>`;
+    g += `<rect x="-38" y="-16" width="15" height="16" rx="5"/><rect x="-16" y="-16" width="15" height="16" rx="5"/><rect x="14" y="-16" width="15" height="16" rx="5"/><rect x="32" y="-16" width="15" height="16" rx="5"/>`;
+    return `<g transform="translate(${f(x)},${f(y)}) scale(${s})" fill="${fill}">${g}</g>`;
+  }
+  /* tracés du second dinosaure (lignes d'or) : polylignes échantillonnées, dans l'ordre cou, dos, queue, pattes, champignon, œil */
+  const TRACES_DINO = ['M-104,-12 C-84,-16 -66,-22 -56,-30 C-60,-60 -30,-80 6,-78 C28,-77 40,-74 48,-86 C56,-104 60,-124 74,-138 C84,-146 100,-144 104,-132 C106,-124 100,-118 90,-118 C80,-118 74,-112 72,-100 C70,-80 64,-56 56,-40 C52,-22 40,-12 24,-10 L-40,-10 C-60,-10 -84,-8 -104,-12',
+    'M-44,-62 L-38,-80 L-30,-68 L-22,-84 L-14,-72 L-6,-86 L2,-75', 'M-30,-10 L-30,4 M-8,-10 L-8,4 M22,-10 L22,4 M40,-12 L40,4',
+    'M-196,-170 C-188,-268 54,-268 62,-170 C10,-160 -144,-160 -196,-170', 'M-92,-168 C-96,-120 -100,-56 -106,4 M-62,-168 C-60,-120 -58,-56 -54,4',
+    'M-150,6 L90,6', 'M90,-133 L93,-133'];
+
+  /* ---------- arbre nu (branches récursives), herbes, clôture, tige de marionnette */
+  function arbre(x, y, h, seed = 1, o = {}) {
+    const p = Object.assign({ fill: C.ombre, lean: 0, depth: 6, w: h * 0.07 }, o);
+    const r = R(seed); let d = '';
+    const branch = (bx, by, len, ang, w, dep) => {
+      const ex = bx + len * Math.sin(rad(ang)), ey = by - len * Math.cos(rad(ang));
+      const nx = Math.cos(rad(ang)), ny = Math.sin(rad(ang));
+      const w1 = w * 0.62;
+      d += `M${f(bx - nx * w / 2)},${f(by - ny * w / 2)} L${f(ex - nx * w1 / 2)},${f(ey - ny * w1 / 2)} L${f(ex + nx * w1 / 2)},${f(ey + ny * w1 / 2)} L${f(bx + nx * w / 2)},${f(by + ny * w / 2)} Z `;
+      if (dep <= 0 || len < 8) return;
+      const k = 2 + (r() < 0.45 ? 1 : 0);
+      for (let i = 0; i < k; i++) {
+        const na = ang + (r() - 0.5) * 70 + (i - (k - 1) / 2) * 22;
+        branch(ex, ey, len * (0.62 + r() * 0.18), na, w1, dep - 1);
+      }
+    };
+    branch(x, y, h * 0.36, p.lean, p.w, p.depth);
+    return `<path fill="${p.fill}" d="${d}"/>`;
+  }
+  function herbes(x0, x1, y, h, seed = 2, fill = C.ombre, dens = 1.4) {
+    const r = R(seed); let d = '';
+    for (let x = x0; x < x1; x += 3 / dens + r() * 5) {
+      const hh = h * (0.4 + r() * 0.8), lean = (r() - 0.5) * hh * 0.6, w = 2 + r() * 3;
+      d += `M${f(x)},${f(y)} Q${f(x + lean * 0.3)},${f(y - hh * 0.6)} ${f(x + lean)},${f(y - hh)} Q${f(x + lean * 0.3 + w)},${f(y - hh * 0.55)} ${f(x + w)},${f(y)} Z `;
+    }
+    return `<path fill="${fill}" d="${d}"/>`;
+  }
+  function cloture(x0, x1, y, h, seed = 4, fill = C.ombre, lisse = 2.5) {
+    const r = R(seed); let g = '';
+    for (let x = x0; x < x1; x += 70 + r() * 40) {
+      const hh = h * (0.8 + r() * 0.4), tilt = (r() - 0.5) * 8;
+      g += `<rect x="${f(x)}" y="${f(y - hh)}" width="10" height="${f(hh)}" transform="rotate(${f(tilt)},${f(x)},${f(y)})"/>`;
+    }
+    g += `<path d="M${x0},${f(y - h * 0.62)} Q${f((x0 + x1) / 2)},${f(y - h * 0.5)} ${x1},${f(y - h * 0.64)}" stroke="${fill}" stroke-width="${lisse}" fill="none"/>`;
+    g += `<path d="M${x0},${f(y - h * 0.32)} Q${f((x0 + x1) / 2)},${f(y - h * 0.22)} ${x1},${f(y - h * 0.34)}" stroke="${fill}" stroke-width="${lisse}" fill="none"/>`;
+    return `<g fill="${fill}">${g}</g>`;
+  }
+  const tige = (x0, y0, x1, y1, w = 2.2, fill = C.ombre) => `<path d="M${f(x0)},${f(y0)} L${f(x1)},${f(y1)}" stroke="${fill}" stroke-width="${w}" stroke-linecap="round" fill="none"/>`;
+
+  /* ---------- meubles et objets de la maison */
+  function lampe(x, y, s = 0.8, fill = C.ombre) {
+    return `<g transform="translate(${f(x)},${f(y)}) scale(${s})" fill="${fill}">` +
+      `<path d="M-30,0 L30,0 L22,-12 L12,-14 C20,-24 22,-38 14,-48 L-14,-48 C-22,-38 -20,-24 -12,-14 L-22,-12 Z"/>` +
+      `<path fill-rule="evenodd" d="M-12,-50 C-22,-70 -22,-96 -10,-112 L10,-112 C22,-96 22,-70 12,-50 Z M-6,-58 C-12,-72 -12,-92 -4,-104 L4,-104 C12,-92 12,-72 6,-58 Z"/></g>`;
+  }
+  function table(x, y, w = 360, h = 150, fill = C.ombre) {
+    return `<g fill="${fill}"><rect x="${f(x - w / 2)}" y="${f(y - h)}" width="${w}" height="14"/>` +
+      `<rect x="${f(x - w / 2 + 16)}" y="${f(y - h)}" width="12" height="${h}"/><rect x="${f(x + w / 2 - 28)}" y="${f(y - h)}" width="12" height="${h}"/></g>`;
+  }
+  function chaise(x, y, s = 1, flip = 1, fill = C.ombre) {
+    return `<g transform="translate(${f(x)},${f(y)}) scale(${f(s * flip * 1000) / 1000},${s})" fill="${fill}"><rect x="-40" y="-120" width="84" height="12"/>` +
+      `<rect x="-40" y="-120" width="10" height="120"/><rect x="34" y="-120" width="10" height="120"/><rect x="-40" y="-260" width="10" height="140"/>` +
+      `<rect x="-40" y="-250" width="30" height="8"/><rect x="-40" y="-200" width="30" height="8"/></g>`;
+  }
+  function tabouret(x, y, h = 96, fill = C.ombre) {
+    return `<g fill="${fill}"><rect x="${x - 34}" y="${y - h}" width="68" height="10" rx="3"/>` +
+      `<path d="M${x - 26},${y - h + 8} L${x - 36},${y} L${x - 28},${y} L${x - 18},${y - h + 8} Z M${x + 18},${y - h + 8} L${x + 28},${y} L${x + 36},${y} L${x + 26},${y - h + 8} Z M${x - 3},${y - h + 8} L${x - 3},${y} L${x + 3},${y} L${x + 3},${y - h + 8} Z"/>` +
+      `<rect x="${x - 30}" y="${f(y - h * 0.42)}" width="60" height="5"/></g>`;
+  }
+  /* balançoire à DEUX cordes et une planche, pivot (x, yTop), planche à yAssise, angle en degrés */
+  function balancoire(x, yTop, yAssise, angle = 0, fill = C.ombre, corde = 4.5) {
+    const Lc = yAssise - yTop;
+    return `<g transform="translate(${f(x)},${f(yTop)}) rotate(${f(angle)})" fill="${fill}">` +
+      `<path d="M-40,0 L-42,${Lc} M40,0 L42,${Lc}" stroke="${fill}" stroke-width="${corde}" stroke-linecap="round" fill="none"/>` +
+      `<rect x="-56" y="${Lc - 4}" width="112" height="12" rx="2"/></g>`;
+  }
+  /* oiseau de papier : deux triangles d'aile pliés ; pose 0 (ailes hautes), 1 (à mi-course), 2 (basses) */
+  function oiseau(pose = 0, fill = C.ombre) {
+    const a = [-1, -0.42, 0.62][((pose % 3) + 3) % 3];
+    const pN = [f(-2 - 8 * Math.abs(a)), f(34 * a)], pF = [f(8 - 5 * Math.abs(a)), f(24 * a - 2)];
+    return `<g fill="${fill}"><path d="M0,-1 L13,-1 L${pF[0]},${pF[1]} Z" opacity=".7"/>` +
+      `<path d="M-24,-5 L-14,0 L-24,5 L-10,2 C0,4 12,4 19,1 L27,-1 L19,-3 C11,-5 0,-5 -10,-2 Z"/>` +
+      `<path d="M-8,0 L11,0 L${pN[0]},${pN[1]} Z"/><path d="M-8,0 L${pN[0]},${pN[1]} L${f(Number(pN[0]) - 7)},${f(Number(pN[1]) * 0.55)} Z" opacity=".8"/></g>`;
+  }
+  function balle(cx, cy, r = 26, rot = 0, fill = C.ombre) {
+    return `<g transform="translate(${f(cx)},${f(cy)}) rotate(${f(rot)})" fill="${fill}"><path fill-rule="evenodd" d="${disque(0, 0, r)} ` +
+      `M${f(-r * 0.73)},${f(-r * 0.31)} C${f(-r * 0.31)},${f(-r * 0.73)} ${f(r * 0.31)},${f(-r * 0.73)} ${f(r * 0.73)},${f(-r * 0.31)} C${f(r * 0.31)},${f(-r * 0.5)} ${f(-r * 0.31)},${f(-r * 0.5)} ${f(-r * 0.73)},${f(-r * 0.31)} Z"/></g>`;
+  }
+  /* dossier ouvert (plats écartés, ouvert 0 à 1) et ses feuilles en éventail (0 à 1), posé en (x, y) */
+  function dossier(x, y, ouvert = 1, eventail = 1, fill = C.ombre) {
+    const a = 70 * ouvert;
+    let g = `<rect x="-46" y="-5" width="46" height="5" transform="rotate(${f(-a / 3)},0,0)"/><rect x="0" y="-5" width="46" height="5" transform="rotate(${f(a / 3)},0,0)"/>`;
+    for (let i = 0; i < 3; i++) g += `<path d="M-3,-4 L-2.5,-58 L3.5,-56 L3,-4 Z" transform="rotate(${f((i - 1) * 17 * eventail - 6 * eventail)},0,-4)"/>`;
+    return `<g transform="translate(${f(x)},${f(y)})" fill="${fill}">${g}</g>`;
+  }
+  /* la carte du dessin (108 × 98 cernée d'ombre 4,5 u, penchée, deux punaises) centrée en (x, y) ; dinosaure dedans ou non */
+  function carteDessin(x, y, o = {}) {
+    const p = Object.assign({ w: 108, h: 98, rot: -4, dino: true, s: 1, papier: C.carte, punaises: 2 }, o);
+    const w = p.w, h = p.h;
+    let g = `<rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" fill="${C.ombre}"/>` +
+      `<rect x="${-w / 2 + 4.5}" y="${-h / 2 + 4.5}" width="${w - 9}" height="${h - 9}" fill="${p.papier}"/>`;
+    if (p.dino) g += dino(13, h / 2 - 12, 0.3, C.ombre) + `<rect x="${-w / 2 + 10}" y="${h / 2 - 12}" width="${w - 20}" height="2" fill="${C.ombre}"/>`;
+    if (p.punaises > 0) g += `<g fill="${C.ombre}"><circle cx="${-w / 2 + 12}" cy="${-h / 2 + 10}" r="4.5"/><circle cx="${w / 2 - 12}" cy="${-h / 2 + 10}" r="4.5"/></g>` +
+      rivet(-w / 2 + 12, -h / 2 + 10, 1.6) + rivet(w / 2 - 12, -h / 2 + 10, 1.6);
+    return `<g transform="translate(${f(x)},${f(y)}) rotate(${f(p.rot)}) scale(${p.s})">${g}</g>`;
+  }
+  /* le petit manteau de la fille et son écharpe, pendus à la patère (crochet en (0, 0)) */
+  const SVG_MANTEAU = `<g fill="${C.ombre}"><path fill-rule="evenodd" d="M-2,-3 L2,-3 L2,6 L-2,6 Z M-9,5 C-4,1 4,1 9,5 L23,13 C29,16 31,21 31,27 L34,72 C34,75 31,77 28,77 L24,77 L23,38 L25,104 C11,108 -11,108 -25,104 L-23,38 L-24,77 L-28,77 C-31,77 -34,75 -34,72 L-31,27 C-31,21 -29,16 -23,13 Z ` +
+    `M-5,7 L0,17 L5,7 Z ${disque(0, 42, 2.6)} ${disque(0, 58, 2.6)} ${disque(0, 74, 2.6)} M-19,84 L-9,84 L-9,90 L-19,90 Z"/>` +
+    `<path d="M-4,2 C-18,14 -34,40 -38,80 C-39,94 -37,108 -35,116 L-28,116 C-31,104 -31,90 -30,80 C-27,46 -14,22 2,6 Z"/>` +
+    `<path d="M-37,116 L-36,124 L-33,124 L-34,116 Z M-31,116 L-30,124 L-27,124 L-28,116 Z"/></g>`;
+
+  /* ================================================================ 2. moteur canvas (pilote mesuré le plus rapide : 7,2 i/s, 3 workers)
+     convertisseur du sous-ensemble SVG du kit en listes d'ops Path2D, caches, textures, plans, flamme, grain, vignettage */
+  const outil = document.createElement('canvas').getContext('2d');
+  const OR_STOPS = [[0, '#FFE7B0'], [0.45, '#E0A84A'], [1, '#C98A2E']];
+  const PEINTURES = {};
+  function radialBB(bb, stops) {
+    const cx = (bb[0] + bb[2]) / 2, cy = (bb[1] + bb[3]) / 2, r = Math.max(1e-3, ((bb[2] - bb[0]) + (bb[3] - bb[1])) / 4);
+    const g = outil.createRadialGradient(cx, cy, 0, cx, cy, r);
+    for (const [o, c] of stops) g.addColorStop(o, c);
+    return g;
+  }
+  PEINTURES.flamme = (bb) => radialBB(bb, [[0, 'rgba(255,246,221,.95)'], [0.35, 'rgba(246,217,160,.55)'], [1, 'rgba(233,198,138,0)']]);
+  const CLASSES = { rivet: { fill: C.rivet } };
+  const SAUTER = new Set(['defs', 'clipPath', 'pattern', 'linearGradient', 'radialGradient', 'filter', 'style', 'text',
+    'mask', 'title', 'desc', 'symbol', 'marker']);
+  const RE_BALISE = /<(\/?)([a-zA-Z][\w:-]*)((?:\s+[\w:-]+\s*=\s*"[^"]*")*)\s*(\/?)>/g;
+  const RE_ATTR = /([\w:-]+)\s*=\s*"([^"]*)"/g;
+  /* boîte englobante approchée d'un chemin SVG */
+  function bboxChemin(d) {
+    const tk = d.match(/[a-zA-Z]|-?(?:\d*\.\d+|\d+\.?)(?:[eE][-+]?\d+)?/g) || [];
+    let i = 0, cmd = 'M', x = 0, y = 0, x0 = 0, y0 = 0, a = Infinity, b = Infinity, c = -Infinity, e = -Infinity;
+    const pt = (px, py) => { if (px < a) a = px; if (py < b) b = py; if (px > c) c = px; if (py > e) e = py; };
+    const nb = () => parseFloat(tk[i++]);
+    while (i < tk.length) {
+      if (/[a-zA-Z]/.test(tk[i])) cmd = tk[i++];
+      const rel = cmd >= 'a', K = cmd.toUpperCase(), ox = rel ? x : 0, oy = rel ? y : 0;
+      if (K === 'Z') { x = x0; y = y0; continue; }
+      if (i >= tk.length) break;
+      switch (K) {
+        case 'M': x = ox + nb(); y = oy + nb(); x0 = x; y0 = y; pt(x, y); cmd = rel ? 'l' : 'L'; break;
+        case 'L': case 'T': x = ox + nb(); y = oy + nb(); pt(x, y); break;
+        case 'H': x = ox + nb(); pt(x, y); break;
+        case 'V': y = oy + nb(); pt(x, y); break;
+        case 'C': pt(ox + nb(), oy + nb()); pt(ox + nb(), oy + nb()); x = ox + nb(); y = oy + nb(); pt(x, y); break;
+        case 'S': case 'Q': pt(ox + nb(), oy + nb()); x = ox + nb(); y = oy + nb(); pt(x, y); break;
+        case 'A': { const rx = nb(), ry = nb(); nb(); nb(); nb(); const nx = ox + nb(), ny = oy + nb();
+          pt(nx - rx, ny - ry); pt(nx + rx, ny + ry); x = nx; y = ny; break; }
+        default: i++;
+      }
+    }
+    return [a, b, c, e];
+  }
+  function lireStyle(s, st) {
+    for (const decl of s.split(';')) {
+      const k = decl.indexOf(':'); if (k < 0) continue;
+      const p = decl.slice(0, k).trim(), v = decl.slice(k + 1).trim();
+      if (p === 'mix-blend-mode') st.mode = v === 'normal' ? null : v;
+      else if (p === 'opacity') st.a *= parseFloat(v);
+      else if (p === 'fill') st.fill = v === 'none' ? null : v;
+      else if (p === 'stroke') st.stroke = v === 'none' ? null : v;
+    }
+  }
+  function heriter(p, at) {
+    const st = Object.assign({}, p);
+    if (at.transform) st.m = Mx.mul(p.m, lireTransform(at.transform));
+    if (at.fill !== undefined) st.fill = at.fill === 'none' ? null : at.fill;
+    if (at['fill-rule']) st.rule = at['fill-rule'];
+    if (at.opacity !== undefined) st.a = p.a * parseFloat(at.opacity);
+    if (at['fill-opacity'] !== undefined) st.fa = parseFloat(at['fill-opacity']);
+    if (at['stroke-opacity'] !== undefined) st.sa = parseFloat(at['stroke-opacity']);
+    if (at.stroke !== undefined) st.stroke = at.stroke === 'none' ? null : at.stroke;
+    if (at['stroke-width'] !== undefined) st.w = parseFloat(at['stroke-width']);
+    if (at['stroke-linecap']) st.cap = at['stroke-linecap'];
+    if (at['stroke-linejoin']) st.join = at['stroke-linejoin'];
+    if (at.class) for (const c of at.class.split(/\s+/)) if (CLASSES[c]) Object.assign(st, CLASSES[c]);
+    if (at.style) lireStyle(at.style, st);
+    return st;
+  }
+  function forme(nom, at) {
+    const n = (v, d = 0) => (v === undefined ? d : parseFloat(v));
+    if (nom === 'path') return at.d ? { p: new Path2D(at.d), bb: () => bboxChemin(at.d) } : null;
+    const p = new Path2D();
+    if (nom === 'circle') { const cx = n(at.cx), cy = n(at.cy), r = n(at.r); p.arc(cx, cy, r, 0, 2 * Math.PI); return { p, bb: () => [cx - r, cy - r, cx + r, cy + r] }; }
+    if (nom === 'ellipse') { const cx = n(at.cx), cy = n(at.cy), rx = n(at.rx), ry = n(at.ry); p.ellipse(cx, cy, rx, ry, 0, 0, 2 * Math.PI); return { p, bb: () => [cx - rx, cy - ry, cx + rx, cy + ry] }; }
+    if (nom === 'rect') {
+      const x = n(at.x), y = n(at.y), w = n(at.width), h = n(at.height), rx = Math.min(n(at.rx, n(at.ry, 0)), w / 2, h / 2);
+      if (rx > 0) p.roundRect(x, y, w, h, rx); else p.rect(x, y, w, h);
+      return { p, bb: () => [x, y, x + w, y + h] };
+    }
+    if (nom === 'line') { const x1 = n(at.x1), y1 = n(at.y1), x2 = n(at.x2), y2 = n(at.y2); p.moveTo(x1, y1); p.lineTo(x2, y2); return { p, bb: () => [Math.min(x1, x2), Math.min(y1, y2), Math.max(x1, x2), Math.max(y1, y2)] }; }
+    return null;
+  }
+  function peinture(val, bb) {
+    if (!val) return null;
+    const k = /^url\(#([\w-]+)\)$/.exec(val);
+    if (k) { const fab = PEINTURES[k[1]]; return fab ? fab(bb()) : null; }
+    return val;
+  }
+  /* compiler(svg, teinte) : analyse une fois une chaîne SVG du kit et rend la liste d'ops (transformations aplaties),
+     avec sa boîte englobante (ops.bb). teinte 'or' : silhouette inversée dorée (dégradé vertical orGrad sur toute la
+     pièce, rivets or sombre, traits or) ; les couleurs « papier » (carte, crème) sont gardées. */
+  const GARDER = new Set([C.carte, C.creme, C.papier, '#FFF4DC', '#F8EDD3']);
+  function compiler(svg, teinte, bbOr) {
+    const ops = [];
+    const pile0 = [{ m: Mx.id(), fill: '#000', rule: 'nonzero', a: 1, fa: 1, sa: 1, stroke: null, w: 1, cap: 'butt', join: 'miter', mode: null }];
+    let saut = 0, k; RE_BALISE.lastIndex = 0;
+    let bx0 = Infinity, by0 = Infinity, bx1 = -Infinity, by1 = -Infinity;
+    while ((k = RE_BALISE.exec(svg))) {
+      const ferme = k[1] === '/', nom = k[2], auto = k[4] === '/';
+      if (saut) { if (SAUTER.has(nom)) { if (ferme) saut--; else if (!auto) saut++; } continue; }
+      if (ferme) { if (nom === 'g' || nom === 'svg' || nom === 'a') pile0.pop(); continue; }
+      if (SAUTER.has(nom)) { if (!auto) saut = 1; continue; }
+      const at = {}; let q; RE_ATTR.lastIndex = 0; while ((q = RE_ATTR.exec(k[3]))) at[q[1]] = q[2];
+      const st = heriter(pile0[pile0.length - 1], at);
+      if (nom === 'g' || nom === 'svg' || nom === 'a') { if (!auto) pile0.push(st); continue; }
+      const fo = forme(nom, at); if (!fo) continue;
+      const bbl = fo.bb(), m = st.m;
+      for (const [x, y] of [[bbl[0], bbl[1]], [bbl[2], bbl[1]], [bbl[0], bbl[3]], [bbl[2], bbl[3]]]) {
+        const X = m[0] * x + m[2] * y + m[4], Y = m[1] * x + m[3] * y + m[5];
+        if (X < bx0) bx0 = X; if (Y < by0) by0 = Y; if (X > bx1) bx1 = X; if (Y > by1) by1 = Y;
+      }
+      const lum = !!(st.fill && /^url\(#flamme\)$/.test(st.fill));
+      ops.push({ p: fo.p, m, f: peinture(st.fill, () => bbl), r: st.rule, a: st.a * st.fa, s: peinture(st.stroke, () => bbl),
+        sa: st.a * st.sa, w: st.w, cap: st.cap, join: st.join, mode: st.mode, lum, fc: st.fill });
+    }
+    ops.bb = ops.length ? [bx0, by0, bx1, by1] : null;
+    if (teinte === 'or' && ops.bb) dorer(ops, bbOr);
+    return ops;
+  }
+  function dorer(ops, bbOr) {
+    const bb = bbOr || ops.bb, cx = (bb[0] + bb[2]) / 2;
+    for (const op of ops) {
+      if (op.f && typeof op.f === 'string') {
+        if (GARDER.has(op.f)) continue;
+        if (op.f === C.rivet) { op.f = '#8C5C1F'; continue; }
+        const iv = Mx.inv(op.m), a = Mx.app(iv, cx, bb[1]), b = Mx.app(iv, cx, bb[3]);
+        const g = outil.createLinearGradient(a[0], a[1], b[0], b[1]);
+        for (const [o, c] of OR_STOPS) g.addColorStop(o, c);
+        op.f = g;
+      }
+      if (op.s && typeof op.s === 'string' && !GARDER.has(op.s)) op.s = '#E3AE55';
+    }
+    ops.or = true;
+  }
+  /* dessinerListe(ctx, ops, M, {alpha, lum, debut, fin, couleur}) : rejoue les ops sous la matrice M ; une liste dorée
+     entière passe par son sprite (silhouette cuite une fois par palier d'échelle, posée d'un seul drawImage) */
+  function dessinerListe(ctx, ops, M, o) {
+    if (ops.or && ops.bb && !(o && (o.couleur || o.debut || (o.fin !== undefined && o.fin < ops.length)))) {
+      if (poserSprite(ctx, ops, M, o && o.alpha !== undefined ? o.alpha : 1)) return;
+    }
+    tracerListe(ctx, ops, M, o);
+  }
+  /* sprites des listes dorées : un dégradé par op coûte cher à chaque image ; la liste est cuite une fois dans un bitmap à
+     l'échelle du palier (2^(1/4)) juste au-dessus de celle de l'écran, puis posée sous M (réduction de 16 % au plus).
+     Partagés par la page, bornés en octets (le plus ancien sort d'abord) ; le résultat ne dépend que de la liste et de M. */
+  const BUDGET_SPRITES = 64 * 1048576;
+  function poserSprite(ctx, ops, M, alpha) {
+    if (ops.__lum === undefined) ops.__lum = ops.some((op) => op.lum);
+    if (ops.__lum) return false;
+    if (Math.abs(M[1]) > 1e-6 || Math.abs(M[2]) > 1e-6) return false;
+    const sc = Math.sqrt(Math.abs(M[0] * M[3] - M[1] * M[2]));
+    if (!(sc > 1e-4)) return true;
+    const b = Math.min(4, Math.pow(2, Math.ceil(Math.log2(sc) * 4 - 1e-6) / 4)), bb = ops.bb;
+    const w = Math.ceil((bb[2] - bb[0]) * b) + 4, h = Math.ceil((bb[3] - bb[1]) * b) + 4;
+    // les petites listes (feuilles et oiseaux qui tournent, petites piles) restent en tracé direct : peu de pixels, et un
+    // sprite par image ne servirait qu'une fois ; les très grandes aussi (au-delà de 4 096 px ou 24 Mo)
+    if (w * h < 60000 || w > 4096 || h > 4096 || w * h * 4 > 24 * 1048576) return false;
+    if (!ops.__id) ops.__id = ++G.nListes;
+    const cle = ops.__id + '@' + b;
+    let sp = G.sprites.get(cle);
+    if (sp) { G.sprites.delete(cle); G.sprites.set(cle, sp); }
+    else {
+      const c = toileHE(w, h); tracerListe(c.getContext('2d'), ops, [b, 0, 0, b, 2 - bb[0] * b, 2 - bb[1] * b]);
+      sp = { c, octets: w * h * 4, runs: w * h >= 600000 ? tuilesPleines(c, 64) : null }; G.sprites.set(cle, sp); G.octetsSprites += sp.octets;
+      for (const [k, v] of G.sprites) { if (G.octetsSprites <= BUDGET_SPRITES || v === sp) break; G.sprites.delete(k); G.octetsSprites -= v.octets; }
+    }
+    const m = chaineM(M, Mx.tr(bb[0] - 2 / b, bb[1] - 2 / b), Mx.ech(1 / b));
+    ctx.globalAlpha = borne(alpha); poserImage(ctx, sp.c, sp.runs, m); ctx.globalAlpha = 1;
+    return true;
+  }
+  /* tracé direct des ops (sans sprite) */
+  function tracerListe(ctx, ops, M, o) {
+    const alpha = o && o.alpha !== undefined ? o.alpha : 1, lum = o && o.lum !== undefined ? o.lum : 1;
+    const debut = (o && o.debut) || 0, fin = o && o.fin !== undefined ? Math.min(o.fin, ops.length) : ops.length;
+    const coul = o && o.couleur;
+    for (let i = debut; i < fin; i++) {
+      const op = ops[i], m = op.m;
+      ctx.setTransform(M[0] * m[0] + M[2] * m[1], M[1] * m[0] + M[3] * m[1], M[0] * m[2] + M[2] * m[3], M[1] * m[2] + M[3] * m[3],
+        M[0] * m[4] + M[2] * m[5] + M[4], M[1] * m[4] + M[3] * m[5] + M[5]);
+      const k = alpha * (op.lum ? lum : 1);
+      if (op.mode) ctx.globalCompositeOperation = op.mode;
+      if (op.f) { ctx.globalAlpha = borne(op.a * k); ctx.fillStyle = coul || op.f; ctx.fill(op.p, op.r); }
+      if (op.s) { ctx.globalAlpha = borne(op.sa * k); ctx.strokeStyle = coul || op.s; ctx.lineWidth = op.w; ctx.lineCap = op.cap; ctx.lineJoin = op.join; ctx.stroke(op.p); }
+      if (op.mode) ctx.globalCompositeOperation = 'source-over';
+    }
+    ctx.globalAlpha = 1;
+  }
+  /* toile hors écran */
+  function toileHE(w, h) { const c = document.createElement('canvas'); c.width = Math.max(1, Math.ceil(w)); c.height = Math.max(1, Math.ceil(h)); return c; }
+  /* dessin flou d'un objet (père qui s'éloigne de la toile) : rendu net dans un calque à la taille de son rectangle
+     d'écran r = [x0, y0, x1, y1], puis UN seul posé filtré ; jamais de filtre op par op. fn(c, base) trace l'objet dans
+     le calque, base étant la matrice écran → calque. Calques partagés par la page (une seule séquence dessine à la fois). */
+  function calque(nom, w, h) {
+    let c = G.calques[nom];
+    if (!c || c.width < w || c.height < h) { c = toileHE(Math.max(w, c ? c.width : 0), Math.max(h, c ? c.height : 0)); G.calques[nom] = c; }
+    return c;
+  }
+  const rectEcran = (bb, M, pts = []) => {
+    const p = [Mx.app(M, bb[0], bb[1]), Mx.app(M, bb[2], bb[1]), Mx.app(M, bb[0], bb[3]), Mx.app(M, bb[2], bb[3]), ...pts];
+    return [Math.min(...p.map((v) => v[0])), Math.min(...p.map((v) => v[1])), Math.max(...p.map((v) => v[0])), Math.max(...p.map((v) => v[1]))];
+  };
+  function dessinerFlou(ctx, r, flouPx, alpha, fn) {
+    const marge = Math.ceil(flouPx * 3) + 2, q = flouPx >= 2.5 ? 0.5 : 1;
+    let x0 = Math.floor(r[0]) - marge, y0 = Math.floor(r[1]) - marge, x1 = Math.ceil(r[2]) + marge, y1 = Math.ceil(r[3]) + marge;
+    x0 = Math.max(x0, -marge * 2); y0 = Math.max(y0, -marge * 2); x1 = Math.min(x1, L + marge * 2); y1 = Math.min(y1, H + marge * 2);
+    const w = x1 - x0, h = y1 - y0, wq = Math.ceil(w * q), hq = Math.ceil(h * q);
+    if (w <= 0 || h <= 0) return;
+    const cf = calque('flou', wq, hq), c = cf.getContext('2d'), cb = calque('flou2', wq, hq), c2 = cb.getContext('2d');
+    c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over'; c.clearRect(0, 0, wq, hq);
+    fn(c, [q, 0, 0, q, -x0 * q, -y0 * q]);
+    c2.setTransform(1, 0, 0, 1, 0, 0); c2.clearRect(0, 0, wq, hq); c2.filter = `blur(${(flouPx * q).toFixed(2)}px)`;
+    c2.drawImage(cf, 0, 0, wq, hq, 0, 0, wq, hq); c2.filter = 'none';
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = borne(alpha);
+    ctx.drawImage(cb, 0, 0, wq, hq, x0, y0, w, h); ctx.globalAlpha = 1;
+  }
+  /* sprite flou pré-rendu d'une petite liste (oiseau proche) : cuit une fois par palier d'échelle et palier de flou
+     (aucun filtre vivant sous la caméra), posé sous M */
+  const PALIERS_FLOU = [2, 3, 4.5, 6.5, 9, 12, 16, 22, 30];
+  function poserFlouCuit(ctx, nom, ops, M, flouPx, alpha) {
+    const sc = Math.sqrt(Math.abs(M[0] * M[3] - M[1] * M[2])); if (!(sc > 1e-4)) return;
+    const b = Math.min(3, Math.pow(2, Math.ceil(Math.log2(sc) * 2 - 1e-6) / 2));   // px du sprite par unité
+    const voulu = flouPx * b / sc, fl = PALIERS_FLOU.reduce((a, v) => (Math.abs(v - voulu) < Math.abs(a - voulu) ? v : a));
+    const sp = tex(`flou:${nom}:${b}:${fl}`, () => {
+      const bb = ops.bb, mg = Math.ceil(fl * 2.6) + 2, w = Math.ceil((bb[2] - bb[0]) * b) + 2 * mg, h = Math.ceil((bb[3] - bb[1]) * b) + 2 * mg;
+      const net = toileHE(w, h); tracerListe(net.getContext('2d'), ops, [b, 0, 0, b, mg - bb[0] * b, mg - bb[1] * b]);
+      const c = toileHE(w, h), x = c.getContext('2d'); x.filter = `blur(${fl}px)`; x.drawImage(net, 0, 0); x.filter = 'none';
+      c.__pose = { ox: bb[0] - mg / b, oy: bb[1] - mg / b, b }; return c;
+    });
+    const p = sp.__pose, m = chaineM(M, Mx.tr(p.ox, p.oy), Mx.ech(1 / p.b));
+    ctx.setTransform(m[0], m[1], m[2], m[3], m[4], m[5]); ctx.globalAlpha = borne(alpha); ctx.drawImage(sp, 0, 0); ctx.globalAlpha = 1;
+  }
+  /* halo pré-rendu d'une liste dorée (une fois par liste, gardé sur la liste) */
+  function haloDe(ops) {
+    if (ops.__halo !== undefined) return ops.__halo;
+    const bb = ops.bb;
+    if (!bb) { ops.__halo = null; return null; }
+    const w = bb[2] - bb[0], h = bb[3] - bb[1], d = Math.min(0.35, 640 / Math.max(w, h, 1));   // halo doux : basse résolution suffit
+    const flou = Math.max(1.5, 9 * d), marge = Math.ceil(flou * 3 + 2);
+    const cw = Math.ceil(w * d) + 2 * marge, ch = Math.ceil(h * d) + 2 * marge;
+    const net = toileHE(cw, ch);
+    tracerListe(net.getContext('2d'), ops, [d, 0, 0, d, marge - bb[0] * d, marge - bb[1] * d], { couleur: '#F2C46A' });
+    const img = toileHE(cw, ch), ci = img.getContext('2d');
+    ci.filter = `blur(${flou.toFixed(2)}px)`; ci.drawImage(net, 0, 0); ci.filter = 'none';
+    ops.__halo = { img, ox: bb[0] - marge / d, oy: bb[1] - marge / d, d, runs: tuilesPleines(img, 24) };
+    return ops.__halo;
+  }
+  /* tuiles non vides d'une image (alpha > 1/255), fusionnées en bandes horizontales [x, y, w, h] : une grande silhouette
+     clairsemée (l'arbre, son halo) ne se pose que là où elle a des pixels */
+  function tuilesPleines(img, T) {
+    if (img.width * img.height < 160000) return null;
+    const W = img.width, Hh = img.height, d = img.getContext('2d').getImageData(0, 0, W, Hh).data, runs = [];
+    for (let ty = 0; ty < Hh; ty += T) {
+      let debut = -1;
+      for (let tx = 0; tx < W + T; tx += T) {   // un tour de plus pour fermer la bande en cours
+        let plein = false;
+        if (tx < W) for (let y = ty; y < Math.min(Hh, ty + T) && !plein; y++) for (let x = tx; x < Math.min(W, tx + T); x++) if (d[(y * W + x) * 4 + 3] > 1) { plein = true; break; }
+        if (plein && debut < 0) debut = tx;
+        if (!plein && debut >= 0) { runs.push([debut, ty, Math.min(W, tx) - debut, Math.min(T, Hh - ty)]); debut = -1; }
+      }
+    }
+    return runs;
+  }
+  /* pose d'une image sous la matrice m, bande par bande quand elle en a (bandes hors du cadre sautées sans rotation) */
+  function poserImage(ctx, img, runs, m) {
+    ctx.setTransform(m[0], m[1], m[2], m[3], m[4], m[5]);
+    if (!runs) { ctx.drawImage(img, 0, 0); return; }
+    const droit = Math.abs(m[1]) < 1e-9 && Math.abs(m[2]) < 1e-9;
+    for (const [x, y, w, h] of runs) {
+      if (droit) { const ax = m[0] * x + m[4], ay = m[3] * y + m[5], bx = ax + m[0] * w, by = ay + m[3] * h;
+        if (Math.max(ax, bx) < 0 || Math.min(ax, bx) > L || Math.max(ay, by) < 0 || Math.min(ay, by) > H) continue; }
+      ctx.drawImage(img, x, y, w, h, x, y, w, h);
+    }
+  }
+  function poserHalo(ctx, ha, M, alpha) {
+    if (!ha || alpha <= 0.01) return;
+    ctx.globalAlpha = borne(alpha);
+    poserImage(ctx, ha.img, ha.runs, chaineM(M, Mx.tr(ha.ox, ha.oy), Mx.ech(1 / ha.d)));
+    ctx.globalAlpha = 1;
+  }
+  /* dessin d'une liste dans sa palette : dorée → halo puis silhouette */
+  function dessinerTeinte(ctx, ops, M, lum, alpha = 1) {
+    if (ops.or) {
+      // petite liste tournée (feuille qui vole, oiseau) : son halo, une tache douce, est posé droit (chemin rapide du canvas)
+      const bb = ops.bb, tourne = Math.abs(M[1]) > 1e-6 || Math.abs(M[2]) > 1e-6;
+      if (tourne && bb && Math.max(bb[2] - bb[0], bb[3] - bb[1]) < 120) {
+        const cx = (bb[0] + bb[2]) / 2, cy = (bb[1] + bb[3]) / 2, [X, Y] = Mx.app(M, cx, cy), sc = Math.sqrt(Math.abs(M[0] * M[3] - M[1] * M[2]));
+        poserHalo(ctx, haloDe(ops), [sc, 0, 0, sc, X - sc * cx, Y - sc * cy], 0.62 * lum * alpha);
+      } else poserHalo(ctx, haloDe(ops), M, 0.62 * lum * alpha);
+    }
+    dessinerListe(ctx, ops, M, { alpha, lum });
+  }
+  /* caches LRU (l'entrée lue repasse en fin) ; une clé détermine entièrement son contenu */
+  function cache(fabrique, max = 400) {
+    const m = new Map();
+    return (cle, ...args) => {
+      let v = m.get(cle);
+      if (v === undefined) { v = fabrique(cle, ...args); m.set(cle, v); if (m.size > max) m.delete(m.keys().next().value); }
+      else { m.delete(cle); m.set(cle, v); }
+      return v;
+    };
+  }
+  /* listes du décor fixe partagées par toutes les séquences de la page (même nom, même chaîne SVG, même liste) */
+  const OPS = G.ops;
+  function opsDe(cle, fab, teinte, bbOr) {
+    const k = cle + '|' + (teinte || '');
+    let v = OPS.get(k);
+    if (!v) { v = compiler(fab(), teinte, bbOr); OPS.set(k, v); }
+    return v;
+  }
+  /* listes des objets animés : la clé EST la chaîne SVG complète (plus la teinte et la boîte de l'or), donc un même dessin
+     donne toujours la même liste, quel que soit l'ordre des images ; les marionnettes et les objets sont tracés à
+     l'origine et posés par la matrice, pour que la clé ne change pas quand ils se déplacent */
+  const compilerPose = (() => {
+    const c = cache((cle, svg, teinte, bbOr) => compiler(svg, teinte, bbOr), 400);
+    return (svg, teinte = null, bbOr = null) => c(`${teinte || ''}|${bbOr ? bbOr.join(',') : ''}|${svg}`, svg, teinte, bbOr);
+  })();
+
+  /* halos communs de l'arbre doré, un par état arrondi (pile, feuilles, or des trois bandes) : la clé détermine le contenu */
+  const halosArbre = cache(() => ({}), 40);
+  /* l'arbre d'or fini, ses morceaux réunis en une seule liste (une par nombre de feuilles) */
+  const arbresCuits = cache(() => [], 80);
+
+  /* ---------- textures générées une fois par bruit à graine fixe, partagées dans window.__OMBRES_om5.tex ----------
+     nom de texture = nature + graine : la même graine donne la même texture quelle que soit la séquence qui la crée.
+     Les « derive: » sont des copies d'exécution (mosaïques) d'une texture, pas des textures. */
+  const TEX = G.tex;
+  function tex(nom, fab) { let v = TEX[nom]; if (!v) { v = fab(); TEX[nom] = v; } return v; }
+  function imageBruit(w, h, fn) {
+    const c = toileHE(w, h), x = c.getContext('2d'), im = x.createImageData(w, h), d = im.data;
+    for (let j = 0, k = 0; j < h; j++) for (let i = 0; i < w; i++, k += 4) { const p = fn(i, j); d[k] = p[0]; d[k + 1] = p[1]; d[k + 2] = p[2]; d[k + 3] = p[3]; }
+    x.putImageData(im, 0, 0); return c;
+  }
+  /* tuile de grain sans couture (256 px) : mouchetures brunes dont l'alpha porte l'assombrissement ; posée en
+     source-over, elle équivaut au multiply du kit sans le coût d'un mode de fusion */
+  function tuileGrain(graine, moyenne, ecart, T = 256) {
+    return imageBruit(T, T, (x, y) => {
+      const g = 0.62 * (h2(x, y, graine) * 2 - 1) + 0.38 * (bruit(x / 2, y / 2, graine + 7, T / 2, T / 2) * 2 - 1);
+      return [41, 26, 13, 255 * borne(moyenne + ecart * g * 1.6)];
+    });
+  }
+  /* mosaïque d'exécution d'une tuile (cadre + une tuile) : on en pose des sous-rectangles 1:1, au pixel entier (une copie
+     1:1 reste rapide que le canvas soit rastérisé par le processeur ou non ; un remplissage en motif ne l'est pas) */
+  function mosaique(tuile) {
+    const T = tuile.width, U = tuile.height, img = toileHE(L + T, H + U), x = img.getContext('2d');
+    for (let j = 0; j < H + U; j += U) for (let i = 0; i < L + T; i += T) x.drawImage(tuile, i, j);
+    return img;
+  }
+  const GRAINS = { g4: [41, 0.075, 0.045], g3: [43, 0.11, 0.06], g2: [47, 0.045, 0.032], g1: [53, 0.12, 0.06] };
+  function grainPlan(nom) {
+    const [graine, moy, ec] = GRAINS[nom];
+    const tuile = tex(`grain:${graine}`, () => tuileGrain(graine, moy, ec));
+    const img = tex(`derive:grain:${graine}`, () => mosaique(tuile));
+    return { tuile, img, T: tuile.width, graine };
+  }
+  /* pose du grain d'un plan : accroché à la translation du plan, décalage tiré d'un hash de l'indice d'image toutes les
+     2 images ; rects écran [x0, y0, x1, y1] (null = tout l'écran) */
+  function poserGrain(ctx, gr, Mp, ii, rects) {
+    const g = Math.floor(ii / 2), T = gr.T;
+    const ox = Math.round(Mp[4]) + Math.floor(h01(g * 7919 + gr.graine) * T), oy = Math.round(Mp[5]) + Math.floor(h01(g * 104729 + gr.graine * 31) * T);
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+    const poser = (x0, y0, x1, y1) => {
+      x0 = Math.max(0, Math.round(x0)); y0 = Math.max(0, Math.round(y0)); x1 = Math.min(L, Math.round(x1)); y1 = Math.min(H, Math.round(y1));
+      if (x1 <= x0 || y1 <= y0) return;
+      const u = (((x0 - ox) % T) + T) % T, v = (((y0 - oy) % T) + T) % T;
+      ctx.drawImage(gr.img, u, v, x1 - x0, y1 - y0, x0, y0, x1 - x0, y1 - y0);
+    };
+    if (!rects) return poser(0, 0, L, H);
+    for (const r of rects) poser(r[0], r[1], r[2], r[3]);
+  }
+  /* toile : cœur radial pré-rendu (512 px, posé à l'échelle : un dégradé se suréchantillonne sans défaut), cuit 3 %
+     plus clair (réserve de la flamme) */
+  const STOPS_TOILE = {
+    clair: [[0, '#FFF3D6'], [0.18, '#F3DFB6'], [0.45, '#D9B784'], [0.75, '#A27646'], [1, '#5B3A20']],
+    nuit: [[0, '#7A5426'], [0.18, '#5E3E1C'], [0.45, '#3E2812'], [0.75, '#24160A'], [1, '#0E0804']],
+  };
+  const plus3 = (hex) => { const v = parseInt(hex.slice(1), 16), k = (n) => Math.min(255, Math.round(n * 1.03));
+    return `rgb(${k(v >> 16)},${k((v >> 8) & 255)},${k(v & 255)})`; };
+  function spriteToile(nom) {
+    return tex(`toile:${nom}`, () => {
+      const T = 512, c = toileHE(T, T), x = c.getContext('2d'), st = STOPS_TOILE[nom];
+      x.fillStyle = plus3(st[st.length - 1][1]); x.fillRect(0, 0, T, T);
+      const g = x.createRadialGradient(T / 2, T / 2, 0, T / 2, T / 2, T / 2);
+      for (const [o, col] of st) g.addColorStop(o, plus3(col));
+      x.fillStyle = g; x.fillRect(0, 0, T, T);
+      return c;
+    });
+  }
+  /* taches et fibres de la toile (feTurbulence du kit refaite en bruit à graine), en basse résolution (1/6 et 1/12),
+     brun dont l'alpha porte l'assombrissement (équivalent multiply) ; une teinte pour la toile claire, une pour la nuit */
+  const TOILE_W = 2880, TOILE_H = 2160;
+  function texTaches(nom) {
+    return tex(`taches:5:${nom}`, () => { const col = nom === 'nuit' ? [16, 8, 3] : [86, 52, 24], k = 6;
+      return imageBruit(TOILE_W / k, TOILE_H / k, (i, j) => { const n = fbm(i * k * 0.006, j * k * 0.006, 5, 4); return [col[0], col[1], col[2], 255 * borne(1.2 - 2.2 * n) * 0.55 * 0.85]; }); });
+  }
+  function texFibres(nom) {
+    return tex(`fibres:11:${nom}`, () => { const col = nom === 'nuit' ? [12, 6, 2] : [64, 38, 17];
+      return imageBruit(TOILE_W / 12, TOILE_H / 2, (i, j) => { const n = fbm(i * 12 * 0.0015, j * 2 * 0.035, 11, 2); return [col[0], col[1], col[2], 255 * borne(1.05 - 1.6 * n) * 0.16]; }); });
+  }
+  /* la toile cuite (copie d'exécution) : cœur radial r 1 150 px (toile claire) ou 1 500 px (toile nuit, comme A3 et C3) au
+     centre d'une image 2 880 × 2 160, taches et fibres étirées et lissées ; posée 1:1 au pixel entier, le cœur sur le sujet
+     du plan, glissant ×0,2 avec le plan 4 */
+  const RAYON_TOILE = { clair: 1150, nuit: 1500 };
+  function toileCuite(nom, doux = false) {   // doux : taches et fibres à moitié (carte de fin), cuite à la première demande
+    return tex(`derive:toile:${nom}${doux ? ':doux' : ''}`, () => {
+      const c = toileHE(TOILE_W, TOILE_H), x = c.getContext('2d', { alpha: false }), st = STOPS_TOILE[nom], r = RAYON_TOILE[nom];
+      x.fillStyle = plus3(st[st.length - 1][1]); x.fillRect(0, 0, TOILE_W, TOILE_H);
+      x.imageSmoothingEnabled = true; x.imageSmoothingQuality = 'high';
+      x.drawImage(spriteToile(nom), TOILE_W / 2 - r, TOILE_H / 2 - r, 2 * r, 2 * r);
+      if (doux) x.globalAlpha = 0.5;
+      x.drawImage(texTaches(nom), 0, 0, TOILE_W, TOILE_H);
+      x.drawImage(texFibres(nom), 0, 0, TOILE_W, TOILE_H);
+      x.globalAlpha = 1;
+      return c;
+    });
+  }
+  /* vignettage chaud (kit defs vignette) : texture 960 × 540, recopiée une fois en pleine résolution pour la pose 1:1 */
+  function vignette() {
+    return tex('derive:vignette', () => {
+      const v = tex('vignette', () => { const c = toileHE(L / 2, H / 2), x = c.getContext('2d');
+        const g = x.createRadialGradient(L / 4, H / 4, 0, L / 4, H / 4, 575);   // un peu plus fort sur les côtés que le kit SVG
+        g.addColorStop(0, 'rgba(20,11,5,0)'); g.addColorStop(0.42, 'rgba(20,11,5,0)');
+        g.addColorStop(0.74, 'rgba(20,11,5,.5)'); g.addColorStop(1, 'rgba(12,6,3,.94)');
+        x.fillStyle = g; x.fillRect(0, 0, L / 2, H / 2); return c; });
+      const c = toileHE(L, H), x = c.getContext('2d'); x.imageSmoothingEnabled = true; x.imageSmoothingQuality = 'high'; x.drawImage(v, 0, 0, L, H); return c;
+    });
+  }
+  /* vignettage serré des cadrages serrés : le même vignettage plus un voile radial centré (transparent jusqu'à 300 px,
+     19 % à 600 px, 45 % au-delà de 900 px) qui ramène le cœur de la toile claire d'un rayon de 1 150 à environ 900 px ;
+     cuit une fois en pleine résolution, posé 1:1 (le cœur de la toile reste à quelques dizaines de px du centre) */
+  function vignetteSerree() {
+    return tex('derive:vignette:serree', () => {
+      const c = toileHE(L, H), x = c.getContext('2d'); x.drawImage(vignette(), 0, 0);
+      const g = x.createRadialGradient(L / 2, H / 2, 0, L / 2, H / 2, 1150);
+      for (const [o, a] of [[0, 0], [0.26, 0], [0.52, 0.19], [0.78, 0.45], [1, 0.45]]) g.addColorStop(o, `rgba(20,11,5,${a})`);
+      x.fillStyle = g; x.fillRect(0, 0, L, H); return c;
+    });
+  }
+  /* flamme + vignettage : la toile est cuite 3 % plus claire ; un voile 1 - m / 1,03 ramène sa luminosité à m ; serre
+     (0 à 1) : part du vignettage serré */
+  function poserVignette(ctx, m, force = 1, serre = 0) {
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+    const d = borne(1 - m / 1.03, 0, 0.2);
+    if (d > 0.001) { ctx.fillStyle = `rgba(0,0,0,${d.toFixed(4)})`; ctx.fillRect(0, 0, L, H); }
+    if (serre < 0.99) { ctx.globalAlpha = force * (1 - serre); ctx.drawImage(vignette(), 0, 0); }
+    if (serre > 0.01) { ctx.globalAlpha = force * serre; ctx.drawImage(vignetteSerree(), 0, 0); }
+    ctx.globalAlpha = 1;
+  }
+  /* sprites ronds pré-rendus : halo de lampe (crème), point de poussière d'or */
+  function spriteRond(nom, stops, T = 128) {
+    return tex(`rond:${nom}`, () => {
+      const c = toileHE(T, T), x = c.getContext('2d'), g = x.createRadialGradient(T / 2, T / 2, 0, T / 2, T / 2, T / 2);
+      for (const [o, col] of stops) g.addColorStop(o, col);
+      x.fillStyle = g; x.fillRect(0, 0, T, T); return c;
+    });
+  }
+  const haloLampe = () => spriteRond('lampe', [[0, 'rgba(255,246,221,.95)'], [0.35, 'rgba(246,217,160,.55)'], [1, 'rgba(233,198,138,0)']], 256);
+  const pointOr = () => spriteRond('or', [[0, 'rgba(255,240,200,1)'], [0.32, 'rgba(242,198,110,.92)'], [0.62, 'rgba(224,168,74,.22)'], [1, 'rgba(201,138,46,0)']], 48);
+  const haloOr = () => spriteRond('halo-or', [[0, 'rgba(255,233,184,.9)'], [0.4, 'rgba(224,168,74,.35)'], [1, 'rgba(201,138,46,0)']], 128);
+  const haloLampeOr = () => spriteRond('lampe-or', [[0, 'rgba(255,231,176,.9)'], [0.35, 'rgba(242,196,106,.5)'], [1, 'rgba(201,138,46,0)']], 256);
+  /* flou de caméra : n tirages décalés (moyenne exacte, alpha 1 / (i + 1)) le long de la direction ('x', 'y', angle en
+     degrés, ou 'zoom' pour un recul ou une plongée) ; le premier tirage, centré et opaque, couvre tout le cadre */
+  /* À partir de 3 px de flou, le monde est réduit UNE fois à demi-résolution (960 × 540), les tirages s'y moyennent par
+     copies 1:1 décalées au pixel entier (le chemin rapide du canvas), puis le tampon est agrandi une seule fois vers
+     l'écran : quatre fois moins de pixels par tirage, et l'image est floue, la demi-résolution ne se voit pas. */
+  function flouTirages(ctx, source, px, n, dir = 'x') {
+    const ang = dir === 'x' ? 0 : dir === 'y' ? 90 : typeof dir === 'number' ? dir : null;
+    if (ang === null) n = Math.min(n, 6);
+    const D = px >= 3 ? 2 : 1, w = L / D, h = H / D;
+    let src = source;
+    if (D > 1 && source.width > w) {   // (un monde peint à demi-résolution n'a pas besoin d'être réduit) const r = calque('tirages-src', w, h).getContext('2d'); r.setTransform(1, 0, 0, 1, 0, 0); r.globalAlpha = 1; r.globalCompositeOperation = 'copy';
+      r.imageSmoothingEnabled = true; r.imageSmoothingQuality = 'low'; r.drawImage(source, 0, 0, L, H, 0, 0, w, h); r.globalCompositeOperation = 'source-over'; src = r.canvas; }
+    const dst = D > 1 ? calque('tirages', w, h).getContext('2d') : ctx;
+    dst.setTransform(1, 0, 0, 1, 0, 0); dst.globalCompositeOperation = 'source-over'; dst.imageSmoothingEnabled = true; dst.imageSmoothingQuality = 'low';
+    dst.globalAlpha = 1; dst.drawImage(src, 0, 0, w, h, 0, 0, w, h);
+    for (let i = 1; i < n; i++) {
+      const u = n === 2 ? 0.5 : (i - 1) / (n - 2), k = -1 + 2 * u;
+      dst.globalAlpha = 1 / (i + 1);
+      if (ang === null) {
+        const z = 1 + k * px / 960;
+        dst.drawImage(src, 0, 0, w, h, w / 2 - w * z / 2, h / 2 - h * z / 2, w * z, h * z);
+      } else {
+        dst.drawImage(src, Math.round(k * px * Math.cos(rad(ang)) / D), Math.round(k * px * Math.sin(rad(ang)) / D));
+      }
+    }
+    dst.globalAlpha = 1;
+    if (D > 1) { ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'low';
+      ctx.drawImage(dst.canvas, 0, 0, w, h, 0, 0, L, H); }
+  }
+
+  /* ---------- plans de profondeur et caméra ----------
+     cam(x, y, s) amène le point (x, y) du monde au centre du cadre (960, 540) à l'échelle s. Plan(k) : un plan de facteur k
+     glisse k fois plus vite que le monde et zoome en (s / 1,5)^k (parallaxe ×1,8 avant-plan, ×1 sujet, ×0,5 brume,
+     ×0,2 toile). Les coordonnées d'un plan sont celles du monde à l'endroit où la caméra le croise. */
+  const PLANS = { 1: 1.8, 2: 1, 3: 0.5, 4: 0.2 };
+  const sigma = (k, s) => k * S0 * Math.pow(s / S0, k);
+  function Plan(k) {
+    return { k, matrice(c) { const sg = sigma(k, c.s); return [sg, 0, 0, sg, L / 2 - sg * c.x, H / 2 - sg * c.y]; } };
+  }
+  const P1 = Plan(1.8), P2 = Plan(1), P3 = Plan(0.5), P4 = Plan(0.2);
+  function cam(x, y, s, flou = 0, dir = 'x') { return { x, y, s, flou, dir }; }
+  /* trajet de caméra : mouvements (crans, whips, reculs, plongées, grue) donnés par des clés
+     [[t, cam(x, y, s, flou, dir), courbe d'arrivée], ...], plus une couche de dérive linéaire qui ne s'arrête jamais,
+     AJOUTÉE aux mouvements : derive = { vx, vy (u/s), vs (part d'échelle par seconde), t0 } */
+  function trajet(cles, derive = {}) {
+    const p = piste(cles.map(([t, c, e]) => [t, [c.x, c.y, c.s, c.flou || 0], e]));
+    const vx = derive.vx || 0, vy = derive.vy || 0, vs = derive.vs || 0, t0 = derive.t0 || 0;
+    return (t) => {
+      const v = p(t), d = t - t0;
+      let dir = cles[cles.length - 1][1].dir || 'x';
+      for (let i = 1; i < cles.length; i++) if (t < cles[i][0]) { dir = cles[i][1].dir || 'x'; break; }
+      return { x: v[0] + vx * d, y: v[1] + vy * d, s: v[2] * (1 + vs * d), flou: v[3], dir };
+    };
+  }
+  /* la flamme : multiplicateur 1 ± 0,03, une clé toutes les 4 images tirée d'un hash, alternée au-dessus puis au-dessous
+     de 1, reliées en ligne droite (aucun lissage lent) */
+  function flamme(t, graine = 3) {
+    const u = Math.max(0, t) * IPS / 4, i = Math.floor(u + 1e-6), w = u - i;
+    const cle = (k) => 1 + (k % 2 === 0 ? 1 : -1) * 0.03 * (0.4 + 0.6 * h01(Math.imul(k + 11, 2246822519) + graine));
+    return cle(i) + (cle(i + 1) - cle(i)) * w;
+  }
+
+  /* ================================================================ 3. le monde entier (frame.md § world), aux coordonnées écrites
+     Monde 6 200 × 1 080 u ; la toile monte jusqu'à y -1 600, le sol (y 900) descend jusqu'à y 1 800 en ombre-sol. */
+  const MONDE = {
+    largeur: 6200, sol: SOL,
+    maison: { x0: 60, x1: 3470, y0: 92, y1: 948, faite: [1765, -120], avantToits: [[20, 100], [3510, 100]] },
+    cases: { E: [120, 438, 870, 900], S: [916, 438, 1720, 900], K: [1768, 438, 3420, 900],
+      P: [120, 132, 870, 392], B: [916, 132, 1720, 392], F: [1768, 132, 3420, 392] },
+    grenier: [[330, 84], [1765, -62], [3200, 84]],
+    // baies des cloisons : linteau à y 470 comme la porte (430 u de passage, le père en fait 406)
+    baies: { ES: [870, 470, 916, 900, 'E', 'S'], SK: [1720, 470, 1768, 900, 'S', 'K'] },
+    // F2 : imposte à y 525 (deux petits carreaux en haut, une grande vitre dessous) : la tête de l'horloge tient dans la vitre
+    ouvertures: { porte: [336, 470, 494, 900], F1: [960, 448, 1170, 640], F2: [2690, 470, 2860, 740] },
+    impostes: { F2: 525 },
+    stations: {
+      porte: [415, 900], patere: [230, 600], pereEntree: [700, 900], filleSalon: [1060, 900], balle: [1150, 874], secretaire: [1310, 770],
+      L1: [1244, 770], pereSalon: [1440, 900], horlogeSalon: [1620, 900], balleChaise: [1520, 874], tabouret: [1940, 900], table: [2220, 760], L2: [2090, 760],
+      pileTable: [2220, 760], pereCuisine: [2460, 900], dessin: [2590, 640], horlogeCuisine: [2780, 900], cadran: [2780, 630],
+      marche: [3060, 842], piedEscalier: [2960, 900], litParents: [600, 392], litFille: [2300, 392], arbre: [4300, 900],
+      pivotBalancoire: [4745, 330], plancheBalancoire: 790, horlogeArbre: [4030, 900], horlogeCloture: [5520, 900],
+      poteau1: [5200, 900], poteau2: [5360, 900], carte1: [5200, 770], carte2: [5360, 770], famille: [5070, 900],
+    },
+    /* cadrages de référence (frame.md § framings) : [x, y, s] ; au cadrage, le sol à l'écran à y 880 au plus */
+    cadrages: {
+      porte: [560, 680, 1.4], entree: [620, 660, 1.3], 'fille-fenetre': [1080, 700, 1.55], secretaire: [1450, 700, 1.6],
+      'horloge-salon': [1600, 700, 1.65], tabouret: [1960, 700, 1.6], table: [2330, 690, 1.55], 'horloge-f2': [2780, 690, 1.55],
+      marche: [3060, 670, 1.45], cuisine: [2640, 600, 1.0], 'pere-fille': [2560, 690, 1.3], dessin: [2600, 690, 1.6],
+      chaine: [2780, 700, 1.7], cadran: [2780, 630, 1.93], 'cuisine-doree': [2660, 660, 1.35], arbre: [4500, 620, 1.15],
+      cloture: [5280, 700, 1.5], lettres: [5300, 610, 1.15], 'monde-releve': [2850, 150, 0.34],
+    },
+  };
+  const CASES_ORDRE = ['E', 'S', 'K', 'P', 'B', 'F', 'G'];
+  function cheminCase(nom) {
+    const p = new Path2D();
+    if (nom === 'G') { const g = MONDE.grenier; p.moveTo(g[0][0], g[0][1]); p.lineTo(g[1][0], g[1][1]); p.lineTo(g[2][0], g[2][1]); p.closePath(); return p; }
+    const r = MONDE.cases[nom] || MONDE.baies[nom];
+    p.rect(r[0], r[1], r[2] - r[0], r[3] - r[1]);
+    for (const o of Object.values(MONDE.ouvertures)) if (o[0] >= r[0] && o[2] <= r[2] && o[1] >= r[1] && o[3] <= r[3]) p.rect(o[0], o[1], o[2] - o[0], o[3] - o[1]);
+    return p;
+  }
+  const CHEMINS_CASES = {};
+  for (const k of [...CASES_ORDRE, 'ES', 'SK']) CHEMINS_CASES[k] = cheminCase(k);
+  const bbCase = (k) => (k === 'G' ? [330, -62, 3200, 84] : (MONDE.cases[k] || MONDE.baies[k]).slice(0, 4));
+  /* le dehors : tout le monde sauf la maison, plus les ouvertures (porte, F1, F2) ; découpe du plan 3 (evenodd) */
+  const DEHORS = (() => {
+    const p = new Path2D();
+    p.rect(-6000, -4000, 20000, 9000);
+    p.moveTo(20, 100); p.lineTo(1765, -120); p.lineTo(3510, 100); p.lineTo(3506, 116); p.lineTo(3470, 116); p.lineTo(3470, 948);
+    p.lineTo(60, 948); p.lineTo(60, 116); p.lineTo(24, 116); p.closePath();
+    for (const o of Object.values(MONDE.ouvertures)) p.rect(o[0], o[1], o[2] - o[0], o[3] - o[1]);
+    return p;
+  })();
+
+  /* ---------- décor de la maison (plan 2), en groupes culés par boîte ; dore : passe en or dans le monde doré */
+  function papierPeint(x0, y0, x1, y1, trous, motif) {
+    let d = '';
+    const libre = (a, b, c, e) => !trous.some((t) => a < t[2] && c > t[0] && b < t[3] && e > t[1]);
+    /* une bande verticale coupée par les trous */
+    const colonne = (x, w) => { let ys = [[y0, y1]];
+      for (const t of trous) if (x < t[2] && x + w > t[0]) ys = ys.flatMap(([a, b]) => (t[1] >= b || t[3] <= a ? [[a, b]] : [[a, Math.max(a, t[1])], [Math.min(b, t[3]), b]].filter(([u, v]) => v - u > 1)));
+      for (const [a, b] of ys) d += rct(x, a, x + w, b); };
+    const ligne = (y, h) => { let xs = [[x0, x1]];
+      for (const t of trous) if (y < t[3] && y + h > t[1]) xs = xs.flatMap(([a, b]) => (t[0] >= b || t[2] <= a ? [[a, b]] : [[a, Math.max(a, t[0])], [Math.min(b, t[2]), b]].filter(([u, v]) => v - u > 1)));
+      for (const [a, b] of xs) d += rct(a, y, b, y + h); };
+    for (let x = x0; x < x1 - 4; x += 34) {
+      if (motif === 'E') colonne(x, 5); else colonne(x, 1.5);
+      for (let y = y0; y < y1 - 24; y += 34) {
+        if (motif === 'E' && libre(x + 16, y + 14, x + 22, y + 20)) d += `M${x + 19},${y + 14.5} L${x + 21.5},${y + 17} L${x + 19},${y + 19.5} L${x + 16.5},${y + 17} Z `;
+        else if (motif === 'S' && libre(x + 12, y + 9, x + 22, y + 25)) d += `M${x + 17},${y + 9} L${x + 22},${y + 17} L${x + 17},${y + 25} L${x + 12},${y + 17} Z `;
+        else if (motif === 'K' && libre(x + 15, y + 15, x + 19, y + 19)) d += rct(x + 15, y + 15, x + 19, y + 19);
+      }
+    }
+    if (motif === 'K') for (let y = y0; y < y1 - 4; y += 34) ligne(y, 1.5);
+    return d;
+  }
+  function svgLambris(x0, x1, trous) {
+    let d = rct(x0, 772, x1, 900); for (const t of trous) d += rct(t[0], 772, t[1], 900);
+    let c = ''; let x = x0; for (const t of [...trous, [x1, x1]]) { if (t[0] > x) c += `<rect x="${x}" y="768" width="${t[0] - x}" height="5"/>`; x = t[1]; }
+    return `<path fill="${C.brume2}" opacity=".16" fill-rule="evenodd" d="${d}"/><g fill="${C.ombre}" opacity=".55">${c}</g>`;
+  }
+  const PP = (d) => `<path fill="${C.brume2}" opacity=".09" d="${d}"/>`;
+  function svgCadre() {
+    let d = 'M20,100 L1765,-120 L3510,100 L3506,116 L3470,116 L3470,948 L60,948 L60,116 L24,116 Z ';
+    for (const k of ['E', 'S', 'K', 'P', 'B', 'F']) d += rct(...MONDE.cases[k]);
+    d += rct(...MONDE.baies.ES.slice(0, 4)) + rct(...MONDE.baies.SK.slice(0, 4));
+    const g = MONDE.grenier; d += `M${g[0]} L${g[1]} L${g[2]} Z`;
+    // poinçon du grenier (charpente)
+    return `<path fill="${C.ombre}" fill-rule="evenodd" d="${d}"/><rect x="1759" y="-60" width="12" height="146" fill="${C.ombre}"/>`;
+  }
+  function svgPorte() {
+    return `<g fill="${C.ombre}"><path fill-rule="evenodd" d="${rct(320, 458, 510, 900)}${rct(336, 470, 494, 900)}"/>` +
+      `<rect x="308" y="446" width="214" height="12"/><rect x="316" y="893" width="198" height="9"/></g>`;
+  }
+  /* le battant ajouré de la porte : pivote sur le montant gauche (x 336), s'ouvre vers la pièce (0 fermé, 112 grand ouvert,
+     le battant ne recouvre jamais le petit manteau de la patère) */
+  function svgBattant(theta) {
+    const c = Math.cos(rad(theta)), sn = Math.sin(rad(theta)), W = 158, x0 = 336, yT = 470, yB = 900;
+    const xe = x0 + W * c, yt = yT - 16 * sn;
+    const bat = (u, v) => { const yh = yT + (yt - yT) * u; return [f(x0 + (xe - x0) * u), f(yh + (yB - yh) * v)]; };
+    const quad = (u0, u1, v0, v1) => { const a = bat(u0, v0), b = bat(u1, v0), cc = bat(u1, v1), e = bat(u0, v1); return `M${a} L${b} L${cc} L${e} Z `; };
+    const [px, py] = bat(0.86, 0.53);
+    return `<g fill="${C.ombre}"><path fill-rule="evenodd" d="${quad(0, 1, 0, 1)}${quad(0.2, 0.8, 0.07, 0.44)}${quad(0.2, 0.8, 0.53, 0.9)}"/>` +
+      `<circle cx="${px}" cy="${py}" r="${f(3 + 4 * Math.abs(c))}"/></g>`;
+  }
+  const SVG_PATERE = `<g fill="${C.ombre}"><rect x="196" y="586" width="68" height="10" rx="2"/>${rivet(207, 591, 2.4)}${rivet(253, 591, 2.4)}` +
+    `<path d="M227,596 L233,596 L233,604 C233,609 240,609 242,603 L246,604 C243,615 227,615 227,604 Z"/></g>`;
+  /* fenêtre : cadre de 10 u, croisillon de 8 u, appui de 9 u qui déborde de 12 u ; imposte (y) : traverse haute, deux
+     petits carreaux au-dessus et une grande vitre dessous (aucune traverse au niveau d'une tête qui passe devant) */
+  function svgFenetre(x0, y0, x1, y1, imposte) {
+    const b = 10, m = 8, cx = (x0 + x1) / 2, cy = imposte || (y0 + y1) / 2;
+    let d = rct(x0, y0, x1, y1) + rct(x0 + b, y0 + b, cx - m / 2, cy - m / 2) + rct(cx + m / 2, y0 + b, x1 - b, cy - m / 2);
+    d += imposte ? rct(x0 + b, cy + m / 2, x1 - b, y1 - b) : rct(x0 + b, cy + m / 2, cx - m / 2, y1 - b) + rct(cx + m / 2, cy + m / 2, x1 - b, y1 - b);
+    return `<path fill="${C.ombre}" fill-rule="evenodd" d="${d}"/><rect x="${x0 - 12}" y="${y1 - 2}" width="${x1 - x0 + 24}" height="9" fill="${C.ombre}"/>`;
+  }
+  /* secrétaire x 1 220 à 1 400, plateau y 770 : caisson à tiroirs à gauche, un pied à droite, et entre les deux le vide où
+     passent les jambes du père assis (elles restent dans la lumière) ; galerie étroite, le dessus du plateau reste clair */
+  function svgSecretaire() {
+    return `<path fill="${C.ombre}" fill-rule="evenodd" d="${rct(1216, 770, 1404, 782)}${rct(1220, 752, 1226, 770)}${rct(1394, 744, 1400, 770)}${rct(1224, 782, 1300, 872)}${rct(1232, 792, 1292, 826)}${rct(1232, 836, 1292, 864)}` +
+      `${rct(1300, 782, 1390, 790)}${rct(1226, 872, 1236, 900)}${rct(1288, 872, 1298, 900)}${rct(1386, 782, 1394, 900)}"/>${rivet(1262, 809, 3.4)}${rivet(1262, 850, 3.4)}`;
+  }
+  /* escalier de (2 960, 900) à (3 420, 438), marches de 58 × 58 u, limon ajouré (un jour par marche), poteau de départ
+     à boule ; la grande rampe à barreaux ajourés est l'avant-plan flou (plan 1, x 3 000 à 3 400) : elle ne coupe jamais la
+     fille assise sur la deuxième marche ni les lettres pendues au-dessus d'elle */
+  function svgEscalier() {
+    const x0 = 2960, y0 = 900, m = 58, n = 8;
+    let d = `M${x0},${y0}`;
+    for (let k = 0; k < n; k++) d += ` L${x0 + m * k},${y0 - m * (k + 1)} L${x0 + m * (k + 1)},${y0 - m * (k + 1)}`;
+    d += ` L${x0 + m * n},${y0 - m * n + 84} L${x0 + 84},${y0} Z `;
+    for (let k = 1; k <= 7; k++) { const cx = x0 + m * k + 22, cy = y0 - m * k + 32;
+      d += `M${cx - 14},${cy + 8} L${cx + 2},${cy - 8} L${cx + 14},${cy - 8} L${cx - 2},${cy + 8} Z `; }
+    // poteau de départ bas (boule à y 762) : la tête de la fille qui passe devant F2 vers l'escalier reste dans la lumière
+    return `<g fill="${C.ombre}"><path fill-rule="evenodd" d="${d}"/><rect x="2958" y="770" width="14" height="130"/><circle cx="2965" cy="762" r="10"/>` +
+      `<rect x="2954" y="772" width="22" height="7"/><rect x="2955" y="880" width="20" height="20"/></g>`;
+  }
+  const svgLitParents = () => `<g fill="${C.ombre}"><path d="M412,392 L412,250 C412,236 424,232 436,232 L448,232 L448,320 L772,320 L772,300 L788,300 L788,392 L772,392 L772,350 L428,350 L428,392 Z"/><path d="M462,320 C464,300 482,292 512,294 L532,320 Z"/></g>`;
+  const svgLitFille = () => `<g transform="translate(2300,392) scale(0.66) translate(-600,-392)">${svgLitParents()}</g>` + dino(2238, 339, 0.13, C.ombre, { champignon: false });
+  function svgBureauEtage() {
+    let g = `<path fill-rule="evenodd" d="${rct(990, 196, 1124, 392)}${rct(1000, 206, 1114, 262)}${rct(1000, 272, 1114, 328)}${rct(1000, 338, 1114, 384)}"/>`;
+    const r = R(17);
+    for (const yb of [262, 328, 384]) { let x = 1003; while (x < 1106) { const w = 6 + r() * 7, h = 34 + r() * 18; g += `<rect x="${f(x)}" y="${f(yb - h)}" width="${f(w)}" height="${f(h)}"/>`; x += w + 1.5 + r() * 2; } }
+    g += `<rect x="1380" y="296" width="230" height="12"/><rect x="1392" y="296" width="10" height="96"/><rect x="1590" y="296" width="10" height="96"/>`;
+    g += chaise(1650, 392, 0.55, -1) + lampe(1420, 296, 0.6);
+    return `<g fill="${C.ombre}">${g}</g>`;
+  }
+  const svgGrenier = () => `<g fill="${C.ombre}"><path d="M1430,84 L1430,52 C1430,40 1450,34 1495,34 C1540,34 1560,40 1560,52 L1560,84 Z"/>` +
+    `<rect x="1880" y="38" width="86" height="46"/><rect x="1958" y="54" width="62" height="30"/><rect x="1180" y="60" width="70" height="24"/></g>`;
+  /* les deux poteaux porte-cartes : hauts (en T) quand une carte y est épinglée, sinon à la hauteur de la clôture */
+  function svgPoteaux(haut = true) {
+    let g = '';
+    for (const x of [5200, 5360]) g += haut ? `<rect x="${x - 6}" y="706" width="12" height="194"/><rect x="${x - 10}" y="698" width="20" height="9"/>`
+      : `<rect x="${x - 6}" y="808" width="12" height="92"/>`;
+    return `<g fill="${C.ombre}">${g}</g>`;
+  }
+  /* groupes du décor : [nom, fabrique SVG, boîte, dore] */
+  const DECOR = [
+    ['papierE', () => PP(papierPeint(120, 438, 870, 768, [[310, 440, 520, 900]], 'E')) + svgLambris(120, 870, [[318, 512]]), [120, 438, 870, 900], false],
+    ['papierS', () => PP(papierPeint(916, 438, 1720, 768, [[948, 440, 1182, 650]], 'S')) + svgLambris(916, 1720, []), [916, 438, 1720, 900], false],
+    ['papierK', () => PP(papierPeint(1768, 438, 3420, 768, [[2678, 462, 2872, 768]], 'K')) + svgLambris(1768, 3420, []), [1768, 438, 3420, 900], false],
+    ['papierP', () => PP(papierPeint(120, 132, 870, 392, [], 'S')), [120, 132, 870, 392], false],
+    ['papierB', () => PP(papierPeint(916, 132, 1720, 392, [], 'E')), [916, 132, 1720, 392], false],
+    ['papierF', () => PP(papierPeint(1768, 132, 3420, 392, [], 'K')), [1768, 132, 3420, 392], false],
+  ];
+  const STRUCTURE = [
+    ['cadre', svgCadre, [20, -120, 3510, 948], false],
+  ];
+  const MEUBLES = [
+    ['porte', svgPorte, [308, 446, 522, 902], false],
+    ['patere', () => SVG_PATERE, [196, 586, 264, 616], false],
+    ['F1', () => svgFenetre(960, 448, 1170, 640), [948, 448, 1182, 647], false],
+    ['F2', () => svgFenetre(2690, 470, 2860, 740, MONDE.impostes.F2), [2678, 470, 2872, 747], false],
+    ['secretaire', svgSecretaire, [1216, 744, 1404, 900], false],
+    ['chaiseS', () => chaise(1440, 900, 0.66, -1), [1408, 728, 1470, 900], false],
+    ['tabouret', () => tabouret(1940, 900), [1904, 804, 1976, 900], true],
+    // table x 2 060 à 2 380 : son bout reste libre, l'horloge dorée travaille à la place du père sans la recouvrir
+    ['table', () => table(2220, 900, 320, 140), [2060, 760, 2380, 900], true],
+    ['chaiseK', () => chaise(2460, 900, 0.66, -1), [2428, 728, 2490, 900], true],
+    ['escalier', svgEscalier, [2950, 434, 3424, 900], false],
+    ['litParents', svgLitParents, [412, 232, 788, 392], false],
+    ['bureauEtage', svgBureauEtage, [990, 196, 1680, 392], false],
+    ['litFille', svgLitFille, [2176, 284, 2424, 392], false],
+    ['grenier', svgGrenier, [1180, 34, 2020, 84], false],
+    ['herbesG', () => herbes(-500, 62, 906, 28, 21, C.ombre, 0.9), [-500, 860, 62, 906], false],
+    ['herbesJ', () => herbes(3468, 6600, 906, 30, 23, C.ombre, 0.6), [3468, 850, 6600, 906], false],
+    ['cloture', () => cloture(5050, 6000, 900, 90, 4, C.ombre, 3.5), [5040, 800, 6010, 900], true],
+  ];
+
+  /* ---------- l'arbre du jardin (pied (4 300, 900), h 760, penché à droite ; branche maîtresse jusqu'à (5 450, 300)) */
+  const ARBRE = { pied: [4300, 900], fourche: [4320, 380], maitresse: [[4334, 392], [4760, 300], [5450, 300]], pivot: [4745, 330] };
+  function bezQ(P0, P1, P2, t) { const u = 1 - t; return [u * u * P0[0] + 2 * u * t * P1[0] + t * t * P2[0], u * u * P0[1] + 2 * u * t * P1[1] + t * t * P2[1]]; }
+  /* bande effilée le long d'une quadratique, entre t0 et t1 (largeur w0 → w1 sur toute la courbe) */
+  function bande(P0, P1, P2, w0, w1, t0 = 0, t1 = 1, N = 12) {
+    const Lg = [], Rg = [];
+    for (let i = 0; i <= N; i++) {
+      const t = t0 + (t1 - t0) * i / N, p = bezQ(P0, P1, P2, t), a = bezQ(P0, P1, P2, Math.max(0, t - 0.01)), b = bezQ(P0, P1, P2, Math.min(1, t + 0.01));
+      let nx = -(b[1] - a[1]), ny = b[0] - a[0]; const n = Math.hypot(nx, ny) || 1; nx /= n; ny /= n;
+      const w = w0 + (w1 - w0) * t;
+      Lg.push([p[0] + nx * w / 2, p[1] + ny * w / 2]); Rg.push([p[0] - nx * w / 2, p[1] - ny * w / 2]);
+    }
+    return `M${Lg.map((q) => f(q[0]) + ',' + f(q[1])).join(' L')} L${Rg.reverse().map((q) => f(q[0]) + ',' + f(q[1])).join(' L')} Z `;
+  }
+  const BRANCHES = [   // [P0, P1, P2, w0, w1]
+    [[4334, 392], [4760, 300], [5450, 300], 46, 8],
+    [[4308, 388], [4210, 262], [4040, 168], 34, 9],
+    [[4318, 384], [4318, 250], [4372, 146], 36, 10],
+    [[4334, 394], [4470, 296], [4602, 196], 28, 8],
+  ];
+  /* trois bandes de lumière, de la fourche vers les pointes */
+  function svgArbre(bandeN) {
+    let d = '';
+    if (bandeN === 'tronc') {
+      d += bande([4300, 906], [4286, 640], [4320, 380], 68, 46);
+      d += `M4262,906 C4250,896 4230,896 4206,904 L4206,906 Z M4338,906 C4352,894 4376,894 4402,904 L4402,906 Z`;
+      return `<path fill="${C.ombre}" d="${d}"/>`;
+    }
+    if (bandeN === 0) for (const b of BRANCHES) d += bande(b[0], b[1], b[2], b[3], b[4], 0, 0.52);
+    if (bandeN === 1) for (const b of BRANCHES) d += bande(b[0], b[1], b[2], b[3], b[4], 0.5, 1);
+    let g = `<path fill="${C.ombre}" d="${d}"/>`;
+    if (bandeN === 2) {
+      // rameaux le long de la branche maîtresse et couronnes au bout des branches
+      const M = BRANCHES[0], q = R(57);
+      for (const [t, up, l, a] of [[0.28, 1, 90, 58], [0.4, 1, 120, 40], [0.55, -1, 60, 30], [0.68, 1, 80, 48], [0.86, 1, 110, 50], [0.94, -1, 70, 24], [1, 1, 80, 14]]) {
+        const [x, y] = bezQ(M[0], M[1], M[2], t), aa = rad(a), x1 = x + l * Math.cos(aa), y1 = y - up * l * Math.sin(aa);
+        g += `<path fill="${C.ombre}" d="${bande([x, y], [x + l * 0.5 * Math.cos(aa), y - up * l * 0.3 * Math.sin(aa)], [x1, y1], 9, 3)}"/>`;
+        if (q() < 0.5) g += `<path fill="${C.ombre}" d="${bande([x1, y1], [x1 + 14, y1 - up * 16], [x1 + 30, y1 - up * 20], 3.5, 1.5)}"/>`;
+      }
+      g += arbre(4040, 172, 230, 81, { lean: -40, depth: 4, w: 9 }) + arbre(4372, 150, 250, 82, { lean: 6, depth: 4, w: 10 }) +
+        arbre(4602, 200, 220, 83, { lean: 34, depth: 4, w: 8 });
+    }
+    return g;
+  }
+  /* le tronc de devis empilés (emprunt de C3) : pile irrégulière du sol à la fourche, onglets, racines de feuilles couchées */
+  function svgTroncDevis(progres) {
+    const x = 4300, yB = 906, yT = 372, Hh = yB - yT, r = R(5), ph = r() * 6;
+    const yLim = yB - progres * (Hh + 30);
+    const axe = (t) => x + 18 * t + Math.sin(t * 4.2 + ph) * 8, larg = (t) => 150 * (1 - 0.28 * t);
+    let g = '', y = yB;
+    for (let i = 0; i < 3; i++) {
+      const w = 150 * (1.5 - i * 0.18) * (0.9 + r() * 0.2), th = 14 * (1 + r() * 0.4), cx = x + (r() - 0.5) * 18;
+      if (y - th >= yLim) g += `<rect x="${f(cx - w / 2)}" y="${f(y - th)}" width="${f(w)}" height="${f(th)}" transform="rotate(${f((r() - 0.5) * 2)},${f(cx)},${f(y)})"/>`;
+      else { r(); }
+      y -= th + 2.2;
+    }
+    while (y > yT - 30) {
+      const t = Math.min(1, (yB - y) / Hh), th = 14 * (0.7 + r() * 0.7);
+      const w = larg(t) * (0.84 + r() * 0.26), cx = axe(t) + (r() - 0.5) * 7, rot = (r() - 0.5) * 2.8, ong = r() < 0.3, side = r();
+      if (y - th >= yLim) {
+        const tr = `transform="rotate(${f(rot)},${f(cx)},${f(y)})"`;
+        g += `<rect x="${f(cx - w / 2)}" y="${f(y - th)}" width="${f(w)}" height="${f(th)}" ${tr}/>`;
+        if (ong) { const tx = cx - w / 2 + w * (side < 0.5 ? 0.08 : 0.64); g += `<rect x="${f(tx)}" y="${f(y - th - 4)}" width="${f(w * 0.24)}" height="6" rx="2" ${tr}/>`; }
+      }
+      y -= th + 3.6 * (0.5 + r());
+    }
+    return `<g fill="${C.ombre}">${g}</g>`;
+  }
+  /* feuilles de papier dorées de la couronne (graine fixe) ; le ciel de la balançoire reste libre */
+  const FEUILLES_ARBRE = (() => {
+    const rf = R(19), out = [];
+    while (out.length < 72) {
+      const a = rf() * Math.PI * 2, rr = Math.sqrt(rf()), x = 4520 + Math.cos(a) * rr * 640, y = 200 + Math.sin(a) * rr * 200;
+      const w = 16 + rf() * 10, h = 20 + rf() * 12, rot = rf() * 360, op = 0.5 + rf() * 0.5;
+      if (x > 4660 && x < 4830 && y > 290) continue;
+      out.push([x, y, w, h, rot, op]);
+    }
+    return out;
+  })();
+  function feuillePapier(x, y, w, h, rot) {
+    let d = `M${f(-w / 2)},${f(-h / 2)} L${f(w / 2)},${f(-h / 2)} L${f(w / 2)},${f(h / 2)} L${f(-w / 2)},${f(h / 2)} Z `;
+    if (w > 14) for (let k = 0; k < 3; k++) { const yy = -h / 2 + h * (0.22 + k * 0.22), e = Math.max(1.6, h * 0.07);
+      d += `M${f(-w / 2 + w * 0.16)},${f(yy)} L${f(w / 2 - w * 0.16)},${f(yy)} L${f(w / 2 - w * 0.16)},${f(yy + e)} L${f(-w / 2 + w * 0.16)},${f(yy + e)} Z `; }
+    return `<path fill-rule="evenodd" transform="translate(${f(x)},${f(y)}) rotate(${f(rot)})" d="${d}"/>`;
+  }
+
+  /* ---------- le plan 3 : la brume (collines, arbres et clôture lointains, la balançoire vue par F1), en coordonnées
+     du plan 3 ; pré-rendu flou une fois en tuiles (≤ 600 Ko chacune), une série par palette */
+  function collines(x0, x1, yb, amp, seed, pas = 60) {
+    let d = `M${x0},1400 L${x0},${f(yb)}`;
+    for (let x = x0; x <= x1; x += pas) { const n = fbm(x / 700, 0.37, seed, 3); d += ` L${x},${f(yb - amp * (n - 0.35) * 2.2)}`; }
+    return d + ` L${x1},1400 Z`;
+  }
+  const ARBRES_LOIN = [[-700, 330, 7, 4], [300, 420, 5, -3], [1700, 340, 9, 5], [2730, 430, 11, -4], [3900, 370, 13, 6], [4950, 300, 15, -2],
+    [5700, 400, 17, 3], [6700, 350, 19, -5], [7500, 320, 21, 2]];
+  function svgPaysage(dore) {
+    const c = dore
+      ? { crete: '#2B1A0C', aC: 0.8, coll: '#3A2512', aCo: 0.94, arb: '#3A2512', aA: 0.9, clo: '#24170A', bal: '#1E1209', aB: 0.92, nappe: '#8A6430', aN: 0.16 }
+      : { crete: C.brume, aC: 0.26, coll: C.brume, aCo: 0.4, arb: C.brume2, aA: 0.42, clo: C.brume2, bal: C.ombre2, aB: 0.85, nappe: '#F6E6C4', aN: 0.32 };
+    let z = `<path fill="${c.crete}" opacity="${c.aC}" d="${collines(-1900, 8300, 830, 64, 31, 80)}"/>`;
+    for (const [x, h, sd, ln] of ARBRES_LOIN) z += `<g opacity="${c.aA}">${arbre(x, 914, h, sd, { fill: c.arb, depth: 5, lean: ln })}</g>`;
+    z += `<path fill="${c.coll}" opacity="${c.aCo}" d="${collines(-1900, 8300, 884, 30, 37, 60)}"/>`;
+    z += `<g opacity="${c.aA}">${cloture(110, 660, 894, 70, 3, c.clo)}${cloture(5600, 7000, 896, 56, 6, c.clo)}</g>`;
+    for (const [x, y, rx, ry] of [[600, 880, 520, 40], [2400, 892, 700, 36], [5200, 886, 820, 44]]) z += `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${c.nappe}" opacity="${c.aN}"/>`;
+    // la branche nue qui porte la balançoire (la balançoire elle-même est à part : balancoireLoin)
+    z += `<g opacity="${c.aB}" fill="${c.bal}"><path d="M1300,232 C1220,246 1140,258 1060,272 C1010,281 960,290 900,302 L898,314 C960,304 1012,296 1062,288 C1142,274 1222,262 1302,250 Z"/>` +
+      `<path d="M1150,262 C1162,240 1178,228 1200,220 L1203,228 C1184,236 1170,246 1160,266 Z"/><path d="M960,296 C948,282 940,270 936,256 L944,254 C948,268 956,280 966,292 Z"/></g>`;
+    return z;
+  }
+  /* la balançoire vue par F1 (plan 3, monde sombre) : deux cordes et une planche, pendues à la branche nue ; posée seulement
+     quand ses deux cordes et sa planche tiennent dans un même carreau de F1 (jamais une corde seule) */
+  const BAL_LOIN = { cordes: [1132, 1164], haut: 262, planche: [1118, 512, 1178, 521] };
+  function balancoireLoin() {
+    return tex('plan3:balancoire', () => {
+      const b = BAL_LOIN, d = PAYSAGE.d, m = Math.ceil(PAYSAGE.flou * 3) + 2, x0 = b.planche[0] - 6, y0 = b.haut - 6;
+      const w = Math.ceil((b.planche[2] - x0 + 6) * d) + 2 * m, h = Math.ceil((b.planche[3] - y0 + 6) * d) + 2 * m;
+      const net = toileHE(w, h), cn = net.getContext('2d');
+      tracerListe(cn, compiler(`<g opacity=".85" fill="${C.ombre2}"><path d="M${b.cordes[0]},${b.haut} L${b.cordes[0]},${b.planche[1] + 2} M${b.cordes[1]},${b.haut - 2} L${b.cordes[1]},${b.planche[1] + 2}" stroke="${C.ombre2}" stroke-width="4.5" stroke-linecap="round" fill="none"/>` +
+        `<rect x="${b.planche[0]}" y="${b.planche[1]}" width="${b.planche[2] - b.planche[0]}" height="${b.planche[3] - b.planche[1]}" rx="2"/></g>`), [d, 0, 0, d, m - x0 * d, m - y0 * d]);
+      const c = toileHE(w, h), cc = c.getContext('2d'); cc.filter = `blur(${PAYSAGE.flou}px)`; cc.drawImage(net, 0, 0); cc.filter = 'none';
+      c.__pose = { ox: x0 - m / d, oy: y0 - m / d, d }; return c;
+    });
+  }
+  const PAYSAGE = { x0: -1900, x1: 8300, y0: 150, y1: 1300, d: 0.5, tuile: 1600, flou: 1.1 };
+  function tuilesPaysage(pal) {
+    const dore = pal === 'dore', out = [];
+    let ops = null;
+    for (let x = PAYSAGE.x0, i = 0; x < PAYSAGE.x1; x += PAYSAGE.tuile, i++) {
+      out.push(tex(`plan3:${pal}:${i}`, () => {
+        if (!ops) ops = compiler(svgPaysage(dore));
+        const d = PAYSAGE.d, m = Math.ceil(PAYSAGE.flou * 3), w = Math.ceil(PAYSAGE.tuile * d) + 2 * m, h = Math.ceil((PAYSAGE.y1 - PAYSAGE.y0) * d) + 2 * m;
+        const net = toileHE(w, h), cn = net.getContext('2d');
+        // lueur chaude au ras de l'horizon (le ciel encore clair au-dessus des collines), cuite dans la brume
+        cn.setTransform(d, 0, 0, d, m - x * d, m - PAYSAGE.y0 * d);
+        const g = cn.createLinearGradient(0, 560, 0, 905);
+        if (dore) { g.addColorStop(0, 'rgba(217,163,90,0)'); g.addColorStop(0.6, 'rgba(217,163,90,.2)'); g.addColorStop(1, 'rgba(246,214,154,.62)'); }
+        else { g.addColorStop(0, 'rgba(255,243,214,0)'); g.addColorStop(1, 'rgba(255,243,214,.22)'); }
+        cn.fillStyle = g; cn.fillRect(x - PAYSAGE.tuile, 560, PAYSAGE.tuile * 3, 345); cn.fillRect(x - PAYSAGE.tuile, 905, PAYSAGE.tuile * 3, 400);
+        dessinerListe(cn, ops, [d, 0, 0, d, m - x * d, m - PAYSAGE.y0 * d]);
+        const c = toileHE(w, h), cc = c.getContext('2d'); cc.filter = `blur(${PAYSAGE.flou}px)`; cc.drawImage(net, 0, 0); cc.filter = 'none';
+        const px = cc.getImageData(0, 0, w, h).data; let yMin = h;
+        for (let j = 0; j < h && yMin === h; j++) for (let i = 3; i < w * 4; i += 16) if (px[j * w * 4 + i] > 2) { yMin = j; break; }
+        // grain du plan 3 cuit (source-atop : seulement sur la brume), deux variantes choisies toutes les 2 images
+        const g3 = grainPlan('g3'), variantes = [[0, 0], [131, 77]].map(([dx, dy]) => {
+          const v = toileHE(w, h), cv = v.getContext('2d'); cv.drawImage(c, 0, 0);
+          const pat = cv.createPattern(g3.tuile, 'repeat'); pat.setTransform(new DOMMatrix([1, 0, 0, 1, dx, dy]));
+          cv.globalCompositeOperation = 'source-atop'; cv.fillStyle = pat; cv.fillRect(0, 0, w, h); return v; });
+        variantes.__pose = { ox: x - m / d, oy: PAYSAGE.y0 - m / d, d, x0: x, x1: x + PAYSAGE.tuile, yMin: Math.max(0, yMin - 2), w, h };
+        return variantes;
+        return c;
+      }));
+    }
+    return out;
+  }
+
+  /* ---------- le plan 1 : avant-plan sombre et flou (10 à 22 px), coupé par le bord du cadre (frame.md § plan-1),
+     pré-rendu une fois par palette, grain cuit en deux variantes (choisies toutes les 2 images) */
+  const AVANT = {
+    montant: { bb: [0, 300, 196, 1090], flou: 14, svg: (a, b) => `<rect x="10" y="300" width="158" height="790" fill="${a}"/><rect x="166" y="300" width="20" height="790" fill="${b}"/>` },
+    portemanteau: { bb: [780, 440, 940, 946], flou: 18, svg: (a) => `<g fill="${a}"><rect x="853" y="468" width="15" height="440"/><circle cx="860.5" cy="466" r="12"/>` +
+      `<path d="M853,880 L796,936 L808,940 L860,898 L912,940 L924,936 L868,880 Z"/>` +
+      `<path d="M853,492 C836,494 826,486 820,474 L812,477 C818,494 832,504 853,503 Z M868,492 C885,494 895,486 901,474 L909,477 C903,494 889,504 868,503 Z"/>` +
+      `<path d="M818,478 C806,482 798,490 794,504 L788,556 L784,668 L806,672 L806,566 L810,590 L812,724 C830,730 850,730 864,724 L862,590 L866,556 L856,504 C848,490 836,480 818,478 Z"/>` +
+      `<path d="M892,472 C892,458 922,458 922,472 L932,475 C932,481 882,481 882,475 Z"/></g>` },
+    cloisonES: { bb: [856, 200, 932, 1090], flou: 16, svg: (a, b) => `<rect x="862" y="200" width="64" height="890" fill="${a}"/><rect x="920" y="200" width="6" height="890" fill="${b}"/>` },
+    fauteuil: { bb: [1150, 736, 1356, 1090], flou: 18, svg: (a) => `<g fill="${a}"><path d="M1160,1090 L1162,840 C1164,770 1190,742 1240,742 C1290,742 1316,770 1318,840 L1320,1090 Z"/>` +
+      `<path d="M1300,906 C1302,884 1340,876 1352,894 L1352,1090 L1300,1090 Z"/></g>` },
+    cloisonSK: { bb: [1708, 200, 1780, 1090], flou: 16, svg: (a, b) => `<rect x="1714" y="200" width="60" height="890" fill="${a}"/><rect x="1714" y="200" width="6" height="890" fill="${b}"/>` },
+    casseroles: { bb: [2070, 300, 2330, 600], flou: 12, svg: (a, b) => { let g = `<rect x="2096" y="300" width="7" height="182"/><rect x="2296" y="300" width="7" height="182"/><rect x="2080" y="476" width="240" height="10"/>`;
+      for (const [x, r] of [[2132, 26], [2200, 32], [2268, 24]]) g += `<rect x="${x - 3}" y="486" width="6" height="22"/><rect x="${x - 5}" y="504" width="10" height="${f(34 - r * 0.3)}" rx="3"/><circle cx="${x}" cy="${f(536 + r * 0.7)}" r="${r}"/>`;
+      return `<g fill="${a}">${g}</g><rect x="2080" y="476" width="240" height="3" fill="${b}"/>`; } },
+    rampe: { bb: [3070, 560, 3470, 1090], flou: 14, svg: (a, b) => { let g = `<path d="M3090,990 L3460,620 L3460,646 L3090,1016 Z"/><rect x="3086" y="962" width="26" height="128"/><circle cx="3099" cy="954" r="15"/>`;
+      for (let x = 3132; x < 3450; x += 46) { const y = 990 - (x - 3090) + 18; g += `<rect x="${x - 4}" y="${y}" width="8" height="${1090 - y}"/>`; }
+      return `<g fill="${a}">${g}</g><path d="M3090,990 L3460,620 L3460,624 L3090,994 Z" fill="${b}"/>`; } },
+    herbes: { bb: [0, 800, 560, 1090], flou: 12, d: 1.2, repete: [3200, 7000, 500], couleurs: [C.ombreSol, C.ombreSol], svg: (a) => { const q = R(21); let dd = '';
+      for (let x = 0; x < 500; x += 12 + q() * 16) { const hh = 80 + q() * 120, lean = (q() - 0.5) * hh * 0.7, w = 18 + q() * 18;   // herbe basse (C3)
+        dd += `M${f(x)},1090 Q${f(x + lean * 0.25)},${f(1090 - hh * 0.6)} ${f(x + lean)},${f(1050 - hh)} Q${f(x + lean * 0.3 + w)},${f(1090 - hh * 0.5)} ${f(x + w)},1090 Z `; }
+      return `<path fill="${a}" d="${dd}"/>`; } },
+    branche: { bb: [4660, 200, 5170, 470], flou: 16, svg: (a) => `<g fill="${a}"><path d="${bande([4660, 236], [4900, 250], [5160, 330], 34, 10)}"/>` +
+      `<path d="${bande([4840, 250], [4860, 300], [4900, 360], 12, 4)}"/><path d="${bande([4990, 278], [5030, 330], [5050, 400], 10, 3)}"/>` +
+      `<path d="${bande([5080, 305], [5100, 360], [5140, 440], 8, 3)}"/><path d="${bande([4760, 242], [4740, 300], [4770, 350], 9, 3)}"/></g>` },
+    /* une volute de fumée (la fumée est posée par fumee(), trois volutes courtes nées de la mèche) : 110 u, s'élargit et
+       s'efface en montant */
+    fumee: { bb: [-34, -124, 44, 8], flou: 10, palettes: ['sombre', 'noir'], couleurs: [C.brume2, C.brume2], svg: () => {
+      const P0 = [0, 0], P1 = [26, -58], P2 = [-8, -112];
+      return `<path fill="${C.brume2}" opacity=".85" d="${bande(P0, P1, P2, 5, 22, 0, 0.36, 6)}"/><path fill="${C.brume2}" opacity=".5" d="${bande(P0, P1, P2, 5, 22, 0.34, 0.7, 6)}"/>` +
+        `<path fill="${C.brume2}" opacity=".22" d="${bande(P0, P1, P2, 5, 22, 0.68, 1, 6)}"/>`; } },
+  };
+  const AVANT_COULEURS = { sombre: ['#0E0805', '#22160C'], noir: ['#0E0805', '#22160C'], dore: ['#2B1B0C', '#5A3C17'] };
+  const D1 = 1.6, SIG1 = 2.7;
+  function spriteAvant(nom, pal) {
+    const pk = pal === 'dore' && !AVANT[nom].couleurs ? 'dore' : 'sombre';
+    return tex(`plan1:${nom}:${pk}`, () => {
+      const it = AVANT[nom], [a, b] = it.couleurs || AVANT_COULEURS[pk], bb = it.bb, D = it.d || D1;
+      const flou = it.flou * D / SIG1, marge = Math.ceil(flou * 2.6) + 2;
+      const w = Math.ceil((bb[2] - bb[0]) * D) + 2 * marge, h = Math.ceil((bb[3] - bb[1]) * D) + 2 * marge;
+      const net = toileHE(w, h);
+      dessinerListe(net.getContext('2d'), compiler(it.svg(a, b)), [D, 0, 0, D, marge - bb[0] * D, marge - bb[1] * D]);
+      const fl = toileHE(w, h), cf = fl.getContext('2d'); cf.filter = `blur(${flou.toFixed(2)}px)`; cf.drawImage(net, 0, 0); cf.filter = 'none';
+      const g1 = grainPlan('g1'), variantes = [[0, 0], [97, 141]].map(([dx, dy]) => {
+        const c = toileHE(w, h), cc = c.getContext('2d'); cc.drawImage(fl, 0, 0);
+        const pat = cc.createPattern(g1.tuile, 'repeat'); pat.setTransform(new DOMMatrix([1, 0, 0, 1, dx, dy]));
+        cc.globalCompositeOperation = 'source-atop'; cc.fillStyle = pat; cc.fillRect(0, 0, w, h); return c;
+      });
+      variantes.__pose = { ox: bb[0] - marge / D, oy: bb[1] - marge / D, d: D, w, h };
+      return variantes;
+    });
+  }
+
+  /* ================================================================ 4. poses des marionnettes (changées à 12 i/s)
+     Une marionnette d'état : { x, y (sol sous ses pieds, défaut 900), pose, phase (marche), flip (1 droite, -1 gauche),
+     siege (hauteur du siège au-dessus de y), armF, armB, legF, legB, tete, mains: {F: [x, y], B: [x, y]} (cibles monde),
+     penche (degrés autour des pieds), echelle (éloignement de la toile, ×1 à ×1,25 autour des pieds), flou (px), opacite,
+     tient: {...}, tiges (défaut vrai), or (silhouette dorée) } */
+  const POSES_PERE = {
+    debout: { legF: [-4, 4], legB: [6, 2], armF: [-12, -24], armB: [28, 10] },
+    raide: { legF: [-2, 2], legB: [3, 1], armF: [-6, -12], armB: [26, 8] },
+    pile: { legF: [-4, 4], legB: [6, 2], armF: [-6, -12], armB: [28, 10] },   // la pile sous le bras, calée contre la hanche
+    assis: { assis: true, siege: 80, legF: [-90, 90], legB: [-84, 86], armF: [-58, -40], armB: [12, 18], head: 6 },
+    'assis-dossier': { assis: true, siege: 80, legF: [-90, 90], legB: [-84, 86], armF: [-62, -30], armB: [12, 18], head: 16 },
+    'assis-feuille': { assis: true, siege: 80, legF: [-90, 90], legB: [-84, 86], armF: ik([6, -478], [118, -506], 116, 104), armB: [12, 18], head: 4 },
+    'assis-dessin': { assis: true, siege: 80, legF: [-90, 90], legB: [-84, 86], armF: ik([6, -478], [122, -470], 116, 104), armB: [24, 14], head: 22 },
+    leve: { legF: [-6, 4], legB: [8, 2], armF: [-14, -24], armB: [-100, -40], head: -4 },
+    'tend-main': { legF: [-6, 4], legB: [8, 2], armF: [-62, -8], armB: [26, 10] },
+    // à genou : cuisse avant à l'horizontale sous un manteau raccourci, tibia arrière à plat ; tige avant depuis le coude
+    genou: { legF: [-90, 90], legB: [0, 90], armF: [-56, -54], armB: [-40, -48], head: 12, manteau: -258, tigeAvant: 'coude' },
+    pousse: { legF: [-26, 12], legB: [30, 2], armF: [-80, -10], armB: [-70, -10], penche: 4 },
+    epaules: { legF: [-3, 2], legB: [4, 1], armF: [-150, 26], armB: [-142, 22] },
+  };
+  function marchePere(phase) {
+    const s = Math.sin(2 * Math.PI * phase), c = Math.cos(2 * Math.PI * phase);
+    return { legF: [-21 * s, 6 + 14 * Math.max(0, -c)], legB: [21 * s, 6 + 14 * Math.max(0, c)], armF: [-14 + 12 * s, -24], armB: [28 - 8 * s, 10] };
+  }
+  const POSES_FILLE = {
+    debout: { legF: [-4, 3], legB: [5, 2], armF: [-10, -14], armB: [16, 8] },
+    'assise-sol': { assisSol: true, legF: [-128, 86], legB: [-120, 80], armF: [-58, -46], armB: [-40, -52] },
+    'genoux-balle': { legF: [0, 90], legB: [4, 86], armF: [-122, -14], armB: [-112, -20], head: -12 },
+    tabouret: { assis: true, siege: 96, legsAssis: [[-80, 70], [-74, 64]], armF: [-112, -14], armB: [-100, -26], head: -6 },
+    menton: { assis: true, siege: 58, menton: true, legsAssis: [[-88, 86], [-84, 80]], armB: [-40, -60], head: 6 },
+    'tete-basse': { legF: [-4, 3], legB: [5, 2], armF: [-4, -6], armB: [10, 4], head: 18 },
+    agite: { legF: [-4, 3], legB: [5, 2], armF: [-168, 20], armB: [16, 8], head: -8 },
+    'bras-croises': { legF: [-4, 3], legB: [5, 2], armF: [8, -86], armB: [6, -84], head: -14 },
+    'pointe-pieds': { legF: [-2, 1], legB: [2, 1], armF: [-142, -8], armB: [-128, -14], head: -16, pointe: 7 },
+    'serre-dessin': { legF: [-4, 3], legB: [5, 2], armF: [-34, -104], armB: [-24, -108], head: 6 },
+    balancoire: { assis: true, siege: 0, legsAssis: [[-76, 60], [-70, 54]], armF: [-150, 0], armB: [-140, 0], head: -6 },
+    genou: { legF: [-90, 90], legB: [0, 92], armF: [-70, -40], armB: [-50, -50], head: 10 },
+    mains: { legF: [-4, 3], legB: [5, 2], armF: [-64, -64], armB: [-52, -70], head: -10 },
+    saute: { legF: [-34, 52], legB: [-8, 44], armF: [-74, -6], armB: [-20, -30], head: -4 },
+    epaules: { assis: true, siege: 0, legsAssis: [[-70, 66], [-64, 60]], armF: [-150, -10], armB: [-140, -20], head: -10 },
+  };
+  function marcheFille(phase) {
+    const s = Math.sin(2 * Math.PI * phase), c = Math.cos(2 * Math.PI * phase);
+    return { legF: [-18 * s, 5 + 12 * Math.max(0, -c)], legB: [18 * s, 5 + 12 * Math.max(0, c)], armF: [-6 + 10 * s, -10], armB: [12 - 10 * s, 6] };
+  }
+  function basJambe(hy, [hip, knee], l1, l2, semelle) {
+    const ky = hy + l1 * Math.cos(rad(hip)), ay = ky + l2 * Math.cos(rad(hip + knee));
+    return Math.max(ky + 6, ay + semelle);
+  }
+  const vers = (o, s, flip, T) => [(T[0] - o[0]) / (s * flip), (T[1] - o[1]) / s];
+  /* couleur d'un papier (cadran, carte du dessin, feuille) sous la lumière de sa case : lum 1 = pleine lumière de la toile,
+     0 = sous le voile entier (#140B05) ; le papier s'éteint avec la case au lieu de rester la tache la plus claire */
+  function papierSous(hex, lum) {
+    if (lum >= 0.999) return hex;
+    const a = parseInt(hex.slice(1), 16), b = 0x140B05, u = borne(lum);
+    const c = (s) => Math.round(((b >> s) & 255) + (((a >> s) & 255) - ((b >> s) & 255)) * u);
+    return '#' + [16, 8, 0].map((s) => c(s).toString(16).padStart(2, '0')).join('').toUpperCase();
+  }
+  /* place une marionnette À L'ORIGINE de ses pieds (x, y) : rend la chaîne SVG locale (marionnette et objet tenu), ses
+     points dans le monde et ses tiges (point d'attache dans le monde + pente) ; la pose et la position sont séparées,
+     donc une même pose donne la même chaîne SVG partout. env.papier : lumière du papier tenu (0 à 1). */
+  function placerPere(a, env = {}) {
+    let q = Object.assign({}, POSES_PERE.debout, POSES_PERE[a.pose] || {});
+    if (a.pose === 'marche' || a.pose === 'marche-pile') { q = Object.assign({}, POSES_PERE.debout, marchePere(a.phase || 0)); if (a.pose === 'marche-pile') q.armF = POSES_PERE.pile.armF.slice(); }
+    for (const k of ['armF', 'armB', 'legF', 'legB']) if (a[k]) q[k] = a[k];
+    if (a.tete !== undefined) q.head = a.tete;
+    const s = 0.66, flip = a.flip || 1, X = a.x, Y = a.y ?? SOL, pen = a.penche ?? q.penche ?? 0;
+    const oy = q.assis ? -(a.siege ?? q.siege) - PERE.hanche * s
+      : -Math.max(basJambe(PERE.hanche, q.legF, 112, 112, 10), basJambe(PERE.hanche, q.legB, 112, 112, 10)) * s;
+    const o = [0, oy], rotP = (pt, sg) => Mx.app(Mx.rot(sg * pen, X, Y), pt[0], pt[1]), monde = (pt) => [pt[0] + X, pt[1] + Y];
+    if (a.mains) for (const b of ['F', 'B']) if (a.mains[b]) { const T = rotP(a.mains[b], -1);
+      q[b === 'B' ? 'armB' : 'armF'] = ik(b === 'B' ? PERE.epaB : PERE.epaF, vers(o, s, flip, [T[0] - X, T[1] - Y]), 116, 112); }
+    const P = { x: 0, y: oy, s, flip, armF: q.armF, armB: q.armB, legF: q.legF, legB: q.legB, head: q.head || 0, manteau: a.manteau ?? q.manteau ?? -210 };
+    let svg = pere(P);
+    const mF = mainPere(P, 'F'), mB = mainPere(P, 'B');
+    const tn = a.tient || {}, pap = papierSous(C.carte, env.papier ?? 1);
+    if (tn.pile) {   // la pile sous le bras : calée contre la hanche, la main avant à mi-hauteur de la pile
+      const n = tn.pile, px = mF[0] + 10 * flip, py = mF[1] + 0.45 * n * 7.6;
+      svg += pile(px, py, n, { w: 96, h: 6.2, gap: 1.4, seed: 5 });
+    }
+    if (tn.devis) { const w = tn.devis.w || 64, hh = tn.devis.h || 86; svg += devis(mF[0] + (flip > 0 ? 2 : -w - 2), mF[1] - hh * 0.62, w, hh, tn.devis.rot || 0); }
+    if (tn.dessin) svg += carteDessin(mF[0] + (flip > 0 ? 40 : -40), mF[1] - 34, { rot: tn.dessin.rot ?? 2, s: 0.9, papier: pap });
+    // tiges : du dos, et du poignet avant (ou du coude avant, vers l'arrière, quand le poignet passe devant quelqu'un)
+    const coude = () => { const [sh] = P.armF; return [(PERE.epaF[0] - 116 * Math.sin(rad(sh))) * s * flip, oy + (PERE.epaF[1] + 116 * Math.cos(rad(sh))) * s]; };
+    const avant = (a.tigeAvant ?? q.tigeAvant) === 'coude' ? { p: monde(coude()), k: -0.1 * flip } : { p: monde(mF), k: 0.14 * flip };
+    const tiges = a.tiges === false ? [] : [{ p: monde([PERE.dos[0] * s * flip, oy + PERE.dos[1] * s]), k: -0.2 * flip }, avant];
+    return { svg, P, pen, pivot: [X, Y], base: [X, Y], mF: rotP(monde(mF), 1), mB: rotP(monde(mB), 1), o: [X, Y + oy], tiges, flip,
+      brasB: () => pere(Object.assign({}, P, { partie: 'brasB' })) };
+  }
+  function placerFille(a, env = {}) {
+    let q = Object.assign({}, POSES_FILLE.debout, POSES_FILLE[a.pose] || {});
+    if (a.pose === 'marche' || a.pose === 'marche-tete-basse') { q = Object.assign({}, POSES_FILLE.debout, marcheFille(a.phase || 0)); if (a.pose === 'marche-tete-basse') { q.head = 18; q.armF = [-4, -6]; } }
+    for (const k of ['armF', 'armB', 'legF', 'legB', 'legsAssis']) if (a[k]) q[k] = a[k];
+    if (a.tete !== undefined) q.head = a.tete;
+    const s = 0.76, flip = a.flip || 1, X = a.x, Y = a.y ?? SOL, pen = a.penche ?? 0;
+    let oy;
+    if (q.assis) oy = -(a.siege ?? q.siege) - FILLE.hancheAssise * s;
+    else if (q.assisSol) oy = -FILLE.hanche * s;
+    else oy = -Math.max(basJambe(FILLE.hanche, q.legF, 62, 58, 8), basJambe(FILLE.hanche, q.legB, 62, 58, 8)) * s - (a.pointe ?? q.pointe ?? 0);
+    const o = [0, oy], monde = (pt) => [pt[0] + X, pt[1] + Y];
+    if (a.mains) for (const b of ['F', 'B']) if (a.mains[b]) q[b === 'B' ? 'armB' : 'armF'] = ik(b === 'B' ? FILLE.epaB : FILLE.epaF, vers(o, s, flip, [a.mains[b][0] - X, a.mains[b][1] - Y]), 56, 54);
+    const P = { x: 0, y: oy, s, flip, armF: q.armF, armB: q.armB, legF: q.legF, legB: q.legB, legsAssis: q.legsAssis || [[-88, 86], [-84, 80]],
+      head: q.head || 0, seated: !!q.assis, menton: !!q.menton };
+    let svg = fille(P);
+    const main = (b) => { const [sx, sy] = b === 'B' ? FILLE.epaB : FILLE.epaF, [sh, el] = b === 'B' ? P.armB : P.armF;
+      const ex = sx - 56 * Math.sin(rad(sh)), ey = sy + 56 * Math.cos(rad(sh)), wx = ex - 50 * Math.sin(rad(sh + el)), wy = ey + 50 * Math.cos(rad(sh + el));
+      return [wx * s * flip, oy + wy * s]; };
+    const mF = main('F'), mB = main('B'), tn = a.tient || {}, pap = papierSous(C.carte, env.papier ?? 1);
+    if (tn.balle) svg += balle((mF[0] + mB[0]) / 2 + 4 * flip, Math.min(mF[1], mB[1]) - 22, 26, 0);
+    if (tn.feuille) { const fx = mF[0] + 18 * flip, fy = mF[1] - 22, r = tn.feuille.rot ?? -8 * flip;
+      svg += `<g transform="translate(${f(fx)},${f(fy)}) rotate(${f(r)})"><rect x="-30" y="-23" width="60" height="46" fill="${C.ombre}"/><rect x="-27" y="-20" width="54" height="40" fill="${pap}"/>` +
+        (tn.feuille.trait ? `<path d="M-18,6 C-10,-6 -2,10 6,-2 C10,-8 14,-6 ${f(-18 + 36 * borne(tn.feuille.trait))},0" stroke="${C.ombre}" stroke-width="2.4" fill="none" stroke-linecap="round"/>` : '') + `</g>`; }
+    if (tn.crayon) svg += `<path d="M${f(mB[0])},${f(mB[1])} L${f(mB[0] + 26 * flip)},${f(mB[1] - 18)}" stroke="${C.ombre}" stroke-width="4" stroke-linecap="round" fill="none"/>`;
+    if (tn.dessin) svg += carteDessin((mF[0] + mB[0]) / 2 + 8 * flip, (mF[1] + mB[1]) / 2 - 20, { rot: tn.dessin.rot ?? -3, s: 0.92, papier: pap });
+    const tiges = a.tiges === false ? [] : [{ p: monde([FILLE.dos[0] * s * flip, oy + FILLE.dos[1] * s]), k: -0.16 * flip }];
+    return { svg, P, pen, pivot: [X, Y], base: [X, Y], mF: monde(mF), mB: monde(mB), o: [X, Y + oy], tiges, flip };
+  }
+  function placerHorloge(a, env = {}) {
+    const X = a.x, Y = a.y ?? SOL, pen = a.penche || 0;
+    const P = { x: 0, y: 0, s: 0.70, heure: a.heure ?? -60, minute: a.minute ?? 140, balancier: a.balancier ?? 8,
+      armL: a.armL || [24, -30], armR: a.armR || [-24, 30], roue: a.roue || 0, engr: a.engr || 0, papier: papierSous(C.papier, env.papier ?? 1) };
+    if (a.mains) for (const b of ['L', 'R']) if (a.mains[b]) {
+      const sh = b === 'L' ? HORLOGE.epaL : HORLOGE.epaR, rT = Mx.app(Mx.rot(-pen, X, Y), a.mains[b][0], a.mains[b][1]);
+      P[b === 'L' ? 'armL' : 'armR'] = ik(sh, [(rT[0] - X) / P.s, (rT[1] - Y) / P.s - 10], 52, 46);
+    }
+    const svg = horloge(Object.assign({}, P, { partie: 'corps' }));
+    const parties = PIECES_HORLOGE.map(([nom, param, sg, px, py]) => ({ svg: horloge(Object.assign({}, P, { partie: nom })), m: Mx.rot(sg * (P[param] || 0), px * P.s, py * P.s) }));
+    const m = Mx.rot(pen, X, Y), lt = lentille(P), mL = mainHorloge(P, 'L'), mR = mainHorloge(P, 'R');
+    return { svg, parties, P, pen, pivot: [X, Y], base: [X, Y], lent: Mx.app(m, X + lt[0], Y + lt[1]), cadran: Mx.app(m, X, Y - 270),
+      mL: Mx.app(m, X + mL[0], Y + mL[1]), mR: Mx.app(m, X + mR[0], Y + mR[1]), tiges: [] };
+  }
+
+  /* ================================================================ 5. lumière des cases, palettes, objets animables
+     Cases : E entrée, S salon, K cuisine, P chambre des parents, B bureau, F chambre de la fille, G grenier.
+     État d'une case : nombre (voile 0 à 0,66) ou { voile, or } (or : case rallumée en or, monde doré). */
+  const CASES_DEFAUT = {
+    sombre: { E: 0, S: 0, K: 0, P: 0.62, B: 0.62, F: 0.62, G: 0.66 },
+    noir: { E: 0.66, S: 0.66, K: 0.66, P: 0.66, B: 0.66, F: 0.66, G: 0.66 },
+    dore: { E: 0.5, S: 0.5, K: 0.5, P: 0.5, B: 0.5, F: 0.5, G: 0.55 },
+  };
+  function etatCases(E, pal) {
+    const out = {}, src = Object.assign({}, CASES_DEFAUT[pal] || CASES_DEFAUT.sombre, E.cases || {});
+    for (const k of CASES_ORDRE) { const v = src[k]; out[k] = typeof v === 'number' ? { voile: v, or: 0 } : { voile: v.voile ?? 0, or: v.or ?? 0, trou: v.trou || null }; }
+    for (const [b, r] of Object.entries(MONDE.baies)) out[b] = { voile: Math.min(out[r[4]].voile, out[r[5]].voile), or: Math.max(out[r[4]].or, out[r[5]].or) };
+    return out;
+  }
+  /* trou du voile (cases K: { voile, trou: [x, y, r, force] }) : le voile s'amincit autour du cœur lumineux (force 0,75 par
+     défaut au centre, rien au rayon r), pour garder la lumière derrière le sujet quand le reste de la case s'éteint */
+  const TROU_U = [0, 0.25, 0.5, 0.75, 1];
+  const trouChute = (u) => { const k = borne(1 - u); return k * k * (3 - 2 * k); };
+  /* voile effectif au point (x, y) du monde (0 hors des cases) */
+  function voileEn(cs, x, y) {
+    for (const k of ['E', 'S', 'K', 'P', 'B', 'F']) {
+      const r = MONDE.cases[k];
+      if (x >= r[0] && x <= r[2] && y >= r[1] && y <= r[3]) {
+        const c = cs[k]; if (!c.trou) return c.voile;
+        const [tx, ty, tr, fo = 0.75] = c.trou; return c.voile * (1 - fo * trouChute(Math.hypot(x - tx, y - ty) / tr));
+      }
+    }
+    return 0;
+  }
+  /* signature 1 « la case qui s'éteint, puis se rallume » : crans [[t, voile], ...] de 0,06 s expo.out (jamais un fondu lent) */
+  function crans(t, liste, depart = 0, duree = 0.06) {
+    let v = depart;
+    for (const [t0, cible] of liste) if (t >= t0) v += (cible - v) * courbe('expo.out')((t - t0) / duree);
+    return v;
+  }
+  /* la poussière d'or : points or-clair de 2 à 5 u qui montent lentement (8 à 20 u/s), graine fixe, fonction pure de t */
+  function poussiere(ctx, M, p, lum) {
+    const sp = pointOr(), n = p.n || 40, g = p.graine || 7, W = p.x1 - p.x0, Hh = p.y1 - p.y0, t = p.t || 0, a0 = p.alpha ?? 1;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    for (let i = 0; i < n; i++) {
+      const rx = h01(g * 7919 + i * 31), ry = h01(g * 104729 + i * 17), rv = h01(g * 1543 + i * 7), rr = h01(g * 92821 + i * 13);
+      const v = (8 + 12 * rv) * (p.sens || 1), r = 2 + 3 * rr;
+      const y = p.y1 - ((((1 - ry) * Hh + v * t) % Hh) + Hh) % Hh, x = p.x0 + rx * W + 6 * Math.sin(t * 0.9 + i * 1.7);
+      const [sx, sy] = Mx.app(M, x, y), k = M[0] * r * 1.7;
+      if (sx < -k || sx > L + k || sy < -k || sy > H + k) continue;
+      ctx.globalAlpha = borne(a0 * (0.45 + 0.55 * h01(g * 31 + i)) * lum);
+      ctx.drawImage(sp, sx - k, sy - k, 2 * k, 2 * k);
+    }
+    ctx.globalAlpha = 1;
+  }
+  /* polylignes échantillonnées d'un chemin M/L/C (tracés du second dinosaure) */
+  function echantillonner(d) {
+    const tk = d.match(/[MLCZ]|-?\d*\.?\d+/g), lignes = []; let cur = null, i = 0, cmd = 'M', x = 0, y = 0;
+    const nb = () => parseFloat(tk[i++]);
+    while (i < tk.length) {
+      if (/[MLCZ]/.test(tk[i])) cmd = tk[i++];
+      if (cmd === 'M') { x = nb(); y = nb(); cur = [[x, y]]; lignes.push(cur); cmd = 'L'; }
+      else if (cmd === 'L') { x = nb(); y = nb(); cur.push([x, y]); }
+      else if (cmd === 'C') { const a = [nb(), nb()], b = [nb(), nb()], e = [nb(), nb()];
+        for (let k = 1; k <= 8; k++) { const t = k / 8, u = 1 - t; cur.push([u * u * u * x + 3 * u * u * t * a[0] + 3 * u * t * t * b[0] + t * t * t * e[0], u * u * u * y + 3 * u * u * t * a[1] + 3 * u * t * t * b[1] + t * t * t * e[1]]); }
+        x = e[0]; y = e[1]; }
+      else if (cmd === 'Z') { cur.push(cur[0].slice()); }
+    }
+    return lignes;
+  }
+  const LIGNES_DINO2 = (() => {
+    const out = [];
+    TRACES_DINO.forEach((d, k) => { for (const l of echantillonner(d)) out.push(k === 3 || k === 4 ? l.map(([x, y]) => [0.8 * x + 1.6, 0.8 * y]) : l); });
+    let tot = 0; for (const l of out) for (let i = 1; i < l.length; i++) tot += Math.hypot(l[i][0] - l[i - 1][0], l[i][1] - l[i - 1][1]);
+    out.total = tot; return out;
+  })();
+  /* lettres de papier Fraunces pendues à des fils : l'initiale (700) seule, puis le mot se déplie depuis elle (600),
+     chaque lettre glissant de derrière l'initiale (0,03 s d'écart, 0,12 s expo.out) */
+  const MESURES = {};
+  /* à appeler après om.pret : tant que Fraunces n'est pas chargée, la mesure (police de secours) n'est pas gardée */
+  function mesurerMot(texte, taille) {
+    const cle = texte + '|' + taille;
+    if (MESURES[cle]) return MESURES[cle];
+    const chargee = document.fonts.check(`700 ${taille}px Fraunces`) && document.fonts.check(`600 ${taille}px Fraunces`);
+    if (!chargee) avis('mesure', 'mesurerMot / largeurMot appelé avant le chargement de Fraunces (appeler après om.pret) : mesure non gardée');
+    outil.font = `700 ${taille}px Fraunces, serif`; const wI = outil.measureText(texte[0]).width;
+    outil.font = `600 ${taille}px Fraunces, serif`;
+    const xs = []; let x = wI;
+    for (let i = 1; i < texte.length; i++) { xs.push(x); x += outil.measureText(texte[i]).width; }
+    const r = { wI, xs, largeur: x };
+    if (chargee) MESURES[cle] = r;
+    return r;
+  }
+  /* largeur d'un mot de lettres de papier (pour le centrer : x de l'initiale = centre - largeur / 2) */
+  const largeurMot = (texte, taille) => mesurerMot(texte, taille).largeur;
+
+  /* ================================================================ 6. aides HTML au-dessus du canvas (classes om-, ids préfixés)
+     Toutes pilotées par l'état (fonctions pures : un même état écrit les mêmes styles). */
+  function el(tag, cls, parent, txt) { const e = document.createElement(tag); if (cls) e.className = cls; if (txt !== undefined) e.textContent = txt; if (parent) parent.appendChild(e); return e; }
+  const ecrire = (o, val) => { if (o.etat !== val) { o.etat = val; o.el.style.cssText = val; } };
+  /* sous-titre : phrases [{ sortie: [t0, t1], mots: [{ m, t, boite: 'b1', trait: true, colle: true }] }] (colle : pas
+     d'espace avant ce mot, pour une ponctuation hors boîte ; jamais de point final collé à une boîte qui finit la ligne,
+     frame.md key-box : la phrase s'arrête sur la boîte) ; un mot paraît en 0,12 s
+     (opacité 0 → 0,35 → 1, y +6 → 0, échelle 1,04 → 1, flou 4 → 0 px) ; boîte tracée depuis la gauche 0,04 s avant son
+     premier mot (scaleX 0 → 1, 0,16 s power3.out) ; trait d'or tracé depuis la gauche en 0,4 s power2.out */
+  function SousTitres(hote, phrases) {
+    const p3 = courbe('power3.out'), p2 = courbe('power2.out'), p1i = courbe('power1.in');
+    hote.textContent = '';
+    const elts = [];
+    for (const ph of phrases || []) {
+      const div = el('div', 'om-phrase', hote);
+      const rec = { ph, div, mots: [], boites: [], traits: [], etat: '' };
+      let groupe = null, idGroupe = null;
+      ph.mots.forEach((mo, i) => {
+        let parent = div;
+        if (mo.boite) {
+          if (idGroupe !== mo.boite) {
+            if (i > 0) div.appendChild(document.createTextNode(' '));
+            groupe = el('span', 'om-boite', div); const fond = el('i', 'om-fond', groupe);
+            idGroupe = mo.boite; rec.boites.push({ el: fond, t: mo.t - 0.04, etat: '' });
+          } else groupe.appendChild(document.createTextNode(' '));
+          parent = groupe;
+        } else { idGroupe = null; if (i > 0 && !mo.colle) div.appendChild(document.createTextNode(' ')); }
+        const sp = el('span', 'om-mot', parent, mo.m);
+        rec.mots.push({ el: sp, t: mo.t, etat: '' });
+        if (mo.trait) {
+          const ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg');
+          svg.setAttribute('class', 'om-trait'); svg.setAttribute('viewBox', '0 0 100 8'); svg.setAttribute('preserveAspectRatio', 'none');
+          const pa = document.createElementNS(ns, 'path'); pa.setAttribute('d', 'M0,3.5 Q50,-1.5 100,3.5 L100,4.5 Q50,9.5 0,4.5 Z'); pa.setAttribute('fill', C.or);
+          svg.appendChild(pa); sp.appendChild(svg); rec.traits.push({ el: svg, t: mo.t, etat: '' });
+        }
+      });
+      elts.push(rec);
+    }
+    return {
+      maj(t) {
+        for (const rec of elts) {
+          const [s0, s1] = rec.ph.sortie || [1e9, 1e9], debut = rec.ph.mots.length ? rec.ph.mots[0].t - 0.05 : 0;
+          const sortie = t < debut || t >= s1 ? 0 : t <= s0 ? 1 : 1 - p1i((t - s0) / (s1 - s0));
+          const etat = sortie >= 1 ? '' : sortie <= 0 ? 'visibility:hidden' : `opacity:${sortie.toFixed(3)}`;
+          if (rec.etat !== etat) { rec.etat = etat; rec.div.style.cssText = etat; }
+          if (sortie <= 0) continue;
+          for (const mo of rec.mots) {
+            const u = (t - mo.t) / 0.12;
+            let v;
+            if (u <= 0) v = 'opacity:0';
+            else if (u >= 1) v = 'opacity:1';
+            else { const e = p2(u), op = u < 0.3 ? 0.35 * (u / 0.3) : 0.35 + 0.65 * p2((u - 0.3) / 0.7);
+              v = `opacity:${op.toFixed(3)};transform:translateY(${(6 * (1 - e)).toFixed(2)}px) scale(${(1.04 - 0.04 * e).toFixed(4)});filter:blur(${(4 * (1 - e)).toFixed(2)}px)`; }
+            ecrire(mo, v);
+          }
+          for (const b of rec.boites) { const u = borne((t - b.t) / 0.16); ecrire(b, u >= 1 ? 'transform:none' : `transform:scaleX(${p3(u).toFixed(4)})`); }
+          // visible = « inherit » : le trait suit la phrase (un enfant en visibility:visible resterait visible sous sa phrase masquée)
+          for (const tr of rec.traits) { const u = borne((t - tr.t) / 0.4); ecrire(tr, u <= 0 ? 'visibility:hidden' : u >= 1 ? 'visibility:inherit' : `visibility:inherit;clip-path:inset(0 ${(100 * (1 - p2(u))).toFixed(2)}% 0 0)`); }
+        }
+      },
+    };
+  }
+  /* la preuve « 10 h » qui roule (Fraunces 700 150 px or-clair, centré à (960, 230)) et ses deux lignes DM Sans 40 px */
+  const LIGNES_PREUVE = ['gagnées chaque semaine', 'par la dernière dirigeante formée'];
+  function Preuve(hote) {
+    const bloc = el('div', 'om-preuve', hote), chiffre = el('div', 'om-chiffre', bloc), nb = el('span', 'om-nombre', chiffre, '0');
+    chiffre.appendChild(document.createTextNode(' h'));
+    const lignes = LIGNES_PREUVE.map((txt, k) => { const d = el('div', 'om-ligne om-ligne-' + (k + 1), bloc);
+      return txt.split(' ').map((m, i) => { if (i) d.appendChild(document.createTextNode(' ')); return { el: el('span', 'om-mot', d, m), etat: '' }; }); });
+    const o = { bloc: { el: bloc, etat: null }, chiffre: { el: chiffre, etat: null }, txt: '' };
+    return {
+      maj(p) {
+        if (!p || !(p.visible > 0)) { ecrire(o.bloc, 'visibility:hidden'); return; }
+        ecrire(o.bloc, p.visible >= 1 ? '' : `opacity:${p.visible.toFixed(3)}`);
+        const ar = courbe('expo.out')(p.arrivee ?? 1), po = p.pose ?? 1;
+        const sc = (1.4 - 0.4 * ar) * (po < 1 ? 1 + 0.06 * (1 - courbe('expo.out')(po)) : 1);
+        ecrire(o.chiffre, `transform:scale(${sc.toFixed(4)});filter:blur(${(8 * (1 - ar)).toFixed(2)}px);opacity:${Math.min(1, ar * 3).toFixed(3)}`);
+        const v = String(Math.floor(borne(p.valeur ?? 10, 0, 10) + 1e-6)); if (o.txt !== v) { o.txt = v; nb.textContent = v; }
+        lignes.forEach((ms, k) => { const n = (p.lignes || [99, 99])[k];
+          ms.forEach((m, i) => { const u = borne(n - i); ecrire(m, u >= 1 ? 'opacity:1' : `opacity:${(u < 0.3 ? 0.35 * u / 0.3 : 0.35 + 0.65 * (u - 0.3) / 0.7).toFixed(3)};transform:translateY(${(6 * (1 - u)).toFixed(2)}px)`); }); });
+      },
+    };
+  }
+  /* la carte de fin : signature Caveat bordeaux (masque de gauche à droite), « formateur IA », le bouton, la ligne
+     d'adresses, le curseur de papier et l'onde du clic ; le noir final */
+  function Fin(hote) {
+    const bloc = el('div', 'om-fin', hote);
+    const sig = el('div', 'om-signature', bloc, 'Antoine Contino'), form = el('div', 'om-formateur', bloc, 'formateur IA');
+    const bouton = el('div', 'om-bouton', bloc), txt = el('span', 'om-bouton-texte', bouton, 'Réserver un audit IA de 30 minutes');
+    const onde = el('div', 'om-onde', bloc);
+    const adr = el('div', 'om-adresses', bloc);
+    const mots = 'calendly.com/antoine-cntno/30min · antoinecontino.fr'.split(' ').map((m, i) => { if (i) adr.appendChild(document.createTextNode(' ')); return { el: el('span', 'om-mot', adr, m), etat: '' }; });
+    const curseur = el('div', 'om-curseur', bloc);
+    curseur.innerHTML = '<svg viewBox="-2 -2 38 48" width="38" height="48"><path d="M3,2 L31,24 L19,26 L26,40 L20,43 L13,29 L3,38 Z" fill="#1B120B" stroke="#FFF4DC" stroke-width="2" stroke-linejoin="round"/><circle cx="9" cy="14" r="1.8" fill="#5A4028"/></svg>';
+    const o = { bloc: { el: bloc, etat: null }, sig: { el: sig, etat: null }, form: { el: form, etat: null }, bouton: { el: bouton, etat: null },
+      txt: { el: txt, etat: null }, onde: { el: onde, etat: null }, curseur: { el: curseur, etat: null } };
+    const melange = (a, b, u) => { const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16), c = (s) => Math.round(((pa >> s) & 255) + (((pb >> s) & 255) - ((pa >> s) & 255)) * u);
+      return `rgb(${c(16)},${c(8)},${c(0)})`; };
+    return {
+      maj(p) {
+        if (!p || !(p.visible > 0)) { ecrire(o.bloc, 'visibility:hidden'); return; }
+        ecrire(o.bloc, p.visible >= 1 ? '' : `opacity:${p.visible.toFixed(3)}`);
+        const sg = courbe('power1.inOut')(p.signature ?? 1) * 112 - 6;
+        ecrire(o.sig, `-webkit-mask-image:linear-gradient(90deg,#000 ${sg.toFixed(2)}%,transparent ${(sg + 6).toFixed(2)}%);mask-image:linear-gradient(90deg,#000 ${sg.toFixed(2)}%,transparent ${(sg + 6).toFixed(2)}%)`);
+        const fo = courbe('expo.out')(p.formateur ?? 1);
+        ecrire(o.form, `opacity:${fo.toFixed(3)};transform:scale(${(1.1 - 0.1 * fo).toFixed(4)});filter:blur(${(4 * (1 - fo)).toFixed(2)}px)`);
+        const bo = courbe('expo.out')(p.bouton ?? 1), pr = p.pression ?? 0, rs = p.respire ?? 0;
+        const sc = (1.1 - 0.1 * bo) * (1 - 0.06 * pr) * (1 + 0.01 * Math.sin(Math.PI * rs));
+        const c = p.couleur ?? 0;
+        const fond = c <= 0 || c >= 1 ? C.bordeaux : c < 1 / 3 ? melange(C.bordeaux, C.bordeauxClair, c * 3) : c < 2 / 3 ? melange(C.bordeauxClair, C.creme, c * 3 - 1) : melange(C.creme, C.bordeaux, c * 3 - 2);
+        ecrire(o.bouton, `opacity:${Math.min(1, bo * 2).toFixed(3)};transform:scale(${sc.toFixed(4)});filter:blur(${(6 * (1 - bo)).toFixed(2)}px);background:${fond}`);
+        ecrire(o.txt, c > 0.45 && c < 0.85 ? `color:${C.bordeaux}` : '');
+        const on = p.onde ?? 0;
+        ecrire(o.onde, on <= 0 || on >= 1 ? 'visibility:hidden' : `visibility:inherit;outline-offset:${(2 + 26 * courbe('expo.out')(on)).toFixed(2)}px;opacity:${(0.7 * (1 - on)).toFixed(3)}`);
+        const na = p.adresses ?? 1, n = na * mots.length;
+        mots.forEach((m, i) => { const u = borne(n - i); ecrire(m, `opacity:${u.toFixed(3)}`); });
+        const cu = p.curseur;
+        ecrire(o.curseur, cu && cu.visible !== false ? `transform:translate(${cu.x.toFixed(1)}px,${cu.y.toFixed(1)}px)` : 'visibility:hidden');
+      },
+    };
+  }
+
+  /* ================================================================ 7. création d'une instance et dessin (fonction pure de l'état) */
+  function creer(racine, prefixe, options = {}) {
+    const opt = Object.assign({ palettes: ['sombre', 'noir', 'dore'], phrases: [], textes: true, clip: null }, options);
+    const ident = (n) => `${prefixe}-${n}`;
+    const ecran = document.createElement('canvas'); ecran.width = L; ecran.height = H;
+    ecran.className = 'om-calque om-ecran'; ecran.id = ident('ecran'); racine.appendChild(ecran);
+    const calques = [ecran];
+    const couche = (cls, nom) => { const d = el('div', 'om-calque ' + cls, racine); d.id = ident(nom); calques.push(d); return d; };
+    const hSous = couche('om-sous', 'sous'), hPreuve = couche('om-couche-preuve', 'preuve'), hFin = couche('om-couche-fin', 'fin'), hNoir = couche('om-noir', 'noir');
+    if (opt.clip) calques.forEach((c, i) => { c.classList.add('clip'); c.dataset.start = opt.clip.start; c.dataset.duration = opt.clip.duration; c.dataset.trackIndex = (opt.clip.track || 1) + i; });
+    /* contextes paresseux : une séquence que le worker ne dessine pas n'alloue rien ; les canvas « monde » du flou de
+       caméra sont partagés par la page (une seule séquence dessine à la fois). Dès 3 px de flou, le monde est peint à
+       demi-résolution (960 × 540) : toutes les matrices passent ×0,5 par un mandataire du contexte, l'image est floue */
+    let ctxE = null;
+    const ecranCtx = () => ctxE || (ctxE = ecran.getContext('2d', { alpha: false }));
+    const mondeCtx = () => { let c = G.calques.monde; if (!c) { c = G.calques.monde = toileHE(L, H); c.__ctx = c.getContext('2d', { alpha: false }); } return c.__ctx; };
+    const mondeDemiCtx = () => {
+      let c = G.calques.mondeDemi;
+      if (!c) {
+        c = G.calques.mondeDemi = toileHE(L / 2, H / 2); const r = c.getContext('2d', { alpha: false });
+        c.__ctx = new Proxy(r, {
+          get(t, k) {
+            if (k === 'setTransform') return (a, b, cc, d, e, f) => t.setTransform(a / 2, b / 2, cc / 2, d / 2, e / 2, f / 2);
+            if (k === 'resetTransform') return () => t.setTransform(0.5, 0, 0, 0.5, 0, 0);
+            const v = t[k]; return typeof v === 'function' ? v.bind(t) : v;
+          },
+          set(t, k, v) { t[k] = v; return true; },
+        });
+      }
+      return c.__ctx;
+    };
+    let pret = false, sous = SousTitres(hSous, opt.phrases);
+    const preuve = Preuve(hPreuve), fin = Fin(hFin), noir = { el: hNoir, etat: null };
+
+    async function preparer() {
+      try {
+        await Promise.all(['500 60px "DM Sans"', '700 32px "DM Sans"', '600 84px Fraunces', '700 84px Fraunces', '700 120px Caveat']
+          .map((s) => document.fonts.load(s).catch(() => null)));
+        await document.fonts.ready;
+      } catch (e) { /* polices locales : le rendu continue avec les secours */ }
+      const etapes = [() => ['g1', 'g2', 'g3', 'g4'].forEach(grainPlan), () => toileCuite('clair'), () => { if (opt.palettes.some((p) => p !== 'sombre')) toileCuite('nuit'); },
+        () => { vignette(); if (opt.palettes.includes('sombre')) vignetteSerree(); haloLampe(); haloLampeOr(); pointOr(); haloOr(); spriteLumierePorte(); }];
+      for (const pal of opt.palettes) {
+        if (pal !== 'noir') etapes.push(() => tuilesPaysage(pal === 'dore' ? 'dore' : 'sombre'));
+        etapes.push(() => { for (const nom of Object.keys(AVANT)) if (!AVANT[nom].palettes || AVANT[nom].palettes.includes(pal)) spriteAvant(nom, pal); });
+      }
+      // une étape qui échoue est journalisée et sautée (texture de secours : rien) ; pret est toujours résolu
+      for (const e of etapes) { try { e(); } catch (err) { console.error('kit ombres : préparation, étape sautée :', err && err.stack || err); } await Promise.resolve(); }
+      pret = true;
+      return inst;
+    }
+
+    /* ---------- dessin d'un état ---------- */
+    function dessiner(E) {
+      if (!pret || !E) return false;
+      const cm = E.cam || cam(1765, 400, 0.5), pal = E.palette || 'sombre', t = E.t || 0;
+      const ii = E.ii ?? Math.floor(t * IPS + 1e-4);
+      const lum = pal === 'noir' ? 1 : (E.flamme ?? flamme(t)) * (E.lumiere ?? 1);
+      const flou = (cm.flou || 0) > 0.25 && cm.s < 3, demi = flou && cm.flou >= 3, ctxE = ecranCtx();
+      const ctx = demi ? mondeDemiCtx() : flou ? mondeCtx() : ctxE;
+      peindre(ctx, E, cm, pal, t, ii, lum);
+      if (flou) flouTirages(ctxE, demi ? G.calques.mondeDemi : ctx.canvas, cm.flou, Math.min(12, 2 + Math.ceil(2 * cm.flou / 1.5)), cm.dir || 'x');
+      // cadrages serrés du monde sombre (échelle ≥ 1,4) : le cœur se resserre et les bords s'assombrissent
+      const serre = pal === 'sombre' && E.scene !== 'toile' ? borne((cm.s - 1.3) / 0.1) * (E.coeurSerre ?? 1) : 0;   // fondu entre 1,3 et 1,4 : deux poses du vignettage seulement là
+      poserVignette(ctxE, lum, E.vignette ?? 1, serre);
+      majHTML(E);
+      return true;
+    }
+    function majHTML(E) {
+      sous.maj(E.sous ?? -1);
+      preuve.maj(E.preuve);
+      fin.maj(E.fin);
+      const nr = E.noir || 0;
+      ecrire(noir, `opacity:${borne(nr).toFixed(3)}`);
+    }
+    function vueDe(c, marge = 80) { const w = (L / 2) / c.s + marge, h = (H / 2) / c.s + marge; return [c.x - w, c.y - h, c.x + w, c.y + h]; }
+    const coupe = (a, b) => a[0] < b[2] && a[2] > b[0] && a[1] < b[3] && a[3] > b[1];
+
+    function peindre(ctx, E, c, pal, t, ii, lum) {
+      ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.filter = 'none';
+      ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'low';
+      const M1 = P1.matrice(c), M2 = P2.matrice(c), M3 = P3.matrice(c), M4 = P4.matrice(c), vue = vueDe(c);
+      const O = E.objets || {};
+      if (pal === 'noir') { peindreNoir(ctx, E, c, M1, M2, M4, ii, t); return; }
+      poserToile(ctx, E, c, E.scene === 'toile' ? 'sombre' : pal, M4, ii);
+      if (E.scene === 'toile') {
+        if (O.poussiere) for (const p of [].concat(O.poussiere)) poussiere(ctx, M2, p, 1);
+        if (O.oiseaux) oiseaux(ctx, M2, O.oiseaux, 'sombre', lum);
+        return;
+      }
+      peindrePlan3(ctx, E, c, pal, M2, M3, ii);
+      peindrePlan2(ctx, E, c, pal, M2, vue, ii, lum, t);
+      peindrePlan1(ctx, E, c, pal, M1, ii, t);
+      if (O.encre) encre(ctx, M2, O.encre);
+      if (O.lumiereCadran) lumiereCadran(ctx, M2, O.lumiereCadran);
+    }
+
+    /* ---------- plan 4 : la toile (cœur radial sur le sujet du plan, taches et fibres, grain) ---------- */
+    function poserToile(ctx, E, c, pal, M4, ii) {
+      const nom = pal === 'sombre' ? 'clair' : 'nuit', tc = toileCuite(nom, E.scene === 'toile'), st = STOPS_TOILE[nom];
+      const coeur = E.coeur || [c.x, c.y], [hx, hy] = Mx.app(M4, coeur[0], coeur[1]);
+      const x0 = Math.round(hx - TOILE_W / 2), y0 = Math.round(hy - TOILE_H / 2);
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      if (x0 > 0 || y0 > 0 || x0 + TOILE_W < L || y0 + TOILE_H < H) { ctx.fillStyle = plus3(st[st.length - 1][1]); ctx.fillRect(0, 0, L, H); }
+      const sx = Math.max(0, -x0), sy = Math.max(0, -y0), dx = Math.max(0, x0), dy = Math.max(0, y0);
+      const w = Math.min(TOILE_W - sx, L - dx), h = Math.min(TOILE_H - sy, H - dy);
+      if (w > 0 && h > 0) ctx.drawImage(tc, sx, sy, w, h, dx, dy, w, h);
+      poserGrain(ctx, grainPlan('g4'), M4, ii, null);
+    }
+
+    /* ---------- plan 3 : le dehors (ciels des ouvertures, brume), découpé par la maison ---------- */
+    function ciels(ctx, E, pal, M2) {
+      ctx.setTransform(M2[0], M2[1], M2[2], M2[3], M2[4], M2[5]);
+      const grad = (y0, y1, stops) => { const g = ctx.createLinearGradient(0, y0, 0, y1); for (const [o, col] of stops) g.addColorStop(o, col); return g; };
+      const O = MONDE.ouvertures, nuitG = (o) => grad(o[1], o[3], [[0, '#170E07'], [1, '#3A2511']]);
+      const po = E.porte || {}, F2 = E.F2 || {};
+      for (const [nom, o] of Object.entries(O)) {
+        let fond;
+        if (pal === 'dore') fond = nuitG(o);
+        else if (nom === 'porte') fond = grad(o[1], o[3], [[0, '#FFF4DA'], [0.62, '#F3DDB0'], [1, '#D9B784']]);
+        else if (nom === 'F1') fond = grad(o[1], o[3], [[0, '#FFF2D4'], [1, '#E4C690']]);
+        else fond = grad(o[1], o[3], [[0, '#F2D2A0'], [1, '#E4B577']]);
+        ctx.globalAlpha = 1; ctx.fillStyle = fond; ctx.fillRect(o[0], o[1], o[2] - o[0], o[3] - o[1]);
+        if (nom === 'F2' && pal !== 'dore') {
+          const nu = borne(F2.nuit ?? 0), jo = borne(F2.jour ?? 0);
+          if (nu > 0) { ctx.globalAlpha = nu; ctx.fillStyle = nuitG(o); ctx.fillRect(o[0], o[1], o[2] - o[0], o[3] - o[1]); }
+          if (jo > 0) { ctx.globalAlpha = jo; ctx.fillStyle = '#FFF3D6'; ctx.fillRect(o[0], o[1], o[2] - o[0], o[3] - o[1]); }
+        }
+        if (nom === 'F2') {   // étoiles sans lune (crème au monde sombre, or au monde doré)
+          const et = pal === 'dore' ? (F2.etoiles ?? 1) : borne(F2.nuit ?? 0) * (F2.etoiles ?? 1) * (1 - borne(F2.jour ?? 0));
+          if (et > 0.01) {
+            ctx.fillStyle = pal === 'dore' ? C.orClair : C.creme;
+            for (let i = 0; i < 16; i++) {
+              const x = o[0] + 16 + h01(i * 7919 + 3) * (o[2] - o[0] - 32), y = o[1] + 14 + h01(i * 104729 + 5) * (o[3] - o[1] - 60), r = 1 + 1.6 * h01(i * 31 + 9);
+              ctx.globalAlpha = et * (0.5 + 0.5 * h01(i * 13 + 1)); ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.fill();
+            }
+          }
+        }
+        if (nom === 'porte' && (po.soir || 0) > 0) { ctx.globalAlpha = borne(po.soir); ctx.fillStyle = C.voile; ctx.fillRect(o[0], o[1], o[2] - o[0], o[3] - o[1]); }
+      }
+      ctx.globalAlpha = 1;
+    }
+    function peindrePlan3(ctx, E, c, pal, M2, M3, ii) {
+      const ma = Mx.app(M2, 20, -120), mb = Mx.app(M2, 3510, 948);
+      const maison = ma[0] < L && mb[0] > 0 && ma[1] < H && mb[1] > 0;
+      ctx.save();
+      if (maison) { ctx.setTransform(M2[0], M2[1], M2[2], M2[3], M2[4], M2[5]); ctx.clip(DEHORS, 'evenodd'); }
+      ciels(ctx, E, pal, M2);
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      const rects = [], sol = M2[3] * SOL + M2[5];
+      const vg = Math.floor(h01(Math.floor(ii / 2) * 53 + 3) * 2) % 2;
+      for (const tu of tuilesPaysage(pal === 'dore' ? 'dore' : 'sombre')) {
+        const p = tu.__pose, img = tu[vg], k = sigma(0.5, c.s) / p.d, ox = M3[0] * p.ox + M3[4], oy = M3[3] * p.oy + M3[5];
+        const ex0 = M3[0] * p.x0 + M3[4], ex1 = M3[0] * p.x1 + M3[4];   // chaque tuile seulement sur sa bande (ses marges floues recouvrent la voisine)
+        const ax = Math.max(0, ex0, ox), ay = Math.max(0, oy + p.yMin * k), bx = Math.min(L, ex1, ox + p.w * k), by = Math.min(H, sol + 2, oy + p.h * k);
+        if (bx <= ax || by <= ay) continue;
+        ctx.drawImage(img, (ax - ox) / k, (ay - oy) / k, (bx - ax) / k, (by - ay) / k, ax, ay, bx - ax, by - ay);
+      }
+      // la balançoire lointaine, seulement si ses deux cordes et sa planche tiennent dans un même carreau de F1
+      if (pal === 'sombre' && maison) {
+        const o = MONDE.ouvertures.F1, b = BAL_LOIN, cx = (o[0] + o[2]) / 2, cy = (o[1] + o[3]) / 2;
+        const X = (x) => M2[0] * x + M2[4], Y = (y) => M2[3] * y + M2[5], x3 = (x) => M3[0] * x + M3[4], y3 = (y) => M3[3] * y + M3[5], mg = 3;
+        const cols = [[X(o[0] + 10), X(cx - 4)], [X(cx + 4), X(o[2] - 10)]], rows = [[Y(o[1] + 10), Y(cy - 4)], [Y(cy + 4), Y(o[3] - 10)]];
+        const dans = (a0, a1, [b0, b1]) => a0 >= b0 + mg && a1 <= b1 - mg;
+        const cx0 = x3(b.planche[0]), cx1 = x3(b.planche[2]), py0 = y3(b.planche[1]), py1 = y3(b.planche[3]);
+        if (cols.some((col) => dans(cx0, cx1, col)) && rows.some((row) => dans(py0, py1, row))) {
+          const sp = balancoireLoin(), q = sp.__pose, k = sigma(0.5, c.s) / q.d;
+          ctx.setTransform(k, 0, 0, k, M3[0] * q.ox + M3[4], M3[3] * q.oy + M3[5]); ctx.drawImage(sp, 0, 0); ctx.setTransform(1, 0, 0, 1, 0, 0);
+        }
+      }
+      // grain du plan 3 : cuit dans la brume ; posé en plus dans les ouvertures (le ciel vu par la porte et les fenêtres)
+      if (maison) for (const o of Object.values(MONDE.ouvertures)) { const a = Mx.app(M2, o[0], o[1]), b = Mx.app(M2, o[2], o[3]); rects.push([a[0], a[1], b[0], b[1]]); }
+      if (rects.length) poserGrain(ctx, grainPlan('g3'), M3, ii, rects);
+      ctx.restore();
+    }
+
+    /* ---------- plan 2 : la maison, le jardin, les marionnettes, les objets ---------- */
+    function peindrePlan2(ctx, E, c, pal, M2, vue, ii, lum, t) {
+      const dore = pal === 'dore', cs = etatCases(E, pal), O = E.objets || {};
+      const vis = (bb) => coupe(bb, vue);
+      const setM = (m) => ctx.setTransform(m[0], m[1], m[2], m[3], m[4], m[5]);
+      // 1. fonds dorés des cases rallumées (monde doré : la toile derrière la pièce passe au doré)
+      if (dore) for (const k of [...CASES_ORDRE, 'ES', 'SK']) {
+        const v = cs[k].or, bb = bbCase(k); if (v < 0.01 || !vis(bb)) continue;
+        setM(M2); const g = ctx.createRadialGradient((bb[0] + bb[2]) / 2, bb[1] + (bb[3] - bb[1]) * 0.6, 10, (bb[0] + bb[2]) / 2, bb[1] + (bb[3] - bb[1]) * 0.6, Math.max(bb[2] - bb[0], bb[3] - bb[1]) * 0.75);
+        if (k === 'K' || k === 'SK') { g.addColorStop(0, '#86592A'); g.addColorStop(0.7, '#5C3B1C'); g.addColorStop(1, '#422912'); }
+        else { g.addColorStop(0, '#A8763A'); g.addColorStop(0.7, '#7E5224'); g.addColorStop(1, '#553618'); }
+        ctx.globalAlpha = borne(v) * Math.min(1.05, lum); ctx.fillStyle = g; ctx.fill(CHEMINS_CASES[k], 'evenodd'); ctx.globalAlpha = 1;
+      }
+      // 2. papier peint (motif brume-2 à 9 %) et lambris (brume-2 à 16 %)
+      for (const [nom, fab, bb] of DECOR) if (vis(bb)) dessinerListe(ctx, opsDe(nom, fab), M2);
+      // 3. voiles des cases éteintes (#140B05 à 0 à 66 %)
+      setM(M2); ctx.fillStyle = C.voile;
+      for (const k of [...CASES_ORDRE, 'ES', 'SK']) {
+        const v = cs[k].voile; if (!(v > 0.004) || !vis(bbCase(k))) continue;
+        if (cs[k].trou) {   // voile percé autour du cœur lumineux (dégradé radial, pas de bord)
+          const [tx, ty, tr, fo = 0.75] = cs[k].trou, g = ctx.createRadialGradient(tx, ty, 0, tx, ty, tr);
+          for (const u of TROU_U) g.addColorStop(u, `rgba(20,11,5,${(borne(v) * (1 - fo * trouChute(u))).toFixed(4)})`);
+          ctx.globalAlpha = 1; ctx.fillStyle = g; ctx.fill(CHEMINS_CASES[k], 'evenodd'); ctx.fillStyle = C.voile;
+        } else { ctx.globalAlpha = borne(v); ctx.fill(CHEMINS_CASES[k], 'evenodd'); }
+      }
+      ctx.globalAlpha = 1;
+      // 4. halos des lampes (derrière les silhouettes, découpés par leur case)
+      const lampes = Object.assign({ L1: 1, L2: 1 }, E.lampes || {});
+      for (const [nom, [lx, ly], cas] of [['L1', MONDE.stations.L1, 'S'], ['L2', MONDE.stations.L2, 'K']]) {
+        const niv = lampes[nom]; if (!(niv > 0) || !vis([lx - 300, ly - 400, lx + 300, ly + 200])) continue;
+        ctx.save(); setM(M2); ctx.clip(CHEMINS_CASES[cas], 'evenodd');
+        const r = 150 * (0.6 + 0.4 * niv), [sx, sy] = Mx.app(M2, lx, ly - 64), k = r * M2[0];
+        ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = borne((0.35 + 0.6 * niv) * lum * (dore && nom === 'L2' ? 0.9 : 1));
+        ctx.drawImage(dore ? haloLampeOr() : haloLampe(), sx - k, sy - k, 2 * k, 2 * k); ctx.restore();
+      }
+      // 5. cadre de la maison, meubles (monde doré : cuisine et jardin en or)
+      dessinerListe(ctx, opsDe('cadre', svgCadre), M2);
+      for (const [nom, fab, bb, d] of MEUBLES) if (vis(bb)) dessinerTeinte(ctx, opsDe(nom, fab, dore && d ? 'or' : null), M2, lum);
+      const po = Object.assign({ angle: 112, lumiere: 0.8 }, E.porte || {});
+      if (vis([180, 440, 520, 900])) {
+        dessinerListe(ctx, compilerPose(svgBattant(po.angle)), M2);
+        const ma = E.manteau || 0;
+        dessinerListe(ctx, opsDe('manteau', () => SVG_MANTEAU), chaineM(M2, Mx.tr(230, 604), Mx.rot(ma)));
+        if (po.lumiere > 0.01 && pal === 'sombre') {
+          const sp = spriteLumierePorte(), p = sp.__pose; ctx.globalAlpha = borne(0.42 * po.lumiere * lum * Math.max(0, Math.cos(rad(Math.min(90, 112 - po.angle))) * (po.angle > 20 ? 1 : po.angle / 20)));
+          const m = chaineM(M2, Mx.tr(p.ox, p.oy), Mx.ech(1 / p.d)); setM(m); ctx.drawImage(sp, 0, 0); ctx.globalAlpha = 1;
+        }
+      }
+      for (const [nom, [lx, ly], d] of [['L1', MONDE.stations.L1, false], ['L2', MONDE.stations.L2, true]]) {
+        if (!vis([lx - 60, ly - 120, lx + 60, ly])) continue;
+        dessinerTeinte(ctx, opsDe('lampe' + nom, () => lampe(lx, ly, 0.8), dore && d ? 'or' : null), M2, lum);
+        const niv = lampes[nom];
+        if (niv > 0) { setM(M2); ctx.fillStyle = dore ? '#FFE7B0' : C.or; ctx.globalAlpha = borne(0.6 + 0.4 * lum);
+          const hF = 22 * (0.5 + 0.5 * niv) * lum; ctx.beginPath(); ctx.moveTo(lx, ly - 52 - hF); ctx.quadraticCurveTo(lx + 6, ly - 52 - hF * 0.3, lx, ly - 50); ctx.quadraticCurveTo(lx - 6, ly - 52 - hF * 0.3, lx, ly - 52 - hF); ctx.fill(); ctx.globalAlpha = 1; }
+      }
+      // 6. le jardin : l'arbre (nu et sombre, puis tronc de devis et branches d'or), la balançoire
+      const ar = Object.assign({ pile: 0, or: 0, feuilles: 0 }, E.arbre || {});
+      if (vis([3900, -100, 5600, 910])) {
+        const BBA = [3900, -120, 5600, 910], np = Math.round(ar.pile * 60), nf = dore ? Math.round(borne(ar.feuilles) * FEUILLES_ARBRE.length) : 0;
+        const al = [0, 0.38, 0.7].map((th) => (dore ? borne((ar.or - th) / 0.3) : 0));
+        const opsPile = np > 0 ? compilerPose(svgTroncDevis(np / 60), dore ? 'or' : null, BBA) : null;
+        const opsFeuilles = nf > 0 ? compilerPose(`<g fill="${C.ombre}">${FEUILLES_ARBRE.slice(0, nf).map((q) => `<g opacity="${f(q[5])}">${feuillePapier(q[0], q[1], q[2], q[3], q[4])}</g>`).join('')}</g>`, 'or', BBA) : null;
+        if (dore && (al[0] > 0.01 || opsPile || opsFeuilles)) {   // halo commun de l'or de l'arbre, pré-rendu une fois par état arrondi
+          const cle = `haloArbre|${np}|${nf}|${al.map((v) => Math.round(v * 10)).join(',')}`;
+          const ha = halosArbre(cle);
+          if (ha.__halo === undefined) {
+            const morceaux = [...[0, 1, 2].filter((b) => al[b] > 0.05).map((b) => opsDe('arbre:' + b, () => svgArbre(b), 'or', BBA)), opsPile, opsFeuilles].filter(Boolean);
+            const tout = []; for (const m of morceaux) tout.push(...m); tout.bb = BBA;
+            ha.__halo = haloDe(tout); tout.__halo = undefined;
+          }
+          poserHalo(ctx, ha.__halo, M2, 0.62 * lum);
+        }
+        if (dore && np === 60 && al.every((v) => v >= 0.99)) {   // arbre d'or fini : une seule liste, donc un seul sprite (pas de recouvrements)
+          const tout = arbresCuits(`arbre|${nf}`);
+          if (!tout.length) { for (const m of [0, 1, 2].map((b) => opsDe('arbre:' + b, () => svgArbre(b), 'or', BBA)).concat([opsPile, opsFeuilles]))
+            if (m) for (const op of m) tout.push(op);
+            let bx0 = Infinity, by0 = Infinity, bx1 = -Infinity, by1 = -Infinity;
+            for (const m of [0, 1, 2].map((b) => opsDe('arbre:' + b, () => svgArbre(b), 'or', BBA)).concat([opsPile, opsFeuilles])) if (m && m.bb) {
+              bx0 = Math.min(bx0, m.bb[0]); by0 = Math.min(by0, m.bb[1]); bx1 = Math.max(bx1, m.bb[2]); by1 = Math.max(by1, m.bb[3]); }
+            tout.bb = [bx0, by0, bx1, by1]; tout.or = true; }
+          dessinerListe(ctx, tout, M2, { lum });
+        } else {
+          if (!(ar.pile >= 1 && dore)) dessinerListe(ctx, opsDe('arbre:tronc', () => svgArbre('tronc')), M2);
+          for (const b of [0, 1, 2]) {
+            if (al[b] < 0.99) dessinerListe(ctx, opsDe('arbre:' + b, () => svgArbre(b)), M2);
+            if (al[b] > 0.01) dessinerListe(ctx, opsDe('arbre:' + b, () => svgArbre(b), 'or', BBA), M2, { alpha: al[b], lum });
+          }
+          if (opsPile) dessinerListe(ctx, opsPile, M2, { lum });
+          if (opsFeuilles) dessinerListe(ctx, opsFeuilles, M2, { lum });
+        }
+      }
+      // les poteaux porte-cartes : hauts seulement quand une carte y est épinglée (E.poteaux : forcer 'haut' ou 'bas')
+      if (vis([5190, 698, 5370, 900])) {
+        const hauts = E.poteaux ? E.poteaux === 'haut' : !!O.dessin2 || (O.dessins || []).some((d) => Math.abs(d.x - 5200) < 40 || Math.abs(d.x - 5360) < 40);
+        dessinerTeinte(ctx, opsDe('poteaux:' + (hauts ? 'h' : 'b'), () => svgPoteaux(hauts), dore ? 'or' : null), M2, lum);
+      }
+      const ba = E.balancoire || {};
+      // la balançoire : une seule liste (tracée droite), balancée par la matrice ; son halo est calculé une fois
+      if (vis([4560, 300, 4940, 830])) dessinerTeinte(ctx, compilerPose(balancoire(0, 0, 460, 0, C.ombre, 5), dore && ba.or !== false ? 'or' : null), chaineM(M2, Mx.tr(4745, 330), Mx.rot(ba.angle || 0)), lum);
+      // 7. objets posés (derrière les marionnettes)
+      const teinteObj = (o) => ((o.or ?? dore) ? 'or' : null);
+      // les objets sont tracés à l'origine et posés par la matrice (la liste ne change pas quand ils se déplacent)
+      const poser = (svg, te, x, y) => dessinerTeinte(ctx, compilerPose(svg, te), Mx.mul(M2, Mx.tr(x, y)), lum);
+      for (const p of O.piles || []) poser(`<g transform="rotate(${f(p.rot || 0)})">${pile(0, 0, p.n, { w: p.w || 118, h: p.h || 7, gap: p.gap || 1.6, seed: p.seed || 3 })}</g>`, teinteObj(p), p.x, p.y);
+      if (O.dossier) { const d = O.dossier; poser(dossier(0, 0, d.ouvert ?? 1, d.eventail ?? 1), teinteObj(d), d.x, d.y); }
+      for (const d of O.dessins || []) dessinCarte(ctx, M2, d, lum, teinteObj(d), d.clair ?? (teinteObj(d) ? 1 : 1 - voileEn(cs, d.x, d.y)));
+      if (O.dessin2) dessinSecond(ctx, M2, O.dessin2, lum, dore);
+      for (const d of O.devis || []) { const w = d.w || 70, h = d.h || 92;
+        poser(`<g transform="rotate(${f(d.rot || 0)})">${devis(-w / 2, -h / 2, w, h, 0)}` +
+          (d.punaise ? `<circle cx="0" cy="${f(-h / 2 + 9)}" r="4.2" fill="${C.ombre}"/>${rivet(0, -h / 2 + 9, 1.5)}` : '') + `</g>`, teinteObj(d), d.x, d.y); }
+      if (O.balle) { const b = O.balle; poser(balle(0, 0, 26, b.rot || 0), teinteObj(b), b.x, b.y); }
+      // 8. les marionnettes (et la chaîne du poignet arrière du père à la lentille du balancier) ; le papier qu'elles portent
+      // (cadran, carte, feuille) prend la lumière de leur case, sauf lumière imposée (clair : 0 à 1)
+      const teinteM = (a) => ((a.or ?? dore) ? 'or' : null);
+      const papierDe = (a, x, y) => ({ papier: a.clair ?? (dore && (a.or ?? true) ? 1 : 1 - voileEn(cs, x, y)) });
+      const places = {};
+      if (E.horloge) places.horloge = placerHorloge(E.horloge, papierDe(E.horloge, E.horloge.x, (E.horloge.y ?? SOL) - 270));
+      if (E.fille) {
+        const a = Object.assign({}, E.fille);
+        if (a.pose === 'balancoire') { const piv = ARBRE.pivot, ang = ba.angle || 0; a.x = a.x ?? piv[0] - 6; a.y = 786; a.penche = ang;
+          a.mains = { F: [piv[0] + 38, 650], B: [piv[0] + 38, 676] }; places.balPivot = piv; }
+        places.fille = placerFille(a, papierDe(a, a.x, (a.y ?? SOL) - 150));
+        if (a.pose === 'balancoire') { places.fille.pivot = ARBRE.pivot; places.fille.pen = ba.angle || 0; }
+      }
+      if (E.pere) {
+        const a = Object.assign({}, E.pere);
+        if (a.pose === 'pousse' && places.fille && !a.mains) {
+          const pf = places.fille, m = Mx.rot(pf.pen, pf.pivot[0], pf.pivot[1]), s = 0.76, fl = pf.P.flip;
+          const dos = (lx, ly) => Mx.app(m, pf.o[0] + lx * s * fl, pf.o[1] + ly * s);
+          a.mains = { F: dos(-24, -214), B: dos(-34, -174) };
+        }
+        places.pere = placerPere(a, papierDe(a, a.x, (a.y ?? SOL) - 220));
+      }
+      const ordre = E.ordre || ['horloge', 'pere', 'fille'];
+      const dessinerActeur = (nom) => {
+        const pl = places[nom], a = E[nom]; if (!pl) return;
+        const te = teinteM(a), ops = compilerPose(pl.svg, te);
+        // matrice du monde de la marionnette (penche autour du pivot, éloignement de la toile autour des pieds), puis la pose
+        let Mw = pl.pen ? Mx.rot(pl.pen, pl.pivot[0], pl.pivot[1]) : Mx.id();
+        const ech = a.echelle || 1;
+        if (ech !== 1) Mw = Mx.mul(Mw, [ech, 0, 0, ech, pl.base[0] * (1 - ech), pl.base[1] * (1 - ech)]);
+        const M = chaineM(M2, Mw, Mx.tr(pl.base[0], pl.base[1]));
+        // les tiges : hors de la rotation et de l'échelle, du point d'attache transformé jusqu'au sol (y 900), toujours
+        const tiges = pl.tiges.map((tg) => { const p = Mx.app(Mw, tg.p[0], tg.p[1]); return [p, [p[0] + tg.k * (SOL - p[1]), SOL]]; });
+        const tracerTiges = (c, Mm, alpha) => {
+          if (!tiges.length) return;
+          c.setTransform(Mm[0], Mm[1], Mm[2], Mm[3], Mm[4], Mm[5]); c.globalAlpha = borne(alpha); c.strokeStyle = te ? '#E3AE55' : C.ombre;
+          c.lineWidth = 2.2 * ech; c.lineCap = 'round'; c.beginPath();
+          for (const [p0, p1] of tiges) { c.moveTo(p0[0], p0[1]); c.lineTo(p1[0], p1[1]); }
+          c.stroke(); c.globalAlpha = 1;
+        };
+        // pièces mobiles (horloge) : petites listes tracées à l'angle 0, tournées par la matrice, dans la teinte du corps
+        const pieces = (pl.parties || []).map((q) => [compilerPose(q.svg, te, te ? ops.bb : null), q.m]);
+        const tracerPieces = (c, Mm, alpha) => { for (const [o, m] of pieces) tracerListe(c, o, Mx.mul(Mm, m), { alpha }); };
+        const op = a.opacite ?? 1, fl = a.flou || 0;
+        if (fl > 0.3) {
+          if (ops.or) poserHalo(ctx, haloDe(ops), M, 0.5 * lum * op);
+          const r = rectEcran(ops.bb, M, tiges.flat().map((p) => Mx.app(M2, p[0], p[1])));
+          dessinerFlou(ctx, r, fl, op, (c, base) => { tracerListe(c, ops, Mx.mul(base, M)); tracerPieces(c, Mx.mul(base, M), 1); tracerTiges(c, Mx.mul(base, M2), 1); });
+        } else { dessinerTeinte(ctx, ops, M, lum, op); tracerPieces(ctx, M, op); tracerTiges(ctx, M2, op); }
+        // père effacé et enchaîné : son bras arrière (épaule, coude, main) reste net, la chaîne garde un point d'attache lisible
+        if (nom === 'pere' && pl.brasB && (op < 0.95 || fl > 0.3) && E.chaine && E.chaine.visible !== false && a.brasNet !== false)
+          dessinerTeinte(ctx, compilerPose(pl.brasB(), te), M, lum, Math.max(op, 0.85));
+        if (nom === 'horloge') horlogeLumieres(ctx, M2, pl, a, lum, dore);
+      };
+      for (const nom of ordre) dessinerActeur(nom);
+      if (E.chaine && places.pere && places.horloge && E.chaine.visible !== false) chaineDessin(ctx, M2, places, E, lum, dore);
+      // 9. objets devant : feuilles volantes, lettres de papier, oiseaux, poussière
+      // feuilles qui volent (feuille simple qui tourne) ; sol: true, une feuille posée à plat au sol (x, y du sol), le bout relevé
+      for (const p of O.feuilles || []) {
+        if (p.sol) { poser(feuilleSol(p.w || 66, p.flip ?? 1), teinteObj(p), p.x, p.y ?? SOL); continue; }
+        // la feuille qui tourne : tracée droite une fois, tournée et retournée par la matrice (sa liste ne change pas en vol)
+        const fl = p.flip ?? 1, k = Math.abs(fl) < 0.06 ? 0.06 * Math.sign(fl || 1) : fl;
+        dessinerTeinte(ctx, compilerPose(feuilleSimple(0, 0, p.w || 62, p.h || 84, 0, 1), teinteObj(p)), chaineM(M2, Mx.tr(p.x, p.y), Mx.rot(p.rot || 0), Mx.ech(k, 1)), lum);
+      }
+      if (O.lettres) lettres(ctx, M2, c, O.lettres, lum);
+      if (O.oiseaux) oiseaux(ctx, M2, O.oiseaux, pal, lum);
+      if (O.poussiere) for (const p of [].concat(O.poussiere)) poussiere(ctx, M2, p, lum);
+      // 10. le sol : sous y 900 tout est ombre-sol (seuil compris) ; aucune lumière ne déborde dans la bande des sous-titres
+      ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1;
+      const ys = M2[3] * SOL + M2[5];
+      if (ys < H) { ctx.fillStyle = C.ombreSol; ctx.fillRect(0, Math.max(0, Math.floor(ys)), L, H); }
+      // 11. le grain du plan 2, porté par la maison (cases allumées visibles)
+      const rects = [];
+      for (const k of CASES_ORDRE) { if (k === 'G' || cs[k].voile > 0.4) continue; const bb = bbCase(k); if (!vis(bb)) continue;
+        const a = Mx.app(M2, bb[0], bb[1]), b = Mx.app(M2, bb[2], bb[3]); rects.push([a[0], a[1], b[0], Math.min(b[1], ys)]); }
+      if (rects.length) poserGrain(ctx, grainPlan('g2'), M2, ii, rects);
+    }
+    /* la lumière de l'horloge : liseré crème du cadran, fenêtre du cadran allumée d'or (pivot), étincelle */
+    function horlogeLumieres(ctx, M2, pl, a, lum, dore) {
+      const m = chaineM(M2, Mx.rot(pl.pen, pl.pivot[0], pl.pivot[1]));
+      const [cx, cy] = [pl.base[0], pl.base[1] - 386 * 0.7];
+      const li = a.lisere || 0;
+      if (li > 0) { ctx.setTransform(m[0], m[1], m[2], m[3], m[4], m[5]); ctx.globalAlpha = borne(li * lum); ctx.strokeStyle = C.creme; ctx.lineWidth = 2.4; ctx.lineCap = 'round';
+        ctx.beginPath(); a.lisereArc ? ctx.arc(cx, cy, 57, rad(196), rad(300)) : ctx.arc(cx, cy, 57, 0, 2 * Math.PI); ctx.stroke(); ctx.globalAlpha = 1; }
+      const co = a.cadranOr ?? (dore ? 0.75 : 0);
+      if (co > 0) {
+        const [sx, sy] = Mx.app(m, cx, cy), k = 58 * 0.7 * m[0] * 2.6;
+        ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = borne(co * 0.7 * lum); ctx.drawImage(haloOr(), sx - k, sy - k, 2 * k, 2 * k);
+        ctx.setTransform(m[0], m[1], m[2], m[3], m[4], m[5]); ctx.globalAlpha = borne(co);
+        const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, 41); g.addColorStop(0, '#FBE3AE'); g.addColorStop(0.55, C.orClair); g.addColorStop(1, C.or);
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, 41 * (0.2 + 0.8 * courbe('expo.out')(Math.min(1, co * 1.2))), 0, 2 * Math.PI); ctx.fill();
+        // aiguilles et graduations par-dessus la lumière (tracées à l'origine, posées sous la matrice)
+        ctx.globalAlpha = 1; tracerListe(ctx, compilerPose(`<g transform="scale(0.7)" fill="#3A2408">` +
+          `<path d="M-4,4 L-2.7,-30 L0,-38 L2.7,-30 L4,4 Z" transform="translate(0,-386) rotate(${f(pl.P.heure)})"/><path d="M-2.5,4 L-1.7,-46 L0,-54 L1.7,-46 L2.5,4 Z" transform="translate(0,-386) rotate(${f(pl.P.minute)})"/><circle cx="0" cy="-386" r="6"/></g>`),
+          chaineM(m, Mx.tr(pl.base[0], pl.base[1])));
+      }
+      if (a.etincelle > 0) { const [sx, sy] = Mx.app(m, cx, cy), k = 22 * m[0] * a.etincelle; ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.drawImage(pointOr(), sx - k, sy - k, 2 * k, 2 * k); }
+      ctx.globalAlpha = 1;
+    }
+    /* la chaîne de papier : du poignet arrière du père à la lentille du balancier ; tendue ou en chaînette ; n maillons
+       visibles (elle se tend maillon par maillon) ; reflet d'or qui court ; maillons illuminés. Tracée depuis son point
+       d'attache (la clé ne dépend que de sa forme), ses tranches de n maillons gardées sur la liste. */
+    function chaineDessin(ctx, M2, places, E, lum, dore) {
+      const ch = E.chaine, pp = places.pere, b = places.horloge.lent, ech = E.pere.echelle || 1;
+      const a = ech === 1 ? pp.mB : [pp.base[0] + (pp.mB[0] - pp.base[0]) * ech, pp.base[1] + (pp.mB[1] - pp.base[1]) * ech];
+      const a0 = [a[0], a[1] + 6], pts = courbeChaine([0, 0], [b[0] - a0[0], b[1] - a0[1]], ch.longueur || 360, ch.tension || 0);
+      const svg = chaine(pts), Mc = Mx.mul(M2, Mx.tr(a0[0], a0[1]));
+      const te = (ch.or ?? dore) ? 'or' : null, ops = compilerPose(svg, te);
+      const n = ch.n === undefined || ch.n === null ? ops.length : Math.min(ops.length, Math.floor(ch.n));
+      const tranche = (l, k) => { if (k >= l.length) return l; l.__tranches = l.__tranches || new Map();
+        let v = l.__tranches.get(k); if (!v) { v = Object.assign(l.slice(0, k), { bb: l.bb, or: l.or }); l.__tranches.set(k, v); } return v; };
+      dessinerTeinte(ctx, tranche(ops, n), Mc, lum);
+      const orOps = te ? null : compilerPose(svg, 'or');
+      if (orOps && ch.reflet !== undefined && ch.reflet !== null && ch.reflet >= 0 && ch.reflet <= 1.2) {
+        const centre = ch.reflet * n;
+        for (let i = 0; i < n; i++) { const d = Math.abs(i - centre); if (d < 3) tracerListe(ctx, orOps, Mc, { debut: i, fin: i + 1, alpha: 1 - d / 3 }); }
+      }
+      if (orOps && ch.illumine > 0) tracerListe(ctx, orOps, Mc, { fin: Math.min(n, Math.floor(ch.illumine)) });
+    }
+    /* la carte du petit dinosaure (tracée à l'origine, papier sous la lumière de sa case), son reflet d'or */
+    function dessinCarte(ctx, M2, d, lum, te, clair) {
+      const ops = compilerPose(carteDessin(0, 0, { rot: d.rot ?? -4, s: d.s || 1, papier: papierSous(C.carte, clair) }), te);
+      dessinerTeinte(ctx, ops, Mx.mul(M2, Mx.tr(d.x, d.y)), lum);
+      if (d.reflet > 0 && d.reflet < 1) {
+        ctx.save(); ctx.setTransform(M2[0], M2[1], M2[2], M2[3], M2[4], M2[5]);
+        ctx.translate(d.x, d.y); ctx.rotate(rad(d.rot ?? -4)); ctx.scale(d.s || 1, d.s || 1);
+        ctx.beginPath(); ctx.rect(-49.5, -44.5, 99, 89); ctx.clip();
+        const x = -90 + 180 * d.reflet, g = ctx.createLinearGradient(x - 30, -40, x + 30, 40);
+        g.addColorStop(0, 'rgba(224,168,74,0)'); g.addColorStop(0.5, 'rgba(240,196,106,.75)'); g.addColorStop(1, 'rgba(224,168,74,0)');
+        ctx.fillStyle = g; ctx.fillRect(-60, -50, 120, 100); ctx.restore();
+      }
+    }
+    /* le second dinosaure : la même carte, tracé en lignes d'or (progression 0 à 1), halo or quand il est fini */
+    function dessinSecond(ctx, M2, d, lum, dore) {
+      const ops = compilerPose(carteDessin(0, 0, { rot: d.rot ?? 3, dino: false }), dore ? 'or' : null), Mc = Mx.mul(M2, Mx.tr(d.x, d.y));
+      if ((d.halo || 0) > 0) poserHalo(ctx, haloDe(ops), Mc, 0.9 * d.halo * lum);
+      dessinerTeinte(ctx, ops, Mc, lum);
+      const p = borne(d.progres ?? 1); if (p <= 0) return;
+      ctx.save(); const m = chaineM(M2, Mx.tr(d.x, d.y), Mx.rot(d.rot ?? 3), Mx.tr(9, 38), Mx.ech(0.36));
+      ctx.setTransform(m[0], m[1], m[2], m[3], m[4], m[5]);
+      ctx.strokeStyle = C.orClair; ctx.lineWidth = 7.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.shadowColor = 'rgba(242,196,106,.85)'; ctx.shadowBlur = 6;
+      let reste = p * LIGNES_DINO2.total;
+      for (const l of LIGNES_DINO2) {
+        if (reste <= 0) break;
+        ctx.beginPath(); ctx.moveTo(l[0][0], l[0][1]);
+        for (let i = 1; i < l.length && reste > 0; i++) {
+          const sg = Math.hypot(l[i][0] - l[i - 1][0], l[i][1] - l[i - 1][1]);
+          if (sg <= reste) { ctx.lineTo(l[i][0], l[i][1]); reste -= sg; }
+          else { const u = reste / sg; ctx.lineTo(l[i - 1][0] + (l[i][0] - l[i - 1][0]) * u, l[i - 1][1] + (l[i][1] - l[i - 1][1]) * u); reste = 0; }
+        }
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+    /* lettres de papier pendues à des fils (initiale seule puis mot déplié), ombre ou or-clair ; trait d'or sous le mot */
+    /* lettres : [{ texte, x, y (ligne de base, monde), taille, deplie, rot, or, trait, filHaut, pendA }] ; pendA : indice
+       du mot du dessus dans la même liste, auquel ce mot est pendu comme un mobile (ses fils montent jusqu'au bas du mot du
+       dessus, jamais à travers lui ; frame.md : aucune ligne qui traverse une phrase) */
+    function lettres(ctx, M2, c, liste, lum) {
+      const haut = c.y - (H / 2) / c.s - 20;
+      for (const w of liste) {
+        const T = w.taille || 84 / c.s, me = mesurerMot(w.texte, T), or = !!w.or;
+        if (T * c.s > 84.5) avis('lettres:' + w.texte, `lettres « ${w.texte} » à ${(T * c.s).toFixed(1)} px (> 84 px) : poser taille = 84 / échelle la plus forte`);
+        const sup = w.pendA !== undefined && w.pendA !== null ? liste[w.pendA] : null;
+        const supT = sup ? sup.taille || 84 / c.s : 0, supL = sup ? mesurerMot(sup.texte, supT).largeur : 0;
+        const hautFil = (xl) => {   // haut du fil d'abscisse locale xl : le bas du mot du dessus s'il est au-dessus, sinon le plafond
+          const xw = w.x + xl;
+          if (sup && xw >= sup.x - 0.08 * supT && xw <= sup.x + supL + 0.08 * supT) return sup.y + 0.02 * supT - w.y;
+          return (w.filHaut ?? haut) - w.y;
+        };
+        const dep = w.deplie === undefined || w.deplie === null ? -1 : w.deplie;
+        const m = chaineM(M2, Mx.tr(w.x, w.y), Mx.rot(w.rot || 0, me.wI / 2, -T * 0.7));
+        ctx.save(); ctx.setTransform(m[0], m[1], m[2], m[3], m[4], m[5]);
+        const fil = or ? C.or : C.ombre;
+        ctx.strokeStyle = fil; ctx.lineWidth = Math.max(1.4, 2.2 / c.s * 1.4); ctx.globalAlpha = 0.95;
+        ctx.beginPath(); ctx.moveTo(me.wI / 2, -T * 0.68); ctx.lineTo(me.wI / 2, hautFil(me.wI / 2)); ctx.stroke();
+        const n = w.texte.length - 1, fini = dep >= 0.12 + 0.03 * (n - 1);
+        if (fini && n > 0) { const xe = me.xs[n - 1] + 0.35 * T * 0.5; ctx.beginPath(); ctx.moveTo(xe, -T * 0.5); ctx.lineTo(xe, hautFil(xe)); ctx.stroke(); }
+        ctx.globalAlpha = 1;
+        if (or) { ctx.shadowColor = `rgba(242,196,106,${(0.8 * lum).toFixed(3)})`; ctx.shadowBlur = 16 * c.s; }
+        ctx.fillStyle = or ? C.orClair : C.ombre; ctx.textBaseline = 'alphabetic';
+        if (dep >= 0 && n > 0) {
+          ctx.save(); ctx.beginPath(); ctx.rect(me.wI - 1, -T * 1.2, me.largeur * 1.5, T * 1.8); ctx.clip();
+          ctx.font = `600 ${T}px Fraunces, serif`;
+          for (let i = 1; i <= n; i++) {
+            const u = courbe('expo.out')((dep - (i - 1) * 0.03) / 0.12); if (u <= 0) continue;
+            ctx.fillText(w.texte[i], me.wI + (me.xs[i - 1] - me.wI) * u - (1 - u) * T * 0.4, 0);
+          }
+          ctx.restore();
+        }
+        ctx.font = `700 ${T}px Fraunces, serif`; ctx.fillText(w.texte[0], 0, 0);
+        ctx.shadowBlur = 0;
+        const tr = w.trait || 0;
+        if (tr > 0 && fini) {   // trait d'or sous le mot : coup de pinceau effilé (6 px au centre, 1 px aux bouts)
+          const x0 = 0, x1 = me.largeur * courbe('power2.out')(borne(tr)), e = 6 / c.s, y = T * 0.16, xm = (x0 + me.largeur) / 2;
+          ctx.save(); ctx.beginPath(); ctx.rect(x0 - 2, y - e * 2, x1 - x0 + 2, e * 4); ctx.clip();
+          ctx.fillStyle = C.or; ctx.beginPath(); ctx.moveTo(x0, y); ctx.quadraticCurveTo(xm, y - e, me.largeur, y); ctx.quadraticCurveTo(xm, y + e * 1.05, x0, y + 0.5 / c.s); ctx.fill(); ctx.restore();
+        }
+        ctx.restore();
+      }
+    }
+    /* oiseaux de papier : deux triangles d'aile pliés, 3 poses à 12 i/s ; ombre ou or ; les plus proches grands et flous */
+    function oiseaux(ctx, M2, liste, pal, lum) {
+      for (const o of liste) {
+        const te = (o.or ?? pal === 'dore') ? 'or' : null, svg = oiseau(o.pose || 0), ops = compilerPose(svg, te);
+        const m = chaineM(M2, Mx.tr(o.x, o.y), Mx.rot(o.rot || 0), Mx.ech((o.s || 1) * (o.flip || 1), o.s || 1));
+        if ((o.flou || 0) > 0.3) poserFlouCuit(ctx, `oiseau:${o.pose || 0}:${te}`, ops, m, o.flou, o.alpha ?? 1);   // sprite flou pré-rendu
+        else dessinerTeinte(ctx, ops, m, lum, o.alpha ?? 1);
+      }
+    }
+    /* la nuit d'encre partie de la lampe : disque ombre-sol à 96 % (rayon en px d'écran), bord doux */
+    function encre(ctx, M2, p) {
+      const [sx, sy] = Mx.app(M2, p.x, p.y), r = p.r;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      const g = ctx.createRadialGradient(sx, sy, Math.max(0, r * 0.82), sx, sy, Math.max(1, r));
+      g.addColorStop(0, 'rgba(15,9,5,.96)'); g.addColorStop(1, 'rgba(15,9,5,0)');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, L, H);
+    }
+    /* la lumière d'or du cadran qui déborde : disque or-clair → crème (rayon en px d'écran). Exception écrite dans frame.md :
+       seule lumière qui couvre la bande des sous-titres, au pivot (séquence 7 après la sortie de « idée », début de la 8) */
+    function lumiereCadran(ctx, M2, p) {
+      const [sx, sy] = p.ecran || Mx.app(M2, p.x, p.y), r = Math.max(1, p.r);
+      ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = borne(p.a ?? 1);
+      const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, r * 1.08);
+      g.addColorStop(0, C.orClair); g.addColorStop(0.9, C.creme); g.addColorStop(1, 'rgba(255,244,220,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(sx, sy, r * 1.08, 0, 2 * Math.PI); ctx.fill(); ctx.globalAlpha = 1;
+    }
+
+    /* ---------- palette noir (pivot) : tout noir sauf ce qu'on allume ; la bande des sous-titres reste ombre-sol (le sol
+       de l'avant-scène, à y min(sol écran, 880)) : l'horloge et l'or passent derrière ---------- */
+    function peindreNoir(ctx, E, c, M1, M2, M4, ii, t) {
+      const yb = Math.min(M2[3] * SOL + M2[5], 880);
+      ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = C.ombreSol; ctx.fillRect(0, 0, L, H);
+      poserGrain(ctx, grainPlan('g4'), M4, ii, [[0, 0, L, yb]]);
+      const O = E.objets || {};
+      if (E.horloge) {
+        const a = E.horloge, pl = placerHorloge(a), mp = Mx.mul(M2, Mx.rot(pl.pen, pl.pivot[0], pl.pivot[1]));
+        const m = chaineM(mp, Mx.tr(pl.base[0], pl.base[1]));
+        const mo = borne(a.orMasque ?? 0), si = borne(a.silhouette || 0);
+        if (si > 0) {   // contre-jour : une lueur faible derrière l'horloge découpe sa silhouette (l'anneau se lit comme un cadran)
+          const [sx, sy] = Mx.app(mp, pl.base[0], pl.base[1] - 240), k = 250 * M2[0];
+          ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = si; ctx.drawImage(contreJour(), sx - k, sy - k, 2 * k, 2 * k); ctx.globalAlpha = 1;
+          const sil = placerHorloge(a, { papier: a.clair ?? 0 });   // cadran éteint dans le noir
+          tracerListe(ctx, compilerPose(sil.svg, null), m); for (const q of sil.parties) tracerListe(ctx, compilerPose(q.svg, null), Mx.mul(m, q.m));
+        }
+        if (mo > 0) {
+          const ops = compilerPose(pl.svg, 'or');
+          const yHaut = -500 * 0.7, yM = yHaut + (4 - yHaut) * courbe('expo.out')(mo);
+          ctx.save(); ctx.setTransform(m[0], m[1], m[2], m[3], m[4], m[5]); ctx.beginPath(); ctx.rect(-200, yHaut - 60, 400, yM - yHaut + 60); ctx.clip();
+          dessinerTeinte(ctx, ops, m, 1); for (const q of pl.parties) tracerListe(ctx, compilerPose(q.svg, 'or', ops.bb), Mx.mul(m, q.m)); ctx.restore();
+        }
+        horlogeLumieres(ctx, M2, pl, a, 1, false);
+      }
+      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.beginPath(); ctx.rect(0, 0, L, yb); ctx.clip();
+      if (O.poussiere) for (const p of [].concat(O.poussiere)) poussiere(ctx, M2, p, 1);
+      if (O.fumee) fumee(ctx, M1, O.fumee, ii, 'noir');
+      ctx.restore();
+      ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.fillStyle = C.ombreSol; ctx.fillRect(0, Math.floor(yb), L, H);
+      if (O.lumiereCadran) lumiereCadran(ctx, M2, O.lumiereCadran);
+    }
+    /* la fumée de la lampe éteinte (plan 1) : trois volutes courtes et discontinues nées de la mèche (x, y du plan 1), qui
+       montent en biais, s'élargissent et s'effacent ; jamais un trait continu (frame.md, aucune tige seule) */
+    function fumee(ctx, M1, p, ii, pal) {
+      const v = spriteAvant('fumee', pal === 'dore' ? 'dore' : 'noir'), q = v.__pose, t = p.t || 0, n = p.n || 3, T = p.vie || 2.7;
+      for (let i = 0; i < n; i++) {
+        const age = ((t + i * T / n) % T + T) % T, u = age / T, sc = (p.s || 1) * (0.7 + 0.9 * u);
+        const x = p.x + (p.vx ?? 9) * age + 6 * Math.sin(age * 2.1 + i * 2.3), y = p.y - (p.vy ?? 26) * age, fl = i % 2 ? -1 : 1;
+        const m = chaineM(M1, Mx.tr(x, y), Mx.ech(sc * fl, sc), Mx.tr(q.ox, q.oy), Mx.ech(1 / q.d));
+        ctx.setTransform(m[0], m[1], m[2], m[3], m[4], m[5]); ctx.globalAlpha = borne((p.a ?? 0.12) / 0.5 * Math.sin(Math.PI * u));
+        ctx.drawImage(v[Math.floor(ii / 2) % 2], 0, 0);
+      }
+      ctx.globalAlpha = 1;
+    }
+    const contreJour = () => spriteRond('contre-jour', [[0, 'rgba(201,164,110,1)'], [0.45, 'rgba(201,164,110,.42)'], [1, 'rgba(201,164,110,0)']], 256);
+
+    /* ---------- plan 1 : l'avant-plan sombre et flou, coupé par les bords du cadre ----------
+       E.plan1 : liste de noms ou d'objets { nom, x, y } (décalage en coordonnées du plan) ; 'auto' : ceux que la caméra croise */
+    function peindrePlan1(ctx, E, c, pal, M1, ii, t) {
+      let liste = E.plan1 ?? 'auto';
+      if (liste === 'auto') liste = c.s < 0.9 ? [] : Object.keys(AVANT).filter((n) => !['cloisonES', 'cloisonSK', 'fumee'].includes(n));
+      const O = E.objets || {}, M2 = P2.matrice(c);
+      // rien du plan 1 dans la bande des sous-titres : tout est coupé au sol de l'écran (y 890 au plus)
+      const yb = Math.min(M2[3] * SOL + M2[5], 890);
+      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.beginPath(); ctx.rect(0, 0, L, Math.max(0, yb)); ctx.clip();
+      for (const it0 of liste) {
+        const it = typeof it0 === 'string' ? { nom: it0 } : it0, def = AVANT[it.nom]; if (!def || it.nom === 'fumee') continue;
+        const v = spriteAvant(it.nom, pal), q = v.__pose, img = v[Math.floor(h01(Math.floor(ii / 2) * 31 + it.nom.length) * 2) % 2];
+        const xs = def.repete ? (() => { const out = []; for (let x = def.repete[0]; x < def.repete[1]; x += def.repete[2]) out.push(x); return out; })() : [0];
+        for (const [k, x0] of xs.entries()) {
+          const dx = (it.x !== undefined ? it.x - (def.bb[0] + def.bb[2]) / 2 : 0) + x0, dy = it.y || 0, fl = def.repete && k % 2 ? -1 : 1;
+          const cx = (q.ox + q.w / q.d / 2);
+          const m = chaineM(M1, Mx.tr(dx + (fl < 0 ? 2 * cx : 0), dy), Mx.ech(fl, 1), Mx.tr(q.ox, q.oy), Mx.ech(1 / q.d));
+          const xa = m[4], xb = m[4] + m[0] * q.w, ya = m[5], ybas = m[5] + m[3] * q.h;
+          if (Math.max(xa, xb) < 0 || Math.min(xa, xb) > L || ybas < 0 || ya > yb) continue;
+          // aucun objet flou de plus de 1 800 px de large (frame.md § depth) : signalé, puis écarté
+          const larg = Math.abs(m[0]) * q.w - 2 * (Math.ceil(def.flou * (def.d || D1) / SIG1 * 2.6) + 2) * Math.abs(m[0]);
+          if (larg > 1800) { avis('plan1:' + it.nom, `avant-plan « ${it.nom} » de ${Math.round(larg)} px (> 1 800 px) : écarté ; desserrer le cadrage`); continue; }
+          ctx.setTransform(m[0], m[1], m[2], m[3], m[4], m[5]); ctx.globalAlpha = it.alpha ?? 1;
+          ctx.drawImage(img, 0, 0);
+          ctx.globalAlpha = 1;
+        }
+      }
+      if (O.fumee) fumee(ctx, M1, O.fumee, ii, pal);
+      ctx.restore();
+    }
+
+    const inst = { racine, prefixe, dessiner, elements: { ecran, sous: hSous, preuve: hPreuve, fin: hFin, noir: hNoir, calques },
+      phrases(liste) { sous = SousTitres(hSous, liste); } };
+    inst.pret = preparer().catch((err) => { console.error('kit ombres : préparation interrompue :', err && err.stack || err); pret = true; return inst; });
+    return inst;
+  }
+  /* la lumière du soir qui entre par la porte : trapèze au sol et lueur autour du chambranle, flou pré-rendu */
+  function spriteLumierePorte() {
+    return tex('lumiere-porte', () => {
+      const S = { x0: 250, y0: 470, x1: 1000, y1: 905, d: 0.8 };
+      const w = (S.x1 - S.x0) * S.d, h = (S.y1 - S.y0) * S.d, net = toileHE(w, h), c3 = net.getContext('2d');
+      c3.setTransform(S.d, 0, 0, S.d, -S.x0 * S.d, -S.y0 * S.d);
+      const g = c3.createRadialGradient(415, 780, 20, 415, 780, 330); g.addColorStop(0, 'rgba(255,244,218,.55)'); g.addColorStop(1, 'rgba(255,244,218,0)');
+      c3.fillStyle = g; c3.fillRect(S.x0, S.y0, S.x1 - S.x0, S.y1 - S.y0);
+      c3.fillStyle = 'rgba(255,244,218,1)'; c3.globalAlpha = 0.5; c3.beginPath(); c3.moveTo(494, 900); c3.lineTo(494, 600); c3.lineTo(560, 640); c3.lineTo(900, 900); c3.closePath(); c3.fill();
+      c3.globalAlpha = 1; c3.beginPath(); c3.moveTo(336, 900); c3.lineTo(494, 900); c3.lineTo(800, 900); c3.lineTo(580, 866); c3.lineTo(380, 874); c3.closePath(); c3.fill();
+      const c = toileHE(w, h), x = c.getContext('2d'); x.filter = 'blur(9px)'; x.drawImage(net, 0, 0); x.filter = 'none';
+      c.__pose = { ox: S.x0, oy: S.y0, d: S.d };
+      return c;
+    });
+  }
+
+  return {
+    L, H, IPS, IPS_POSE, SOL, C, MONDE, ARBRE, f, rad, borne, lerp, R, h01, courbe, piste, amortie, tPose, Mx, ik, cam, trajet, flamme, crans,
+    sigma, largeurMot, mesurerMot, LIGNES_PREUVE,
+    kit: { seg, rivet, disque, pere, mainPere, fille, horloge, roue, engrenage, lentille, mainHorloge, chaine, courbeChaine, pile, devis, feuilleSimple,
+      dino, arbre, herbes, cloture, tige, lampe, table, chaise, tabouret, balancoire, oiseau, balle, dossier, carteDessin },
+    poses: { pere: POSES_PERE, fille: POSES_FILLE, marchePere, marcheFille }, placerPere, placerFille, placerHorloge,
+    creer,
+    /* branchement d'une séquence sur sa timeline HyperFrames (le seul câblage à utiliser) : dans om.pret.then, crée la
+       timeline en pause avec un proxy { t } dont le setter dessine (dédoublonné à 1/240 s : un seek, même avec
+       suppressEvents, donne exactement un dessin), laisse la séquence y ajouter ses tweens (construire(tl, proxy)), dessine
+       t = 0, PUIS enregistre window.__timelines[id] = tl en dernier et appelle window.__hfForceTimelineRebind().
+       Rend une promesse de la timeline. */
+    brancher(om, id, duree, etatDe, construire) {
+      return om.pret.then(() => {
+        const g = window.gsap; if (!g) throw new Error('kit ombres : GSAP absent de la page');
+        let dernier = null;
+        const dessiner = (t) => { const k = Math.round(t * 240); if (k === dernier) return; dernier = k; om.dessiner(etatDe(t)); };
+        const proxy = { _t: 0 };
+        Object.defineProperty(proxy, 't', { get() { return this._t; }, set(v) { this._t = v; dessiner(v); }, enumerable: true });
+        const tl = g.timeline({ paused: true });
+        tl.to(proxy, { t: duree, duration: duree, ease: 'none', onUpdate: () => dessiner(proxy._t) }, 0);
+        if (construire) construire(tl, proxy);
+        dessiner(0);
+        window.__timelines = window.__timelines || {};
+        window.__timelines[id] = tl;
+        if (typeof window.__hfForceTimelineRebind === 'function') window.__hfForceTimelineRebind();
+        return tl;
+      }).catch((e) => { console.error('kit ombres : branchement de la timeline impossible :', e && e.stack || e); throw e; });
+    },
+    /* contrôle : textures partagées (et copies d'exécution « derive: »), poids PNG et poids décodé (RVBA, ce que la page
+       garde en mémoire) ; budget : 25 Mo décodés par texture, 250 Mo pour la page (textures + sprites dorés) */
+    textures() {
+      const out = []; let png = 0, octets = 0;
+      for (const [nom, v] of Object.entries(TEX)) {
+        const liste = Array.isArray(v) ? v : [v];
+        liste.forEach((cv, i) => { if (cv && cv.toDataURL) { const u = cv.toDataURL('image/png'), p = Math.round((u.length - 22) * 3 / 4), o = cv.width * cv.height * 4;
+          png += p; octets += o; out.push({ nom: nom + (liste.length > 1 ? '#' + i : ''), w: cv.width, h: cv.height, png: p, octets: o, depasse: o > 25 * 1048576 }); } });
+      }
+      const tot = { textures: out.length, png, octets, sprites: G.sprites.size, octetsSprites: G.octetsSprites, budgetPage: 250 * 1048576 };
+      tot.depasse = octets + G.octetsSprites > tot.budgetPage;
+      return { textures: out, total: tot };
+    },
+  };
+})();
+/* ===================== KIT OMBRES : fin du kit JS à copier ===================== */
+
+/* ================================================================ séquence 4 : « Interminable Attente » (16,42 → 20,38, 3,96 s)
+   P9 puis P10 : la fille seule sur la deuxième marche, le menton dans les mains ; I et A tombent du plafond au bout de leurs
+   fils, se rangent sur deux lignes, puis chaque mot se déplie depuis son initiale ; trait d'or sous « Attente » ; le recul
+   commence. Tout l'image est une fonction pure du temps local t (etatDe), dessinée par le kit (om.dessiner). */
+const FID = '04-attente', PRE = 'p04', DUREE = 3.96;
+const racine = document.getElementById('p04-root');
+const IMG = 1 / 30;   // chaque mot paraît une image avant son temps (jamais en retard)
+const om = OM.creer(racine, PRE, {
+  palettes: ['sombre'],
+  clip: { start: 0, duration: DUREE, track: 1 },
+  // pendant le moment typographique, le sous-titre ne montre que le début de la phrase (frame.md, type)
+  phrases: [{ sortie: [3.70, 3.84], mots: [
+    { m: 'Pour', t: 0.34 - IMG }, { m: 'sa', t: 0.48 - IMG }, { m: 'fille,', t: 0.78 - IMG },
+    { m: 'IA', t: 1.25 - IMG, boite: 'b1' }, { m: 'voulait', t: 1.74 - IMG }, { m: 'dire', t: 2.06 - IMG }] }],
+});
+const ST = OM.MONDE.stations;
+const lin = OM.lerp, bornee = OM.borne, ease = OM.courbe;
+
+/* ---------- caméra : fin du cran (expo.out) sur la marche, cran d'échelle ×1,04 sur les lettres, poussée lente, départ du
+   recul. La dérive (y +4 u/s, échelle +VS par seconde) tourne sans arrêt et s'ajoute aux clés ; les clés sont écrites
+   « hors dérive » pour que les images de couture tombent exactement sur handoff_in et handoff_out. VS est tiré de la
+   piste : cran ×1,04 + poussée = cam(3 060, 685, 1,55) à 3,84. */
+const VY = 4;
+const VS = (1.55 - 1.45 * 1.04) / (1.45 * 1.04 * 3.84 - 1.55 * 0.18);
+const horsDerive = (t, x, y, s, flou, dir) => OM.cam(x, y - VY * t, s / (1 + VS * t), flou, dir);
+const B0 = horsDerive(0.18, 3060, 670, 1.45, 0, 'x');            // tenue de 0,18 à 1,60
+const B1 = OM.cam(3060, 685 - VY * 3.84, B0.s * 1.04, 0, 'x');   // tenue de 1,80 à 3,84
+const CAMERA = OM.trajet([
+  [0, horsDerive(0, 2900, 680, 1.5, 8, 'x')],
+  [0.18, B0, 'expo.out'],
+  [1.60, B0, 'none'],
+  [1.80, B1, 'expo.inOut'],
+  [3.84, Object.assign({}, B1, { dir: 'zoom' }), 'none'],
+  [3.96, horsDerive(3.96, 3045, 684, 1.52, 3, 'zoom'), 'power2.in'],
+], { vy: VY, vs: VS, t0: 0 });
+
+/* ---------- la fille (poses à 12 i/s) : épaules qui s'abaissent, une couette qui bouge (la tête l'entraîne, le kit n'a
+   pas de couette séparée), les yeux levés vers les lettres, la tête vers la cuisine, le talon sur la marche */
+const TETE = OM.piste([[0, 6], [0.34, 6], [0.42, 11, 'power2.out'], [0.48, 11], [0.53, 14, 'power2.out'], [0.62, 11, 'power2.inOut'],
+  [1.00, 11], [1.12, 3, 'power2.out'], [2.30, 3], [2.42, 6, 'power2.inOut']]);
+const SIEGE = OM.piste([[0, 58], [0.34, 58], [0.42, 56, 'power2.out'], [3.10, 56], [3.18, 58, 'power2.out']]);
+const GENOU = OM.piste([[0, 80], [3.10, 80], [3.17, 60, 'power2.out'], [3.25, 82, 'power3.in'], [3.32, 80]]);
+/* le balancier lointain bat sur les tic-tac (0,48 ; 1,00 ; 2,30 ; 2,90) ; les aiguilles restent arrêtées */
+const BALANCIER = OM.piste([[0, -10], [0.48, -10], [0.70, 10, 'sine.inOut'], [1.00, 10], [1.22, -10, 'sine.inOut'],
+  [2.30, -10], [2.52, 10, 'sine.inOut'], [2.90, 10], [3.12, -10, 'sine.inOut']]);
+
+/* ---------- les lettres de papier (kit lettres), 84 px au plus à l'écran : taille = 84 / la plus forte échelle (1,55) */
+const T_MAX = 1.55, PLAFOND = 438;
+let MISE = null;
+function mise() {   // mesures Fraunces : appelée seulement après om.pret
+  if (MISE) return MISE;
+  const T = 84 / T_MAX, a = OM.mesurerMot('Interminable', T), b = OM.mesurerMot('Attente', T);
+  const dx2 = (a.wI - b.wI) / 2, g = Math.min(0, dx2), d = Math.max(a.largeur, dx2 + b.largeur);
+  const x0 = 3060 - (g + d) / 2, ecart = 0.3 * T, tot = a.wI + ecart + b.wI;
+  MISE = { T, wI: a.wI, wA: b.wI,
+    iCote: [3060 - tot / 2, 496], aCote: [3060 - tot / 2 + a.wI + ecart, 496],   // I et A côte à côte, centrés à l'écran
+    iLigne: [x0, 516], aLigne: [x0 + dx2, 588] };                                // le mobile : deux lignes, initiales sur un même axe
+  return MISE;
+}
+const T_CHUTE = 1.25 - IMG, T_RANGE = 1.72, T_DEPLI1 = 2.58 - 0.03, T_DEPLI2 = 3.42 - 0.03;
+const FINI2 = T_DEPLI2 + 0.12 + 0.03 * 5;   // « Attente » entièrement dépliée : le trait d'or part de là
+/* balancement amorti fini (sinus : départ à 0, sans saut) */
+const balance = (t, t0, amp, per, tau) => (t <= t0 ? 0 : amp * Math.exp(-(t - t0) / tau) * Math.sin(2 * Math.PI * (t - t0) / per));
+const sinD = (d) => Math.sin(d * Math.PI / 180);
+function lettresDe(t, c) {
+  if (t < T_CHUTE) return [];
+  const M = mise(), T = M.T;
+  const q = ease('power3.out')((t - T_CHUTE) / 0.25), dy = -135 * (1 - q);          // chute : y -200 px → 0 à l'écran
+  const p = ease('power3.out')((t - T_RANGE) / 0.2), accroche = p >= 1;              // « voulait » : I sur la 1re ligne, A sur la 2e
+  // 1,45 : les initiales se balancent (±6° amorti) ; 2,06 « dire » : les fils se tendent, elles s'arrêtent net
+  const net = t < 2.06 ? 1 : 1 - ease('expo.out')((t - 2.06) / 0.07);
+  // 3,66 fin de la voix : les mots se balancent (±3° au plus), revenus droits à la couture
+  const thI = balance(t, 1.45, 6, 0.488, 0.55) * net + balance(t, 3.66, 1.5, 0.6, 0.4);
+  const thA = balance(t, 1.45, -5, 0.813, 0.55) * net + balance(t, 3.66, -3, 0.6, 0.4);
+  const yI = lin(M.iCote[1], M.iLigne[1], p) + dy, yA = lin(M.aCote[1], M.aLigne[1], p) + dy;
+  if (yI < 400) return [];   // encore dans le plancher : rien ne se dessine au-dessus du plafond
+  // un fil pend du plafond (y 438) : il ne descend jamais sous le haut de la lettre
+  const filI = Math.min(PLAFOND, yI - 0.69 * T);
+  const lfI = Math.max(0, yI - 0.7 * T - filI);
+  const basI = -(lfI + 0.7 * T) * sinD(thI);                      // déplacement du bas du I (pendule pivotant au plafond)
+  const k = Math.min(1, p / 0.75);                                // le fil du A passe du plafond au bas du I pendant le rangement
+  const filA = Math.min(lin(PLAFOND, yI + 0.02 * T, k), yA - 0.69 * T);
+  const lfA = Math.max(0, yA - 0.7 * T - filA);
+  const xI = lin(M.iCote[0], M.iLigne[0], p) - lfI * sinD(thI);
+  const xA = lin(M.aCote[0], M.aLigne[0], p) + basI * k - lfA * sinD(thA);
+  const dep1 = t >= T_DEPLI1 ? t - T_DEPLI1 : null, dep2 = t >= T_DEPLI2 ? t - T_DEPLI2 : null;
+  const trait = t >= FINI2 ? bornee((t - FINI2) / (DUREE - 0.01 - FINI2)) : 0;
+  return [
+    { texte: 'Interminable', x: xI, y: yI, taille: T, deplie: dep1, rot: thI, filHaut: filI },
+    Object.assign({ texte: 'Attente', x: xA, y: yA, taille: T, deplie: dep2, rot: thA, trait },
+      accroche ? { pendA: 0 } : { filHaut: filA }),
+  ];
+}
+
+/* ---------- l'état complet de l'image au temps t (fonction pure) ---------- */
+function etatDe(t) {
+  const c = CAMERA(t), tp = OM.tPose(t);
+  // 0,78 « fille » : le cœur lumineux se recentre sur elle et le voile de la cuisine s'amincit autour de la marche (0,1 s)
+  const kc = t < 0.78 ? 0 : ease('power2.out')((t - 0.78) / 0.1);
+  return {
+    t, sous: t, cam: c, palette: 'sombre',
+    coeur: kc > 0 ? [lin(c.x, 3060, kc), lin(c.y, 640, kc)] : undefined,
+    cases: { S: 0.45, K: kc > 0 ? { voile: 0.5, trou: [3090, 560, 560, 0.9 * kc] } : 0.5 },
+    lampes: { L1: 0.5, L2: 0.5 }, F2: { nuit: 1 },
+    fille: { x: ST.marche[0], y: ST.marche[1], pose: 'menton', flip: -1, tete: TETE(tp), siege: SIEGE(tp),
+      legsAssis: [[-88, 86], [-84, GENOU(tp)]] },
+    pere: { x: ST.pereCuisine[0], pose: 'assis-feuille', flip: -1, tient: { devis: {} } },
+    horloge: { x: ST.horlogeCuisine[0], balancier: BALANCIER(tp) },
+    chaine: { tension: 0.1 },
+    objets: { piles: [{ x: 2220, y: 760, n: 12, w: 130, seed: 7 }], dessins: [{ x: ST.dessin[0], y: ST.dessin[1] }],
+      lettres: lettresDe(t, c) },
+    plan1: [{ nom: 'rampe', x: 3300 }],
+  };
+}
+
+OM.brancher(om, FID, DUREE, etatDe, (tl) => { tl.set({}, {}, DUREE); });
+
+})();
+  </script>
+</template>

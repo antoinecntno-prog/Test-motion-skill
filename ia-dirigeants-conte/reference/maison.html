@@ -17,20 +17,27 @@
   Le kit JS se colle À L'INTÉRIEUR de la fonction immédiate de la séquence ((function () { … })();), jamais au niveau
   global : les 12 séquences vivent dans la même page assemblée. Il ne déclare qu'une constante locale, OM. Les textures
   (grain par plan, toile, taches et fibres, vignettage, brume du plan 3, avant-plans flous du plan 1, lumière de la porte)
-  sont générées une fois par bruit à graine fixe et partagées par toutes les séquences de la page dans
-  window.__OMBRES_TEX (même graine, même texture, quelle que soit la séquence qui la crée) ; les listes vectorielles du
-  décor dans window.__OMBRES_OPS. Aucun Math.random, aucune horloge du navigateur, aucune animation CSS ; le kit n'a
-  besoin d'aucune bibliothèque (ses courbes portent les noms GSAP ; les séquences animent avec GSAP,
-  assets/vendor/gsap-3.14.2.min.js).
+  sont générées une fois par bruit à graine fixe et partagées par toutes les séquences de la page dans l'espace
+  window.__OMBRES_om5 (indexé sur la version du kit, VERSION = 'om5' : deux copies différentes du kit dans la même page
+  le signalent par console.error) : textures, listes vectorielles du décor, calques de flou, canvas du flou de caméra,
+  sprites dorés (bornés à 64 Mo). Aucun Math.random, aucune horloge du navigateur, aucune animation CSS ; le kit n'a
+  besoin d'aucune bibliothèque pour dessiner (ses courbes portent les noms GSAP ; les séquences animent avec GSAP,
+  assets/vendor/gsap-3.14.2.min.js, et OM.brancher s'en sert).
 
   Interface (dans la séquence, préfixe d'id « p01 » à « p12 ») :
     const om = OM.creer(racine, 'p03', { phrases: [...], palettes: ['sombre'], clip: { start: 0, duration: 5.66, track: 1 } });
       crée dans racine : canvas.om-ecran (#p03-ecran), .om-sous (#p03-sous), .om-couche-preuve, .om-couche-fin, .om-noir ;
-      prépare de façon asynchrone polices et textures puis résout om.pret ; options.clip pose class="clip" et les data-*
-      HyperFrames sur chaque calque (pistes consécutives).
-    om.pret.then(() => { tl.to(proxy, { t: D, duration: D, ease: 'none', onUpdate: () => om.dessiner(etatDe(proxy.t)) }); });
-    om.dessiner(etat) : FONCTION PURE de l'état, sans effet de bord qui dépende du dessin précédent (les caches ne
-      gardent que des résultats déterminés par leur clé).
+      prépare de façon asynchrone polices et textures puis résout om.pret (toujours : une étape qui échoue est journalisée
+      et sautée) ; options.clip pose class="clip" et les data-* HyperFrames sur chaque calque (pistes consécutives).
+    OM.brancher(om, 'p03', D, etatDe, (tl, proxy) => { … tweens de la séquence … });
+      LE câblage à utiliser : dans om.pret.then, crée la timeline en pause et un proxy { t } dont le setter dessine
+      (dédoublonné à 1/240 s : un seek, même avec suppressEvents, donne exactement un dessin), appelle construire, dessine
+      t = 0, PUIS enregistre window.__timelines['p03'] = tl en dernier et appelle window.__hfForceTimelineRebind().
+      (Enregistrer la timeline avant la fin de la construction asynchrone rend une séquence vide ; le lint ne le voit pas.)
+    om.dessiner(etat) : FONCTION PURE de l'état, sans effet de bord qui dépende du dessin précédent : les listes des
+      objets animés sont indexées sur leur chaîne SVG complète (plus la teinte), les marionnettes et les objets sont tracés à
+      l'origine et posés par la matrice, les caches sont des LRU bornés.
+    OM.largeurMot / OM.mesurerMot : à appeler après om.pret (avant le chargement de Fraunces, la mesure n'est pas gardée).
 
   Schéma de l'état (tout est facultatif sauf cam ; coordonnées du monde de frame.md § world) :
     t        temps local en secondes (flamme, grain : son décalage change toutes les 2 images, poussière d'or)
@@ -42,32 +49,46 @@
              'dore' (toile nuit, silhouettes inversées or avec halo pré-rendu, poussière d'or)
     scene    'monde' (défaut) | 'toile' (la toile claire seule : carte de fin)
     coeur    [x, y] du cœur lumineux de la toile (défaut : le centre de la caméra) ; lumiere : multiplicateur de lumière
-    cases    { E, S, K, P, B, F, G } : voile 0 à 0,66 (nombre) ou { voile, or } (case rallumée en or) ; OM.crans(t, …)
-             donne la signature « la case qui s'éteint » (crans de 0,06 s expo.out, jamais un fondu lent)
+    cases    { E, S, K, P, B, F, G } : voile 0 à 0,66 (nombre) ou { voile, or, trou: [x, y, r, force] } (case rallumée en or ;
+             trou : le voile s'amincit autour du cœur lumineux) ; OM.crans(t, …) donne la signature « la case qui
+             s'éteint » (crans de 0,06 s expo.out, jamais un fondu lent). Le papier (cadran, carte du dessin, feuille)
+             prend la lumière de sa case ; clair (0 à 1) sur la marionnette ou le dessin impose sa lumière.
+    coeurSerre 0 à 1 (défaut 1) : aux cadrages serrés (échelle ≥ 1,4, fondu depuis 1,3) le cœur de la toile claire se resserre et les bords s'assombrissent
     porte    { angle (0 fermé à 112 grand ouvert), lumiere (trapèze du soir au sol), soir (le dehors qui baisse) }
     manteau  angle du petit manteau de la patère ; lampes { L1, L2 } : 0 éteinte, 0,5 flamme basse, 1 haute
     F2       { nuit, jour, etoiles } (crépuscule, nuit étoilée sans lune, jours et nuits accélérés)
     pere, fille, horloge   marionnettes : { x, y (sol sous les pieds), pose, phase, flip, siege, armF, armB, legF, legB,
              tete, mains {F, B} (cinématique inverse), penche, echelle, flou, opacite, tient {pile, devis, dessin, balle,
-             feuille, crayon}, tiges, or } ; horloge : { x, roue, balancier, heure, minute, armL, armR, mains {L, R},
-             penche, engr, lisere, cadranOr, orMasque (pivot), etincelle, silhouette }. Poses : OM.poses.
+             feuille, crayon}, tiges, or, clair } ; père : manteau (ourlet), tigeAvant ('coude'), brasNet (défaut vrai :
+             effacé, son bras arrière reste net) ; fille : pointe (hauteur sur la pointe des pieds) ; horloge : { x, roue,
+             balancier, heure, minute, armL, armR, mains {L, R}, penche, engr, lisere, cadranOr, orMasque (pivot),
+             etincelle, silhouette (dans le noir : force du contre-jour qui découpe sa silhouette), clair }. Poses : OM.poses.
+             Les tiges sont tracées hors de la rotation et de l'échelle : toujours du point d'attache jusqu'au sol (y 900).
     chaine   { longueur, tension 0 (chaînette) à 1 (tendue), n (maillons visibles), reflet (0 à 1), illumine (n), visible }
     arbre    { pile 0 à 1 (le tronc de devis monte), or 0 à 1 (branches de la fourche vers les pointes), feuilles 0 à 1 }
     balancoire { angle (±18°, période 1,6 s), or }
-    objets   { piles, feuilles (feuille simple qui tourne), devis (feuilles de face), dessins (la carte du petit dinosaure,
-             reflet), dessin2 (second dinosaure tracé en or, progres 0 à 1, halo), balle, dossier, lettres (initiale puis mot
-             déplié, deplie = secondes depuis le début du dépli, or, trait), oiseaux (pose 0 à 2, or, flou), poussiere,
-             fumee (plan 1), encre (nuit d'encre, rayon px), lumiereCadran (rayon px) }
+    objets   { piles, feuilles (feuille simple qui tourne ; sol: true, posée à plat au sol, le bout relevé), devis (feuilles
+             de face), dessins (la carte du petit dinosaure, reflet, clair), dessin2 (second dinosaure tracé en or, progres 0
+             à 1, halo), balle, dossier, lettres (initiale puis mot déplié, deplie = secondes depuis le début du dépli, or,
+             trait, taille, filHaut, pendA : indice du mot du dessus auquel ce mot est pendu), oiseaux (pose 0 à 2, or,
+             flou : sprite flou pré-rendu), poussiere, fumee (plan 1 : { x, y } de la mèche, t, a, s, vx, vy, vie, n),
+             encre (nuit d'encre, rayon px), lumiereCadran (rayon px) }
+    poteaux  'haut' | 'bas' (défaut : hauts quand une carte y est épinglée)
     plan1    'auto' ou liste de noms ou d'objets { nom, x } : montant, portemanteau, cloisonES, fauteuil, cloisonSK,
              casseroles, rampe, herbes, branche, fumee
     ordre    ordre de dessin des marionnettes (défaut ['horloge', 'pere', 'fille'])
-    sous     temps des sous-titres (mot par mot sur leurs temps) ; preuve { visible, valeur, arrivee, pose, lignes } ;
+    sous     temps des sous-titres (mot par mot sur leurs temps ; mot { m, t, boite, trait, colle }) ; preuve { visible,
+             valeur, arrivee, pose, lignes } ;
     fin      { visible, signature, formateur, bouton, pression, couleur, respire, adresses, curseur {x, y}, onde } ; noir
 
   Profondeur : quatre plans, chacun avec son grain qui le suit et change de décalage toutes les 2 images ; parallaxe
   ×1,8 (avant-plan flou pré-rendu, ≤ 1 800 px), ×1 (la maison, les marionnettes), ×0,5 (la brume), ×0,2 (la toile).
   Lumière : la flamme (une clé toutes les 4 images, alternée au-dessus et au-dessous de 1, ±3 %, reliée en ligne droite)
-  module la toile et les halos ; vignettage chaud fixé à l'objectif ; sous y 900 tout est ombre-sol.
+  module la toile et les halos ; vignettage chaud fixé à l'objectif ; sous y 900 tout est ombre-sol, le plan 1 et la
+  palette 'noir' compris (seule la lumière d'or du pivot couvre la bande, quand elle est vide). Flou de caméra : tirages
+  moyennés à demi-résolution dès 3 px. Aucun objet flou de plus de 1 800 px (le plan 1 le signale et l'écarte).
+  Contrôle : OM.textures() rend { textures: [{ nom, w, h, png, octets }], total } (budget 25 Mo décodés par texture,
+  250 Mo pour la page).
 
   Démos (hors film) : la page s'ouvre sur le sélecteur ; demo('porte') … une démo par cadrage de référence (19) avec les
   personnages et objets de l'image clé du storyboard, plus 'noir', 'cadran-or', 'cuisine-or', 'jardin-or',
@@ -103,16 +124,17 @@
   .om-boite > .om-mot { text-shadow: none; }
   /* trait d'or des pics : coup de pinceau effilé (6 px au centre, 1 px aux bouts) sous le mot */
   .om-trait { position: absolute; left: -3px; top: 61px; width: calc(100% + 6px); height: 8px; overflow: visible; visibility: hidden; }
-  /* bloc de preuve : « 10 h » Fraunces 700 150 px or-clair centré à (960, 330), deux lignes DM Sans 500 40 px crème */
+  /* bloc de preuve : « 10 h » Fraunces 700 150 px or-clair centré à (960, 230), deux lignes DM Sans 500 40 px crème, le
+     tout dans le ciel, au-dessus du faîte du toit au recul final (faîte à l'écran vers y 448) */
   .om-preuve { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; text-align: center; }
-  .om-chiffre { position: absolute; left: 0; right: 0; top: 240px; height: 180px; font: 700 150px/180px "Fraunces", serif;
+  .om-chiffre { position: absolute; left: 0; right: 0; top: 140px; height: 180px; font: 700 150px/180px "Fraunces", serif;
     color: var(--om-or-clair); font-variant-numeric: tabular-nums; transform-origin: 50% 50%;
     text-shadow: 0 0 26px rgba(224, 168, 74, .5), 0 2px 10px rgba(15, 9, 5, .55); }
   .om-ligne { position: absolute; left: 0; right: 0; font: 500 40px/52px "DM Sans", sans-serif; color: var(--om-creme);
     text-shadow: 0 2px 12px rgba(15, 9, 5, .95), 0 0 30px rgba(15, 9, 5, .9), 0 0 54px rgba(15, 9, 5, .75); }
   .om-ligne .om-mot { opacity: 0; }
-  .om-ligne-1 { top: 428px; }
-  .om-ligne-2 { top: 484px; }
+  .om-ligne-1 { top: 328px; }
+  .om-ligne-2 { top: 384px; }
   /* carte de fin : signature Caveat 700 120 px bordeaux (centrée à (960, 360), masque de gauche à droite), « formateur IA »,
      le bouton bordeaux 640 × 96 coins 10, la ligne d'adresses, le curseur de papier et l'onde du clic */
   .om-fin { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
@@ -168,12 +190,12 @@
 (function () {
 /* ===================== KIT OMBRES : début du kit JS à copier ===================== */
 /* Kit du conte d'ombres « Le Temps perdu » (charte : frame.md). À coller MOT POUR MOT à l'intérieur de la fonction
-   immédiate de la séquence : « const OM » reste local, rien n'est déclaré au niveau global. Les textures sont partagées
-   par toutes les séquences de la page dans window.__OMBRES_TEX (même graine, même texture), les listes vectorielles
-   du décor dans window.__OMBRES_OPS.
+   immédiate de la séquence : « const OM » reste local, rien n'est déclaré au niveau global. Les textures, les listes
+   du décor, les calques et les sprites dorés sont partagés par toutes les séquences de la page dans window.__OMBRES_om5
+   (même graine, même texture ; indexé sur la version du kit).
    Usage :
      const om = OM.creer(racine, 'p01', { phrases: [...] });      // rend la main tout de suite
-     om.pret.then(() => { ... timeline GSAP ... onUpdate: () => om.dessiner(etatDe(t)) });
+     OM.brancher(om, 'p01', D, etatDe, (tl, proxy) => { ... });   // timeline enregistrée APRÈS la préparation
    dessiner(etat) est une fonction pure de l'état (voir l'en-tête de la page de référence pour le schéma de l'état).
    Aucun Math.random, aucune horloge du navigateur, aucune animation CSS. */
 const OM = (() => {
@@ -187,7 +209,7 @@ const OM = (() => {
     if (!vs.includes(VERSION)) vs.push(VERSION);
     if (vs.length > 1) console.error(`kit ombres : plusieurs versions du kit dans la page (${vs.join(', ')}) : recopier le même kit dans chaque séquence`);
     const nom = '__OMBRES_' + VERSION;
-    return (window[nom] = window[nom] || { tex: {}, ops: new Map(), calques: {}, sprites: new Map(), octetsSprites: 0, nListes: 0, avis: new Set() });
+    return (window[nom] = window[nom] || { tex: {}, ops: new Map(), calques: {}, sprites: new Map(), octetsSprites: 0, nListes: 0, avis: new Set() });   // sprites : ≤ 64 Mo
   })();
   const avis = (cle, msg) => { if (!G.avis.has(cle)) { G.avis.add(cle); console.warn('kit ombres : ' + msg); } };
   const C = {
@@ -342,7 +364,7 @@ const OM = (() => {
   const PERE = { epaF: [6, -478], epaB: [-2, -478], hanche: -222, bras: [116, 104], jambe: [112, 112], dos: [-16, -400] };
   function pere(o = {}) {
     const p = Object.assign({ x: 0, y: 0, s: 0.66, flip: 1, armF: [-14, -26], armB: [28, 10], legF: [-4, 4], legB: [6, 2],
-      head: 0, hand: null, extra: '', fill: C.ombre, rivets: true }, o);
+      head: 0, hand: null, extra: '', fill: C.ombre, rivets: true, manteau: -210 }, o);
     let g = '';
     const leg = (hx, hy, [hip, knee]) => {
       const [t, kx, ky] = seg(hx, hy, 112, 17, 12, hip);
@@ -350,22 +372,22 @@ const OM = (() => {
       const shoe = `<path d="M${f(ax - 7)},${f(ay - 6)} L${f(ax + 28)},${f(ay + 1)} C${f(ax + 36)},${f(ay + 3)} ${f(ax + 36)},${f(ay + 10)} ${f(ax + 28)},${f(ay + 10)} L${f(ax - 9)},${f(ay + 10)} Z"/>`;
       return t + s2 + shoe + (p.rivets ? rivet(kx, ky) : '');
     };
-    const arm = (sx, sy, [sh, el], hand, avantBras) => {
+    const arm = (sx, sy, [sh, el], hand) => {
       const [u, ex, ey] = seg(sx, sy, 116, 13, 10, sh);
       const [fa, wx, wy] = seg(ex, ey, 104, 10, 8, sh + el);
       const ha = sh + el;
       const mitt = `<g transform="translate(${f(wx)},${f(wy)}) rotate(${f(ha)})"><path d="M-6,-2 C-8,10 -6,22 0,26 C6,24 8,12 6,-2 Z"/>` +
         `<path d="M4,2 C10,4 13,10 11,14 C8,12 6,9 3,8 Z"/></g>`;
-      if (avantBras) return fa + mitt + (p.rivets ? rivet(ex, ey) : '');
       return u + fa + (hand === 'none' ? '' : mitt) + (p.rivets ? rivet(ex, ey) : '');
     };
-    /* partie 'avantBrasB' : l'avant-bras arrière et sa main seuls (point d'attache net de la chaîne quand il s'efface) */
-    if (p.partie === 'avantBrasB') return `<g transform="translate(${f(p.x)},${f(p.y)}) scale(${f(p.s * p.flip * 1000) / 1000},${p.s})" fill="${p.fill}">${arm(-2, -478, p.armB, null, true)}</g>`;
+    /* partie 'brasB' : le bras arrière seul, de l'épaule à la main (point d'attache net de la chaîne quand il s'efface) */
+    if (p.partie === 'brasB') return `<g transform="translate(${f(p.x)},${f(p.y)}) scale(${f(p.s * p.flip * 1000) / 1000},${p.s})" fill="${p.fill}">${arm(-2, -478, p.armB)}</g>`;
     g += leg(-8, -222, p.legB);
     g += arm(-2, -478, p.armB);
     g += leg(8, -222, p.legF);
-    // manteau raide, col
-    g += `<path d="M-24,-496 L18,-496 C30,-492 34,-480 34,-466 L38,-340 L52,-210 L-46,-210 L-32,-340 L-30,-466 C-30,-484 -28,-492 -24,-496 Z"/>`;
+    // manteau raide, col ; ourlet au genou (y -210), plus haut à genou (les cuisses sortent du manteau)
+    const ou = p.manteau, kx = (ou + 340) / 130, xd = 38 + 14 * kx, xg = -32 - 14 * kx;
+    g += `<path d="M-24,-496 L18,-496 C30,-492 34,-480 34,-466 L38,-340 L${f(xd)},${ou} L${f(xg)},${ou} L-32,-340 L-30,-466 C-30,-484 -28,-492 -24,-496 Z"/>`;
     g += `<path d="M8,-497 L24,-480 L14,-468 Z"/>`;
     // tête de profil, sans expression
     g += `<g transform="rotate(${f(p.head)},4,-500)"><path d="M-8,-506 C-26,-520 -30,-552 -20,-574 C-10,-594 18,-600 30,-588 C38,-580 41,-570 39,-561 L53,-545 L40,-541 C42,-535 40,-529 36,-526 L40,-517 C32,-511 20,-509 12,-507 L10,-494 L-6,-494 Z"/>` +
@@ -448,43 +470,62 @@ const OM = (() => {
   }
   /* le Temps perdu : horloge comtoise trapue sur deux roulettes (échelle du film 0,70 ; cadran r 80 à 270 u du sol) */
   const HORLOGE = { cadran: -386, epaL: [-88, -190], epaR: [88, -190], bras: [52, 46], pivot: -262, lentille: 132 };
+  /* partie : 'corps' (tout ce qui ne tourne pas), ou une pièce mobile tracée à l'angle 0 ('roueG', 'roueD', 'balancier',
+     'engr1', 'engr2', 'heure', 'minute') que placerHorloge fait tourner par la matrice (PIECES_HORLOGE) : le corps garde la
+     même liste, son sprite et son halo, quand l'horloge roule et que son balancier bat */
   function horloge(o = {}) {
     const p = Object.assign({ x: 0, y: 0, s: 0.70, heure: -60, minute: 140, balancier: 8, armL: [24, -30], armR: [-24, 30],
-      roue: 0, engr: 0, fill: C.ombre, rivets: true, papier: C.papier }, o);
+      roue: 0, engr: 0, fill: C.ombre, rivets: true, papier: C.papier, partie: null }, o);
+    const pt = p.partie, tout = !pt, corps = tout || pt === 'corps';
+    const ba = pt ? 0 : p.balancier, ro = pt ? 0 : p.roue, en = pt ? 0 : p.engr;
     let g = '';
-    g += roue(-48, -21, p.roue) + roue(48, -21, p.roue + 40);
-    g += `<path d="M-80,-36 L80,-36 L72,-66 L-72,-66 Z"/>`;
-    // ventre bombé et sa fenêtre en lentille (ajourée)
-    g += `<path fill-rule="evenodd" d="M-70,-64 C-106,-112 -106,-204 -66,-252 C-60,-264 -60,-280 -54,-292 L54,-292 C60,-280 60,-264 66,-252 C106,-204 106,-112 70,-64 Z ` +
-      `M0,-272 C42,-238 42,-118 0,-88 C-42,-118 -42,-238 0,-272 Z"/>`;
-    // balancier : tige, lentille ajourée, engrenages
-    const ba = p.balancier, lx = -132 * Math.sin(rad(ba)), ly = -262 + 132 * Math.cos(rad(ba));
-    g += `<path d="M-2,-262 L2,-262 L${f(lx + 2)},${f(ly)} L${f(lx - 2)},${f(ly)} Z"/>`;
-    g += `<path fill-rule="evenodd" d="${disque(lx, ly, 22)} ${disque(lx, ly, 9)}"/>`;
-    g += engrenage(-14, -232, 17, 9, 12 + p.engr) + engrenage(14, -214, 12, 7, 30 - p.engr * 9 / 7);
-    g += `<path d="M-56,-290 L56,-290 L60,-312 L-60,-312 Z"/>`;
-    // cadran : disque, fenêtre ronde, graduations et aiguilles dans la fenêtre
-    g += `<path fill-rule="evenodd" d="${disque(0, -386, 80)} ${disque(0, -386, 58)}"/>`;
-    if (p.papier) g += `<circle cx="0" cy="-386" r="58.5" fill="${p.papier}"/>`;   // cadran de papier : il garde la lumière de la toile
-    for (let i = 0; i < 12; i++) {
-      const a = rad(i * 30), r0 = 48, r1 = i % 3 === 0 ? 58 : 54;
-      g += `<path d="M${f(Math.sin(a) * r0 - 2)},${f(-386 - Math.cos(a) * r0)} L${f(Math.sin(a) * r1 - 2)},${f(-386 - Math.cos(a) * r1)} L${f(Math.sin(a) * r1 + 2)},${f(-386 - Math.cos(a) * r1)} L${f(Math.sin(a) * r0 + 2)},${f(-386 - Math.cos(a) * r0)} Z"/>`;
+    if (tout || pt === 'roueG') g += roue(-48, -21, ro);
+    if (tout || pt === 'roueD') g += roue(48, -21, ro + 40);
+    if (corps) {
+      g += `<path d="M-80,-36 L80,-36 L72,-66 L-72,-66 Z"/>`;
+      // ventre bombé et sa fenêtre en lentille (ajourée)
+      g += `<path fill-rule="evenodd" d="M-70,-64 C-106,-112 -106,-204 -66,-252 C-60,-264 -60,-280 -54,-292 L54,-292 C60,-280 60,-264 66,-252 C106,-204 106,-112 70,-64 Z ` +
+        `M0,-272 C42,-238 42,-118 0,-88 C-42,-118 -42,-238 0,-272 Z"/>`;
     }
+    // balancier : tige, lentille ajourée, engrenages
+    if (tout || pt === 'balancier') {
+      const lx = -132 * Math.sin(rad(ba)), ly = -262 + 132 * Math.cos(rad(ba));
+      g += `<path d="M-2,-262 L2,-262 L${f(lx + 2)},${f(ly)} L${f(lx - 2)},${f(ly)} Z"/>`;
+      g += `<path fill-rule="evenodd" d="${disque(lx, ly, 22)} ${disque(lx, ly, 9)}"/>`;
+    }
+    if (tout || pt === 'engr1') g += engrenage(-14, -232, 17, 9, 12 + en);
+    if (tout || pt === 'engr2') g += engrenage(14, -214, 12, 7, 30 - en * 9 / 7);
     const aig = (ang, len, w) => `<path d="M${-w / 2},4 L${f(-w / 3)},${-len} L0,${-len - 8} L${f(w / 3)},${-len} L${w / 2},4 Z" transform="translate(0,-386) rotate(${f(ang)})"/>`;
-    g += aig(p.heure, 30, 8) + aig(p.minute, 46, 5) + `<circle cx="0" cy="-386" r="7"/>`;
-    // couronne à pommeaux
-    g += `<path d="M-74,-430 C-52,-486 52,-486 74,-430 C60,-446 30,-458 0,-458 C-30,-458 -60,-446 -74,-430 Z"/>`;
-    g += `<circle cx="-70" cy="-440" r="9"/><circle cx="70" cy="-440" r="9"/><circle cx="0" cy="-482" r="11"/>`;
-    // bras courts sur tiges, mains rondes
-    const arm = (sx, sy, [sh, el]) => {
-      const [u, ex, ey] = seg(sx, sy, 52, 9, 8, sh);
-      const [fa, wx, wy] = seg(ex, ey, 46, 8, 7, sh + el);
-      return u + fa + `<g transform="translate(${f(wx)},${f(wy)}) rotate(${f(sh + el)})"><path d="M-7,0 L-7,13 A7,7 0 0 0 7,13 L7,0 Z"/></g>` + (p.rivets ? rivet(ex, ey, 2.4) : '');
-    };
-    g += arm(-88, -190, p.armL) + arm(88, -190, p.armR);
-    if (p.rivets) g += rivet(-88, -190, 3) + rivet(88, -190, 3);
+    if (pt === 'heure') g += aig(0, 30, 8);
+    if (pt === 'minute') g += aig(0, 46, 5);
+    if (corps) {
+      g += `<path d="M-56,-290 L56,-290 L60,-312 L-60,-312 Z"/>`;
+      // cadran : disque, fenêtre ronde, graduations et aiguilles dans la fenêtre
+      g += `<path fill-rule="evenodd" d="${disque(0, -386, 80)} ${disque(0, -386, 58)}"/>`;
+      if (p.papier) g += `<circle cx="0" cy="-386" r="58.5" fill="${p.papier}"/>`;   // cadran de papier, sous la lumière de sa case
+      for (let i = 0; i < 12; i++) {
+        const a = rad(i * 30), r0 = 48, r1 = i % 3 === 0 ? 58 : 54;
+        g += `<path d="M${f(Math.sin(a) * r0 - 2)},${f(-386 - Math.cos(a) * r0)} L${f(Math.sin(a) * r1 - 2)},${f(-386 - Math.cos(a) * r1)} L${f(Math.sin(a) * r1 + 2)},${f(-386 - Math.cos(a) * r1)} L${f(Math.sin(a) * r0 + 2)},${f(-386 - Math.cos(a) * r0)} Z"/>`;
+      }
+      if (tout) g += aig(p.heure, 30, 8) + aig(p.minute, 46, 5);
+      g += `<circle cx="0" cy="-386" r="7"/>`;
+      // couronne à pommeaux
+      g += `<path d="M-74,-430 C-52,-486 52,-486 74,-430 C60,-446 30,-458 0,-458 C-30,-458 -60,-446 -74,-430 Z"/>`;
+      g += `<circle cx="-70" cy="-440" r="9"/><circle cx="70" cy="-440" r="9"/><circle cx="0" cy="-482" r="11"/>`;
+      // bras courts sur tiges, mains rondes
+      const arm = (sx, sy, [sh, el]) => {
+        const [u, ex, ey] = seg(sx, sy, 52, 9, 8, sh);
+        const [fa, wx, wy] = seg(ex, ey, 46, 8, 7, sh + el);
+        return u + fa + `<g transform="translate(${f(wx)},${f(wy)}) rotate(${f(sh + el)})"><path d="M-7,0 L-7,13 A7,7 0 0 0 7,13 L7,0 Z"/></g>` + (p.rivets ? rivet(ex, ey, 2.4) : '');
+      };
+      g += arm(-88, -190, p.armL) + arm(88, -190, p.armR);
+      if (p.rivets) g += rivet(-88, -190, 3) + rivet(88, -190, 3);
+    }
     return `<g transform="translate(${f(p.x)},${f(p.y)}) scale(${p.s})" fill="${p.fill}">${g}</g>`;
   }
+  /* pièces mobiles de l'horloge : [partie, paramètre et signe de son angle, pivot (repère de l'horloge, avant l'échelle)] */
+  const PIECES_HORLOGE = [['roueG', 'roue', 1, -48, -21], ['roueD', 'roue', 1, 48, -21], ['balancier', 'balancier', 1, 0, -262],
+    ['engr1', 'engr', 1, -14, -232], ['engr2', 'engr', -9 / 7, 14, -214], ['heure', 'heure', 1, 0, -386], ['minute', 'minute', 1, 0, -386]];
   /* centre de la lentille du balancier, dans le repère de la scène (avant la rotation « penche ») */
   function lentille(o) {
     const p = Object.assign({ x: 0, y: 0, s: 0.70, balancier: 8 }, o);
@@ -554,6 +595,13 @@ const OM = (() => {
     const k = Math.abs(flip) < 0.06 ? 0.06 * Math.sign(flip || 1) : flip;
     return `<g transform="translate(${f(x)},${f(y)}) rotate(${f(rot)}) scale(${f(k * 100) / 100},1)" fill="${fill}">` +
       `<path d="M${f(-w / 2)},${f(-h / 2)} L${f(w / 2 - 9)},${f(-h / 2)} L${f(w / 2)},${f(-h / 2 + 9)} L${f(w / 2)},${f(h / 2)} L${f(-w / 2)},${f(h / 2)} Z"/></g>`;
+  }
+
+  /* feuille posée au sol, vue de profil : 3 u d'épaisseur à plat, le bout qui se relève et se corne (lisible sur la lumière
+     du sol) ; flip -1 : le bout relevé à gauche */
+  function feuilleSol(w = 66, flip = 1) {
+    return `<g transform="scale(${flip < 0 ? -1 : 1},1)" fill="${C.ombre}"><path d="M${f(-w / 2)},-1 L${f(w / 2 - 16)},-1 C${f(w / 2 - 6)},-1 ${f(w / 2 - 1)},-5 ${f(w / 2 + 2)},-14 ` +
+      `L${f(w / 2 - 1)},-15 C${f(w / 2 - 4)},-8 ${f(w / 2 - 9)},-4.5 ${f(w / 2 - 17)},-4.5 L${f(-w / 2)},-4.5 Z"/></g>`;
   }
 
   /* ---------- le petit dinosaure sous son champignon (papier découpé, œil et pois ajourés) */
@@ -821,7 +869,7 @@ const OM = (() => {
   /* sprites des listes dorées : un dégradé par op coûte cher à chaque image ; la liste est cuite une fois dans un bitmap à
      l'échelle du palier (2^(1/4)) juste au-dessus de celle de l'écran, puis posée sous M (réduction de 16 % au plus).
      Partagés par la page, bornés en octets (le plus ancien sort d'abord) ; le résultat ne dépend que de la liste et de M. */
-  const BUDGET_SPRITES = 96 * 1048576;
+  const BUDGET_SPRITES = 64 * 1048576;
   function poserSprite(ctx, ops, M, alpha) {
     if (ops.__lum === undefined) ops.__lum = ops.some((op) => op.lum);
     if (ops.__lum) return false;
@@ -830,14 +878,16 @@ const OM = (() => {
     if (!(sc > 1e-4)) return true;
     const b = Math.min(4, Math.pow(2, Math.ceil(Math.log2(sc) * 4 - 1e-6) / 4)), bb = ops.bb;
     const w = Math.ceil((bb[2] - bb[0]) * b) + 4, h = Math.ceil((bb[3] - bb[1]) * b) + 4;
-    if (w > 4096 || h > 4096 || w * h * 4 > 24 * 1048576) return false;
+    // les petites listes (feuilles et oiseaux qui tournent, petites piles) restent en tracé direct : peu de pixels, et un
+    // sprite par image ne servirait qu'une fois ; les très grandes aussi (au-delà de 4 096 px ou 24 Mo)
+    if (w * h < 60000 || w > 4096 || h > 4096 || w * h * 4 > 24 * 1048576) return false;
     if (!ops.__id) ops.__id = ++G.nListes;
     const cle = ops.__id + '@' + b;
     let sp = G.sprites.get(cle);
     if (sp) { G.sprites.delete(cle); G.sprites.set(cle, sp); }
     else {
       const c = toileHE(w, h); tracerListe(c.getContext('2d'), ops, [b, 0, 0, b, 2 - bb[0] * b, 2 - bb[1] * b]);
-      sp = { c, octets: w * h * 4, runs: tuilesPleines(c, 64) }; G.sprites.set(cle, sp); G.octetsSprites += sp.octets;
+      sp = { c, octets: w * h * 4, runs: w * h >= 600000 ? tuilesPleines(c, 64) : null }; G.sprites.set(cle, sp); G.octetsSprites += sp.octets;
       for (const [k, v] of G.sprites) { if (G.octetsSprites <= BUDGET_SPRITES || v === sp) break; G.sprites.delete(k); G.octetsSprites -= v.octets; }
     }
     const m = chaineM(M, Mx.tr(bb[0] - 2 / b, bb[1] - 2 / b), Mx.ech(1 / b));
@@ -910,7 +960,7 @@ const OM = (() => {
     if (ops.__halo !== undefined) return ops.__halo;
     const bb = ops.bb;
     if (!bb) { ops.__halo = null; return null; }
-    const w = bb[2] - bb[0], h = bb[3] - bb[1], d = Math.min(0.6, 640 / Math.max(w, h, 1));
+    const w = bb[2] - bb[0], h = bb[3] - bb[1], d = Math.min(0.35, 640 / Math.max(w, h, 1));   // halo doux : basse résolution suffit
     const flou = Math.max(1.5, 9 * d), marge = Math.ceil(flou * 3 + 2);
     const cw = Math.ceil(w * d) + 2 * marge, ch = Math.ceil(h * d) + 2 * marge;
     const net = toileHE(cw, ch);
@@ -927,7 +977,7 @@ const OM = (() => {
     const W = img.width, Hh = img.height, d = img.getContext('2d').getImageData(0, 0, W, Hh).data, runs = [];
     for (let ty = 0; ty < Hh; ty += T) {
       let debut = -1;
-      for (let tx = 0; tx <= W; tx += T) {
+      for (let tx = 0; tx < W + T; tx += T) {   // un tour de plus pour fermer la bande en cours
         let plein = false;
         if (tx < W) for (let y = ty; y < Math.min(Hh, ty + T) && !plein; y++) for (let x = tx; x < Math.min(W, tx + T); x++) if (d[(y * W + x) * 4 + 3] > 1) { plein = true; break; }
         if (plein && debut < 0) debut = tx;
@@ -955,7 +1005,14 @@ const OM = (() => {
   }
   /* dessin d'une liste dans sa palette : dorée → halo puis silhouette */
   function dessinerTeinte(ctx, ops, M, lum, alpha = 1) {
-    if (ops.or) poserHalo(ctx, haloDe(ops), M, 0.62 * lum * alpha);
+    if (ops.or) {
+      // petite liste tournée (feuille qui vole, oiseau) : son halo, une tache douce, est posé droit (chemin rapide du canvas)
+      const bb = ops.bb, tourne = Math.abs(M[1]) > 1e-6 || Math.abs(M[2]) > 1e-6;
+      if (tourne && bb && Math.max(bb[2] - bb[0], bb[3] - bb[1]) < 120) {
+        const cx = (bb[0] + bb[2]) / 2, cy = (bb[1] + bb[3]) / 2, [X, Y] = Mx.app(M, cx, cy), sc = Math.sqrt(Math.abs(M[0] * M[3] - M[1] * M[2]));
+        poserHalo(ctx, haloDe(ops), [sc, 0, 0, sc, X - sc * cx, Y - sc * cy], 0.62 * lum * alpha);
+      } else poserHalo(ctx, haloDe(ops), M, 0.62 * lum * alpha);
+    }
     dessinerListe(ctx, ops, M, { alpha, lum });
   }
   /* caches LRU (l'entrée lue repasse en fin) ; une clé détermine entièrement son contenu */
@@ -986,8 +1043,10 @@ const OM = (() => {
 
   /* halos communs de l'arbre doré, un par état arrondi (pile, feuilles, or des trois bandes) : la clé détermine le contenu */
   const halosArbre = cache(() => ({}), 40);
+  /* l'arbre d'or fini, ses morceaux réunis en une seule liste (une par nombre de feuilles) */
+  const arbresCuits = cache(() => [], 80);
 
-  /* ---------- textures générées une fois par bruit à graine fixe, partagées dans window.__OMBRES_TEX ----------
+  /* ---------- textures générées une fois par bruit à graine fixe, partagées dans window.__OMBRES_om5.tex ----------
      nom de texture = nature + graine : la même graine donne la même texture quelle que soit la séquence qui la crée.
      Les « derive: » sont des copies d'exécution (mosaïques) d'une texture, pas des textures. */
   const TEX = G.tex;
@@ -1063,16 +1122,20 @@ const OM = (() => {
     return tex(`fibres:11:${nom}`, () => { const col = nom === 'nuit' ? [12, 6, 2] : [64, 38, 17];
       return imageBruit(TOILE_W / 12, TOILE_H / 2, (i, j) => { const n = fbm(i * 12 * 0.0015, j * 2 * 0.035, 11, 2); return [col[0], col[1], col[2], 255 * borne(1.05 - 1.6 * n) * 0.16]; }); });
   }
-  /* la toile cuite (copie d'exécution) : cœur radial r 1 150 px au centre d'une image 2 880 × 2 160, taches et fibres
-     étirées et lissées ; posée 1:1 au pixel entier, le cœur sur le sujet du plan, glissant ×0,2 avec le plan 4 */
-  function toileCuite(nom) {
-    return tex(`derive:toile:${nom}`, () => {
-      const c = toileHE(TOILE_W, TOILE_H), x = c.getContext('2d', { alpha: false }), st = STOPS_TOILE[nom];
+  /* la toile cuite (copie d'exécution) : cœur radial r 1 150 px (toile claire) ou 1 500 px (toile nuit, comme A3 et C3) au
+     centre d'une image 2 880 × 2 160, taches et fibres étirées et lissées ; posée 1:1 au pixel entier, le cœur sur le sujet
+     du plan, glissant ×0,2 avec le plan 4 */
+  const RAYON_TOILE = { clair: 1150, nuit: 1500 };
+  function toileCuite(nom, doux = false) {   // doux : taches et fibres à moitié (carte de fin), cuite à la première demande
+    return tex(`derive:toile:${nom}${doux ? ':doux' : ''}`, () => {
+      const c = toileHE(TOILE_W, TOILE_H), x = c.getContext('2d', { alpha: false }), st = STOPS_TOILE[nom], r = RAYON_TOILE[nom];
       x.fillStyle = plus3(st[st.length - 1][1]); x.fillRect(0, 0, TOILE_W, TOILE_H);
       x.imageSmoothingEnabled = true; x.imageSmoothingQuality = 'high';
-      x.drawImage(spriteToile(nom), TOILE_W / 2 - 1150, TOILE_H / 2 - 1150, 2300, 2300);
+      x.drawImage(spriteToile(nom), TOILE_W / 2 - r, TOILE_H / 2 - r, 2 * r, 2 * r);
+      if (doux) x.globalAlpha = 0.5;
       x.drawImage(texTaches(nom), 0, 0, TOILE_W, TOILE_H);
       x.drawImage(texFibres(nom), 0, 0, TOILE_W, TOILE_H);
+      x.globalAlpha = 1;
       return c;
     });
   }
@@ -1080,19 +1143,33 @@ const OM = (() => {
   function vignette() {
     return tex('derive:vignette', () => {
       const v = tex('vignette', () => { const c = toileHE(L / 2, H / 2), x = c.getContext('2d');
-        const g = x.createRadialGradient(L / 4, H / 4, 0, L / 4, H / 4, 575);
-        g.addColorStop(0, 'rgba(20,11,5,0)'); g.addColorStop(0.45, 'rgba(20,11,5,0)');
-        g.addColorStop(0.8, 'rgba(20,11,5,.45)'); g.addColorStop(1, 'rgba(12,6,3,.92)');
+        const g = x.createRadialGradient(L / 4, H / 4, 0, L / 4, H / 4, 575);   // un peu plus fort sur les côtés que le kit SVG
+        g.addColorStop(0, 'rgba(20,11,5,0)'); g.addColorStop(0.42, 'rgba(20,11,5,0)');
+        g.addColorStop(0.74, 'rgba(20,11,5,.5)'); g.addColorStop(1, 'rgba(12,6,3,.94)');
         x.fillStyle = g; x.fillRect(0, 0, L / 2, H / 2); return c; });
       const c = toileHE(L, H), x = c.getContext('2d'); x.imageSmoothingEnabled = true; x.imageSmoothingQuality = 'high'; x.drawImage(v, 0, 0, L, H); return c;
     });
   }
-  /* flamme + vignettage : la toile est cuite 3 % plus claire ; un voile 1 - m / 1,03 ramène sa luminosité à m */
-  function poserVignette(ctx, m, force = 1) {
+  /* vignettage serré des cadrages serrés : le même vignettage plus un voile radial centré (transparent jusqu'à 300 px,
+     19 % à 600 px, 45 % au-delà de 900 px) qui ramène le cœur de la toile claire d'un rayon de 1 150 à environ 900 px ;
+     cuit une fois en pleine résolution, posé 1:1 (le cœur de la toile reste à quelques dizaines de px du centre) */
+  function vignetteSerree() {
+    return tex('derive:vignette:serree', () => {
+      const c = toileHE(L, H), x = c.getContext('2d'); x.drawImage(vignette(), 0, 0);
+      const g = x.createRadialGradient(L / 2, H / 2, 0, L / 2, H / 2, 1150);
+      for (const [o, a] of [[0, 0], [0.26, 0], [0.52, 0.19], [0.78, 0.45], [1, 0.45]]) g.addColorStop(o, `rgba(20,11,5,${a})`);
+      x.fillStyle = g; x.fillRect(0, 0, L, H); return c;
+    });
+  }
+  /* flamme + vignettage : la toile est cuite 3 % plus claire ; un voile 1 - m / 1,03 ramène sa luminosité à m ; serre
+     (0 à 1) : part du vignettage serré */
+  function poserVignette(ctx, m, force = 1, serre = 0) {
     ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
     const d = borne(1 - m / 1.03, 0, 0.2);
     if (d > 0.001) { ctx.fillStyle = `rgba(0,0,0,${d.toFixed(4)})`; ctx.fillRect(0, 0, L, H); }
-    ctx.globalAlpha = force; ctx.drawImage(vignette(), 0, 0); ctx.globalAlpha = 1;
+    if (serre < 0.99) { ctx.globalAlpha = force * (1 - serre); ctx.drawImage(vignette(), 0, 0); }
+    if (serre > 0.01) { ctx.globalAlpha = force * serre; ctx.drawImage(vignetteSerree(), 0, 0); }
+    ctx.globalAlpha = 1;
   }
   /* sprites ronds pré-rendus : halo de lampe (crème), point de poussière d'or */
   function spriteRond(nom, stops, T = 128) {
@@ -1108,23 +1185,27 @@ const OM = (() => {
   const haloLampeOr = () => spriteRond('lampe-or', [[0, 'rgba(255,231,176,.9)'], [0.35, 'rgba(242,196,106,.5)'], [1, 'rgba(201,138,46,0)']], 256);
   /* flou de caméra : n tirages décalés (moyenne exacte, alpha 1 / (i + 1)) le long de la direction ('x', 'y', angle en
      degrés, ou 'zoom' pour un recul ou une plongée) ; le premier tirage, centré et opaque, couvre tout le cadre */
-  /* À partir de 3 px de flou, la moyenne se fait dans un tampon à demi-résolution (960 × 540, quatre fois moins de pixels
-     par tirage), agrandi une seule fois vers l'écran : l'image est floue, la demi-résolution ne se voit pas. */
+  /* À partir de 3 px de flou, le monde est réduit UNE fois à demi-résolution (960 × 540), les tirages s'y moyennent par
+     copies 1:1 décalées au pixel entier (le chemin rapide du canvas), puis le tampon est agrandi une seule fois vers
+     l'écran : quatre fois moins de pixels par tirage, et l'image est floue, la demi-résolution ne se voit pas. */
   function flouTirages(ctx, source, px, n, dir = 'x') {
     const ang = dir === 'x' ? 0 : dir === 'y' ? 90 : typeof dir === 'number' ? dir : null;
     if (ang === null) n = Math.min(n, 6);
     const D = px >= 3 ? 2 : 1, w = L / D, h = H / D;
+    let src = source;
+    if (D > 1 && source.width > w) {   // (un monde peint à demi-résolution n'a pas besoin d'être réduit) const r = calque('tirages-src', w, h).getContext('2d'); r.setTransform(1, 0, 0, 1, 0, 0); r.globalAlpha = 1; r.globalCompositeOperation = 'copy';
+      r.imageSmoothingEnabled = true; r.imageSmoothingQuality = 'low'; r.drawImage(source, 0, 0, L, H, 0, 0, w, h); r.globalCompositeOperation = 'source-over'; src = r.canvas; }
     const dst = D > 1 ? calque('tirages', w, h).getContext('2d') : ctx;
     dst.setTransform(1, 0, 0, 1, 0, 0); dst.globalCompositeOperation = 'source-over'; dst.imageSmoothingEnabled = true; dst.imageSmoothingQuality = 'low';
-    dst.globalAlpha = 1; dst.drawImage(source, 0, 0, L, H, 0, 0, w, h);
+    dst.globalAlpha = 1; dst.drawImage(src, 0, 0, w, h, 0, 0, w, h);
     for (let i = 1; i < n; i++) {
       const u = n === 2 ? 0.5 : (i - 1) / (n - 2), k = -1 + 2 * u;
       dst.globalAlpha = 1 / (i + 1);
       if (ang === null) {
         const z = 1 + k * px / 960;
-        dst.drawImage(source, 0, 0, L, H, (L / 2 - L * z / 2) / D, (H / 2 - H * z / 2) / D, L * z / D, H * z / D);
+        dst.drawImage(src, 0, 0, w, h, w / 2 - w * z / 2, h / 2 - h * z / 2, w * z, h * z);
       } else {
-        dst.drawImage(source, 0, 0, L, H, Math.round(k * px * Math.cos(rad(ang))) / D, Math.round(k * px * Math.sin(rad(ang))) / D, w, h);
+        dst.drawImage(src, Math.round(k * px * Math.cos(rad(ang)) / D), Math.round(k * px * Math.sin(rad(ang)) / D));
       }
     }
     dst.globalAlpha = 1;
@@ -1172,15 +1253,18 @@ const OM = (() => {
     cases: { E: [120, 438, 870, 900], S: [916, 438, 1720, 900], K: [1768, 438, 3420, 900],
       P: [120, 132, 870, 392], B: [916, 132, 1720, 392], F: [1768, 132, 3420, 392] },
     grenier: [[330, 84], [1765, -62], [3200, 84]],
-    baies: { ES: [870, 520, 916, 900, 'E', 'S'], SK: [1720, 520, 1768, 900, 'S', 'K'] },
-    ouvertures: { porte: [336, 470, 494, 900], F1: [960, 458, 1170, 678], F2: [2680, 470, 2890, 690] },
+    // baies des cloisons : linteau à y 470 comme la porte (430 u de passage, le père en fait 406)
+    baies: { ES: [870, 470, 916, 900, 'E', 'S'], SK: [1720, 470, 1768, 900, 'S', 'K'] },
+    // F2 : imposte à y 525 (deux petits carreaux en haut, une grande vitre dessous) : la tête de l'horloge tient dans la vitre
+    ouvertures: { porte: [336, 470, 494, 900], F1: [960, 448, 1170, 640], F2: [2690, 470, 2860, 740] },
+    impostes: { F2: 525 },
     stations: {
-      porte: [415, 900], patere: [230, 600], pereEntree: [700, 900], filleSalon: [1060, 900], balle: [1150, 874], secretaire: [1380, 770],
-      L1: [1320, 770], pereSalon: [1500, 900], horlogeSalon: [1620, 900], tabouret: [1940, 900], table: [2230, 760], L2: [2090, 760],
-      pileTable: [2220, 760], pereCuisine: [2460, 900], dessin: [2620, 640], horlogeCuisine: [2780, 900], cadran: [2780, 630],
+      porte: [415, 900], patere: [230, 600], pereEntree: [700, 900], filleSalon: [1060, 900], balle: [1150, 874], secretaire: [1310, 770],
+      L1: [1244, 770], pereSalon: [1440, 900], horlogeSalon: [1620, 900], balleChaise: [1520, 874], tabouret: [1940, 900], table: [2220, 760], L2: [2090, 760],
+      pileTable: [2220, 760], pereCuisine: [2460, 900], dessin: [2590, 640], horlogeCuisine: [2780, 900], cadran: [2780, 630],
       marche: [3060, 842], piedEscalier: [2960, 900], litParents: [600, 392], litFille: [2300, 392], arbre: [4300, 900],
-      pivotBalancoire: [4745, 330], plancheBalancoire: 790, horlogeArbre: [4120, 900], horlogeCloture: [5520, 900],
-      poteau1: [5200, 900], poteau2: [5360, 900], carte1: [5200, 770], carte2: [5360, 770], famille: [5280, 900],
+      pivotBalancoire: [4745, 330], plancheBalancoire: 790, horlogeArbre: [4030, 900], horlogeCloture: [5520, 900],
+      poteau1: [5200, 900], poteau2: [5360, 900], carte1: [5200, 770], carte2: [5360, 770], famille: [5070, 900],
     },
     /* cadrages de référence (frame.md § framings) : [x, y, s] ; au cadrage, le sol à l'écran à y 880 au plus */
     cadrages: {
@@ -1266,16 +1350,19 @@ const OM = (() => {
   }
   const SVG_PATERE = `<g fill="${C.ombre}"><rect x="196" y="586" width="68" height="10" rx="2"/>${rivet(207, 591, 2.4)}${rivet(253, 591, 2.4)}` +
     `<path d="M227,596 L233,596 L233,604 C233,609 240,609 242,603 L246,604 C243,615 227,615 227,604 Z"/></g>`;
-  function svgFenetre(x0, y0, x1, y1) {
-    const b = 10, m = 8, cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
-    const d = rct(x0, y0, x1, y1) + rct(x0 + b, y0 + b, cx - m / 2, cy - m / 2) + rct(cx + m / 2, y0 + b, x1 - b, cy - m / 2) +
-      rct(x0 + b, cy + m / 2, cx - m / 2, y1 - b) + rct(cx + m / 2, cy + m / 2, x1 - b, y1 - b);
+  /* fenêtre : cadre de 10 u, croisillon de 8 u, appui de 9 u qui déborde de 12 u ; imposte (y) : traverse haute, deux
+     petits carreaux au-dessus et une grande vitre dessous (aucune traverse au niveau d'une tête qui passe devant) */
+  function svgFenetre(x0, y0, x1, y1, imposte) {
+    const b = 10, m = 8, cx = (x0 + x1) / 2, cy = imposte || (y0 + y1) / 2;
+    let d = rct(x0, y0, x1, y1) + rct(x0 + b, y0 + b, cx - m / 2, cy - m / 2) + rct(cx + m / 2, y0 + b, x1 - b, cy - m / 2);
+    d += imposte ? rct(x0 + b, cy + m / 2, x1 - b, y1 - b) : rct(x0 + b, cy + m / 2, cx - m / 2, y1 - b) + rct(cx + m / 2, cy + m / 2, x1 - b, y1 - b);
     return `<path fill="${C.ombre}" fill-rule="evenodd" d="${d}"/><rect x="${x0 - 12}" y="${y1 - 2}" width="${x1 - x0 + 24}" height="9" fill="${C.ombre}"/>`;
   }
-  /* secrétaire x 1 300 à 1 460, plateau y 770 : galerie étroite à droite, le dessus du plateau reste dans la lumière */
+  /* secrétaire x 1 220 à 1 400, plateau y 770 : caisson à tiroirs à gauche, un pied à droite, et entre les deux le vide où
+     passent les jambes du père assis (elles restent dans la lumière) ; galerie étroite, le dessus du plateau reste clair */
   function svgSecretaire() {
-    return `<path fill="${C.ombre}" fill-rule="evenodd" d="${rct(1296, 770, 1464, 782)}${rct(1300, 752, 1306, 770)}${rct(1454, 744, 1460, 770)}${rct(1306, 782, 1454, 872)}${rct(1316, 792, 1444, 826)}${rct(1316, 836, 1444, 864)}` +
-      `${rct(1308, 872, 1318, 900)}${rct(1442, 872, 1452, 900)}"/>${rivet(1380, 809, 3.4)}${rivet(1380, 850, 3.4)}`;
+    return `<path fill="${C.ombre}" fill-rule="evenodd" d="${rct(1216, 770, 1404, 782)}${rct(1220, 752, 1226, 770)}${rct(1394, 744, 1400, 770)}${rct(1224, 782, 1300, 872)}${rct(1232, 792, 1292, 826)}${rct(1232, 836, 1292, 864)}` +
+      `${rct(1300, 782, 1390, 790)}${rct(1226, 872, 1236, 900)}${rct(1288, 872, 1298, 900)}${rct(1386, 782, 1394, 900)}"/>${rivet(1262, 809, 3.4)}${rivet(1262, 850, 3.4)}`;
   }
   /* escalier de (2 960, 900) à (3 420, 438), marches de 58 × 58 u, limon ajouré (un jour par marche), poteau de départ
      à boule ; la grande rampe à barreaux ajourés est l'avant-plan flou (plan 1, x 3 000 à 3 400) : elle ne coupe jamais la
@@ -1287,8 +1374,9 @@ const OM = (() => {
     d += ` L${x0 + m * n},${y0 - m * n + 84} L${x0 + 84},${y0} Z `;
     for (let k = 1; k <= 7; k++) { const cx = x0 + m * k + 22, cy = y0 - m * k + 32;
       d += `M${cx - 14},${cy + 8} L${cx + 2},${cy - 8} L${cx + 14},${cy - 8} L${cx - 2},${cy + 8} Z `; }
-    return `<g fill="${C.ombre}"><path fill-rule="evenodd" d="${d}"/><rect x="2958" y="694" width="14" height="206"/><circle cx="2965" cy="686" r="10"/>` +
-      `<rect x="2954" y="696" width="22" height="7"/><rect x="2955" y="880" width="20" height="20"/></g>`;
+    // poteau de départ bas (boule à y 762) : la tête de la fille qui passe devant F2 vers l'escalier reste dans la lumière
+    return `<g fill="${C.ombre}"><path fill-rule="evenodd" d="${d}"/><rect x="2958" y="770" width="14" height="130"/><circle cx="2965" cy="762" r="10"/>` +
+      `<rect x="2954" y="772" width="22" height="7"/><rect x="2955" y="880" width="20" height="20"/></g>`;
   }
   const svgLitParents = () => `<g fill="${C.ombre}"><path d="M412,392 L412,250 C412,236 424,232 436,232 L448,232 L448,320 L772,320 L772,300 L788,300 L788,392 L772,392 L772,350 L428,350 L428,392 Z"/><path d="M462,320 C464,300 482,292 512,294 L532,320 Z"/></g>`;
   const svgLitFille = () => `<g transform="translate(2300,392) scale(0.66) translate(-600,-392)">${svgLitParents()}</g>` + dino(2238, 339, 0.13, C.ombre, { champignon: false });
@@ -1302,16 +1390,18 @@ const OM = (() => {
   }
   const svgGrenier = () => `<g fill="${C.ombre}"><path d="M1430,84 L1430,52 C1430,40 1450,34 1495,34 C1540,34 1560,40 1560,52 L1560,84 Z"/>` +
     `<rect x="1880" y="38" width="86" height="46"/><rect x="1958" y="54" width="62" height="30"/><rect x="1180" y="60" width="70" height="24"/></g>`;
-  function svgPoteaux() {
+  /* les deux poteaux porte-cartes : hauts (en T) quand une carte y est épinglée, sinon à la hauteur de la clôture */
+  function svgPoteaux(haut = true) {
     let g = '';
-    for (const x of [5200, 5360]) g += `<rect x="${x - 6}" y="706" width="12" height="194"/><rect x="${x - 10}" y="698" width="20" height="9"/>`;
+    for (const x of [5200, 5360]) g += haut ? `<rect x="${x - 6}" y="706" width="12" height="194"/><rect x="${x - 10}" y="698" width="20" height="9"/>`
+      : `<rect x="${x - 6}" y="808" width="12" height="92"/>`;
     return `<g fill="${C.ombre}">${g}</g>`;
   }
   /* groupes du décor : [nom, fabrique SVG, boîte, dore] */
   const DECOR = [
     ['papierE', () => PP(papierPeint(120, 438, 870, 768, [[310, 440, 520, 900]], 'E')) + svgLambris(120, 870, [[318, 512]]), [120, 438, 870, 900], false],
-    ['papierS', () => PP(papierPeint(916, 438, 1720, 768, [[950, 448, 1182, 690]], 'S')) + svgLambris(916, 1720, []), [916, 438, 1720, 900], false],
-    ['papierK', () => PP(papierPeint(1768, 438, 3420, 768, [[2668, 460, 2902, 700]], 'K')) + svgLambris(1768, 3420, []), [1768, 438, 3420, 900], false],
+    ['papierS', () => PP(papierPeint(916, 438, 1720, 768, [[948, 440, 1182, 650]], 'S')) + svgLambris(916, 1720, []), [916, 438, 1720, 900], false],
+    ['papierK', () => PP(papierPeint(1768, 438, 3420, 768, [[2678, 462, 2872, 768]], 'K')) + svgLambris(1768, 3420, []), [1768, 438, 3420, 900], false],
     ['papierP', () => PP(papierPeint(120, 132, 870, 392, [], 'S')), [120, 132, 870, 392], false],
     ['papierB', () => PP(papierPeint(916, 132, 1720, 392, [], 'E')), [916, 132, 1720, 392], false],
     ['papierF', () => PP(papierPeint(1768, 132, 3420, 392, [], 'K')), [1768, 132, 3420, 392], false],
@@ -1322,12 +1412,13 @@ const OM = (() => {
   const MEUBLES = [
     ['porte', svgPorte, [308, 446, 522, 902], false],
     ['patere', () => SVG_PATERE, [196, 586, 264, 616], false],
-    ['F1', () => svgFenetre(960, 458, 1170, 678), [948, 458, 1182, 685], false],
-    ['F2', () => svgFenetre(2680, 470, 2890, 690), [2668, 470, 2902, 697], false],
-    ['secretaire', svgSecretaire, [1296, 744, 1464, 900], false],
-    ['chaiseS', () => chaise(1500, 900, 0.66, -1), [1468, 728, 1530, 900], false],
+    ['F1', () => svgFenetre(960, 448, 1170, 640), [948, 448, 1182, 647], false],
+    ['F2', () => svgFenetre(2690, 470, 2860, 740, MONDE.impostes.F2), [2678, 470, 2872, 747], false],
+    ['secretaire', svgSecretaire, [1216, 744, 1404, 900], false],
+    ['chaiseS', () => chaise(1440, 900, 0.66, -1), [1408, 728, 1470, 900], false],
     ['tabouret', () => tabouret(1940, 900), [1904, 804, 1976, 900], true],
-    ['table', () => table(2230, 900, 340, 140), [2060, 760, 2400, 900], true],
+    // table x 2 060 à 2 380 : son bout reste libre, l'horloge dorée travaille à la place du père sans la recouvrir
+    ['table', () => table(2220, 900, 320, 140), [2060, 760, 2380, 900], true],
     ['chaiseK', () => chaise(2460, 900, 0.66, -1), [2428, 728, 2490, 900], true],
     ['escalier', svgEscalier, [2950, 434, 3424, 900], false],
     ['litParents', svgLitParents, [412, 232, 788, 392], false],
@@ -1337,7 +1428,6 @@ const OM = (() => {
     ['herbesG', () => herbes(-500, 62, 906, 28, 21, C.ombre, 0.9), [-500, 860, 62, 906], false],
     ['herbesJ', () => herbes(3468, 6600, 906, 30, 23, C.ombre, 0.6), [3468, 850, 6600, 906], false],
     ['cloture', () => cloture(5050, 6000, 900, 90, 4, C.ombre, 3.5), [5040, 800, 6010, 900], true],
-    ['poteaux', svgPoteaux, [5190, 698, 5370, 900], true],
   ];
 
   /* ---------- l'arbre du jardin (pied (4 300, 900), h 760, penché à droite ; branche maîtresse jusqu'à (5 450, 300)) */
@@ -1444,10 +1534,24 @@ const OM = (() => {
     z += `<path fill="${c.coll}" opacity="${c.aCo}" d="${collines(-1900, 8300, 884, 30, 37, 60)}"/>`;
     z += `<g opacity="${c.aA}">${cloture(110, 660, 894, 70, 3, c.clo)}${cloture(5600, 7000, 896, 56, 6, c.clo)}</g>`;
     for (const [x, y, rx, ry] of [[600, 880, 520, 40], [2400, 892, 700, 36], [5200, 886, 820, 44]]) z += `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${c.nappe}" opacity="${c.aN}"/>`;
+    // la branche nue qui porte la balançoire (la balançoire elle-même est à part : balancoireLoin)
     z += `<g opacity="${c.aB}" fill="${c.bal}"><path d="M1300,232 C1220,246 1140,258 1060,272 C1010,281 960,290 900,302 L898,314 C960,304 1012,296 1062,288 C1142,274 1222,262 1302,250 Z"/>` +
-      `<path d="M1150,262 C1162,240 1178,228 1200,220 L1203,228 C1184,236 1170,246 1160,266 Z"/><path d="M960,296 C948,282 940,270 936,256 L944,254 C948,268 956,280 966,292 Z"/>` +
-      `<path d="M1046,283 L1046,606 M1078,278 L1078,606" stroke="${c.bal}" stroke-width="4.5" stroke-linecap="round" fill="none"/><rect x="1032" y="602" width="60" height="9" rx="2"/></g>`;
+      `<path d="M1150,262 C1162,240 1178,228 1200,220 L1203,228 C1184,236 1170,246 1160,266 Z"/><path d="M960,296 C948,282 940,270 936,256 L944,254 C948,268 956,280 966,292 Z"/></g>`;
     return z;
+  }
+  /* la balançoire vue par F1 (plan 3, monde sombre) : deux cordes et une planche, pendues à la branche nue ; posée seulement
+     quand ses deux cordes et sa planche tiennent dans un même carreau de F1 (jamais une corde seule) */
+  const BAL_LOIN = { cordes: [1132, 1164], haut: 262, planche: [1118, 512, 1178, 521] };
+  function balancoireLoin() {
+    return tex('plan3:balancoire', () => {
+      const b = BAL_LOIN, d = PAYSAGE.d, m = Math.ceil(PAYSAGE.flou * 3) + 2, x0 = b.planche[0] - 6, y0 = b.haut - 6;
+      const w = Math.ceil((b.planche[2] - x0 + 6) * d) + 2 * m, h = Math.ceil((b.planche[3] - y0 + 6) * d) + 2 * m;
+      const net = toileHE(w, h), cn = net.getContext('2d');
+      tracerListe(cn, compiler(`<g opacity=".85" fill="${C.ombre2}"><path d="M${b.cordes[0]},${b.haut} L${b.cordes[0]},${b.planche[1] + 2} M${b.cordes[1]},${b.haut - 2} L${b.cordes[1]},${b.planche[1] + 2}" stroke="${C.ombre2}" stroke-width="4.5" stroke-linecap="round" fill="none"/>` +
+        `<rect x="${b.planche[0]}" y="${b.planche[1]}" width="${b.planche[2] - b.planche[0]}" height="${b.planche[3] - b.planche[1]}" rx="2"/></g>`), [d, 0, 0, d, m - x0 * d, m - y0 * d]);
+      const c = toileHE(w, h), cc = c.getContext('2d'); cc.filter = `blur(${PAYSAGE.flou}px)`; cc.drawImage(net, 0, 0); cc.filter = 'none';
+      c.__pose = { ox: x0 - m / d, oy: y0 - m / d, d }; return c;
+    });
   }
   const PAYSAGE = { x0: -1900, x1: 8300, y0: 150, y1: 1300, d: 0.5, tuile: 1600, flou: 1.1 };
   function tuilesPaysage(pal) {
@@ -1543,15 +1647,16 @@ const OM = (() => {
   const POSES_PERE = {
     debout: { legF: [-4, 4], legB: [6, 2], armF: [-12, -24], armB: [28, 10] },
     raide: { legF: [-2, 2], legB: [3, 1], armF: [-6, -12], armB: [26, 8] },
-    pile: { legF: [-4, 4], legB: [6, 2], armF: [-30, -96], armB: [28, 10] },
+    pile: { legF: [-4, 4], legB: [6, 2], armF: [-6, -12], armB: [28, 10] },   // la pile sous le bras, calée contre la hanche
     assis: { assis: true, siege: 80, legF: [-90, 90], legB: [-84, 86], armF: [-58, -40], armB: [12, 18], head: 6 },
     'assis-dossier': { assis: true, siege: 80, legF: [-90, 90], legB: [-84, 86], armF: [-62, -30], armB: [12, 18], head: 16 },
     'assis-feuille': { assis: true, siege: 80, legF: [-90, 90], legB: [-84, 86], armF: ik([6, -478], [118, -506], 116, 104), armB: [12, 18], head: 4 },
     'assis-dessin': { assis: true, siege: 80, legF: [-90, 90], legB: [-84, 86], armF: ik([6, -478], [122, -470], 116, 104), armB: [24, 14], head: 22 },
     leve: { legF: [-6, 4], legB: [8, 2], armF: [-14, -24], armB: [-100, -40], head: -4 },
     'tend-main': { legF: [-6, 4], legB: [8, 2], armF: [-62, -8], armB: [26, 10] },
-    genou: { legF: [-86, 112], legB: [0, 90], armF: [-56, -54], armB: [-40, -48], head: 12 },
-    pousse: { legF: [-26, 12], legB: [30, 2], armF: [-80, -10], armB: [-70, -10], penche: 9 },
+    // à genou : cuisse avant à l'horizontale sous un manteau raccourci, tibia arrière à plat ; tige avant depuis le coude
+    genou: { legF: [-90, 90], legB: [0, 90], armF: [-56, -54], armB: [-40, -48], head: 12, manteau: -258, tigeAvant: 'coude' },
+    pousse: { legF: [-26, 12], legB: [30, 2], armF: [-80, -10], armB: [-70, -10], penche: 4 },
     epaules: { legF: [-3, 2], legB: [4, 1], armF: [-150, 26], armB: [-142, 22] },
   };
   function marchePere(phase) {
@@ -1570,7 +1675,7 @@ const OM = (() => {
     'pointe-pieds': { legF: [-2, 1], legB: [2, 1], armF: [-142, -8], armB: [-128, -14], head: -16, pointe: 7 },
     'serre-dessin': { legF: [-4, 3], legB: [5, 2], armF: [-34, -104], armB: [-24, -108], head: 6 },
     balancoire: { assis: true, siege: 0, legsAssis: [[-76, 60], [-70, 54]], armF: [-150, 0], armB: [-140, 0], head: -6 },
-    genou: { legF: [-86, 112], legB: [0, 90], armF: [-70, -40], armB: [-50, -50], head: 10 },
+    genou: { legF: [-90, 90], legB: [0, 92], armF: [-70, -40], armB: [-50, -50], head: 10 },
     mains: { legF: [-4, 3], legB: [5, 2], armF: [-64, -64], armB: [-52, -70], head: -10 },
     saute: { legF: [-34, 52], legB: [-8, 44], armF: [-74, -6], armB: [-20, -30], head: -4 },
     epaules: { assis: true, siege: 0, legsAssis: [[-70, 66], [-64, 60]], armF: [-150, -10], armB: [-140, -20], head: -10 },
@@ -1606,20 +1711,22 @@ const OM = (() => {
     const o = [0, oy], rotP = (pt, sg) => Mx.app(Mx.rot(sg * pen, X, Y), pt[0], pt[1]), monde = (pt) => [pt[0] + X, pt[1] + Y];
     if (a.mains) for (const b of ['F', 'B']) if (a.mains[b]) { const T = rotP(a.mains[b], -1);
       q[b === 'B' ? 'armB' : 'armF'] = ik(b === 'B' ? PERE.epaB : PERE.epaF, vers(o, s, flip, [T[0] - X, T[1] - Y]), 116, 112); }
-    const P = { x: 0, y: oy, s, flip, armF: q.armF, armB: q.armB, legF: q.legF, legB: q.legB, head: q.head || 0 };
+    const P = { x: 0, y: oy, s, flip, armF: q.armF, armB: q.armB, legF: q.legF, legB: q.legB, head: q.head || 0, manteau: a.manteau ?? q.manteau ?? -210 };
     let svg = pere(P);
     const mF = mainPere(P, 'F'), mB = mainPere(P, 'B');
     const tn = a.tient || {}, pap = papierSous(C.carte, env.papier ?? 1);
-    if (tn.pile) {   // la pile sous le bras : calée contre la hanche, la main avant dessous
-      const n = tn.pile, px = mF[0] + 10 * flip, py = mF[1] + 4;
+    if (tn.pile) {   // la pile sous le bras : calée contre la hanche, la main avant à mi-hauteur de la pile
+      const n = tn.pile, px = mF[0] + 10 * flip, py = mF[1] + 0.45 * n * 7.6;
       svg += pile(px, py, n, { w: 96, h: 6.2, gap: 1.4, seed: 5 });
     }
     if (tn.devis) { const w = tn.devis.w || 64, hh = tn.devis.h || 86; svg += devis(mF[0] + (flip > 0 ? 2 : -w - 2), mF[1] - hh * 0.62, w, hh, tn.devis.rot || 0); }
     if (tn.dessin) svg += carteDessin(mF[0] + (flip > 0 ? 40 : -40), mF[1] - 34, { rot: tn.dessin.rot ?? 2, s: 0.9, papier: pap });
-    const tiges = a.tiges === false ? [] : [{ p: monde([PERE.dos[0] * s * flip, oy + PERE.dos[1] * s]), k: -0.2 * flip },
-      { p: monde(mF), k: 0.14 * flip }];
+    // tiges : du dos, et du poignet avant (ou du coude avant, vers l'arrière, quand le poignet passe devant quelqu'un)
+    const coude = () => { const [sh] = P.armF; return [(PERE.epaF[0] - 116 * Math.sin(rad(sh))) * s * flip, oy + (PERE.epaF[1] + 116 * Math.cos(rad(sh))) * s]; };
+    const avant = (a.tigeAvant ?? q.tigeAvant) === 'coude' ? { p: monde(coude()), k: -0.1 * flip } : { p: monde(mF), k: 0.14 * flip };
+    const tiges = a.tiges === false ? [] : [{ p: monde([PERE.dos[0] * s * flip, oy + PERE.dos[1] * s]), k: -0.2 * flip }, avant];
     return { svg, P, pen, pivot: [X, Y], base: [X, Y], mF: rotP(monde(mF), 1), mB: rotP(monde(mB), 1), o: [X, Y + oy], tiges, flip,
-      avantBras: () => pere(Object.assign({}, P, { partie: 'avantBrasB' })) };
+      brasB: () => pere(Object.assign({}, P, { partie: 'brasB' })) };
   }
   function placerFille(a, env = {}) {
     let q = Object.assign({}, POSES_FILLE.debout, POSES_FILLE[a.pose] || {});
@@ -1657,9 +1764,10 @@ const OM = (() => {
       const sh = b === 'L' ? HORLOGE.epaL : HORLOGE.epaR, rT = Mx.app(Mx.rot(-pen, X, Y), a.mains[b][0], a.mains[b][1]);
       P[b === 'L' ? 'armL' : 'armR'] = ik(sh, [(rT[0] - X) / P.s, (rT[1] - Y) / P.s - 10], 52, 46);
     }
-    const svg = horloge(P);
+    const svg = horloge(Object.assign({}, P, { partie: 'corps' }));
+    const parties = PIECES_HORLOGE.map(([nom, param, sg, px, py]) => ({ svg: horloge(Object.assign({}, P, { partie: nom })), m: Mx.rot(sg * (P[param] || 0), px * P.s, py * P.s) }));
     const m = Mx.rot(pen, X, Y), lt = lentille(P), mL = mainHorloge(P, 'L'), mR = mainHorloge(P, 'R');
-    return { svg, P, pen, pivot: [X, Y], base: [X, Y], lent: Mx.app(m, X + lt[0], Y + lt[1]), cadran: Mx.app(m, X, Y - 270),
+    return { svg, parties, P, pen, pivot: [X, Y], base: [X, Y], lent: Mx.app(m, X + lt[0], Y + lt[1]), cadran: Mx.app(m, X, Y - 270),
       mL: Mx.app(m, X + mL[0], Y + mL[1]), mR: Mx.app(m, X + mR[0], Y + mR[1]), tiges: [] };
   }
 
@@ -1816,7 +1924,7 @@ const OM = (() => {
       },
     };
   }
-  /* la preuve « 10 h » qui roule (Fraunces 700 150 px or-clair, centré à (960, 330)) et ses deux lignes DM Sans 40 px */
+  /* la preuve « 10 h » qui roule (Fraunces 700 150 px or-clair, centré à (960, 230)) et ses deux lignes DM Sans 40 px */
   const LIGNES_PREUVE = ['gagnées chaque semaine', 'par la dernière dirigeante formée'];
   function Preuve(hote) {
     const bloc = el('div', 'om-preuve', hote), chiffre = el('div', 'om-chiffre', bloc), nb = el('span', 'om-nombre', chiffre, '0');
@@ -1886,11 +1994,27 @@ const OM = (() => {
     const couche = (cls, nom) => { const d = el('div', 'om-calque ' + cls, racine); d.id = ident(nom); calques.push(d); return d; };
     const hSous = couche('om-sous', 'sous'), hPreuve = couche('om-couche-preuve', 'preuve'), hFin = couche('om-couche-fin', 'fin'), hNoir = couche('om-noir', 'noir');
     if (opt.clip) calques.forEach((c, i) => { c.classList.add('clip'); c.dataset.start = opt.clip.start; c.dataset.duration = opt.clip.duration; c.dataset.trackIndex = (opt.clip.track || 1) + i; });
-    /* contextes paresseux : une séquence que le worker ne dessine pas n'alloue rien ; le canvas « monde » du flou de
-       caméra est partagé par la page (une seule séquence dessine à la fois) */
+    /* contextes paresseux : une séquence que le worker ne dessine pas n'alloue rien ; les canvas « monde » du flou de
+       caméra sont partagés par la page (une seule séquence dessine à la fois). Dès 3 px de flou, le monde est peint à
+       demi-résolution (960 × 540) : toutes les matrices passent ×0,5 par un mandataire du contexte, l'image est floue */
     let ctxE = null;
     const ecranCtx = () => ctxE || (ctxE = ecran.getContext('2d', { alpha: false }));
     const mondeCtx = () => { let c = G.calques.monde; if (!c) { c = G.calques.monde = toileHE(L, H); c.__ctx = c.getContext('2d', { alpha: false }); } return c.__ctx; };
+    const mondeDemiCtx = () => {
+      let c = G.calques.mondeDemi;
+      if (!c) {
+        c = G.calques.mondeDemi = toileHE(L / 2, H / 2); const r = c.getContext('2d', { alpha: false });
+        c.__ctx = new Proxy(r, {
+          get(t, k) {
+            if (k === 'setTransform') return (a, b, cc, d, e, f) => t.setTransform(a / 2, b / 2, cc / 2, d / 2, e / 2, f / 2);
+            if (k === 'resetTransform') return () => t.setTransform(0.5, 0, 0, 0.5, 0, 0);
+            const v = t[k]; return typeof v === 'function' ? v.bind(t) : v;
+          },
+          set(t, k, v) { t[k] = v; return true; },
+        });
+      }
+      return c.__ctx;
+    };
     let pret = false, sous = SousTitres(hSous, opt.phrases);
     const preuve = Preuve(hPreuve), fin = Fin(hFin), noir = { el: hNoir, etat: null };
 
@@ -1901,7 +2025,7 @@ const OM = (() => {
         await document.fonts.ready;
       } catch (e) { /* polices locales : le rendu continue avec les secours */ }
       const etapes = [() => ['g1', 'g2', 'g3', 'g4'].forEach(grainPlan), () => toileCuite('clair'), () => { if (opt.palettes.some((p) => p !== 'sombre')) toileCuite('nuit'); },
-        () => { vignette(); haloLampe(); haloLampeOr(); pointOr(); haloOr(); spriteLumierePorte(); }];
+        () => { vignette(); if (opt.palettes.includes('sombre')) vignetteSerree(); haloLampe(); haloLampeOr(); pointOr(); haloOr(); spriteLumierePorte(); }];
       for (const pal of opt.palettes) {
         if (pal !== 'noir') etapes.push(() => tuilesPaysage(pal === 'dore' ? 'dore' : 'sombre'));
         etapes.push(() => { for (const nom of Object.keys(AVANT)) if (!AVANT[nom].palettes || AVANT[nom].palettes.includes(pal)) spriteAvant(nom, pal); });
@@ -1918,11 +2042,13 @@ const OM = (() => {
       const cm = E.cam || cam(1765, 400, 0.5), pal = E.palette || 'sombre', t = E.t || 0;
       const ii = E.ii ?? Math.floor(t * IPS + 1e-4);
       const lum = pal === 'noir' ? 1 : (E.flamme ?? flamme(t)) * (E.lumiere ?? 1);
-      const flou = (cm.flou || 0) > 0.25 && cm.s < 3, ctxE = ecranCtx();
-      const ctx = flou ? mondeCtx() : ctxE;
+      const flou = (cm.flou || 0) > 0.25 && cm.s < 3, demi = flou && cm.flou >= 3, ctxE = ecranCtx();
+      const ctx = demi ? mondeDemiCtx() : flou ? mondeCtx() : ctxE;
       peindre(ctx, E, cm, pal, t, ii, lum);
-      if (flou) flouTirages(ctxE, ctx.canvas, cm.flou, Math.min(12, 2 + Math.ceil(2 * cm.flou / 1.5)), cm.dir || 'x');
-      poserVignette(ctxE, lum, E.vignette ?? 1);
+      if (flou) flouTirages(ctxE, demi ? G.calques.mondeDemi : ctx.canvas, cm.flou, Math.min(12, 2 + Math.ceil(2 * cm.flou / 1.5)), cm.dir || 'x');
+      // cadrages serrés du monde sombre (échelle ≥ 1,4) : le cœur se resserre et les bords s'assombrissent
+      const serre = pal === 'sombre' && E.scene !== 'toile' ? borne((cm.s - 1.3) / 0.1) * (E.coeurSerre ?? 1) : 0;   // fondu entre 1,3 et 1,4 : deux poses du vignettage seulement là
+      poserVignette(ctxE, lum, E.vignette ?? 1, serre);
       majHTML(E);
       return true;
     }
@@ -1957,7 +2083,7 @@ const OM = (() => {
 
     /* ---------- plan 4 : la toile (cœur radial sur le sujet du plan, taches et fibres, grain) ---------- */
     function poserToile(ctx, E, c, pal, M4, ii) {
-      const nom = pal === 'sombre' ? 'clair' : 'nuit', tc = toileCuite(nom), st = STOPS_TOILE[nom];
+      const nom = pal === 'sombre' ? 'clair' : 'nuit', tc = toileCuite(nom, E.scene === 'toile'), st = STOPS_TOILE[nom];
       const coeur = E.coeur || [c.x, c.y], [hx, hy] = Mx.app(M4, coeur[0], coeur[1]);
       const x0 = Math.round(hx - TOILE_W / 2), y0 = Math.round(hy - TOILE_H / 2);
       ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -2015,6 +2141,18 @@ const OM = (() => {
         const ax = Math.max(0, ex0, ox), ay = Math.max(0, oy + p.yMin * k), bx = Math.min(L, ex1, ox + p.w * k), by = Math.min(H, sol + 2, oy + p.h * k);
         if (bx <= ax || by <= ay) continue;
         ctx.drawImage(img, (ax - ox) / k, (ay - oy) / k, (bx - ax) / k, (by - ay) / k, ax, ay, bx - ax, by - ay);
+      }
+      // la balançoire lointaine, seulement si ses deux cordes et sa planche tiennent dans un même carreau de F1
+      if (pal === 'sombre' && maison) {
+        const o = MONDE.ouvertures.F1, b = BAL_LOIN, cx = (o[0] + o[2]) / 2, cy = (o[1] + o[3]) / 2;
+        const X = (x) => M2[0] * x + M2[4], Y = (y) => M2[3] * y + M2[5], x3 = (x) => M3[0] * x + M3[4], y3 = (y) => M3[3] * y + M3[5], mg = 3;
+        const cols = [[X(o[0] + 10), X(cx - 4)], [X(cx + 4), X(o[2] - 10)]], rows = [[Y(o[1] + 10), Y(cy - 4)], [Y(cy + 4), Y(o[3] - 10)]];
+        const dans = (a0, a1, [b0, b1]) => a0 >= b0 + mg && a1 <= b1 - mg;
+        const cx0 = x3(b.planche[0]), cx1 = x3(b.planche[2]), py0 = y3(b.planche[1]), py1 = y3(b.planche[3]);
+        if (cols.some((col) => dans(cx0, cx1, col)) && rows.some((row) => dans(py0, py1, row))) {
+          const sp = balancoireLoin(), q = sp.__pose, k = sigma(0.5, c.s) / q.d;
+          ctx.setTransform(k, 0, 0, k, M3[0] * q.ox + M3[4], M3[3] * q.oy + M3[5]); ctx.drawImage(sp, 0, 0); ctx.setTransform(1, 0, 0, 1, 0, 0);
+        }
       }
       // grain du plan 3 : cuit dans la brume ; posé en plus dans les ouvertures (le ciel vu par la porte et les fenêtres)
       if (maison) for (const o of Object.values(MONDE.ouvertures)) { const a = Mx.app(M2, o[0], o[1]), b = Mx.app(M2, o[2], o[3]); rects.push([a[0], a[1], b[0], b[1]]); }
@@ -2094,16 +2232,33 @@ const OM = (() => {
           }
           poserHalo(ctx, ha.__halo, M2, 0.62 * lum);
         }
-        if (!(ar.pile >= 1 && dore)) dessinerListe(ctx, opsDe('arbre:tronc', () => svgArbre('tronc')), M2);
-        for (const b of [0, 1, 2]) {
-          if (al[b] < 0.99) dessinerListe(ctx, opsDe('arbre:' + b, () => svgArbre(b)), M2);
-          if (al[b] > 0.01) dessinerListe(ctx, opsDe('arbre:' + b, () => svgArbre(b), 'or', BBA), M2, { alpha: al[b], lum });
+        if (dore && np === 60 && al.every((v) => v >= 0.99)) {   // arbre d'or fini : une seule liste, donc un seul sprite (pas de recouvrements)
+          const tout = arbresCuits(`arbre|${nf}`);
+          if (!tout.length) { for (const m of [0, 1, 2].map((b) => opsDe('arbre:' + b, () => svgArbre(b), 'or', BBA)).concat([opsPile, opsFeuilles]))
+            if (m) for (const op of m) tout.push(op);
+            let bx0 = Infinity, by0 = Infinity, bx1 = -Infinity, by1 = -Infinity;
+            for (const m of [0, 1, 2].map((b) => opsDe('arbre:' + b, () => svgArbre(b), 'or', BBA)).concat([opsPile, opsFeuilles])) if (m && m.bb) {
+              bx0 = Math.min(bx0, m.bb[0]); by0 = Math.min(by0, m.bb[1]); bx1 = Math.max(bx1, m.bb[2]); by1 = Math.max(by1, m.bb[3]); }
+            tout.bb = [bx0, by0, bx1, by1]; tout.or = true; }
+          dessinerListe(ctx, tout, M2, { lum });
+        } else {
+          if (!(ar.pile >= 1 && dore)) dessinerListe(ctx, opsDe('arbre:tronc', () => svgArbre('tronc')), M2);
+          for (const b of [0, 1, 2]) {
+            if (al[b] < 0.99) dessinerListe(ctx, opsDe('arbre:' + b, () => svgArbre(b)), M2);
+            if (al[b] > 0.01) dessinerListe(ctx, opsDe('arbre:' + b, () => svgArbre(b), 'or', BBA), M2, { alpha: al[b], lum });
+          }
+          if (opsPile) dessinerListe(ctx, opsPile, M2, { lum });
+          if (opsFeuilles) dessinerListe(ctx, opsFeuilles, M2, { lum });
         }
-        if (opsPile) dessinerListe(ctx, opsPile, M2, { lum });
-        if (opsFeuilles) dessinerListe(ctx, opsFeuilles, M2, { lum });
+      }
+      // les poteaux porte-cartes : hauts seulement quand une carte y est épinglée (E.poteaux : forcer 'haut' ou 'bas')
+      if (vis([5190, 698, 5370, 900])) {
+        const hauts = E.poteaux ? E.poteaux === 'haut' : !!O.dessin2 || (O.dessins || []).some((d) => Math.abs(d.x - 5200) < 40 || Math.abs(d.x - 5360) < 40);
+        dessinerTeinte(ctx, opsDe('poteaux:' + (hauts ? 'h' : 'b'), () => svgPoteaux(hauts), dore ? 'or' : null), M2, lum);
       }
       const ba = E.balancoire || {};
-      if (vis([4560, 300, 4940, 830])) dessinerTeinte(ctx, compilerPose(balancoire(0, 0, 460, ba.angle || 0, C.ombre, 5), dore && ba.or !== false ? 'or' : null), Mx.mul(M2, Mx.tr(4745, 330)), lum);
+      // la balançoire : une seule liste (tracée droite), balancée par la matrice ; son halo est calculé une fois
+      if (vis([4560, 300, 4940, 830])) dessinerTeinte(ctx, compilerPose(balancoire(0, 0, 460, 0, C.ombre, 5), dore && ba.or !== false ? 'or' : null), chaineM(M2, Mx.tr(4745, 330), Mx.rot(ba.angle || 0)), lum);
       // 7. objets posés (derrière les marionnettes)
       const teinteObj = (o) => ((o.or ?? dore) ? 'or' : null);
       // les objets sont tracés à l'origine et posés par la matrice (la liste ne change pas quand ils se déplacent)
@@ -2156,21 +2311,30 @@ const OM = (() => {
           for (const [p0, p1] of tiges) { c.moveTo(p0[0], p0[1]); c.lineTo(p1[0], p1[1]); }
           c.stroke(); c.globalAlpha = 1;
         };
+        // pièces mobiles (horloge) : petites listes tracées à l'angle 0, tournées par la matrice, dans la teinte du corps
+        const pieces = (pl.parties || []).map((q) => [compilerPose(q.svg, te, te ? ops.bb : null), q.m]);
+        const tracerPieces = (c, Mm, alpha) => { for (const [o, m] of pieces) tracerListe(c, o, Mx.mul(Mm, m), { alpha }); };
         const op = a.opacite ?? 1, fl = a.flou || 0;
         if (fl > 0.3) {
           if (ops.or) poserHalo(ctx, haloDe(ops), M, 0.5 * lum * op);
           const r = rectEcran(ops.bb, M, tiges.flat().map((p) => Mx.app(M2, p[0], p[1])));
-          dessinerFlou(ctx, r, fl, op, (c, base) => { tracerListe(c, ops, Mx.mul(base, M)); tracerTiges(c, Mx.mul(base, M2), 1); });
-        } else { dessinerTeinte(ctx, ops, M, lum, op); tracerTiges(ctx, M2, op); }
-        // père effacé et enchaîné : son avant-bras arrière et sa main restent nets, la chaîne garde un point d'attache lisible
-        if (nom === 'pere' && pl.avantBras && (op < 0.95 || fl > 0.3) && E.chaine && E.chaine.visible !== false && a.brasNet !== false)
-          dessinerTeinte(ctx, compilerPose(pl.avantBras(), te), M, lum, 1);
+          dessinerFlou(ctx, r, fl, op, (c, base) => { tracerListe(c, ops, Mx.mul(base, M)); tracerPieces(c, Mx.mul(base, M), 1); tracerTiges(c, Mx.mul(base, M2), 1); });
+        } else { dessinerTeinte(ctx, ops, M, lum, op); tracerPieces(ctx, M, op); tracerTiges(ctx, M2, op); }
+        // père effacé et enchaîné : son bras arrière (épaule, coude, main) reste net, la chaîne garde un point d'attache lisible
+        if (nom === 'pere' && pl.brasB && (op < 0.95 || fl > 0.3) && E.chaine && E.chaine.visible !== false && a.brasNet !== false)
+          dessinerTeinte(ctx, compilerPose(pl.brasB(), te), M, lum, Math.max(op, 0.85));
         if (nom === 'horloge') horlogeLumieres(ctx, M2, pl, a, lum, dore);
       };
       for (const nom of ordre) dessinerActeur(nom);
       if (E.chaine && places.pere && places.horloge && E.chaine.visible !== false) chaineDessin(ctx, M2, places, E, lum, dore);
       // 9. objets devant : feuilles volantes, lettres de papier, oiseaux, poussière
-      for (const p of O.feuilles || []) poser(feuilleSimple(0, 0, p.w || 62, p.h || 84, p.rot || 0, p.flip ?? 1), teinteObj(p), p.x, p.y);
+      // feuilles qui volent (feuille simple qui tourne) ; sol: true, une feuille posée à plat au sol (x, y du sol), le bout relevé
+      for (const p of O.feuilles || []) {
+        if (p.sol) { poser(feuilleSol(p.w || 66, p.flip ?? 1), teinteObj(p), p.x, p.y ?? SOL); continue; }
+        // la feuille qui tourne : tracée droite une fois, tournée et retournée par la matrice (sa liste ne change pas en vol)
+        const fl = p.flip ?? 1, k = Math.abs(fl) < 0.06 ? 0.06 * Math.sign(fl || 1) : fl;
+        dessinerTeinte(ctx, compilerPose(feuilleSimple(0, 0, p.w || 62, p.h || 84, 0, 1), teinteObj(p)), chaineM(M2, Mx.tr(p.x, p.y), Mx.rot(p.rot || 0), Mx.ech(k, 1)), lum);
+      }
       if (O.lettres) lettres(ctx, M2, c, O.lettres, lum);
       if (O.oiseaux) oiseaux(ctx, M2, O.oiseaux, pal, lum);
       if (O.poussiere) for (const p of [].concat(O.poussiere)) poussiere(ctx, M2, p, lum);
@@ -2347,15 +2511,16 @@ const OM = (() => {
         const m = chaineM(mp, Mx.tr(pl.base[0], pl.base[1]));
         const mo = borne(a.orMasque ?? 0), si = borne(a.silhouette || 0);
         if (si > 0) {   // contre-jour : une lueur faible derrière l'horloge découpe sa silhouette (l'anneau se lit comme un cadran)
-          const [sx, sy] = Mx.app(mp, pl.base[0], pl.base[1] - 240), k = 360 * M2[0];
+          const [sx, sy] = Mx.app(mp, pl.base[0], pl.base[1] - 240), k = 250 * M2[0];
           ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = si; ctx.drawImage(contreJour(), sx - k, sy - k, 2 * k, 2 * k); ctx.globalAlpha = 1;
-          tracerListe(ctx, compilerPose(placerHorloge(a, { papier: a.clair ?? 0 }).svg, null), m);   // cadran éteint dans le noir
+          const sil = placerHorloge(a, { papier: a.clair ?? 0 });   // cadran éteint dans le noir
+          tracerListe(ctx, compilerPose(sil.svg, null), m); for (const q of sil.parties) tracerListe(ctx, compilerPose(q.svg, null), Mx.mul(m, q.m));
         }
         if (mo > 0) {
           const ops = compilerPose(pl.svg, 'or');
           const yHaut = -500 * 0.7, yM = yHaut + (4 - yHaut) * courbe('expo.out')(mo);
           ctx.save(); ctx.setTransform(m[0], m[1], m[2], m[3], m[4], m[5]); ctx.beginPath(); ctx.rect(-200, yHaut - 60, 400, yM - yHaut + 60); ctx.clip();
-          dessinerTeinte(ctx, ops, m, 1); ctx.restore();
+          dessinerTeinte(ctx, ops, m, 1); for (const q of pl.parties) tracerListe(ctx, compilerPose(q.svg, 'or', ops.bb), Mx.mul(m, q.m)); ctx.restore();
         }
         horlogeLumieres(ctx, M2, pl, a, 1, false);
       }
@@ -2483,124 +2648,138 @@ const OM = (() => {
 const om = OM.creer(document.getElementById('ref-scene'), 'ref', { palettes: ['sombre', 'noir', 'dore'] });
 const S = OM.MONDE.stations, CA = OM.MONDE.cadrages;
 const camDe = (nom) => OM.cam(CA[nom][0], CA[nom][1], CA[nom][2]);
-/* phrase de démo : [mot clé en boîte] (plusieurs mots possibles), {mot souligné d'or} ; tous les mots posés */
+/* phrase de démo : [mot clé en boîte] (plusieurs mots possibles), {mot souligné d'or} ; tous les mots posés. La ponctuation
+   qui suit une boîte reste hors de la boîte (mot « colle ») ; en fin de phrase elle tombe (frame.md key-box : pas de point
+   final collé à la boîte quand le mot clé finit la ligne) */
 function phrase(txt) {
   const mots = []; let boite = null, n = 0;
-  for (let tok of txt.split(' ')) {
-    let trait = false;
+  const toks = txt.split(' ');
+  toks.forEach((tok0, k) => {
+    let tok = tok0, trait = false, apres = '';
     if (tok.startsWith('[')) { boite = 'b' + (++n); tok = tok.slice(1); }
-    const fin = tok.includes(']'); tok = tok.replace(']', '');
+    const fin = tok.includes(']');
+    if (fin) { apres = tok.slice(tok.indexOf(']') + 1); tok = tok.slice(0, tok.indexOf(']')); }
     if (tok.startsWith('{')) { trait = true; tok = tok.replace(/[{}]/g, ''); }
     mots.push({ m: tok, t: 0, boite: boite || undefined, trait });
-    if (fin) boite = null;
-  }
+    if (fin) { boite = null; if (apres && k < toks.length - 1) mots.push({ m: apres, t: 0, colle: true }); }
+  });
   return [{ sortie: [100, 101], mots }];
 }
-/* mot de lettres de papier centré à l'écran (84 px), baseline à l'écran */
-function motCentre(texte, c, base, o) {
-  const T = 84 / c.s, lw = OM.largeurMot(texte, T);
-  return Object.assign({ texte, x: c.x - lw / 2, y: c.y + (base - 540) / c.s, taille: T, deplie: 9 }, o);
+/* deux mots de lettres de papier (84 px au cadrage c) en mobile : initiales sur un même axe, le second mot pendu au premier
+   (pendA), le bloc centré à l'écran sur cx ; base1, base2 : lignes de base à l'écran */
+function blocLettres(m1, m2, c, base1, base2, o = {}) {
+  const T = 84 / c.s, a = OM.mesurerMot(m1, T), b = OM.mesurerMot(m2, T);
+  const dx2 = (a.wI - b.wI) / 2, g = Math.min(0, dx2), d = Math.max(a.largeur, dx2 + b.largeur);
+  const x0 = c.x + ((o.cx ?? 960) - 960) / c.s - (g + d) / 2;
+  return [Object.assign({ texte: m1, x: x0, y: c.y + (base1 - 540) / c.s, taille: T, deplie: 9 }, o.l1),
+    Object.assign({ texte: m2, x: x0 + dx2, y: c.y + (base2 - 540) / c.s, taille: T, deplie: 9, pendA: 0 }, o.l2)];
 }
 const poussiere = (x0, y0, x1, y1, n, graine, t = 2, o = {}) => Object.assign({ x0, y0, x1, y1, n, graine, t }, o);
 /* les pièces communes de la cuisine du monde sombre */
-const pileTable = (n = 12) => ({ x: 2230, y: 760, n, w: 130, seed: 7 });
+const pileTable = (n = 12) => ({ x: 2220, y: 760, n, w: 130, seed: 7 });
 const pereTable = (o) => Object.assign({ x: S.pereCuisine[0], pose: 'assis-feuille', flip: -1, tient: { devis: {} } }, o);
-const epingles = [{ x: 2604, y: 632, w: 72, h: 94, rot: -6, punaise: true }, { x: 2640, y: 646, w: 72, h: 94, rot: 5, punaise: true }, { x: 2620, y: 640, w: 74, h: 96, rot: -2, punaise: true }];
+// les devis épinglés sur le dessin, à 50 u au moins du cadre de F2
+const epingles = [{ x: 2572, y: 632, w: 72, h: 94, rot: -6, punaise: true }, { x: 2606, y: 646, w: 72, h: 94, rot: 5, punaise: true }, { x: 2590, y: 640, w: 74, h: 96, rot: -2, punaise: true }];
 const toutesOr = { E: { voile: 0, or: 1 }, S: { voile: 0, or: 1 }, K: { voile: 0, or: 1 }, P: { voile: 0, or: 1 }, B: { voile: 0, or: 1 }, F: { voile: 0, or: 1 }, G: { voile: 0, or: 1 } };
 const arbreOr = { pile: 1, or: 1, feuilles: 1 };
+const brasRentres = { armL: [-4, 4], armR: [4, -4] };   // les deux bras de l'horloge contre son ventre (embrasure, passage serré)
 
 const DEMOS = {
   /* ---------- les 19 cadrages de référence (frame.md § framings), image clé du storyboard ---------- */
-  porte: { titre: 'Porte, le père entre (séq. 1, 1,90)', etat: () => ({ cam: camDe('porte'), coeur: [640, 690],
+  porte: { titre: 'Porte, le père entre (séq. 1, 1,90)', etat: () => ({ cam: camDe('porte'), coeur: [560, 690],
     porte: { angle: 112, lumiere: 1 }, manteau: 3, pere: { x: 700, pose: 'pile', tient: { pile: 13 } }, fille: { x: S.filleSalon[0], pose: 'assise-sol' },
-    objets: { balle: { x: S.balle[0], y: S.balle[1] }, piles: [{ x: 573, y: 900, n: 1, w: 94, h: 4, seed: 9 }] },
+    objets: { balle: { x: S.balle[0], y: S.balle[1] }, feuilles: [{ x: 560, sol: true, w: 66 }] },
     plan1: ['montant'], phrases: phrase('Ce [dirigeant] ramenait le {travail} à la maison.') }) },
-  entree: { titre: 'Entrée, le Temps perdu passe la porte (séq. 1, 4,20)', etat: () => ({ cam: camDe('entree'), coeur: [620, 690],
+  entree: { titre: 'Entrée, le Temps perdu passe la porte (séq. 1, 4,20)', etat: () => ({ cam: camDe('entree'), coeur: [560, 690],
     porte: { angle: 112, lumiere: 0.5, soir: 0.12 }, manteau: -2,
     pere: { x: 836, pose: 'marche-pile', phase: 0.15, tient: { pile: 13 } },
-    horloge: { x: 612, roue: 30, balancier: 10, minute: 160, heure: -40, penche: -3, armL: [40, -40], armR: [-60, 20] }, chaine: { tension: 0.8 },
-    fille: { x: S.filleSalon[0], pose: 'assise-sol' }, objets: { balle: { x: S.balle[0], y: S.balle[1] }, piles: [{ x: 573, y: 900, n: 1, w: 94, h: 4, seed: 9 }] },
+    horloge: Object.assign({ x: 612, roue: 30, balancier: 10, minute: 160, heure: -40, penche: -3 }, brasRentres), chaine: { tension: 0.8 },
+    fille: { x: S.filleSalon[0], pose: 'assise-sol' }, objets: { balle: { x: S.balle[0], y: S.balle[1] } },
     plan1: ['montant', { nom: 'portemanteau', x: 1064 }], phrases: phrase('Derrière lui, le [Temps perdu] passa la porte.') }) },
-  'fille-fenetre': { titre: 'Salon, la fille et sa balle (séq. 2, 1,10)', etat: () => ({ cam: camDe('fille-fenetre'), coeur: [1080, 700],
+  'fille-fenetre': { titre: 'Salon, la fille et sa balle (séq. 2, 1,10)', etat: () => ({ cam: camDe('fille-fenetre'), coeur: [1080, 640],
     fille: { x: 1078, pose: 'genoux-balle', flip: -1, tient: { balle: true } },
-    pere: { x: 930, pose: 'marche-pile', phase: 0.3, tient: { pile: 13 } },
+    pere: { x: 858, pose: 'marche-pile', phase: 0.3, tient: { pile: 13 } },
     horloge: { x: 660, roue: 80, balancier: -6 }, chaine: { tension: 0.3 },
     plan1: [{ nom: 'cloisonES', x: 740 }], phrases: phrase("Sa fille l'attendait pour [jouer].") }) },
-  secretaire: { titre: 'Le père au secrétaire (séq. 2, 3,10)', etat: () => ({ cam: camDe('secretaire'), coeur: [1430, 690],
-    pere: { x: S.pereSalon[0], pose: 'assis-dossier', flip: -1, mains: { F: [1412, 744] } },
-    horloge: { x: S.horlogeSalon[0], balancier: 4 }, chaine: { tension: 0.2 },
-    objets: { piles: [{ x: 1368, y: 770, n: 9, w: 56, seed: 5 }], dossier: { x: 1424, y: 770 }, balle: { x: 1458, y: 874, rot: 30 } },
+  secretaire: { titre: 'Le père au secrétaire (séq. 2, 3,10)', etat: () => ({ cam: camDe('secretaire'), coeur: [1300, 680],
+    pere: { x: S.pereSalon[0], pose: 'assis-dossier', flip: -1, mains: { F: [1398, 744] } },
+    horloge: Object.assign({ x: S.horlogeSalon[0], balancier: 4 }, { armL: [-4, 4] }), chaine: { tension: 0.5, longueur: 220 },
+    objets: { piles: [{ x: 1314, y: 770, n: 9, w: 46, seed: 5 }], dossier: { x: 1388, y: 770 }, balle: { x: S.balleChaise[0], y: S.balleChaise[1], rot: 30 } },
     plan1: [{ nom: 'fauteuil', x: 1150 }], phrases: phrase('Lui, il ouvrit un [dossier].') }) },
-  'horloge-salon': { titre: "L'horloge prend une heure (séq. 2, 4,90)", etat: () => ({ cam: camDe('horloge-salon'), coeur: [1580, 690],
+  'horloge-salon': { titre: "L'horloge prend une heure (séq. 2, 4,90)", etat: () => ({ cam: camDe('horloge-salon'), coeur: [1560, 680],
     cases: { S: 0.3 }, lampes: { L1: 0.5 },
-    pere: { x: S.pereSalon[0], pose: 'assis-dossier', flip: -1, mains: { F: [1412, 744] } },
-    horloge: { x: S.horlogeSalon[0], penche: -5, balancier: -14, minute: 250, heure: -30, mains: { L: [1530, 712] }, armR: [-30, 20] }, chaine: { tension: 0.1 },
-    objets: { piles: [{ x: 1368, y: 770, n: 9, w: 56, seed: 5 }], dossier: { x: 1424, y: 770 }, balle: { x: 1458, y: 874, rot: 30 } },
+    pere: { x: S.pereSalon[0], pose: 'assis-dossier', flip: -1, mains: { F: [1398, 744] } },
+    horloge: { x: S.horlogeSalon[0], penche: -10, balancier: -14, minute: 250, heure: -30, mains: { L: [1474, 746] }, armR: [4, -4] }, chaine: { tension: 0.5, longueur: 220 },
+    objets: { piles: [{ x: 1314, y: 770, n: 9, w: 46, seed: 5 }], dossier: { x: 1388, y: 770 }, balle: { x: S.balleChaise[0], y: S.balleChaise[1], rot: 30 } },
     plan1: [{ nom: 'cloisonSK', x: 1885 }], phrases: phrase('Le Temps perdu lui prit [une heure].') }) },
-  tabouret: { titre: 'Cuisine, la fille au tabouret (séq. 3, 1,10)', etat: () => ({ cam: camDe('tabouret'), coeur: [1960, 700],
+  tabouret: { titre: 'Cuisine, la fille au tabouret (séq. 3, 1,10)', etat: () => ({ cam: camDe('tabouret'), coeur: [1960, 680],
     cases: { S: 0.45 }, lampes: { L1: 0.5 },
     fille: { x: S.tabouret[0], pose: 'tabouret', flip: -1, tient: { feuille: { trait: 0.6 }, crayon: true } },
-    pere: { x: 1790, pose: 'marche-pile', phase: 0.6, tient: { pile: 13 } },
+    pere: { x: 1700, pose: 'marche-pile', phase: 0.6, tient: { pile: 13 } },
     horloge: { x: 1560, roue: 200, balancier: 6 }, chaine: { tension: 0.6 },
     plan1: [{ nom: 'cloisonSK', x: 1660 }], phrases: phrase("Elle l'attendait pour [dessiner].") }) },
-  table: { titre: 'Le père à la table, ses devis (séq. 3, 3,00)', etat: () => ({ cam: camDe('table'), coeur: [2330, 690],
-    pere: pereTable(), horloge: { x: 2762, roue: 140, balancier: -4 }, chaine: { tension: 0.1 },
+  table: { titre: 'Le père à la table, ses devis (séq. 3, 3,00)', etat: () => ({ cam: camDe('table'), coeur: [2330, 680],
+    pere: pereTable(), horloge: { x: S.horlogeCuisine[0], roue: 140, balancier: -4 }, chaine: { tension: 0.1 },
     objets: { piles: [pileTable()], dessins: [{ x: S.dessin[0], y: S.dessin[1] }] },
     plan1: ['casseroles'], phrases: phrase('Lui, il ouvrit ses [devis].') }) },
-  'horloge-f2': { titre: "L'horloge devant F2, la soirée (séq. 3, 5,30)", etat: () => ({ cam: camDe('horloge-f2'), coeur: [2780, 690],
+  'horloge-f2': { titre: "L'horloge devant F2, la soirée (séq. 3, 5,30)", etat: () => ({ cam: camDe('horloge-f2'), coeur: [2780, 660],
     cases: { K: 0.5 }, lampes: { L2: 0.5 }, F2: { nuit: 1 },
     horloge: { x: S.horlogeCuisine[0], balancier: 12, minute: 330, heure: 60 }, pere: pereTable(), chaine: { tension: 0.1 },
-    fille: { x: 2904, pose: 'marche-tete-basse', phase: 0.3 },
+    fille: { x: 2914, pose: 'marche-tete-basse', phase: 0.3 },
     objets: { piles: [pileTable()], dessins: [{ x: S.dessin[0], y: S.dessin[1] }] },
-    plan1: ['rampe'], phrases: phrase('Le Temps perdu lui prit [la soirée].') }) },
-  marche: { titre: 'La fille sur la marche, Interminable Attente (séq. 4, 3,50)', etat: () => { const c = camDe('marche'); return { cam: c, coeur: [3060, 680],
-    cases: { K: 0.5 }, lampes: { L2: 0.5 }, F2: { nuit: 1 },
+    plan1: [{ nom: 'rampe', x: 2950 }], phrases: phrase('Le Temps perdu lui prit [la soirée].') }) },
+  marche: { titre: 'La fille sur la marche, Interminable Attente (séq. 4, 3,50)', etat: () => { const c = camDe('marche'); return { cam: c, coeur: [3060, 640],
+    cases: { K: { voile: 0.5, trou: [3090, 560, 560, 0.9] } }, lampes: { L2: 0.5 }, F2: { nuit: 1 },
     fille: { x: 3046, y: S.marche[1], pose: 'menton', flip: -1 }, pere: pereTable(), horloge: { x: S.horlogeCuisine[0], balancier: -10 }, chaine: { tension: 0.1 },
-    objets: { piles: [pileTable()], dessins: [{ x: S.dessin[0], y: S.dessin[1] }], lettres: [motCentre('Interminable', c, 300, { filHaut: 438 }), motCentre('Attente', c, 404, { trait: 1, filHaut: 438 })] },
-    plan1: [{ nom: 'rampe', x: 3520 }], phrases: phrase('Pour sa fille, [IA] voulait dire') }; } },
+    objets: { piles: [pileTable()], dessins: [{ x: S.dessin[0], y: S.dessin[1] }],
+      lettres: blocLettres('Interminable', 'Attente', c, 300, 404, { cx: 990, l1: { filHaut: 438 }, l2: { trait: 1 } }) },
+    plan1: [{ nom: 'rampe', x: 3300 }], phrases: phrase('Pour sa fille, [IA] voulait dire') }; } },
   cuisine: { titre: 'La cuisine entière, il s\'effaçait (séq. 5, 1,95)', etat: () => ({ cam: camDe('cuisine'), coeur: [2640, 640],
     cases: { K: 0.55 }, lampes: { L2: 0.4 }, F2: { nuit: 1 },
     pere: pereTable({ echelle: 1.16, flou: 4, opacite: 0.6 }), horloge: { x: S.horlogeCuisine[0], balancier: 0 }, chaine: { tension: 0.15 },
     fille: { x: 3046, y: S.marche[1], pose: 'menton', flip: -1 },
     objets: { piles: [pileTable(20)], dessins: [{ x: S.dessin[0], y: S.dessin[1] }], devis: epingles },
     plan1: [{ nom: 'cloisonSK', x: 1925 }, { nom: 'rampe', x: 3400 }], phrases: phrase("Soir après soir, il [s'effaçait].") }) },
-  'pere-fille': { titre: 'Gag muet, la main devant son visage (séq. 5, 3,50)', etat: () => ({ cam: camDe('pere-fille'), coeur: [2520, 690],
+  'pere-fille': { titre: 'Gag muet, la main devant son visage (séq. 5, 3,50)', etat: () => ({ cam: camDe('pere-fille'), coeur: [2520, 680],
     cases: { K: 0.55 }, lampes: { L2: 0.4 }, F2: { nuit: 1 },
-    pere: pereTable({ echelle: 1.25, flou: 6, opacite: 0.4 }), fille: { x: 2382, pose: 'agite' },
+    // le père effacé, moins agrandi (×1,08) et tête penchée sur sa feuille ; elle saute sur place pour agiter la main devant son visage
+    pere: pereTable({ echelle: 1.08, flou: 6, opacite: 0.4, tete: 20 }), fille: { x: 2380, y: 840, pose: 'agite', legF: [-34, 52], legB: [-8, 44], mains: { F: [2434, 586] } },
     horloge: { x: S.horlogeCuisine[0], balancier: -18 }, chaine: { tension: 0.15 },
     objets: { piles: [pileTable(20)], dessins: [{ x: S.dessin[0], y: S.dessin[1] }], devis: epingles },
     plan1: ['casseroles', { nom: 'rampe', x: 3123 }], phrases: [] }) },
-  dessin: { titre: 'Le petit dinosaure retrouvé (séq. 6, 1,50)', etat: () => ({ cam: camDe('dessin'), coeur: [2600, 680],
+  dessin: { titre: 'Le petit dinosaure retrouvé (séq. 6, 1,50)', etat: () => ({ cam: camDe('dessin'), coeur: [2580, 660],
     cases: { K: 0.55 }, lampes: { L2: 0.4 }, F2: { nuit: 1 },
-    pere: pereTable({ echelle: 1.25, flou: 6, opacite: 0.4 }), fille: { x: 2560, pose: 'pointe-pieds', mains: { F: [2604, 606], B: [2596, 618] } },
-    horloge: { x: S.horlogeCuisine[0], balancier: 0 }, chaine: { tension: 0.15 },
+    // elle tire sur la pointe des pieds, du côté de l'horloge ; la chaîne, longue et molle, passe sous sa robe
+    pere: pereTable({ echelle: 1.25, flou: 6, opacite: 0.4 }), fille: { x: 2604, pose: 'pointe-pieds', flip: -1, pointe: 14, mains: { F: [2606, 628], B: [2588, 642] } },
+    horloge: { x: S.horlogeCuisine[0], balancier: 0 }, chaine: { tension: 0.1, longueur: 420 },
     objets: { piles: [pileTable(20)], dessins: [{ x: S.dessin[0], y: S.dessin[1], reflet: 0.45 }],
-      feuilles: [{ x: 2664, y: 600, w: 70, h: 92, rot: 28, flip: 0.7 }, { x: 2560, y: 790, w: 70, h: 92, rot: 62, flip: -0.45 }, { x: 2486, y: 872, w: 70, h: 92, rot: 96, flip: 0.25 }] },
+      feuilles: [{ x: 2520, y: 560, w: 70, h: 92, rot: -28, flip: 0.7 }, { x: 2480, y: 700, w: 70, h: 92, rot: 62, flip: -0.55 }, { x: 2546, sol: true, w: 70 }] },
     plan1: ['casseroles'], phrases: phrase('Alors elle retrouva leur [petit dinosaure].') }) },
-  chaine: { titre: 'Il voit la chaîne, le reflet d\'or (séq. 6, 5,45)', etat: () => ({ cam: camDe('chaine'), coeur: [2760, 690],
+  chaine: { titre: 'Il voit la chaîne, le reflet d\'or (séq. 6, 5,45)', etat: () => ({ cam: camDe('chaine'), coeur: [2760, 680],
     cases: { K: 0.5 }, lampes: { L2: 0.7 }, lumiere: 0.97, F2: { nuit: 1 },
-    pere: pereTable({ pose: 'assis-dessin', armB: [26, 14], tient: { devis: {}, dessin: {} } }), fille: { x: 2382, pose: 'debout' },
+    // la fille, qui lui a glissé le dessin, est restée au bout de la table, hors du cadre à gauche
+    pere: pereTable({ pose: 'assis-dessin', armB: [26, 14], tient: { devis: {}, dessin: {} } }),
     horloge: { x: S.horlogeCuisine[0], balancier: 0 }, chaine: { tension: 1, reflet: 0.55 },
     objets: { piles: [pileTable(20)] }, plan1: [{ nom: 'rampe', x: 3202 }], phrases: phrase('Enfin, il vit la [chaîne].') }) },
   cadran: { titre: 'Le cadran dans le noir s\'allume (séq. 7, 2,00)', etat: () => ({ cam: camDe('cadran'), palette: 'noir',
-    horloge: { x: S.horlogeCuisine[0], heure: 0, minute: 0, balancier: 0, cadranOr: 1, lisere: 0.25, etincelle: 0.6 },
-    objets: { fumee: { x: 2716, y: 640, a: 0.12, t: 0.6, s: 0.35 } }, phrases: phrase('Le Temps perdu eut alors une [idée].') }) },
-  'cuisine-doree': { titre: 'Cuisine dorée, la chaîne éclate (séq. 8, 2,00)', etat: () => ({ cam: camDe('cuisine-doree'), palette: 'dore', coeur: [2620, 660],
+    horloge: { x: S.horlogeCuisine[0], heure: 0, minute: 0, balancier: 0, cadranOr: 1, lisere: 0.25, etincelle: 0.6, silhouette: 0.15 },
+    objets: { fumee: { x: 2640, y: 706, a: 0.12, t: 0.6, s: 0.35 } }, phrases: phrase('Le Temps perdu eut alors une [idée].') }) },
+  'cuisine-doree': { titre: 'Cuisine dorée, la chaîne éclate (séq. 8, 2,00)', etat: () => ({ cam: camDe('cuisine-doree'), palette: 'dore', coeur: [2600, 660],
     cases: { K: { voile: 0.12, or: 0 } }, lampes: { L2: 1 },
-    horloge: { x: 2440, balancier: 8, engr: 120, mains: { L: [2318, 744] }, armR: [-40, 20] },
-    pere: { x: 2604, pose: 'leve', flip: -1 }, fille: { x: 3046, y: S.marche[1], pose: 'menton', flip: -1 },
-    objets: { piles: [{ x: 2206, y: 760, n: 11, w: 120, seed: 7 }, { x: 2342, y: 760, n: 5, w: 70, seed: 11, or: true }],
-      oiseaux: Array.from({ length: 12 }, (_, i) => ({ x: 2560 + i * 26 + (i % 3) * 8, y: 700 - i * 15 - 18 * Math.sin(i * 1.7), s: 0.9 + (i % 4) * 0.08, pose: i % 3, rot: -14 })),
+    horloge: { x: 2510, balancier: 8, engr: 120, mains: { L: [2412, 754] } },
+    pere: { x: 2640, pose: 'leve', flip: -1 }, fille: { x: 3046, y: S.marche[1], pose: 'menton', flip: -1 },
+    objets: { piles: [{ x: 2196, y: 760, n: 11, w: 120, seed: 7 }, { x: 2324, y: 760, n: 5, w: 64, seed: 11, or: true }],
+      oiseaux: Array.from({ length: 12 }, (_, i) => ({ x: 2640 + i * 24 + (i % 3) * 8, y: 560 - i * 12 - 16 * Math.sin(i * 1.7), s: 0.9 + (i % 4) * 0.08, pose: i % 3, rot: -14 })),
       poussiere: poussiere(2100, 420, 3200, 900, 80, 11, 2) },
     plan1: ['casseroles'], phrases: phrase("L'horloge se mit au travail [pour lui].") }) },
   arbre: { titre: 'Le tronc d\'or, la balançoire poussée (séq. 9, 1,80)', etat: () => ({ cam: camDe('arbre'), palette: 'dore', coeur: [4560, 620],
     arbre: { pile: 1, or: 1, feuilles: 0.25 }, balancoire: { angle: 5 },
-    fille: { pose: 'balancoire' }, pere: { x: 4590, pose: 'pousse' }, horloge: { x: S.horlogeArbre[0], balancier: 5 },
-    objets: { piles: [{ x: 4212, y: 900, n: 6, w: 80, seed: 13, or: true }], poussiere: [poussiere(3900, 200, 5200, 900, 90, 17, 3), poussiere(4700, 700, 4800, 840, 14, 5, 1)] },
+    fille: { pose: 'balancoire' }, pere: { x: 4555, pose: 'pousse' }, horloge: Object.assign({ x: S.horlogeArbre[0], balancier: 5 }, { armR: [4, -4] }),
+    objets: { piles: [{ x: 4122, y: 900, n: 6, w: 56, seed: 13, or: true }], poussiere: [poussiere(3900, 200, 5200, 900, 90, 17, 3), poussiere(4700, 700, 4800, 840, 14, 5, 1)] },
     plan1: ['herbes', 'branche'], phrases: phrase('Le soir suivant, il poussait la [balançoire].') }) },
-  cloture: { titre: 'La clôture, le second dinosaure (séq. 9, 4,80)', etat: () => ({ cam: camDe('cloture'), palette: 'dore', coeur: [5280, 700],
+  cloture: { titre: 'La clôture, le second dinosaure (séq. 9, 4,80)', etat: () => ({ cam: camDe('cloture'), palette: 'dore', coeur: [5250, 700],
     arbre: arbreOr, balancoire: { angle: -6 },
-    pere: { x: 5010, pose: 'genou' }, fille: { x: 5112, pose: 'genou', mains: { F: [5164, 760] } }, horloge: { x: S.horlogeCloture[0], balancier: 6 },
+    pere: { x: 4960, pose: 'genou', mains: { F: [5034, 810] } }, fille: { x: 5088, pose: 'genou', mains: { F: [5134, 772] } }, horloge: { x: S.horlogeCloture[0], balancier: 6 },
     objets: { dessins: [{ x: S.carte1[0], y: S.carte1[1], rot: -4 }], dessin2: { x: S.carte2[0], y: S.carte2[1], rot: 3, progres: 1, halo: 0.8 },
       poussiere: poussiere(4900, 400, 5700, 900, 60, 23, 4) },
     plan1: ['herbes', { nom: 'branche', x: 4980 }], phrases: phrase('un [second dinosaure].') }) },
@@ -2608,39 +2787,41 @@ const DEMOS = {
     arbre: arbreOr, balancoire: { angle: -10 },
     pere: { x: 5046, pose: 'debout' }, fille: { x: 5124, pose: 'mains', flip: -1 }, horloge: { x: S.horlogeCloture[0], balancier: -6 },
     objets: { dessins: [{ x: S.carte1[0], y: S.carte1[1], rot: -4 }], dessin2: { x: S.carte2[0], y: S.carte2[1], rot: 3, progres: 1 },
-      lettres: [motCentre('Intelligence', c, 262, { or: true, filHaut: 300 }), motCentre('Artificielle', c, 354, { or: true, trait: 1, filHaut: 300 })],
+      lettres: blocLettres('Intelligence', 'Artificielle', c, 288, 380, { l1: { or: true, filHaut: 300 }, l2: { or: true, trait: 1 } }),
       poussiere: poussiere(4800, 250, 5800, 900, 70, 29, 2) },
     plan1: ['herbes', 'branche'], phrases: phrase('Désormais, [IA] voulait dire') }; } },
   'monde-releve': { titre: 'Tout le monde relevé, 10 h (séq. 11, 2,40)', etat: () => ({ cam: camDe('monde-releve'), palette: 'dore', coeur: [2850, 260],
     cases: toutesOr, arbre: arbreOr, balancoire: { angle: -12 },
     pere: { x: S.famille[0], pose: 'epaules' }, fille: { x: S.famille[0] - 6, y: 572, pose: 'epaules', siege: 0, tiges: false },
     horloge: { x: S.horlogeCloture[0], balancier: 10 },
-    objets: { piles: [{ x: 2206, y: 760, n: 4, w: 120, seed: 7 }], dessins: [{ x: S.carte1[0], y: S.carte1[1], rot: -4 }], dessin2: { x: S.carte2[0], y: S.carte2[1], rot: 3, progres: 1 },
+    objets: { piles: [{ x: 2196, y: 760, n: 4, w: 120, seed: 7 }], dessins: [{ x: S.carte1[0], y: S.carte1[1], rot: -4 }], dessin2: { x: S.carte2[0], y: S.carte2[1], rot: 3, progres: 1 },
       poussiere: [poussiere(100, -200, 3500, 900, 160, 31, 2), poussiere(3600, -100, 6000, 900, 120, 37, 2)] },
     preuve: { visible: 1, valeur: 10, arrivee: 1, pose: 1, lignes: [9, 9] }, plan1: [], phrases: [] }) },
   /* ---------- palettes et moments ---------- */
   noir: { titre: 'Le noir : le cadran seul (séq. 7, 0,00)', etat: () => ({ cam: OM.cam(2780, 690, 1.76), palette: 'noir',
-    horloge: { x: S.horlogeCuisine[0], heure: -40, minute: 160, balancier: 0, lisere: 0.15 },
-    objets: { fumee: { x: 2700, y: 690, a: 0.12, t: 0, s: 0.35 } }, phrases: [] }) },
+    horloge: { x: S.horlogeCuisine[0], heure: -40, minute: 160, balancier: 0, lisere: 0.15, silhouette: 0.15 },
+    objets: { fumee: { x: 2614, y: 779, a: 0.12, t: 0, s: 0.35 } }, phrases: [] }) },
   'cadran-or': { titre: "L'horloge passée en or dans le noir (séq. 7, 2,75)", etat: () => ({ cam: OM.cam(2780, 650, 2.0), palette: 'noir',
     horloge: { x: S.horlogeCuisine[0], heure: 0, minute: 0, balancier: 18, cadranOr: 1, orMasque: 1, engr: 40 },
-    objets: { poussiere: poussiere(2660, 520, 2900, 880, 24, 3, 0.4), fumee: { x: 2690, y: 600, a: 0.06, t: 2.7, s: 0.35 } }, phrases: [] }) },
+    objets: { poussiere: poussiere(2660, 520, 2900, 880, 24, 3, 0.4), fumee: { x: 2648, y: 721, a: 0.06, t: 2.7, s: 0.35 } }, phrases: [] }) },
   'cuisine-or': { titre: 'La cuisine rallumée en or, les devis s\'envolent (séq. 8, 2,80)', etat: () => {
-    const pere = { x: 2884, pose: 'tend-main' }, pp = OM.placerPere(pere);
+    const pere = { x: 2906, pose: 'tend-main', mains: { F: [2972, 694] } };
     return { cam: OM.cam(2720, 670, 1.45), palette: 'dore', coeur: [2700, 640], cases: { K: { voile: 0, or: 1 } }, lampes: { L2: 1 },
-      horloge: { x: 2440, balancier: -8, engr: 200, mains: { L: [2318, 744] } }, pere, fille: { x: 2992, y: 862, pose: 'saute', flip: -1, mains: { F: pp.mF } },
-      objets: { piles: [{ x: 2206, y: 760, n: 5, w: 120, seed: 7 }],
-        feuilles: Array.from({ length: 12 }, (_, i) => ({ x: 2330 + i * 46, y: 712 - 150 * Math.sin(Math.PI * i / 24) - (i % 2) * 14, w: 38, h: 50, rot: -20 + i * 9, flip: Math.cos(i * 1.3) })),
+      horloge: { x: 2510, balancier: -8, engr: 200, mains: { L: [2412, 754] } }, pere, fille: { x: 3012, y: 792, pose: 'saute', flip: -1, mains: { F: [2980, 690] } },
+      objets: { piles: [{ x: 2196, y: 760, n: 5, w: 120, seed: 7 }],
+        // la file de feuilles : de la pile, en arc au-dessus du cadran, jusque dans la vitre de F2 (jamais vers le père)
+        feuilles: Array.from({ length: 12 }, (_, i) => { const u = i / 11;
+          return { x: 2250 + 520 * u, y: 716 - 262 * Math.sin(Math.PI * u * 0.82), w: 38, h: 50, rot: -20 + i * 9, flip: (i % 2 ? -1 : 1) * (0.5 + 0.45 * Math.abs(Math.cos(i * 1.3))) }; }),
         poussiere: [poussiere(1800, 440, 3420, 900, 110, 41, 1.2)] },
       plan1: [{ nom: 'rampe', x: 3330 }], phrases: phrase("Tout [s'automatisait].") }; } },
   'jardin-or': { titre: "Le jardin d'or (à comparer à C3)", etat: () => ({ cam: OM.cam(4600, 560, 1.0), palette: 'dore', coeur: [4560, 600],
-    arbre: arbreOr, balancoire: { angle: -6 }, fille: { pose: 'balancoire' }, pere: { x: 4628, pose: 'pousse' },
-    horloge: { x: S.horlogeArbre[0], balancier: -6, mains: { R: [4196, 806] } },
-    objets: { piles: [{ x: 4212, y: 900, n: 7, w: 90, seed: 31, or: true }], poussiere: [poussiere(3800, 0, 5500, 900, 120, 43, 3)] },
+    arbre: arbreOr, balancoire: { angle: -6 }, fille: { pose: 'balancoire' }, pere: { x: 4590, pose: 'pousse' },
+    horloge: Object.assign({ x: S.horlogeArbre[0], balancier: -6 }, { armR: [4, -4] }),
+    objets: { piles: [{ x: 4122, y: 900, n: 7, w: 56, seed: 31, or: true }], poussiere: [poussiere(3800, 0, 5500, 900, 120, 43, 3)] },
     plan1: ['herbes'], phrases: phrase('Le soir suivant, il poussait la [balançoire].') }) },
   'maison-relevee': { titre: 'La maison relevée, les sept cases en or (séq. 11, 1,83)', etat: () => ({ cam: OM.cam(1765, 400, 0.52), palette: 'dore', coeur: [1765, 420],
-    cases: toutesOr, horloge: { x: 2440, balancier: 6, engr: 60 },
-    objets: { piles: [{ x: 2206, y: 760, n: 5, w: 120, seed: 7 }], poussiere: [poussiere(60, -150, 3480, 900, 170, 47, 1.5)] }, plan1: [], phrases: [] }) },
+    cases: toutesOr, horloge: { x: 2510, balancier: 6, engr: 60 },
+    objets: { piles: [{ x: 2196, y: 760, n: 5, w: 120, seed: 7 }], poussiere: [poussiere(60, -150, 3480, 900, 170, 47, 1.5)] }, plan1: [], phrases: [] }) },
   fin: { titre: 'La carte de fin, le clic (séq. 12, 1,85)', etat: () => ({ scene: 'toile', cam: OM.cam(960, 540, 1), coeur: [960, 470],
     fin: { visible: 1, signature: 1, formateur: 1, bouton: 1, pression: 0.6, couleur: 0.3, adresses: 1, curseur: { x: 1132, y: 652 }, onde: 0.35 },
     objets: { poussiere: [poussiere(160, 0, 1760, 1000, 46, 5, 2.7, { sens: -1, alpha: 0.7 })], oiseaux: [{ x: 1590, y: 170, s: 1.3, pose: 0, flip: -1, or: true }] },

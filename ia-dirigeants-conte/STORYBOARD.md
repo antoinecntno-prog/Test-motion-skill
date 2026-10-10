@@ -54,7 +54,7 @@ patterns: ../patterns/STORYBOARD-CRAFT.md, ../patterns/PATTERNS.md
 - scene: Dans l'entrée allumée de la maison en coupe, la porte s'ouvre sur le soir et le père entre de profil, la pile de devis sous le bras ; derrière lui l'horloge du Temps perdu paraît dans l'encadrement, roule dans la pièce, la chaîne de papier tendue de son balancier au poignet du père, puis la porte se referme et la caméra part en whip vers le salon
 - duration: 5.25s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/01-porte.html
 - voiceover: "Ce dirigeant ramenait le travail à la maison. Derrière lui, le Temps perdu passa la porte."
 - type: hook
@@ -91,7 +91,7 @@ Scene 2 (2.30 à 5.25 s) : P2, le Temps perdu passe la porte, la chaîne
 - scene: Au salon, la fille assise près de la fenêtre lève sa balle vers son père qui passe devant elle sans tourner la tête ; la balle roule jusqu'à sa chaise ; il s'assied au secrétaire et ouvre un dossier ; l'horloge se penche sur son épaule, sa grande aiguille fait un tour ; la case du salon s'éteint de deux crans ; whip vers la cuisine
 - duration: 5.51s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/02-salon.html
 - voiceover: "Sa fille l'attendait pour jouer. Lui, il ouvrit un dossier. Le Temps perdu lui prit une heure."
 - type: problem
@@ -137,7 +137,7 @@ Scene 3 (3.45 à 5.51 s) : P5, le Temps perdu lui prend une heure
 - scene: À la cuisine, la fille sur son tabouret lève sa feuille et son crayon ; le père quitte le salon avec sa pile et passe encore devant elle sans la voir ; il ouvre ses devis à la table, le dessin du petit dinosaure épinglé dans son dos ; devant la fenêtre où la nuit tombe, l'horloge fait tourner ses aiguilles et la case s'éteint de deux crans ; la fille traverse tête basse vers l'escalier
 - duration: 5.66s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/03-cuisine.html
 - voiceover: "Elle l'attendait pour dessiner. Lui, il ouvrit ses devis. Le Temps perdu lui prit la soirée."
 - type: problem
@@ -183,7 +183,7 @@ Scene 3 (3.55 à 5.66 s) : P8, le Temps perdu lui prend la soirée, elle part ve
 - scene: Sur la deuxième marche de l'escalier, la fille seule, le menton dans les mains ; deux fils descendent du plafond et les lettres de papier I et A tombent au-dessus d'elle, puis se déplient en « Interminable Attente » ; un trait d'or sous « Attente » ; le recul commence
 - duration: 3.96s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/04-attente.html
 - voiceover: "Pour sa fille, I.A. voulait dire Interminable Attente."
 - type: problem
@@ -220,7 +220,7 @@ Scene 2 (1.60 à 3.96 s) : P10, Interminable Attente
 - scene: Recul sur la cuisine entière : les lettres volent en feuilles de devis qui s'épinglent sur le dessin ; les jours et les nuits passent en accéléré dans la fenêtre pendant que la pile monte ; le père s'éloigne de la toile en trois crans, agrandi et pâle dans le flou ; gag muet : la fille agite la main devant son visage et seul le balancier lui répond ; elle croise les bras et lève les yeux vers le mur
 - duration: 5.02s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/05-effacement.html
 - voiceover: "Soir après soir, il s'effaçait."
 - type: problem
@@ -257,7 +257,7 @@ Scene 2 (2.30 à 5.02 s) : P12, gag muet : la main devant son visage, seul le ba
 - scene: Elle arrache les feuilles épinglées et retrouve le dessin du petit dinosaure ; elle le glisse devant la feuille de devis de son père, qui revient net contre la toile ; il baisse les yeux, un reflet d'or court le long de la chaîne jusqu'à l'horloge ; la lampe vacille et s'éteint, la nuit d'encre gagne tout le cadre
 - duration: 5.97s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/06-chaine.html
 - voiceover: "Alors elle retrouva leur petit dinosaure. Elle le glissa sur ses devis. Enfin, il vit la chaîne."
 - type: problem
@@ -303,7 +303,7 @@ Scene 3 (4.10 à 5.97 s) : P15, il revient net, il voit la chaîne, la nuit gagn
 - scene: Dans le noir de la cuisine éteinte, la caméra s'enfonce vers le cadran de l'horloge ; le balancier s'arrête, les aiguilles se rejoignent sur midi, une étincelle naît et le cadran s'allume d'or de l'intérieur ; l'or descend dans toute l'horloge et fait tourner ses engrenages dans une poussière d'or ; la lumière du cadran déborde et remplit le cadre
 - duration: 3.23s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/07-idee.html
 - voiceover: "Le Temps perdu eut alors une idée."
 - type: pivot
@@ -340,7 +340,7 @@ Scene 2 (2.10 à 3.23 s) : P17, l'or envahit l'horloge, la lumière déborde
 - scene: La lumière d'or se resserre dans le cadran et découvre la cuisine passée au monde doré ; l'horloge roule jusqu'à la table, le père se lève et elle prend sa place, tamponne les devis qui deviennent d'or ; sur « pour lui » la chaîne éclate en oiseaux de papier ; les feuilles finies s'envolent seules par la fenêtre vers le jardin, le père tend la main à sa fille, la case se rallume, whip vers le jardin
 - duration: 3.43s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/08-travail.html
 - voiceover: "L'horloge se mit au travail pour lui. Tout s'automatisait."
 - type: turn
@@ -377,7 +377,7 @@ Scene 2 (2.20 à 3.43 s) : P19, tout s'automatise, les feuilles s'envolent vers 
 - scene: Au jardin, la file de feuilles d'or s'empile autour du tronc de l'arbre nu, qui devient l'arbre doré ; le soir suivant, le père pousse la balançoire de sa fille dans l'arc du balancier de l'horloge ; le soir d'après, à la clôture, ils tracent un second dinosaure en lignes d'or à côté du premier dessin ; la grue remonte vers la branche
 - duration: 5.64s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/09-balancoire.html
 - voiceover: "Le soir suivant, il poussait la balançoire. Celui d'après, ils dessinèrent un second dinosaure."
 - type: payoff
@@ -414,7 +414,7 @@ Scene 2 (2.45 à 5.64 s) : P21, le soir d'après, le second dinosaure
 - scene: Sous la branche dorée, deux fils d'or descendent et les lettres I et A retombent, dorées, au-dessus du père et de sa fille, puis se déplient en « Intelligence Artificielle » ; un trait d'or ; les mots se replient ; l'horloge tourne ses aiguilles à rebours et un ruban de poussière d'or va de son cadran à la famille ; le recul final commence
 - duration: 5.80s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/10-intelligence.html
 - voiceover: "Désormais, I.A. voulait dire Intelligence Artificielle, pour vous rendre le temps perdu."
 - type: payoff
@@ -460,7 +460,7 @@ Scene 3 (3.95 à 5.80 s) : P24, pour vous rendre le temps perdu
 - scene: Le recul découvre tout le monde : la maison en coupe à gauche, dont les six cases se rallument en or une à une, et à droite l'arbre d'or avec sa balançoire au-dessus de la clôture ; dans le ciel de nuit, « 10 h » roule de 0 à 10 avec « gagnées chaque semaine » et « par la dernière dirigeante formée » ; les feuilles de l'arbre s'envolent en oiseaux vers la caméra
 - duration: 3.63s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/11-preuve.html
 - voiceover: "La dernière dirigeante formée gagne dix heures chaque semaine."
 - type: proof
@@ -488,7 +488,7 @@ Scene 1 (0.00 à 3.63 s) : P25, la maison relevée, 10 h dans le ciel
 - scene: Les oiseaux de papier d'or balaient le cadre et découvrent la toile claire du début ; la signature « Antoine Contino » s'écrit en bordeaux, « formateur IA » dessous ; le bouton bordeaux « Réserver un audit IA de 30 minutes » se pose avec la ligne d'adresses dessous, puis le curseur de papier arrive et clique ; tenue vivante, puis le noir
 - duration: 4.00s
 - transition_in: cut
-- status: outline
+- status: animated
 - src: compositions/frames/12-fin.html
 - voiceover: ""
 - type: cta

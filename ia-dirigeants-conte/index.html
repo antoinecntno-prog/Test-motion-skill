@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="assets/vendor/gsap-3.14.2.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #000;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #FFF4DC;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="57.1"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div
+        id="el-01-porte"
+        class="scene"
+        data-composition-id="01-porte"
+        data-composition-src="compositions/frames/01-porte.html"
+        data-start="0"
+        data-duration="5.25"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-02-salon"
+        class="scene"
+        data-composition-id="02-salon"
+        data-composition-src="compositions/frames/02-salon.html"
+        data-start="5.25"
+        data-duration="5.51"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-03-cuisine"
+        class="scene"
+        data-composition-id="03-cuisine"
+        data-composition-src="compositions/frames/03-cuisine.html"
+        data-start="10.76"
+        data-duration="5.66"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-04-attente"
+        class="scene"
+        data-composition-id="04-attente"
+        data-composition-src="compositions/frames/04-attente.html"
+        data-start="16.42"
+        data-duration="3.96"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-05-effacement"
+        class="scene"
+        data-composition-id="05-effacement"
+        data-composition-src="compositions/frames/05-effacement.html"
+        data-start="20.380000000000003"
+        data-duration="5.02"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-06-chaine"
+        class="scene"
+        data-composition-id="06-chaine"
+        data-composition-src="compositions/frames/06-chaine.html"
+        data-start="25.400000000000002"
+        data-duration="5.97"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-07-idee"
+        class="scene"
+        data-composition-id="07-idee"
+        data-composition-src="compositions/frames/07-idee.html"
+        data-start="31.37"
+        data-duration="3.23"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-08-travail"
+        class="scene"
+        data-composition-id="08-travail"
+        data-composition-src="compositions/frames/08-travail.html"
+        data-start="34.6"
+        data-duration="3.43"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-09-balancoire"
+        class="scene"
+        data-composition-id="09-balancoire"
+        data-composition-src="compositions/frames/09-balancoire.html"
+        data-start="38.03"
+        data-duration="5.64"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-10-intelligence"
+        class="scene"
+        data-composition-id="10-intelligence"
+        data-composition-src="compositions/frames/10-intelligence.html"
+        data-start="43.67"
+        data-duration="5.8"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-11-preuve"
+        class="scene"
+        data-composition-id="11-preuve"
+        data-composition-src="compositions/frames/11-preuve.html"
+        data-start="49.47"
+        data-duration="3.63"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="el-12-fin"
+        class="scene"
+        data-composition-id="12-fin"
+        data-composition-src="compositions/frames/12-fin.html"
+        data-start="53.1"
+        data-duration="4"
+        data-track-index="1"
+      ></div>
+      <audio id="mix" data-start="0" data-duration="57.1" data-track-index="11" src="assets/audio/mix.wav" data-volume="1"></audio>
+
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines["main"] = tl;
+        // orchestrator layer (motion-design skill): light flash and iris
+      tl.to({}, { duration: 57.1 }, 0);
+    </script>
+  </body>
+</html>

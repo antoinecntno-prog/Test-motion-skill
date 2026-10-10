@@ -2539,8 +2539,7 @@ const OM = (() => {
   const PHRASES = [{ sortie: [2.60, 2.74], mots: MOTS.map(([m, tm], i) => Object.assign({ m, t: tm - 1 / 30 }, i === MOTS.length - 1 ? { boite: 'b1' } : {})) }];
   const om = OM.creer(racine, 'p07', { phrases: PHRASES, palettes: ['noir'], clip: { start: 0, duration: D, track: 1 } });
 
-  /* caméra : plongée linéaire cam(2780, 690, 1.76) → cam(2780, 632, 1.93) de 0 à 2,10 (le flou 2 px du raccord
-     s'éteint en 0,3 s) ; dérive d'échelle +4 %/s de 2,10 à 2,85 ; plongée expo.in vers cam(2780, 630, 2.4) de 2,85 à 3,23,
+  /* caméra : plongée linéaire cam(2780, 690, 1.76) → cam(2780, 632, 1.93) de 0 à 2,10 ; dérive d'échelle +4 %/s de 2,10 à 2,85 ; plongée expo.in vers cam(2780, 630, 2.4) de 2,85 à 3,23,
      sans flou de caméra */
   const CS0 = 1.76, CS1 = 1.93, CS2 = CS1 * (1 + 0.04 * 0.75), CS3 = 2.4;
   function camera(t) {
@@ -2550,7 +2549,7 @@ const OM = (() => {
       y = 632 + (630 - 632) * Math.min(1, (t - 2.10) / 1.13);
       s = t <= 2.85 ? CS1 * (1 + 0.04 * (t - 2.10)) : CS2 + (CS3 - CS2) * K('expo.in')((t - 2.85) / 0.38);
     }
-    return OM.cam(2780, y, s, Math.max(0, 2 * (1 - t / 0.3)), 'zoom');
+    return OM.cam(2780, y, s, 0, 'zoom');   // aucun flou de caméra : sur le noir, les tirages « zoom » du raccord (2 px) dessinaient des anneaux
   }
 
   /* l'horloge dans le noir (cadran à (2780, 630)) */

@@ -2648,11 +2648,11 @@ const OM = (() => {
 
   /* ---------- la fille (poses à 12 i/s) ----------
      2,10 elle relève la tête ; 2,30 elle descend de sa marche (deux poses) ; 2,55 elle traverse vers lui à petits pas et
-     passe devant l'horloge ; 3,10 elle s'arrête devant lui, au bout de la table ; 3,30, 3,48, 3,66 elle saute et agite la
+     passe devant l'horloge ; 3,10 elle s'arrête devant lui, au bout de la table ; 3,30, 3,48, 3,66 elle saute (haut, la tige la soulève) et agite la
      main devant son visage (une pose par passage) ; 4,20 elle tourne la tête vers l'horloge ; 4,45 elle croise les bras
      (deux poses) ; 4,65 elle tape du pied ; 4,80 elle lève les yeux vers le mur aux feuilles épinglées. */
   const XA = 2944, XF = 2380;
-  const MAINS = [[2414, 560], [2452, 548], [2414, 560]];
+  const MAINS = [[2404, 534], [2440, 522], [2404, 534]];   // devant son visage (père ×1,25)
   function fille(t) {
     if (t < 2.30) return Object.assign({ x: 3060, y: 842, pose: 'menton', flip: -1 }, t >= 2.10 ? { tete: -6 } : {});
     if (t < 2.42) return { x: 3002, y: 842, pose: 'debout', flip: -1, tete: -6 };
@@ -2666,7 +2666,7 @@ const OM = (() => {
     if (t < 3.30) return Object.assign({ pose: 'debout', tete: -16 }, st);
     if (t < 3.84) {
       const i = t < 3.48 ? 0 : t < 3.66 ? 1 : 2, haut = t - [3.30, 3.48, 3.66][i] < 0.10;   // en l'air puis retombée
-      return Object.assign({ pose: 'agite', y: haut ? 842 : 900, tete: -18, mains: { F: MAINS[i] } }, haut ? { legF: [-34, 52], legB: [-8, 44] } : {}, st);
+      return Object.assign({ pose: 'agite', y: haut ? 786 : 900, tete: -18, mains: { F: MAINS[i] } }, haut ? { legF: [-34, 52], legB: [-8, 44] } : {}, st);
     }
     if (t < 4.20) return Object.assign({ pose: 'debout', tete: -16 }, st);
     if (t < 4.45) return Object.assign({ pose: 'debout', tete: -4 }, st);
@@ -2679,7 +2679,7 @@ const OM = (() => {
 
   /* ---------- avant-plan (plan 1) : le montant de la baie S/K au bord gauche, la rampe au bord droit ; la suspension de
      casseroles entre par le haut à gauche pendant la poussée vers le père et la fille ---------- */
-  const pRampe = P([[0, 3300], [0.45, 3400, 'expo.out'], [2.30, 3400], [2.80, 3123, 'expo.inOut']]);
+  const pRampe = P([[0, 3300], [2.30, 3300], [2.80, 2930, 'expo.inOut']]);   // la main courante reste dans le coin bas droit
   const pCasseroles = P([[2.30, 1680], [2.80, 2200, 'expo.inOut']]);
   const pL2 = (t) => OM.crans(t, [[1.20, 0.4]], 0.5, 0.1);   // 1,20 la flamme de L2 baisse encore
 

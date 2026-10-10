@@ -2646,7 +2646,10 @@ function feuilles(t) {
     if (u >= 1) { out.push({ x: c.xf, sol: true, w: 70, flip: c.sol }); continue; }
     const x = ep.x + (c.xf - ep.x) * p1o(u) + 8 * Math.sin(u * Math.PI * 2);
     const y = ep.y + (897 - ep.y) * (0.35 * u + 0.65 * u * u);
-    out.push({ x, y, w: ep.w, h: ep.h, rot: ep.rot + (c.rotf - ep.rot) * p2o(u), flip: Math.cos(1.5 * Math.PI * u) });
+    // la feuille tourne (largeur apparente) sans jamais passer par la tranche en vol (une tranche se lirait comme une tige) ;
+    // elle ne s'amincit qu'au ras du sol, couchée, juste avant de s'y poser
+    const c0 = Math.cos(1.5 * Math.PI * u), flip = u < 0.8 ? Math.sign(c0 || 1) * Math.max(Math.abs(c0), 0.35) : c0;
+    out.push({ x, y, w: ep.w, h: ep.h, rot: ep.rot + (c.rotf - ep.rot) * p2o(u), flip });
   }
   return out;
 }
@@ -2688,7 +2691,7 @@ function etatDe(t) {
   const rf = (t - 5.10) / 0.4 * 1.15; if (rf >= 0 && rf <= 1.2) ch.reflet = rf;
   return {
     t, cam: cm, palette: 'sombre', sous: t, coeur: pCoeur(t), cases: { S: 0.45, K: 0.55 }, lampes: { L1: 0.5, L2: lp.L2 }, lumiere: lp.lumiere, F2: { nuit: 1 },
-    pere: pere(t, tp), fille: fille(tp), horloge: { x: 2780, balancier: balancier(tp), minute: 1410, heure: 150 }, chaine: ch, objets: O,
+    pere: pere(t, tp), fille: fille(tp), horloge: { x: 2780, balancier: balancier(tp), minute: 1220, heure: 30 }, chaine: ch, objets: O,
     // la rampe reste où la séquence 5 l'a laissée (x 2930), sort à droite pendant la fin du cran, revient au bord droit (x 3202) au pan
     plan1: [{ nom: 'cloisonSK', x: 1925 }, 'casseroles', { nom: 'rampe', x: t < 0.5 ? 2930 : 3202 }],
   };

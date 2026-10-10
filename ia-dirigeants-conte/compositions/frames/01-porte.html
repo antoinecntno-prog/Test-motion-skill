@@ -2628,7 +2628,7 @@ function horlogeDe(t, u) {
   if (u < 2.94) x = 405;
   else if (u < 3.11) x = lerp(405, 415, ease('sine.inOut')((u - 2.94) / 0.17));
   else if (u < 4.14) x = 415;
-  else if (u < 4.44) x = lerp(415, 600, ease('power2.inOut')((u - 4.14) / 0.30));
+  else if (u < 4.44) x = lerp(415, 600, ease('expo.out')((u - 4.14) / 0.30));     // tirée hors de l'embrasure, dégagée du chambranle dès 4.22
   else if (u < 5.05) x = lerp(600, 615, ease('expo.out')(borne((u - 4.44) / 0.08)));
   else x = lerp(615, 640, (u - 5.05) / 0.20);
   const h = { x, roue: (x - 405) / R_ROUE * 180 / Math.PI, balancier: u < 2.80 ? -14 : -14 * Math.cos(Math.PI * (u - 2.80) / 0.4),

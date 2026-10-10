@@ -2551,7 +2551,7 @@ const PHRASES = [
 ];
 
 /* ---------- caméra : fin du cran (handoff_in), dérive, cran de suivi, dérive, pan le long de la chaîne, poussée qui
-   devient la plongée vers le cadran (handoff_out : cam(2780, 690, 1.76), y -27,6 u/s, échelle +0,081/s, flou 2 px) */
+   devient la plongée vers le cadran (handoff_out : cam(2780, 690, 1.76), y -27,6 u/s, échelle +0,081/s) */
 const hermite = (k) => (u) => k * u + (3 - 2 * k) * u * u + (k - 2) * u * u * u;   // pente k au départ, nulle à l'arrivée
 const eCran0 = hermite(1.33);   // échelle +1,1/s au raccord (0,19 en 0,23 s)
 const CAM1 = [2600 + 12 * 1.97, 690 + 3 * 1.97, 1.6 * (1 + 0.015 * 1.97)];   // à 2.20, fin de la dérive du plan 1
@@ -2569,8 +2569,10 @@ function camera(t) {
   const T = D - 5.35, u = borne((t - 5.35) / T), u2 = u * u, u3 = u2 * u;
   const y = 700 - 10 * (3 * u2 - 2 * u3) + T * VY_FIN * (u3 - u2);
   const s = 1.70 + 0.06 * (3 * u2 - 2 * u3) + T * VS_FIN * (u3 - u2);
-  return OM.cam(2780, y, s, 2 * borne((t - 5.85) / 0.12), 'zoom');
+  return OM.cam(2780, y, s, 0, 'zoom');   // sans flou au raccord : la séquence 7 part sans flou (les tirages « zoom » font des anneaux sur le noir)
 }
+/* le cœur lumineux de la toile suit le sujet (raccord : [2550, 672] comme la fin de la séquence 5) */
+const pCoeur = OM.piste([[0, [2550, 672]], [0.23, [2580, 660], 'power2.out'], [2.20, [2580, 660]], [2.45, [2420, 670], 'expo.inOut'], [4.85, [2420, 670]], [5.35, [2760, 680], 'expo.inOut']]);
 
 /* ---------- le père : assis à (2460, 900), tourné vers la gauche ; il revient contre la toile en deux crans */
 function pere(t, tp) {
@@ -2682,12 +2684,13 @@ function etatDe(t) {
   if (!des(tp, 1.66)) O.dessins = [{ x: 2590, y: 640, reflet: (t - at(1.36)) / 0.2 }];
   O.feuilles = feuilles(t);
   if (t >= T_ENCRE) { O.encre = { x: LAMPE[0], y: LAMPE[1], r: encreR(t) }; O.fumee = fumee(t); }
-  const ch = { tension: t < 5.40 ? 0.15 : 0.15 + 0.85 * eO(borne((t - 5.40) / 0.06)) };
+  const ch = { tension: t < 5.40 ? 0.1 : 0.1 + 0.9 * eO(borne((t - 5.40) / 0.06)) };
   const rf = (t - 5.10) / 0.4 * 1.15; if (rf >= 0 && rf <= 1.2) ch.reflet = rf;
   return {
-    t, cam: cm, palette: 'sombre', sous: t, cases: { K: 0.55 }, lampes: { L2: lp.L2 }, lumiere: lp.lumiere, F2: { nuit: 1 },
-    pere: pere(t, tp), fille: fille(tp), horloge: { x: 2780, balancier: balancier(tp) }, chaine: ch, objets: O,
-    plan1: t < 0.5 ? ['casseroles', { nom: 'rampe', x: 3123 }] : ['casseroles', { nom: 'rampe', x: 3202 }],
+    t, cam: cm, palette: 'sombre', sous: t, coeur: pCoeur(t), cases: { S: 0.45, K: 0.55 }, lampes: { L1: 0.5, L2: lp.L2 }, lumiere: lp.lumiere, F2: { nuit: 1 },
+    pere: pere(t, tp), fille: fille(tp), horloge: { x: 2780, balancier: balancier(tp), minute: 1410, heure: 150 }, chaine: ch, objets: O,
+    // la rampe reste où la séquence 5 l'a laissée (x 2930), sort à droite pendant la fin du cran, revient au bord droit (x 3202) au pan
+    plan1: [{ nom: 'cloisonSK', x: 1925 }, 'casseroles', { nom: 'rampe', x: t < 0.5 ? 2930 : 3202 }],
   };
 }
 

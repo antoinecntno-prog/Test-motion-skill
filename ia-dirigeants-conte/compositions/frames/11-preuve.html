@@ -2588,10 +2588,31 @@ function bouffee(b, n, graine, t0, t, vie) {
 
 /* ---------- la balançoire vide : elle oscille encore (séquence 10), repart sur « heures » (2,51, au point bas), puis
    12·sin(2π(t - 2,51)/1,6) exactement comme la séquence 12 (même arc que le balancier : période 1,6 s) ---------- */
+const T10 = (t) => OM.tPose(t + 5.80);   // le temps des poses de la séquence 10 prolongé (12 i/s)
 function balancoireEt(t) {
-  const tp = 2.51 - AV, a0 = 7 * Math.exp(-tp / 2.5);
-  const A = t < tp ? 7 * Math.exp(-t / 2.5) : a0 + (12 - a0) * p2o(Math.min(1, (t - tp) / 0.45));
-  return A * Math.sin(2 * Math.PI * (t - 2.51) / 1.6);
+  const T = T10(t), avant = -8 * Math.exp(-T / 8) * Math.cos(2 * Math.PI * (T + 5.64 - 2.86) / 1.6);   // la formule de la 10
+  const w = t < 2.51 - AV ? 0 : p2o(Math.min(1, (t - (2.51 - AV)) / 0.45));
+  return (1 - w) * avant + w * 12 * Math.sin(2 * Math.PI * (t - 2.51) / 1.6);
+}
+/* le balancier : celui de la 10 (amplitude 18, 12 i/s) glisse vers celui de la 12 (amplitude 10, continu) de 0,4 à 1,4 ;
+   l'horloge se redresse (penche -6 → 0, aiguilles et roulettes de la 12) à 0,25, au milieu du recul flou */
+function horlogeEt(t) {
+  const T = T10(t), w = OM.courbe('sine.inOut')(bor((t - 0.4) / 1.0));
+  const bal = (1 - w) * -18 * Math.cos(2 * Math.PI * (T + 5.64 - 1.79) / 1.6) + w * 10 * Math.sin(2 * Math.PI * t / 1.6);
+  if (OM.tPose(t) < 0.25) return { x: ST.horlogeCloture[0], roue: (5520 - 2460) / 14.7 * 180 / Math.PI, balancier: bal, penche: -6, minute: -580, heure: -120 };
+  return { x: ST.horlogeCloture[0], balancier: bal };
+}
+/* les petites étoiles d'or posées autour de la famille à la fin de la 10 (mêmes grappes), qui s'éteignent de 0,6 à 1,5 */
+function etoiles10(P, t) {
+  const d = t + 5.80 - (5.19 - AV), pose = p2o(d / 0.25), f = 1 - bor((t - 0.6) / 0.9);
+  if (f <= 0) return;
+  for (let k = 0; k < 14; k++) {
+    const phi = (-20 + 220 * (k + 0.5) / 14 + 8 * (hh(400 + k) - 0.5)) * Math.PI / 180;
+    const ex = 5068 + 112 * Math.cos(phi), ey = 650 - 230 * Math.sin(phi);
+    const x = 5085 + (ex - 5085) * pose, y = 560 + (ey - 560) * pose;
+    const a = Math.min(1, pose * (0.65 + 0.35 * Math.sin(2 * Math.PI * (d * 2.4 + hh(420 + k))))) * f;
+    if (a > 0.01) P.push({ x0: x - 4, y0: y - 4, x1: x + 4, y1: y + 4, n: 2, graine: 300 + k, t: 0, alpha: a });
+  }
 }
 
 /* ---------- les feuilles de l'arbre (les 72 feuilles du kit : même graine, même tirage) ----------
@@ -2689,24 +2710,31 @@ function preuveEt(t) {
 function etatDe(t) {
   const c = camera(t), vague = vagueEt(t, c);
   const relevees = RELEVES.filter(([, t0]) => t >= t0 - AV).length;
-  const poussiere = [nuage(100, -200, 3500, 900, 160, 31, t, 0.35 + 0.65 * relevees / 6), nuage(3600, -100, 6000, 900, 120, 37, t, 1)];
+  const x10 = bor((t - 0.2) / 0.6);   // les nappes de la 10 cèdent la place à celles de la 12 pendant le recul
+  const poussiere = [nuage(100, -200, 3500, 900, 160, 31, t, 0.35 + 0.65 * relevees / 6)];
+  if (x10 > 0.01) poussiere.push(nuage(3600, -100, 6000, 900, 120, 37, t, x10));
+  if (x10 < 0.99) poussiere.push(nuage(4800, 250, 5800, 900, 70, 29, t + 5.80, 1 - x10), nuage(3700, 150, 4800, 900, 46, 17, t + 5.80, 1 - x10));
+  etoiles10(poussiere, t);
   RELEVES.forEach(([k, t0], i) => { const b = bouffee(BOITES[k], 36, 61 + 6 * i, t0 - AV, t, 1.0); if (b) poussiere.push(b); });
   const ba = bouffee([3950, -120, 5150, 430], 70, 97, 2.79 - AV, t, 0.7); if (ba) poussiere.push(ba);
+  const r = recul(bor(t / T_RECUL)), tl = t < 0.2 ? t + 5.80 : t;
   return {
-    t, cam: c, palette: 'dore', coeur: [c.x, c.y + 92 * recul(bor(t / T_RECUL))],
+    t, ii: Math.floor(tl * OM.IPS + 1e-4), flamme: OM.flamme(tl),
+    cam: c, palette: 'dore', coeur: [c.x + 420 * (1 - r), c.y - 140 * (1 - r) + 92 * r],   // cœur de la 10, puis celui de la 12
     cases: casesEt(t),
     arbre: { pile: 1, or: 1, feuilles: t >= T_FREMIT ? 0 : 1 },
     balancoire: { angle: balancoireEt(t) },
     pere: { x: ST.famille[0], pose: 'epaules' },
     fille: { x: ST.famille[0] - 6, y: 572, pose: 'epaules', siege: 0, tiges: false },
-    horloge: { x: ST.horlogeCloture[0], balancier: 10 * Math.sin(2 * Math.PI * t / 1.6) },
+    horloge: horlogeEt(t),
     objets: {
       piles: [{ x: 2196, y: 760, n: 4, w: 120, seed: 7 }],
       dessins: [{ x: ST.carte1[0], y: ST.carte1[1], rot: -4 }], dessin2: { x: ST.carte2[0], y: ST.carte2[1], rot: 3, progres: 1 },
       feuilles: vague.feuilles, oiseaux: vague.oiseaux, poussiere,
     },
     preuve: preuveEt(t),
-    plan1: c.s >= 0.9 ? ['herbes'] : [],   // sous l'échelle 0,9 le plan 1 flotterait au-dessus du sol (règle « auto » du kit)
+    // l'avant-plan de la 10 (herbes, branche basse) s'efface au début du recul : sous l'échelle 0,9 il flotterait au-dessus du sol
+    plan1: t < 0.2 ? [{ nom: 'herbes', alpha: 1 - t / 0.2 }, { nom: 'branche', alpha: 1 - t / 0.2 }] : [],
     phrases: [],
   };
 }

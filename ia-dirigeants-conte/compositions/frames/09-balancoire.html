@@ -2527,6 +2527,7 @@ const OM = (() => {
 })();
 /* ===================== KIT OMBRES : fin du kit JS à copier ===================== */
 
+
 /* ===================== séquence 09-balancoire (préfixe p09) =====================
    Frame 9 « La balançoire, le second dinosaure » (38,03 → 43,67, 5,64 s), monde doré. Le canvas est dessiné par la fonction
    pure om.dessiner(etat) du kit ; l'état est calculé du temps de la timeline (proxy du kit) : caméra fluide à 30 i/s,
@@ -2549,21 +2550,21 @@ const PHRASES = [
 
 /* ---------- la caméra (cam(x, y, s) : le point du monde au centre du cadre) ----------
    0,00 à 0,22 fin du whip : atterrissage sur cam(4 500, 620, 1,15) ; courbe d'arrivée à décélération forte dont la vitesse
-   de départ vaut celle du raccord (+4 500 u/s en x) : v(u) = (a + A u)(1 - u)^4, a = 4 500 × 0,22 / 1 000 ; flou 10 px au
+   de départ vaut celle de 08 à 3,43 (x +4 570 u/s, y -182 u/s, échelle -1,09/s) : v(u) = (a + A u)(1 - u)^4 ; flou 10 px au
    raccord, suivant la vitesse (12 px au plus), 0 à l'atterrissage.
    0,22 à 2,45 dérive x +20 u/s, échelle +1 %/s ; 2,45 à 2,85 cran expo.inOut vers cam(5 280, 700, 1,5) (flou au milieu) ;
    2,85 à 5,30 dérive x +16 u/s, échelle +1,5 %/s ; 5,30 à 5,64 montée de grue (power1.in : à 5,64 y -265 u/s, échelle
    -1,21/s) jusqu'à cam(5 310, 655, 1,35), flou 0 → 6 px. */
 const LAND = 0.22, CRAN0 = 2.45, CRAN1 = 2.85, GRUE0 = 5.30;
-const VA = 4500 * LAND / 1000, VP = 4, VK = (VP + 1) * (VP + 2) * (1 - VA / (VP + 1));
-const vAtterrir = (u) => (VA + VK * u) * Math.pow(1 - u, VP);
-const gAtterrir = (u) => { const w = 1 - u; return (VA + VK) * (1 - Math.pow(w, VP + 1)) / (VP + 1) - VK * (1 - Math.pow(w, VP + 2)) / (VP + 2); };
+const VP = 4, VX = 4570 * LAND / 1000, VY = 182 * LAND / 20, VS = 1.09 * LAND / 0.12;   // pentes de départ = vitesses de 08 à 3,43
+const vAtterrir = (a, u) => (a + (VP + 1) * (VP + 2) * (1 - a / (VP + 1)) * u) * Math.pow(1 - u, VP);
+const gAtterrir = (a, u) => { const k = (VP + 1) * (VP + 2) * (1 - a / (VP + 1)), w = 1 - u; return (a + k) * (1 - Math.pow(w, VP + 1)) / (VP + 1) - k * (1 - Math.pow(w, VP + 2)) / (VP + 2); };
 const XB = 4500 + 20 * (CRAN0 - LAND), SB = 1.15 * (1 + 0.01 * (CRAN0 - LAND));
 const XG = 5280 + 16 * (GRUE0 - CRAN1), SG = 1.5 * (1 + 0.015 * (GRUE0 - CRAN1));
 function camAt(t) {
   if (t < LAND) {
-    const u = borne(t / LAND), g = gAtterrir(u);
-    return OM.cam(3500 + 1000 * g, 640 - 20 * g, 1.27 - 0.12 * g, Math.min(12, 10 * vAtterrir(u) / VA), 'x');
+    const u = borne(t / LAND);
+    return OM.cam(3500 + 1000 * gAtterrir(VX, u), 640 - 20 * gAtterrir(VY, u), 1.27 - 0.12 * gAtterrir(VS, u), Math.min(12, 10 * vAtterrir(VX, u) / VX), 'x');
   }
   if (t < CRAN0) { const d = t - LAND; return OM.cam(4500 + 20 * d, 620, 1.15 * (1 + 0.01 * d)); }
   if (t < CRAN1) {
@@ -2576,7 +2577,7 @@ function camAt(t) {
 }
 
 /* ---------- les temps du récit ---------- */
-const T_PAIRE = 0.1;      // la paire de l'escalier est sortie du cadre à gauche : le père et la fille de la balançoire entrent (le soir suivant)
+const T_PAIRE = 0.03;     // image 1 : la paire de l'escalier est sortie du cadre à gauche, celle de la balançoire entre par la droite (le soir suivant)
 const T_ELLIPSE = 2.6333; // au milieu du cran (flou au plus fort), « Celui » : le soir d'après, la famille agenouillée à la clôture
 const MASQUE0 = 0.90, MASQUE1 = 1.05;   // l'or descend les cordes, passe sur la fille et le père
 
@@ -2597,39 +2598,43 @@ const balancier = (t) => -18 * Math.cos(2 * Math.PI * (t - 1.79) / 1.6);  // mê
 /* ---------- la file des 12 feuilles d'or (en tête à (3 950, 520) au raccord) : elle s'enroule autour du tronc et devient
    la pile, un cran par mot (0,22, 0,45, 0,59) ; cinq feuilles tombent sur la petite pile au pied du tronc ---------- */
 const PIED = [2, 3, 6, 7, 11];
+// la file au raccord (08, t = 3,43) : [x, y, rot, flip, vx, vy] (vitesses en u/s mesurées sur 08)
+const FILE08 = [[3950, 520, -11.84, 0.2], [3881.56, 529.38, -19.03, 0.92], [3814.94, 541.88, -20.70, 0.52], [3750.15, 554.21, -15.98, 0.2],
+  [3687.18, 563.79, -9.70, 0.92], [3626.04, 574.42, -8.81, 0.52], [3566.72, 584.45, -11.30, 0.2], [3509.23, 589.40, -13.95, 0.92],
+  [3453.57, 585.62, -11.72, 0.52], [3399.73, 571.16, -4.19, 0.2], [3347.72, 549.34, 4.02, 0.92], [3297.53, 524.49, 8.11, 0.52]];
+const AVANT08 = [[3892.84, 527.50], [3825.91, 539.73], [3760.82, 552.29], [3697.55, 562.32], [3636.10, 572.55], [3576.48, 583.02], [3518.69, 589.09],
+  [3462.72, 586.99], [3408.58, 574.21], [3356.26, 553.29], [3305.77, 528.68], [3257.11, 504.08]];   // 08 à 3,43 - 1/60
 const FILE = Array.from({ length: 12 }, (_, i) => {
-  const grp = i < 4 ? 0 : i < 8 ? 1 : 2, pied = PIED.includes(i);
-  return { x0: 3950 - 48 * i, y0: 560 - 40 * Math.cos(i * 0.75), rot0: -20 + i * 9, fl0: (i % 2 ? -1 : 1) * (0.5 + 0.45 * Math.abs(Math.cos(i * 1.3))),
+  const grp = i < 4 ? 0 : i < 8 ? 1 : 2, pied = PIED.includes(i), q = FILE08[i];
+  return { x0: q[0], y0: q[1], rot0: q[2], fl0: q[3], vx: (q[0] - AVANT08[i][0]) * 60, vy: (q[1] - AVANT08[i][1]) * 60,
     Ta: [0.22, 0.45, 0.59][grp], pied, phi: i * 1.9,
     cible: pied ? [4118 + ((i * 7) % 5 - 2) * 3, [883, 866, 857][grp]] : [4300 + ((i * 13) % 7 - 3) * 6, [760, 560, 372][grp]] };
 });
 function feuilleVol(q, t) {
-  const u = borne(t / q.Ta);
-  let x, y;
-  if (q.pied) { const e = p2o(u); x = lerp(q.x0, q.cible[0], e); y = lerp(q.y0, q.cible[1], e) - 150 * Math.sin(Math.PI * u) * (1 - u); }
-  else {
-    const w = 1 - (1 - u) * (1 - u), r = 170 * (1 - u), ph = q.phi + 2 * Math.PI * 1.25 * u;
-    x = lerp(q.x0, q.cible[0] + r * Math.cos(ph), w); y = lerp(q.y0, q.cible[1] + 0.32 * r * Math.sin(ph), w);
-  }
-  return { x, y, w: 38, h: 50, rot: q.rot0 + 420 * u, flip: Math.cos(Math.acos(borne(q.fl0, -1, 1)) + 7 * u) };
+  const u = borne(t / q.Ta), w = u * u * (3 - 2 * u);   // départ à la vitesse de 08, puis aspirée par sa cible
+  let cx, cy;
+  if (q.pied) { cx = q.cible[0]; cy = q.cible[1] - 150 * Math.sin(Math.PI * u) * (1 - u); }
+  else { const r = 170 * (1 - u), ph = q.phi + 2 * Math.PI * 1.25 * u; cx = q.cible[0] + r * Math.cos(ph); cy = q.cible[1] + 0.32 * r * Math.sin(ph); }
+  return { x: lerp(q.x0 + q.vx * t, cx, w), y: lerp(q.y0 + q.vy * t, cy, w), w: 40, h: 56, rot: q.rot0 + 420 * u,
+    flip: Math.cos(Math.acos(borne(q.fl0, -1, 1)) + 7 * u), or: true };
 }
 const piedPile = (t) => (t < 0.22 ? 0 : t < 0.45 ? 2 : t < 0.59 ? 4 : t < 1.0 ? 5 : 6);
 
 /* ---------- l'horloge d'or : elle rejoint le jardin pendant le whip (elle entre par la gauche du cadre), pose la dernière
    feuille sur la petite pile (1,00), puis roule jusqu'à la clôture (5 520, 900) ---------- */
-const XH0 = 2460;
+const XH0 = 2460, XH08 = 2510;   // 08 : l'horloge à la table (2 510) ; angle des roues compté depuis 2 460
 function xHorloge(t) {
   if (t < LAND) {
     const u = borne((t - 0.04) / 0.18);
-    if (u <= 0) return XH0;
-    const c = camAt(t), sx = -361 + 769 * (1 - Math.pow(1 - u, 3));     // à l'écran : de -361 px (hors cadre) à 408 px
+    if (u <= 0) return XH08;
+    const c = camAt(t), sx = -297 + 705 * (1 - Math.pow(1 - u, 3));     // à l'écran : de -297 px (hors cadre) à 408 px
     return c.x + (sx - 960) / c.s;
   }
   if (t < CRAN0) return 4020;
   return 4020 + 1500 * p2io(borne((t - CRAN0) / 1.05));               // entre par la gauche à 2,92, s'arrête à 3,50
 }
 function horlogeDe(t, tp) {
-  const h = { x: xHorloge(t), roue: (xHorloge(tp) - XH0) / 14.7 * 180 / Math.PI, balancier: balancier(tp) };
+  const h = { x: xHorloge(t), roue: (xHorloge(tp) - XH0) / 14.7 * 180 / Math.PI, balancier: balancier(t) };
   if (tp < CRAN0) {
     h.penche = tp < LAND ? 4 : tp < 0.33 ? 6 : tp < 0.42 ? 1 : 0;
     if (tp < 0.83) h.mains = { R: [h.x + 92, 774] };                       // la dernière feuille tenue à bout de bras
@@ -2641,7 +2646,7 @@ function horlogeDe(t, tp) {
 
 /* ---------- le père et la fille ---------- */
 function paireEscalier() {   // raccord : main dans la main au pied de l'escalier (2 960, 900), au bord gauche du cadre
-  return { pere: { x: 2935, pose: 'debout', mains: { F: [2960, 715] } }, fille: { x: 2985, pose: 'debout', mains: { B: [2960, 715] } } };
+  return { pere: { x: 2880, pose: 'tend-main', flip: 1, mains: { F: [2928, 722] }, tigeAvant: 'coude' }, fille: { x: 2962, pose: 'debout', flip: -1, mains: { F: [2928, 722] } } };
 }
 function paireBalancoire(tp, dore) {
   const or = dore ? undefined : false, p = { x: 4555, or };
@@ -2682,27 +2687,34 @@ function etatDe(t) {
   t = Math.max(0, Math.min(D, t));
   const tp = tPose(t), cm = camAt(t), dore = t >= MASQUE1;
   const E = { t, cam: cm, palette: 'dore', sous: t };
-  // « Celui » : le ciel tourne d'un cran (le cœur de la toile glisse, la poussière glisse) : un soir de plus
+  // « Celui » : le ciel tourne d'un cran (le cœur de la toile glisse d'un cran) : un soir de plus
   const cranCiel = OM.crans(t, [[2.63, 1]], 0, 0.1);
-  E.coeur = [cm.x + 420 * cranCiel, cm.y - 140 * cranCiel];
+  const g08 = 1 - (t < LAND ? gAtterrir(VX, t / LAND) : 1);       // 08 : cœur de la toile à (cam.x - 40, cam.y - 10)
+  E.coeur = [cm.x - 40 * g08 + 420 * cranCiel, cm.y - 10 * g08 - 140 * cranCiel];
+  E.cases = { K: { voile: 0, or: 1 } };                              // la cuisine rallumée en or (08)
   E.arbre = { pile: OM.crans(t, [[0.22, 0.26], [0.45, 0.62], [0.59, 1]], 0, 0.08), or: borne((t - 0.75) / 0.2),
     feuilles: t >= T_ELLIPSE ? 1 : (16 / 72) * borne((t - 0.75) / 0.16) };
-  E.balancoire = { angle: -avant(tp), or: dore ? undefined : false };
+  E.balancoire = { angle: -avant(t < T_ELLIPSE ? tp : t), or: dore ? undefined : false };   // vide après l'ellipse : un objet, fluide
   E.horloge = horlogeDe(t, tp);
   const paire = t < T_PAIRE ? paireEscalier() : t < T_ELLIPSE ? paireBalancoire(tp, dore) : paireCloture(tp);
   E.pere = paire.pere; E.fille = paire.fille;
   const feuilles = [];
   for (const q of FILE) if (t < q.Ta) feuilles.push(feuilleVol(q, t));
   if (t < 1.0) { const m = OM.placerHorloge(E.horloge).mR; feuilles.push({ x: m[0] + 6, y: m[1] - 16, w: 30, h: 40, rot: 8 + 10 * (E.horloge.penche || 0) / 10, flip: 0.9 }); }
-  if (t >= T_ELLIPSE) { const m = OM.placerPere(E.pere).mF; feuilles.push({ x: m[0] + 7, y: m[1] - 15, w: 6, h: 36, rot: 32, flip: 1 }); }   // son crayon
+  if (t >= T_ELLIPSE && tp < 5.0) { const m = OM.placerPere(E.pere).mF; feuilles.push({ x: m[0] + 7, y: m[1] - 15, w: 6, h: 36, rot: 32, flip: 1 }); }   // son crayon (rangé quand elle lui serre le bras)
   const piles = [];
   if (piedPile(t) > 0) piles.push({ x: 4122, y: 900, n: piedPile(t), w: 56, seed: 13, or: true });
-  const glisse = 60 * cranCiel, poussiere = [{ x0: 3800 + glisse, y0: 150, x1: 5800 + glisse, y1: 900, n: 140, graine: 17, t }];
+  // poussière : celle de 08 continue et s'efface pendant le whip (0,2 s), celle du jardin (= 10 à son début) paraît
+  const a08 = 1 - borne(t / 0.2), aJ = borne(t / 0.2), poussiere = [];
+  if (a08 > 0) poussiere.push({ x0: 1800, y0: 400, x1: 3450, y1: 900, n: 110, graine: 41, t: 4.63 + t, alpha: a08 },
+    { x0: 3450, y0: 250, x1: 4700, y1: 900, n: 70, graine: 43, t: 6.43 + t, alpha: a08 },
+    { x0: 1900, y0: 460, x1: 3400, y1: 890, n: 80, graine: 53, t: 3.72 + 4 * t, alpha: a08 * 1.5 * Math.exp(-(0.43 + t) / 0.35) });
+  poussiere.push({ x0: 4800, y0: 250, x1: 5800, y1: 900, n: 70, graine: 29, t: t - D, alpha: aJ }, { x0: 3700, y0: 150, x1: 4800, y1: 900, n: 46, graine: 17, t: t - D, alpha: aJ });
   const gerbe = t < 1.76 ? 0 : t < 1.84 ? (t - 1.76) / 0.08 : Math.max(0, 1 - (t - 1.84) / 0.7);   // « balançoire » : la poussière s'échappe de ses pieds
   if (gerbe > 0) poussiere.push({ x0: 4866, y0: 690, x1: 4996, y1: 836, n: 18, graine: 5, t: t - 1.7, alpha: gerbe });
   E.objets = { piles, feuilles, poussiere, dessins: [{ x: 5200, y: 770, rot: -4 }],
     dessin2: { x: 5360, y: 770, rot: 3, progres: progresDino(t), halo: haloDino(t) } };
-  E.plan1 = t < LAND ? [{ nom: 'rampe', x: 3330 }].concat(t < 0.1 ? [] : ['herbes'], ['branche']) : ['herbes', 'branche'];
+  E.plan1 = t < LAND ? ['casseroles', { nom: 'rampe', x: 3280 }].concat(t < 0.1 ? [] : ['herbes'], ['branche']) : ['herbes', 'branche'];
   E.masque = t >= MASQUE0 && t < MASQUE1 ? (t - MASQUE0) / (MASQUE1 - MASQUE0) : 0;
   return E;
 }

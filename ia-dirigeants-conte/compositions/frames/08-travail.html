@@ -2585,9 +2585,9 @@ const MAIN = [2928, 722];   // les mains jointes, au pied de l'escalier
 function pereEtat(p) {
   if (p < 7) return { x: 2460, pose: 'assis-feuille', flip: -1 };
   if (p < 9) return { x: 2470, pose: 'debout', flip: -1 };                    // 0,58 : il se lève
-  if (p < 24) return { x: 2680, pose: 'debout', flip: 1 };                     // 0,75 : il a reculé, l'horloge prend sa place
-  if (p < 26) return { x: 2680, pose: 'leve', flip: 1 };                       // 2,00 : il lève son poignet libre
-  if (p < 31) return { x: 2680 + 33 * (p - 25), pose: 'marche', phase: (p - 26) * 0.25, flip: 1 };
+  if (p < 26) return { x: 2680, pose: 'debout', flip: 1 };                     // 0,75 : il a reculé, l'horloge prend sa place
+  if (p < 27) return { x: 2680, pose: 'leve', flip: 1 };                       // 2,17 : la chaîne partie, il lève son poignet libre
+  if (p < 31) return { x: 2680 + 40 * (p - 26), pose: 'marche', phase: (p - 27) * 0.25, flip: 1 };
   if (p < 32) return { x: 2872, pose: 'debout', flip: 1 };
   if (p < 35) return { x: 2880, pose: 'tend-main', flip: 1, mains: { F: [2966, 700] } };   // 2,67 : il tend la main
   return { x: 2880, pose: 'tend-main', flip: 1, mains: { F: MAIN }, tigeAvant: 'coude' };

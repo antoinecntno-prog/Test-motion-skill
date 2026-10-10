@@ -2543,7 +2543,7 @@ const OM = (() => {
 const FID = '10-intelligence', DUR = 5.80;
 const racine = document.querySelector('[data-composition-id="' + FID + '"]');
 const F1 = 1 / 30;   // une image : chaque mot et chaque révélation arrivent une image avant leur temps
-const P1o = OM.courbe('power1.out'), P2o = OM.courbe('power2.out'), P2i = OM.courbe('power2.in'), P3o = OM.courbe('power3.out');
+const P2o = OM.courbe('power2.out'), P2i = OM.courbe('power2.in'), P3o = OM.courbe('power3.out');
 const P2io = OM.courbe('power2.inOut');
 const bo = OM.borne, h = OM.h01;
 const auPas = (ev) => Math.round(ev * OM.IPS_POSE) / OM.IPS_POSE - 1e-6;   // un temps de la voix posé sur la grille des poses
@@ -2646,7 +2646,7 @@ function majHalo(t, c) {
 
 /* ---------- les marionnettes (poses changées à 12 i/s) ---------- */
 function etatPere(tp) {
-  if (tp < auPas(0.75)) return { x: 4960, pose: 'genou', mains: { F: [5034, 810] } };            // agenouillé devant la clôture (handoff_in)
+  if (tp < auPas(0.75)) return { x: 4960, pose: 'genou', mains: { F: [5052, 786] } };            // agenouillé devant la clôture (fin de la séquence 9)
   if (tp < auPas(0.833)) return { x: 5000, pose: 'debout', legF: [-58, 62], legB: [-8, 64], armF: [-34, -30], armB: [16, 12], tete: 8 };   // 0.75 il se relève
   if (tp < auPas(1.30)) return { x: 5046, pose: 'debout', tete: -8 };
   if (tp < auPas(4.29)) return { x: 5046, pose: 'debout', tete: -16 };                          // il lève les yeux vers les lettres
@@ -2654,7 +2654,7 @@ function etatPere(tp) {
   return { x: 5070, pose: 'epaules' };                                                           // la fille sur ses épaules (handoff_out)
 }
 function etatFille(tp) {
-  if (tp < auPas(0.833)) return { x: 5088, pose: 'genou', mains: { F: [5134, 772] } };
+  if (tp < auPas(0.833)) return { x: 5088, pose: 'genou', flip: -1, mains: { F: [5036, 796], B: [5046, 806] }, tient: { crayon: true } };   // elle serre le bras de son père (fin de la séquence 9)
   if (tp < auPas(0.917)) return { x: 5108, pose: 'debout', legF: [-52, 58], legB: [-6, 60], armF: [-20, -24], armB: [10, 6], tete: 4 };   // elle se relève aussi
   if (tp < auPas(1.00)) return { x: 5124, pose: 'debout', tete: -12 };
   if (tp < auPas(2.90)) return { x: 5124, pose: 'debout', armF: [-158, -6], tete: -18 };        // 1.00 elle lève le bras vers la branche
@@ -2665,10 +2665,11 @@ function etatFille(tp) {
   if (tp < auPas(4.37)) return { x: 5090, y: 770, pose: 'saute', armF: [-120, -10], armB: [-110, -16], tiges: false };   // hissée
   return { x: 5064, y: 572, pose: 'epaules', siege: 0, tiges: false };
 }
+const ROUE = (5520 - 2460) / 14.7 * 180 / Math.PI;   // roulettes : l'angle où la séquence 9 les a laissées
 function etatHorloge(tp) {
   // 4.53 et 4.99 : deux tours d'aiguilles à rebours (0,4 s power2.inOut), au pas de 12 i/s comme un cliquetis
   const tour = P2io((tp - (4.53 - F1)) / 0.4) + P2io((tp - (4.99 - F1)) / 0.4);
-  return { x: 5520, balancier: 12 * Math.sin(2 * Math.PI * tp / 1.6), penche: tp >= auPas(4.15) ? -6 : 0,   // 4.15 le cadran se tourne vers eux
+  return { x: 5520, roue: ROUE, balancier: -18 * Math.cos(2 * Math.PI * (tp + 5.64 - 1.79) / 1.6), penche: tp >= auPas(4.15) ? -6 : 0,   // 4.15 le cadran se tourne vers eux
     minute: 140 - 360 * tour, heure: -60 - 30 * tour };
 }
 
@@ -2716,7 +2717,7 @@ function etatDe(t) {
   majHalo(t, c);
   const objets = {
     dessins: [{ x: 5200, y: 770, rot: -4 }],
-    dessin2: { x: 5360, y: 770, rot: 3, progres: 1, halo: 0.8 - 0.5 * P2io((t - 0.4) / 0.9) },
+    dessin2: { x: 5360, y: 770, rot: 3, progres: 1 },
     poussiere: poussieres(t),
   };
   const lettres = etatLettres(t);
@@ -2725,11 +2726,13 @@ function etatDe(t) {
     t, cam: c, palette: 'dore', sous: t,
     cases: { K: { voile: 0, or: 1 } },
     arbre: { pile: 1, or: 1, feuilles: 1 },
-    balancoire: { angle: -8 * Math.cos(2 * Math.PI * (t - 3.60) / 1.6) },   // ±8°, période 1,6 s ; 3.60 elle entre au bord gauche
+    // la balançoire vide continue l'arc de la séquence 9 (±8° au raccord, période 1,6 s, au pas des poses), amortie lentement
+    balancoire: { angle: -8 * Math.exp(-tp / 8) * Math.cos(2 * Math.PI * (tp + 5.64 - 2.86) / 1.6) },
+    coeur: [c.x + 420, c.y - 140],   // le cœur de la toile là où la séquence 9 l'a laissé
     pere: etatPere(tp), fille: etatFille(tp), horloge: etatHorloge(tp),
     objets,
-    // avant-plan : herbes floues en bas ; la branche basse floue entre par le haut pendant la fin de la grue
-    plan1: ['herbes', { nom: 'branche', y: -120 * (1 - P1o(t / 0.35)) }],
+    // avant-plan : herbes floues en bas, branche basse floue en haut à gauche (comme à la fin de la séquence 9)
+    plan1: ['herbes', 'branche'],
   };
 }
 

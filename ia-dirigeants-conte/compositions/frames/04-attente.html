@@ -2569,7 +2569,7 @@ const SIEGE = OM.piste([[0, 58], [0.34, 58], [0.42, 56, 'power2.out'], [3.10, 56
 const GENOU = OM.piste([[0, 80], [3.10, 80], [3.17, 60, 'power2.out'], [3.25, 82, 'power3.in'], [3.32, 80]]);
 /* le balancier lointain bat sur les tic-tac (0,48 ; 1,00 ; 2,30 ; 2,90) ; les aiguilles restent arrêtées */
 const BALANCIER = OM.piste([[0, -10], [0.48, -10], [0.70, 10, 'sine.inOut'], [1.00, 10], [1.22, -10, 'sine.inOut'],
-  [2.30, -10], [2.52, 10, 'sine.inOut'], [2.90, 10], [3.12, -10, 'sine.inOut']]);
+  [2.30, -10], [2.52, 10, 'sine.inOut'], [2.90, 10], [3.12, 0, 'sine.inOut']]);   // au repos à la couture (séquence 5)
 
 /* ---------- les lettres de papier (kit lettres), 84 px au plus à l'écran : taille = 84 / la plus forte échelle (1,55) */
 const T_MAX = 1.55, PLAFOND = 438;
@@ -2632,7 +2632,7 @@ function etatDe(t) {
     fille: { x: ST.marche[0], y: ST.marche[1], pose: 'menton', flip: -1, tete: TETE(tp), siege: SIEGE(tp),
       legsAssis: [[-88, 86], [-84, GENOU(tp)]] },
     pere: { x: ST.pereCuisine[0], pose: 'assis-feuille', flip: -1, tient: { devis: {} } },
-    horloge: { x: ST.horlogeCuisine[0], balancier: BALANCIER(tp) },
+    horloge: { x: ST.horlogeCuisine[0], balancier: BALANCIER(tp), minute: 330, heure: 60 },   // aiguilles arrêtées
     chaine: { tension: 0.1 },
     objets: { piles: [{ x: 2220, y: 760, n: 12, w: 130, seed: 7 }], dessins: [{ x: ST.dessin[0], y: ST.dessin[1] }],
       lettres: lettresDe(t, c) },
@@ -2640,7 +2640,7 @@ function etatDe(t) {
   };
 }
 
-OM.brancher(om, FID, DUREE, etatDe, (tl) => { tl.set({}, {}, DUREE); });
+OM.brancher(om, '04-attente', DUREE, etatDe, (tl) => { tl.set({}, {}, DUREE); });
 
 })();
   </script>

@@ -2538,27 +2538,30 @@ const OM = (() => {
    puis la dérive (échelle +1 %/s, y +6 u/s). Les six cases éteintes se rallument en or une à une sur la voix, « 10 h »
    roule de 0 à 10 et se pose sur « dix », les feuilles de l'arbre frémissent et partent en 20 oiseaux de papier d'or
    vers la caméra. Tout l'état est une fonction pure du temps local t (etatDe), dessinée par le kit (om.dessiner) ;
-   la timeline window.__timelines["11-preuve"] est créée et enregistrée par OM.brancher après la préparation. */
+   la timeline window.__timelines["11-preuve"] est créée et enregistrée par OM.brancher après la préparation.
+   À 3,63 l'état est exactement la première image de la séquence 12 (etatMonde(0) de 12-fin.html) : même caméra, même
+   cœur, arbre sans feuilles, même balançoire, même balancier, même poussière, même vague d'oiseaux à l'écran. */
 const FID = '11-preuve', D = 3.63;
 const AV = 1 / 30;   // chaque révélation sur un mot part une image avant le mot (jamais en retard)
 const ancre = document.getElementById('p11-sol');
 const racine = (ancre && ancre.parentElement) || document.querySelector('[data-composition-id="' + FID + '"]');
 const om = OM.creer(racine, 'p11', { phrases: [], palettes: ['dore'], clip: { start: 0, duration: D, track: 1 } });
-const ST = OM.MONDE.stations, bor = OM.borne;
+const ST = OM.MONDE.stations, bor = OM.borne, hh = OM.h01;
 const p2o = OM.courbe('power2.out'), sio = OM.courbe('sine.inOut');
 
 /* ---------- caméra : fin du recul (0 à 0,60), puis dérive qui ne s'arrête plus ----------
    handoff_in : cam(4 760, 640, 1,11) flou 6, en plein recul (x -2 600 u/s, échelle -1,0/s). La courbe d'arrivée est un
    expo.out dont l'entrée garde la vitesse du recul de la séquence 10 (0,8 × la vitesse moyenne, soit x -2 550 u/s et
-   échelle -1,03/s à t = 0) : aucun saut de vitesse à la coupe, puis la décélération expo.out jusqu'au repos à 0,60. */
+   échelle -1,03/s à t = 0) : aucun saut de vitesse à la coupe, puis la décélération expo.out jusqu'au repos à 0,60.
+   Dérive de 0,60 à 3,63 : y +5,94 u/s, échelle +0,97 %/s, pour poser exactement cam(2 850, 168, 0,35) à 3,63. */
 const EXPO = (v) => (1 - Math.pow(2, -10 * v)) / (1 - Math.pow(2, -10));
 const B0 = 0.115;
 const recul = (u) => EXPO((1 - B0) * u * u + B0 * u);
-const T_RECUL = 0.6;
+const T_RECUL = 0.6, DERIVE = D - T_RECUL;
 const trajetRecul = OM.trajet([[0, OM.cam(4760, 640, 1.11, 6, 'zoom')], [T_RECUL, OM.cam(2850, 150, 0.34, 0, 'zoom'), recul]]);
 function camera(t) {
-  const c = trajetRecul(t), d = Math.max(0, t - T_RECUL);
-  return OM.cam(c.x, c.y + 6 * d, c.s * (1 + 0.01 * d), c.flou, 'zoom');   // handoff_out : cam(2 850, 168, 0,35) à 3,63
+  const c = trajetRecul(t), d = Math.max(0, t - T_RECUL) / DERIVE;
+  return OM.cam(c.x, c.y + 18 * d, c.s * (1 + (0.35 / 0.34 - 1) * d), c.flou, 'zoom');
 }
 
 /* ---------- les six cases qui se rallument en or (signature 1 : le voile retombe en un cran de 0,06 s expo.out) ----------
@@ -2574,25 +2577,26 @@ function casesEt(t) {
   return out;
 }
 
-/* ---------- poussière d'or : le fond du jardin et de la maison, une bouffée par case rallumée, une bouffée de l'arbre ---------- */
+/* ---------- poussière d'or : le fond du jardin et de la maison, une bouffée par case rallumée, une bouffée de l'arbre ----------
+   les bouffées sont retombées avant 3,63 : à la couture ne restent que les deux nappes de la séquence 12 */
 const nuage = (x0, y0, x1, y1, n, graine, t, alpha) => ({ x0, y0, x1, y1, n, graine, t, alpha });
-function bouffee(b, n, graine, t0, t) {
-  const d = t - t0; if (d < 0) return null;
-  const a = d < 0.08 ? d / 0.08 : Math.max(0.3, 1 - (d - 0.08) / 0.9);
+function bouffee(b, n, graine, t0, t, vie) {
+  const d = t - t0; if (d < 0 || d > 0.08 + vie) return null;
+  const a = d < 0.08 ? d / 0.08 : 1 - (d - 0.08) / vie;
   return nuage(b[0], b[1], b[2], b[3], n, graine, 1 + 3 * d + 2 * (1 - Math.exp(-d / 0.25)), a);   // elle monte vite puis ralentit
 }
 
-/* ---------- la balançoire vide qui oscille, repart sur « heures » (même arc que le balancier : période 1,6 s, ±18° au plus) ---------- */
+/* ---------- la balançoire vide : elle oscille encore (séquence 10), repart sur « heures » (2,51, au point bas), puis
+   12·sin(2π(t - 2,51)/1,6) exactement comme la séquence 12 (même arc que le balancier : période 1,6 s) ---------- */
 function balancoireEt(t) {
-  let A = 8 * Math.exp(-t / 3);
-  const tp = 2.51 - AV;
-  if (t > tp) A += (15 - A) * p2o(Math.min(1, (t - tp) / 0.45));
-  return A * Math.sin(2 * Math.PI * (t + 0.35) / 1.6);
+  const tp = 2.51 - AV, a0 = 7 * Math.exp(-tp / 2.5);
+  const A = t < tp ? 7 * Math.exp(-t / 2.5) : a0 + (12 - a0) * p2o(Math.min(1, (t - tp) / 0.45));
+  return A * Math.sin(2 * Math.PI * (t - 2.51) / 1.6);
 }
 
-/* ---------- les feuilles de l'arbre (mêmes 72 feuilles que le kit : même graine, même tirage) ----------
-   Les 20 dernières sont celles qui partent : sur « semaine » l'arbre ne garde que les 52 premières et les 20 partantes
-   sont posées une à une, à leur place, pour frémir ; à 3,30 chacune devient un oiseau de papier d'or. */
+/* ---------- les feuilles de l'arbre (les 72 feuilles du kit : même graine, même tirage) ----------
+   Sur « semaine » l'arbre passe à 0 feuille et ses 72 feuilles sont posées une à une, à leur place, pour frémir ; chacune
+   appartient à l'un des 20 oiseaux (la feuille graine et ses voisines) : au départ de l'oiseau, ses feuilles le deviennent. */
 const FEUILLES = (() => {
   const rf = OM.R(19), out = [];
   while (out.length < 72) {
@@ -2603,7 +2607,7 @@ const FEUILLES = (() => {
   }
   return out;
 })();
-const N_RESTE = 52, T_FREMIT = 3.01 - AV, T_ENVOL = 3.30;
+const T_FREMIT = 3.01 - AV, T_ENVOL = 3.30;
 function feuilleFremit(q, t, ph) {
   const d = t - T_FREMIT, env = Math.min(1, d / 0.15), w = 2 * Math.PI * d;
   return { x: q[0] + 2.5 * env * Math.sin(5 * w + ph * 2.1), y: q[1] + 2 * env * Math.cos(6 * w + ph * 1.3),
@@ -2611,38 +2615,57 @@ function feuilleFremit(q, t, ph) {
 }
 
 /* ---------- la vague de 20 oiseaux de papier d'or vers la caméra ----------
-   État de handoff_out à 3,63 (en px de l'écran, caméra finale) : [x, y, largeur, flou]. Un oiseau « ×1 » est l'oiseau du
-   film (≈ 72 px de large) : les trois plus proches sont ×3 (215 px) et flous 10 px, tous sur la moitié droite du cadre,
-   à droite du bloc de preuve et au-dessus du sol de l'écran. Chaque oiseau naît à la taille de sa feuille, grandit en
-   perspective (taille en échelle logarithmique, position proportionnelle au grossissement, sine.inOut) et arrive à
-   3,63 sur son état de handoff_out, la vitesse retombée : la séquence 12 les relance (power2.in). */
-const CIBLES = [
-  [1700, 400, 215, 10], [1500, 610, 180, 8.5], [1840, 600, 160, 7.5],
-  [1560, 290, 120, 5], [1360, 480, 95, 4], [1790, 230, 105, 4.5], [1890, 430, 90, 3.5], [1300, 620, 75, 3], [1640, 720, 80, 3],
-  [1420, 370, 52, 1.5], [1540, 460, 42, 1], [1330, 330, 36, 0.6], [1450, 540, 30, 0], [1660, 545, 34, 0.4], [1380, 560, 28, 0],
-  [1720, 320, 46, 1.2], [1600, 395, 38, 0.8], [1860, 330, 54, 1.6], [1510, 520, 26, 0], [1770, 500, 32, 0.3],
-];
-const LARG_OISEAU = 51;   // u, de la queue au bec (kit oiseau)
+   État d'arrivée = la vague de 12-fin.html à son t = 0, recopiée (mêmes nombres, même construction, même tri) : en px de
+   l'écran, k = échelle d'écran (1 = oiseau de 51 px ; les plus proches ×3, 153 px, flous 10 px), b = flou, T et dy pour
+   la vitesse de départ de la séquence 12 (« ils arrivent déjà en vol » : 0,35 × leur traversée par seconde, vers la
+   gauche). Chaque oiseau naît à la taille de sa feuille, grandit (échelle logarithmique, sine.inOut : croissance nulle
+   à la couture, comme le power2.in de la 12) et décrit un vol courbe (Hermite en px d'écran : il s'élève de l'arbre puis
+   tourne vers la gauche et arrive à la vitesse exacte où la séquence 12 le reprend). */
+const VAGUE = [];
+[[1712, 150, 2.5, 8], [1846, 286, 2.8, 9.5], [1668, 420, 3.0, 10], [1808, 556, 2.7, 9], [1704, 690, 2.4, 8], [1872, 776, 2.2, 7], [1590, 250, 2.3, 7.5]]
+  .forEach(([x, y, k, b], i) => VAGUE.push({ x0: x, y0: y, k0: k, b0: b, T: 0.40 + 0.012 * i, dy: -40 + 14 * i, rot: -8 + 5 * hh(i * 13 + 1) }));
+[[1430, 330, 1.6, 5], [1530, 470, 1.4, 4.5], [1610, 600, 1.7, 5.5], [1380, 560, 1.2, 4], [1500, 200, 1.3, 4], [1660, 360, 1.5, 5], [1440, 690, 1.1, 3.5], [1560, 740, 1.3, 4.5]]
+  .forEach(([x, y, k, b], i) => VAGUE.push({ x0: x, y0: y, k0: k, b0: b, T: 0.60 + 0.05 * i, dy: -60 + 18 * i, rot: -12 + 10 * hh(i * 29 + 7) }));
+[[1480, 610, 0.7, 0], [1420, 540, 0.6, 0], [1540, 560, 0.8, 0.8], [1460, 470, 0.55, 0], [1520, 650, 0.65, 0]]
+  .forEach(([x, y, k, b], i) => VAGUE.push({ x0: x, y0: y, k0: k, b0: b, T: 0.50 + 0.04 * i, dy: -120 + 30 * i, rot: -16 + 8 * hh(i * 41 + 3) }));
+VAGUE.sort((a, b) => a.k0 - b.k0);   // même ordre de tracé que la séquence 12 : les plus proches devant
 const CAM_FIN = camera(D);
+const ecranDe = (x, y, c) => [960 + (x - c.x) * c.s, 540 + (y - c.y) * c.s];
 const OISEAUX = (() => {
-  const partants = FEUILLES.slice(N_RESTE).slice().sort((a, b) => a[0] - b[0]);
-  const cibles = CIBLES.slice().sort((a, b) => a[0] - b[0]);
-  return partants.map((q, k) => {
-    const c = cibles[k], rho = bor((c[2] - 22) / (215 - 22));
-    const x1 = CAM_FIN.x + (c[0] - 960) / CAM_FIN.s, y1 = CAM_FIN.y + (c[1] - 540) / CAM_FIN.s;
-    return { q, x0: q[0], y0: q[1], x1, y1, s0: q[2] * 1.15 / LARG_OISEAU, s1: c[2] / (LARG_OISEAU * CAM_FIN.s), flou: c[3], w: c[2],
-      depart: T_ENVOL + 0.1 * (1 - rho), rot: 4 + 12 * OM.h01(k * 7919 + 5), ph: k % 3 };
-  }).sort((a, b) => a.w - b.w);   // les plus lointains d'abord : les plus proches passent devant
+  const libres = FEUILLES.map((q, n) => n), graines = [];
+  // chaque oiseau prend la feuille la plus proche de sa place d'arrivée (les plus lointains choisissent d'abord)
+  const out = VAGUE.map((o, i) => {
+    let best = -1, dm = Infinity;
+    for (const n of libres) { const [sx, sy] = ecranDe(FEUILLES[n][0], FEUILLES[n][1], CAM_FIN), d = Math.hypot(sx - o.x0, sy - o.y0); if (d < dm) { dm = d; best = n; } }
+    libres.splice(libres.indexOf(best), 1); graines.push(best);
+    const xe = -(26 * 2 * o.k0 + 3 * 2 * o.b0 + 30), rho = bor((o.k0 - 0.55) / (3.0 - 0.55));
+    return { o, q: FEUILLES[best], feuilles: [best], ph: (((i - 43) % 3) + 3) % 3, depart: T_ENVOL + 0.1 * (1 - rho),
+      v1: [0.35 * (xe - o.x0) / o.T, 0.35 * o.dy / o.T] };
+  });
+  // les autres feuilles rejoignent l'oiseau de la graine la plus proche
+  for (const n of libres) {
+    let best = 0, dm = Infinity;
+    graines.forEach((g, j) => { const d = Math.hypot(FEUILLES[n][0] - FEUILLES[g][0], FEUILLES[n][1] - FEUILLES[g][1]); if (d < dm) { dm = d; best = j; } });
+    out[best].feuilles.push(n);
+  }
+  return out;
 })();
-function vagueEt(t) {
+const herm = (p0, v0, p1, v1, T, u) => {
+  const u2 = u * u, u3 = u2 * u;
+  return (2 * u3 - 3 * u2 + 1) * p0 + (u3 - 2 * u2 + u) * T * v0 + (-2 * u3 + 3 * u2) * p1 + (u3 - u2) * T * v1;
+};
+function vagueEt(t, c) {
   const oiseaux = [], feuilles = [];
-  const pose = Math.floor(t * OM.IPS_POSE + 1e-6);   // battements à 12 i/s, 3 poses
-  for (const o of OISEAUX) {
-    if (t < o.depart) { if (t >= T_FREMIT) feuilles.push(feuilleFremit(o.q, t, o.ph)); continue; }
-    const e = sio(bor((t - o.depart) / (D - o.depart)));
-    const s = o.s0 * Math.pow(o.s1 / o.s0, e), k = (s - o.s0) / (o.s1 - o.s0);
-    oiseaux.push({ x: o.x0 + (o.x1 - o.x0) * k, y: o.y0 + (o.y1 - o.y0) * k, s, flip: -1, rot: o.rot * Math.min(1, 3 * e),
-      pose: (pose + o.ph) % 3, flou: o.flou * e * e });
+  const pose = Math.floor(t * OM.IPS_POSE + 1e-6);   // battements à 12 i/s, 3 poses (à 3,63 : la pose de la séquence 12)
+  for (const b of OISEAUX) {
+    if (t < b.depart) { if (t >= T_FREMIT) for (const n of b.feuilles) feuilles.push(feuilleFremit(FEUILLES[n], t, n % 3)); continue; }
+    const o = b.o, T = D - b.depart, u = bor((t - b.depart) / T), e = sio(u);
+    const [px, py] = ecranDe(b.q[0], b.q[1], camera(b.depart));       // la feuille, à l'écran, quand elle s'envole
+    const k0 = b.q[2] * 1.15 / 51 * camera(b.depart).s;               // l'oiseau naît à la taille de sa feuille
+    const k = k0 * Math.pow(o.k0 / k0, e);
+    const sx = herm(px, 0, o.x0, b.v1[0], T, u), sy = herm(py, -120, o.y0, b.v1[1], T, u);
+    oiseaux.push({ x: c.x + (sx - 960) / c.s, y: c.y + (sy - 540) / c.s, s: k / c.s, flip: -1, rot: o.rot * e,
+      pose: (pose + b.ph) % 3, or: true, flou: o.b0 * e * e });
   }
   return { oiseaux, feuilles };
 }
@@ -2664,19 +2687,19 @@ function preuveEt(t) {
 
 /* ---------- l'état complet au temps t (fonction pure) ---------- */
 function etatDe(t) {
-  const c = camera(t), vague = vagueEt(t);
+  const c = camera(t), vague = vagueEt(t, c);
   const relevees = RELEVES.filter(([, t0]) => t >= t0 - AV).length;
-  const poussiere = [nuage(100, -200, 3500, 900, 160, 31, t + 2, 0.35 + 0.65 * relevees / 6), nuage(3600, -100, 6000, 900, 120, 37, t + 2, 1)];
-  RELEVES.forEach(([k, t0], i) => { const b = bouffee(BOITES[k], 36, 61 + 6 * i, t0 - AV, t); if (b) poussiere.push(b); });
-  const ba = bouffee([3950, -120, 5150, 430], 70, 97, 2.79 - AV, t); if (ba) poussiere.push(ba);
+  const poussiere = [nuage(100, -200, 3500, 900, 160, 31, t, 0.35 + 0.65 * relevees / 6), nuage(3600, -100, 6000, 900, 120, 37, t, 1)];
+  RELEVES.forEach(([k, t0], i) => { const b = bouffee(BOITES[k], 36, 61 + 6 * i, t0 - AV, t, 1.0); if (b) poussiere.push(b); });
+  const ba = bouffee([3950, -120, 5150, 430], 70, 97, 2.79 - AV, t, 0.7); if (ba) poussiere.push(ba);
   return {
     t, cam: c, palette: 'dore', coeur: [c.x, c.y + 92 * recul(bor(t / T_RECUL))],
     cases: casesEt(t),
-    arbre: { pile: 1, or: 1, feuilles: t >= T_FREMIT ? N_RESTE / 72 : 1 },
+    arbre: { pile: 1, or: 1, feuilles: t >= T_FREMIT ? 0 : 1 },
     balancoire: { angle: balancoireEt(t) },
     pere: { x: ST.famille[0], pose: 'epaules' },
     fille: { x: ST.famille[0] - 6, y: 572, pose: 'epaules', siege: 0, tiges: false },
-    horloge: { x: ST.horlogeCloture[0], balancier: 16 * Math.sin(2 * Math.PI * t / 1.6 + 0.9), engr: 60 + 40 * t },
+    horloge: { x: ST.horlogeCloture[0], balancier: 10 * Math.sin(2 * Math.PI * t / 1.6) },
     objets: {
       piles: [{ x: 2196, y: 760, n: 4, w: 120, seed: 7 }],
       dessins: [{ x: ST.carte1[0], y: ST.carte1[1], rot: -4 }], dessin2: { x: ST.carte2[0], y: ST.carte2[1], rot: 3, progres: 1 },

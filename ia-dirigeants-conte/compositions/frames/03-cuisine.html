@@ -2640,9 +2640,9 @@ function eventail(t, tp) {
     const t1 = 3.06 + 0.02 * i, v = t < t1 ? 0 : ease('power2.in')((t - t1) / 0.12);
     if (v >= 1) continue;                                                   // retombée sur la pile
     const u = ease('expo.out')((t - t0) / 0.1) * (1 - v);
-    const r0 = i < 2 ? -90 : 90, r1 = (i - 2) * 14;
-    out.push({ x: lerp(2220 + (i - 2) * 6, 2220 + (i - 2) * 30, u), y: lerp(652, 618 + 4 * Math.abs(i - 2), u),
-      w: 52, h: 70, rot: lerp(r0, r1, u), flip: lerp(0.06, 1, u) });
+    const r0 = i < 2 ? -90 : 90, r1 = (i - 2) * 20;
+    out.push({ x: lerp(2220 + (i - 2) * 6, 2220 + (i - 2) * 42, u), y: lerp(652, 622 + 5 * Math.abs(i - 2), u),
+      w: 40, h: 56, rot: lerp(r0, r1, u), flip: lerp(0.06, 1, u) });
   }
   return out;
 }

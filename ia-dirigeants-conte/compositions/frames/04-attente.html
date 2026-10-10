@@ -2578,10 +2578,13 @@ function mise() {   // mesures Fraunces : appelée seulement après om.pret
   if (MISE) return MISE;
   const T = 84 / T_MAX, a = OM.mesurerMot('Interminable', T), b = OM.mesurerMot('Attente', T);
   const dx2 = (a.wI - b.wI) / 2, g = Math.min(0, dx2), d = Math.max(a.largeur, dx2 + b.largeur);
-  const x0 = 3060 - (g + d) / 2, ecart = 0.3 * T, tot = a.wI + ecart + b.wI;
+  // bloc commun avec la séquence 5 (sa première image) : cam(3 060, 685, 1,55), bloc centré à x 990 de l'écran, lignes de
+  // base à y 300 et 404 de l'écran
+  const cx = 3060 + 30 / T_MAX, y1 = 685 - 240 / T_MAX, y2 = 685 - 136 / T_MAX;
+  const x0 = cx - (g + d) / 2, ecart = 0.3 * T, tot = a.wI + ecart + b.wI;
   MISE = { T, wI: a.wI, wA: b.wI,
-    iCote: [3060 - tot / 2, 496], aCote: [3060 - tot / 2 + a.wI + ecart, 496],   // I et A côte à côte, centrés à l'écran
-    iLigne: [x0, 516], aLigne: [x0 + dx2, 588] };                                // le mobile : deux lignes, initiales sur un même axe
+    iCote: [cx - tot / 2, y1 - 20], aCote: [cx - tot / 2 + a.wI + ecart, y1 - 20],   // I et A côte à côte, centrés
+    iLigne: [x0, y1], aLigne: [x0 + dx2, y2] };                                     // le mobile : deux lignes, initiales sur un même axe
   return MISE;
 }
 const T_CHUTE = 1.25 - IMG, T_RANGE = 1.72, T_DEPLI1 = 2.58 - 0.03, T_DEPLI2 = 3.42 - 0.03;
@@ -2600,7 +2603,7 @@ function lettresDe(t, c) {
   const thI = balance(t, 1.45, 6, 0.488, 0.55) * net + balance(t, 3.66, 1.5, 0.6, 0.4);
   const thA = balance(t, 1.45, -5, 0.813, 0.55) * net + balance(t, 3.66, -3, 0.6, 0.4);
   const yI = lin(M.iCote[1], M.iLigne[1], p) + dy, yA = lin(M.aCote[1], M.aLigne[1], p) + dy;
-  if (yI < 400) return [];   // encore dans le plancher : rien ne se dessine au-dessus du plafond
+  if (yI < 414) return [];   // encore dans le plancher : rien ne se dessine au-dessus du plafond
   // un fil pend du plafond (y 438) : il ne descend jamais sous le haut de la lettre
   const filI = Math.min(PLAFOND, yI - 0.69 * T);
   const lfI = Math.max(0, yI - 0.7 * T - filI);

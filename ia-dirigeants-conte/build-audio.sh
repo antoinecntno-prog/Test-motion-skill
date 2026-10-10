@@ -19,6 +19,7 @@ TOTAL="${TOTAL:-57.1}"                             # final duration in seconds =
 MUSIC="${MUSIC-assets/audio/music.mp3}"            # CC0 track, or the score of musique-film.py (assets/audio/musique.wav); MUSIC="" for none
 MUSIC_START="${MUSIC_START:-0}"                    # where to start in the track (skip a quiet intro, see pitfalls.md)
 MUSIC_VOLUME="${MUSIC_VOLUME:-0.12}"
+LIMIT="${LIMIT:-0.95}"                           # plafond du limiteur (0.8 garde le true peak sous -1,5 dBTP)
 MIX_GAIN="${MIX_GAIN:-0}"                       # gain (dB) sur le mixage avant le limiteur : viser -16 LUFS (ffmpeg ebur128)               # 0.10 to 0.15 under a voice
 SFX_DIR="${SFX_DIR:-../.claude/skills/media-use/audio/assets/sfx}"   # Pixabay SFX shipped with HeyGen's media-use
 SFX_EVENTS="${SFX_EVENTS:-assets/audio/sfx-events.json}"             # [["name", seconds, volume], ...] on the FINAL timeline
@@ -28,7 +29,7 @@ MIX_OUT="${MIX_OUT:-assets/audio/mix.wav}"
 
 command -v ffmpeg >/dev/null || { echo "build-audio: ffmpeg not found on PATH" >&2; exit 1; }
 [ -f "$RAW" ] || { echo "build-audio: raw voice $RAW not found" >&2; exit 1; }
-export RAW CUTS TAIL TOTAL MUSIC MUSIC_START MUSIC_VOLUME MIX_GAIN SFX_DIR SFX_EVENTS VOICE_OUT MIX_OUT
+export RAW CUTS TAIL TOTAL MUSIC MUSIC_START MUSIC_VOLUME LIMIT MIX_GAIN SFX_DIR SFX_EVENTS VOICE_OUT MIX_OUT
 
 python3 - <<'EOF'
 import json, os, subprocess, sys
@@ -115,7 +116,7 @@ for k, (name, at, volume) in enumerate(events):
     graph.append(f"[{index}]aformat=sample_rates=44100:channel_layouts=stereo,volume={float(volume)},adelay={delay}|{delay}[e{k}]")
     labels.append(f"[e{k}]")
     index += 1
-graph.append("".join(labels) + f"amix=inputs={len(labels)}:normalize=0:duration=first,volume={float(env.get('MIX_GAIN') or 0):.1f}dB,alimiter=limit=0.95[out]")
+graph.append("".join(labels) + f"amix=inputs={len(labels)}:normalize=0:duration=first,volume={float(env.get('MIX_GAIN') or 0):.1f}dB,alimiter=limit={float(env.get('LIMIT') or 0.95)}:level=false[out]")
 subprocess.run(args + ["-filter_complex", ";".join(graph), "-map", "[out]", "-t", f"{total:.3f}", env["MIX_OUT"]], check=True)
 print(f"mix: {env['MIX_OUT']} ({total:.2f} s, music {'on' if music else 'off'}, {len(events)} sound effect(s))")
 EOF

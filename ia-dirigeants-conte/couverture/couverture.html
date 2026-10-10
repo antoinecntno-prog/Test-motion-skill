@@ -1,0 +1,48 @@
+<title>Couverture Le Temps perdu</title>
+<style>
+  /* couverture LinkedIn du film, 1920 x 1080 : l'image du salon à 9,8 s (séquence 2, sous-titre masqué), le titre pendu à
+     ses fils comme les mots du film (Fraunces, initiale 700, suite 600, encre de l'ombre), une ligne au format des
+     sous-titres dans la bande du sol (DM Sans 500 crème, mot clé dans sa boîte bordeaux) */
+  @font-face { font-family: "Fraunces"; font-weight: 600; font-display: block; src: url("../assets/fonts/fraunces-latin-600-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Fraunces"; font-weight: 700; font-display: block; src: url("../assets/fonts/fraunces-latin-700-normal.woff2") format("woff2"); }
+  @font-face { font-family: "DM Sans"; font-weight: 500; font-display: block; src: url("../assets/fonts/dm-sans-latin-500-normal.woff2") format("woff2"); }
+  @font-face { font-family: "DM Sans"; font-weight: 500; font-display: block; src: url("../assets/fonts/dm-sans-latin-ext-500-normal.woff2") format("woff2"); unicode-range: U+0100-024F; }
+  :root { --ombre: #1B120B; --sol: #0F0905; --creme: #FFF4DC; --bordeaux: #7A1E2E; }
+  html, body { margin: 0; padding: 0; background: var(--sol); }
+  #cadre { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--sol) url("fond-salon.jpg") 0 0 / 1920px 1080px no-repeat; }
+  #fils { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+  .mot { position: absolute; margin: 0; white-space: nowrap; color: var(--ombre); font: 600 var(--t)/1 "Fraunces", serif; }
+  .mot b { font-weight: 700; }
+  #ligne { position: absolute; left: 0; right: 0; top: 920px; text-align: center; white-space: nowrap;
+    font: 500 52px/64px "DM Sans", sans-serif; color: var(--creme); letter-spacing: -0.005em; text-shadow: 0 2px 12px rgba(15, 9, 5, .9); }
+  .boite { display: inline-block; padding: 2px 14px 6px; background: var(--bordeaux); border-radius: 6px; line-height: 52px; text-shadow: none; }
+</style>
+<div id="cadre">
+  <svg id="fils" viewBox="0 0 1920 1080" aria-hidden="true"></svg>
+  <p class="mot" id="m1" style="--t: 108px"><b>L</b>e Temps</p>
+  <p class="mot" id="m2" style="--t: 108px"><b>p</b>erdu</p>
+  <div id="ligne">Un conte pour les <span class="boite">dirigeants</span> qui ramènent le travail à la maison</div>
+</div>
+<script>
+  /* mise en place après le chargement des polices : « Le Temps » pendu au plafond (poutre basse à y 108) par deux fils,
+     « perdu » pendu sous lui par deux fils, initiales sur un même axe (comme « Interminable / Attente ») */
+  const PLAFOND = 108, CX = 1322, BASE1 = 272, BASE2 = 394;
+  document.fonts.ready.then(() => {
+    const m1 = document.getElementById('m1'), m2 = document.getElementById('m2'), svg = document.getElementById('fils');
+    const T = 108, asc = 0.72 * T;   // hauteur des capitales de Fraunces : 0,72 em environ
+    const w1 = m1.getBoundingClientRect().width, w2 = m2.getBoundingClientRect().width;
+    const ini1 = m1.querySelector('b').getBoundingClientRect().width, ini2 = m2.querySelector('b').getBoundingClientRect().width;
+    const x1 = CX - w1 / 2, x2 = x1 + (ini1 - ini2) / 2;
+    // la ligne de base de la boîte : font-size T, line-height 1 ; ascent de Fraunces 0,978 em, descent 0,255 em : on place
+    // la ligne de base en mesurant un repère
+    const sonde = document.createElement('span'); sonde.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+    m1.appendChild(sonde); const b1 = sonde.getBoundingClientRect().top - m1.getBoundingClientRect().top; sonde.remove();
+    m1.style.left = x1 + 'px'; m1.style.top = (BASE1 - b1) + 'px';
+    m2.style.left = x2 + 'px'; m2.style.top = (BASE2 - b1) + 'px';
+    const fil = (x, y0, y1) => `<line x1="${x}" y1="${y0}" x2="${x}" y2="${y1}" stroke="#1B120B" stroke-width="2.2" stroke-opacity=".95"/>`;
+    const fin1 = x1 + w1 - 0.30 * T, fin2 = x2 + w2 - 0.30 * T;
+    svg.innerHTML = fil(x1 + ini1 / 2, PLAFOND, BASE1 - asc + 4) + fil(fin1, PLAFOND, BASE1 - 0.5 * T)
+      + fil(x2 + ini2 / 2, BASE1 + 0.06 * T, BASE2 - 0.5 * T) + fil(fin2, BASE1 + 0.06 * T, BASE2 - asc + 4);
+    document.body.dataset.pret = '1';
+  });
+</script>

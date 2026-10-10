@@ -16,11 +16,11 @@ RAW="${RAW:-assets/audio/voix.mp3}"                # raw voice exported from Ele
 CUTS="${CUTS:-22.79:2.5 28.66:0.4 30.68:1.2 39.32:0.5 44.72:0.3}"                                   # "cut:silence" pairs in raw seconds, e.g. "14.00:0.8 34.75:0.4" (empty = no cut)
 TAIL="${TAIL:-4.0}"                                # silence added after the voice (end card hold)
 TOTAL="${TOTAL:-57.1}"                             # final duration in seconds = STORYBOARD duration = TOTAL in assemble.sh
-MUSIC="${MUSIC-assets/audio/music.mp3}"            # CC0 track, or the score of musique-film.py (assets/audio/musique.wav); MUSIC="" for none
+MUSIC="${MUSIC-assets/audio/musique-M2.wav}"            # CC0 track, or the score of musique-film.py (assets/audio/musique.wav); MUSIC="" for none
 MUSIC_START="${MUSIC_START:-0}"                    # where to start in the track (skip a quiet intro, see pitfalls.md)
-MUSIC_VOLUME="${MUSIC_VOLUME:-0.12}"
-LIMIT="${LIMIT:-0.95}"                           # plafond du limiteur (0.8 garde le true peak sous -1,5 dBTP)
-MIX_GAIN="${MIX_GAIN:-0}"                       # gain (dB) sur le mixage avant le limiteur : viser -16 LUFS (ffmpeg ebur128)               # 0.10 to 0.15 under a voice
+MUSIC_VOLUME="${MUSIC_VOLUME:-0.16}"
+LIMIT="${LIMIT:-0.76}"                           # plafond du limiteur (0.8 garde le true peak sous -1,5 dBTP)
+MIX_GAIN="${MIX_GAIN:-9.5}"                       # gain (dB) sur le mixage avant le limiteur : viser -16 LUFS (ffmpeg ebur128)               # 0.10 to 0.15 under a voice
 SFX_DIR="${SFX_DIR:-../.claude/skills/media-use/audio/assets/sfx}"   # Pixabay SFX shipped with HeyGen's media-use
 SFX_EVENTS="${SFX_EVENTS:-assets/audio/sfx-events.json}"             # [["name", seconds, volume], ...] on the FINAL timeline
 VOICE_OUT="${VOICE_OUT:-assets/audio/voix-montage.wav}"

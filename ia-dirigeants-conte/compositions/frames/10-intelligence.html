@@ -61,7 +61,7 @@
   /* ===================== KIT OMBRES : fin du bloc CSS à copier ===================== */
 
   /* ===================== séquence 10-intelligence (préfixe p10) ===================== */
-  #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; }
+  #p10-root { position: relative; width: 1920px; height: 1080px; overflow: hidden; }
   /* halo des lettres d'or (ambient-glow-bloom) : une tache or, plus sombre et plus saturée que les lettres, posée en mode
      écran au-dessus du canvas et sous le sous-titre ; opacité (≤ 0,45) et position écrites à chaque image depuis le temps */
   #p10-halo { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; pointer-events: none;
@@ -71,7 +71,7 @@
     background: radial-gradient(closest-side, rgba(201, 138, 46, .62) 0%, rgba(201, 138, 46, .26) 52%, rgba(201, 138, 46, 0) 100%); }
   </style>
 
-  <div id="root" data-composition-id="10-intelligence" data-width="1920" data-height="1080" data-duration="5.80">
+  <div id="p10-root" data-composition-id="10-intelligence" data-width="1920" data-height="1080" data-duration="5.80">
     <!-- OM.creer pose ici le canvas du monde (plans 1 à 4) et les calques HTML du kit (sous-titre, preuve, fin, noir),
          chacun en class="clip" sur toute la durée (pistes 1 à 5) ; le halo des lettres est glissé juste au-dessus du canvas -->
     <div id="p10-halo" class="clip" data-start="0" data-duration="5.80" data-track-index="6"><div id="p10-halo-tache"></div></div>
@@ -2541,7 +2541,7 @@ const OM = (() => {
    Tout le canvas est dessiné par om.dessiner(etatDe(t)), fonction pure du temps de la timeline : poses des marionnettes
    au pas de 12 i/s (OM.tPose), caméra fluide à 30 i/s (mouvements + couche de dérive), lettres d'or du kit. */
 const FID = '10-intelligence', DUR = 5.80;
-const racine = document.querySelector('[data-composition-id="' + FID + '"]');
+const racine = document.getElementById('p10-root');
 const F1 = 1 / 30;   // une image : chaque mot et chaque révélation arrivent une image avant leur temps
 const P2o = OM.courbe('power2.out'), P2i = OM.courbe('power2.in'), P3o = OM.courbe('power3.out');
 const P2io = OM.courbe('power2.inOut');

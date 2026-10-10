@@ -61,7 +61,7 @@
   /* ===================== KIT OMBRES : fin du bloc CSS à copier ===================== */
 
   /* ===================== séquence 11-preuve (préfixe p11) ===================== */
-  #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; }
+  #p11-root { position: relative; width: 1920px; height: 1080px; overflow: hidden; }
   /* le sol plein cadre (ombre-sol) sous le canvas du monde, sur son propre calque clip */
   #p11-sol { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background: #0F0905; }
   /* avant le premier dessin, rien du bloc de preuve ni de la carte de fin ne paraît (le kit écrit ensuite leurs styles en ligne) */
@@ -69,7 +69,7 @@
   #p11-fin .om-fin { visibility: hidden; }
   </style>
 
-  <div id="root" data-composition-id="11-preuve" data-width="1920" data-height="1080" data-duration="3.63">
+  <div id="p11-root" data-composition-id="11-preuve" data-width="1920" data-height="1080" data-duration="3.63">
     <!-- le sol ; le kit ajoute ses calques clip au-dessus (pistes 1 à 5) : canvas du monde #p11-ecran, #p11-sous, #p11-preuve, #p11-fin, #p11-noir -->
     <div id="p11-sol" class="clip" data-start="0" data-duration="3.63" data-track-index="0"></div>
   </div>
@@ -2544,7 +2544,7 @@ const OM = (() => {
 const FID = '11-preuve', D = 3.63;
 const AV = 1 / 30;   // chaque révélation sur un mot part une image avant le mot (jamais en retard)
 const ancre = document.getElementById('p11-sol');
-const racine = (ancre && ancre.parentElement) || document.querySelector('[data-composition-id="' + FID + '"]');
+const racine = (ancre && ancre.parentElement) || document.getElementById('p11-root');
 const om = OM.creer(racine, 'p11', { phrases: [], palettes: ['dore'], clip: { start: 0, duration: D, track: 1 } });
 const ST = OM.MONDE.stations, bor = OM.borne, hh = OM.h01;
 const p2o = OM.courbe('power2.out'), sio = OM.courbe('sine.inOut');
